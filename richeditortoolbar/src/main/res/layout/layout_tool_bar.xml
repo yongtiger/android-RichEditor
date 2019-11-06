@@ -51,7 +51,25 @@
         style="@style/ImageButton" />
 
 
-<!--///////////-->
+<!--    自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan-->
+    <ImageView
+        android:id="@+id/iv_align_normal"
+        app:tint="@color/color_state_image_button"
+        app:srcCompat="@drawable/ic_format_align_left_black_24dp"
+        style="@style/ImageButton" />
+
+    <ImageView
+        android:id="@+id/iv_align_center"
+        app:tint="@color/color_state_image_button"
+        app:srcCompat="@drawable/ic_format_align_center_black_24dp"
+        style="@style/ImageButton" />
+
+    <ImageView
+        android:id="@+id/iv_align_opposite"
+        app:tint="@color/color_state_image_button"
+        app:srcCompat="@drawable/ic_format_align_right_black_24dp"
+        style="@style/ImageButton" />
+
     <ImageView
         android:id="@+id/iv_bold"
         app:tint="@color/color_state_image_button"
@@ -65,15 +83,16 @@
         style="@style/ImageButton" />
 
     <ImageView
-        android:id="@+id/iv_code"
+        android:id="@+id/iv_quote"
+        android:longClickable="true"
         app:tint="@color/color_state_image_button"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/ic_editor_quote"
         style="@style/ImageButton" />
 
     <ImageView
-        android:id="@+id/iv_quote"
+        android:id="@+id/iv_code"
         app:tint="@color/color_state_image_button"
-        app:srcCompat="@drawable/ic_editor_quote"
+        app:srcCompat="@drawable/ic_editor_code"
         style="@style/ImageButton" />
 
 </merge>

@@ -9,19 +9,19 @@ public class BoldSpan extends StyleSpan {
         super(Typeface.BOLD);
     }
 
-    public BoldSpan(Parcel src) {
-        super(src);
-    }
-
-    public static final Creator<BoldSpan> CREATOR = new Creator<BoldSpan>() {
-        @Override
-        public BoldSpan createFromParcel(Parcel source) {
-            return new BoldSpan(source);
-        }
-
-        @Override
-        public BoldSpan[] newArray(int size) {
-            return new BoldSpan[size];
-        }
-    };
+//    public BoldSpan(Parcel src) {
+//        super(src);
+//    }
+//
+//    public static final Creator<BoldSpan> CREATOR = new Creator<BoldSpan>() {
+//        @Override
+//        public BoldSpan createFromParcel(Parcel source) {
+//            return new BoldSpan(source);
+//        }
+//
+//        @Override
+//        public BoldSpan[] newArray(int size) {
+//            return new BoldSpan[size];
+//        }
+//    };
 }

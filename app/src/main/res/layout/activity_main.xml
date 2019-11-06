@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <cc.brainbook.android.richeditortoolbar.RichEditorToolBar
+    <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
         android:id="@+id/rich_editor_tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,6 +19,14 @@
     <cc.brainbook.android.richeditortoolbar.RichEditText
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:scrollbars="vertical"
+        android:lineSpacingExtra="8dp"
+        android:textCursorDrawable="@null"
+        android:textSize="24sp"
+        android:inputType="textMultiLine|textNoSuggestions" />
+        <!--去掉EditText输入框下面的下划线：android:background="@null"，但selection选择整行时最左面的图标消失！-->
+        <!--去掉字符红色提示下划线：android:inputType="textMultiLine|textNoSuggestions"，如果只android:inputType="textNoSuggestions"则IME的回车键消失、用android:imeOptions="actionNone"也无效！-->
 
 </LinearLayout>

@@ -2,15 +2,16 @@ package cc.brainbook.android.richeditor;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Spanned;
-import android.text.style.StrikethroughSpan;
+import android.text.Html;
+import android.widget.EditText;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
-import cc.brainbook.android.richeditortoolbar.RichEditorToolBar;
+import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
-    private RichEditorToolBar mRichEditorToolBar;
+    private RichEditorToolbar mRichEditorToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +19,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRichEditText = findViewById(R.id.edit_text);
-        mRichEditorToolBar = findViewById(R.id.rich_editor_tool_bar);
-        mRichEditorToolBar.setEditText(mRichEditText);
+        mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
+        mRichEditorToolbar.setEditText(mRichEditText);
+
+//        mRichEditText.setText("aaaaa\naaaaaaaa\naaaaaaaa\naaaaaaaa\naaa");
 
         ///test
 //        mRichEditText.setText("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");
@@ -50,4 +53,11 @@ public class MainActivity extends AppCompatActivity {
 //        }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        ///https://stackoverflow.com/questions/16558948/how-to-use-textview-getlayout-it-returns-null
+//        SpanUtil.getThisLineStart(mRichEditText, 1);
+    }
 }
