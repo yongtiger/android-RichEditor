@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="size_image_button">32dp</dimen>
+    <dimen name="image_view_size">32dp</dimen>
+    <dimen name="text_size">12sp</dimen>
+    <dimen name="text_view_padding">8dp</dimen>
 </resources>

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">RichEditorToolBar</string>
+
+    <string name="font">Font</string>
     <string name="quote_span_strip_width">Strip width: %1$d</string>
     <string name="quote_span_gap_width">Gap width: %1$d</string>
 </resources>

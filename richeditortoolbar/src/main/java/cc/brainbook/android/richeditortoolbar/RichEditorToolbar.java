@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.ColorInt;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spanned;
@@ -14,6 +15,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.SubscriptSpan;
 import android.text.style.SuperscriptSpan;
+import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
@@ -21,6 +23,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -40,6 +43,7 @@ import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
+import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
@@ -89,6 +93,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     ///原生span（带参数）：URL
     private ImageView mImageViewURL;
 
+    ///原生span（带参数）：TypefaceFont
+    private TextView mTextViewTypefaceFont;
+
     ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
     private ImageView mImageViewAlignNormal;
     private ImageView mImageViewAlignCenter;
@@ -105,7 +112,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         LayoutInflater.from(context).inflate(R.layout.layout_tool_bar, this, true);
 
 
-        /* ------------ 原生span：Underline、StrikeThrough、Subscript、Superscript ------------ */
+        /* ------------ ///原生span：Underline、StrikeThrough、Subscript、Superscript ------------ */
         mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline);
         mImageViewUnderline.setOnClickListener(this);
         mClassMap.put(mImageViewUnderline, CustomUnderlineSpan.class);
@@ -123,7 +130,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewSubscript, SubscriptSpan.class);
 
 
-        /* -------------- 自定义span：Bold、Italic --------------- */
+        /* -------------- ///自定义span：Bold、Italic --------------- */
         mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
         mImageViewBold.setOnClickListener(this);
         mClassMap.put(mImageViewBold, BoldSpan.class);
@@ -133,7 +140,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewItalic, ItalicSpan.class);
 
 
-        /* -------------- 原生span（带背景色参数）：ForegroundColor、BackgroundColor --------------- */
+        /* -------------- ///原生span（带背景色参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
         mImageViewForegroundColor.setOnClickListener(this);
         mClassMap.put(mImageViewForegroundColor, ForegroundColorSpan.class);
@@ -143,13 +150,19 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewBackgroundColor, BackgroundColorSpan.class);
 
 
-        /* -------------- 原生span（带参数）：URL --------------- */
+        /* -------------- ///原生span（带参数）：URL --------------- */
         mImageViewURL = (ImageView) findViewById(R.id.iv_url);
         mImageViewURL.setOnClickListener(this);
         mClassMap.put(mImageViewURL, URLSpan.class);
 
 
-        /* -------------- 自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
+        /* -------------- ///原生span（带参数）：TypefaceFont --------------- */
+        mTextViewTypefaceFont = (TextView) findViewById(R.id.tv_typeface_font);
+        mTextViewTypefaceFont.setOnClickListener(this);
+        mClassMap.put(mTextViewTypefaceFont, TypefaceSpan.class);
+
+
+        /* -------------- ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
         mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
         mImageViewAlignNormal.setOnClickListener(this);
         mClassMap.put(mImageViewAlignNormal, AlignNormalSpan.class);
@@ -163,7 +176,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewAlignOpposite, AlignOppositeSpan.class);
 
 
-        /* -------------- 原生段落span（带初始化参数）：Quote --------------- */
+        /* -------------- ///原生段落span（带初始化参数）：Quote --------------- */
         mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
         mImageViewQuote.setOnClickListener(this);
         mImageViewQuote.setOnLongClickListener(this);
@@ -180,7 +193,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 || view == mImageViewItalic
                 || view == mImageViewForegroundColor
                 || view == mImageViewBackgroundColor
-                || view == mImageViewURL;
+                || view == mImageViewURL
+                || view == mTextViewTypefaceFont;
     }
     private boolean isParagraphStyle(View view) {
         return view == mImageViewAlignNormal
@@ -240,6 +254,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     final String link = ((URLSpan) span).getURL();
                     view.setTag(link);
                 }
+                ///原生span（带参数）：TypefaceFont
+                else if (clazz == TypefaceSpan.class) {
+                    final String family = ((TypefaceSpan) span).getFamily();
+                    view.setTag(family);
+                    mTextViewTypefaceFont.setText(family);
+                }
 
                 return;
             }
@@ -252,8 +272,14 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             view.setBackgroundColor(Color.TRANSPARENT);
         }
         ///原生span（带参数）：URL
-        else if (clazz == URLSpan.class) {
+        ///原生span（带参数）：TypefaceFont
+        else if (clazz == URLSpan.class || clazz == TypefaceSpan.class) {
             view.setTag(null);
+
+            ///原生span（带参数）：TypefaceFont
+            if (clazz == TypefaceSpan.class) {
+                mTextViewTypefaceFont.setText(view.getContext().getString(R.string.font));
+            }
         }
     }
     private <T> void updateParagraphViews(Class<T> clazz, Editable editable, int currentLineStart, int currentLineEnd, View view) {
@@ -313,7 +339,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
             ///原生span（带参数）：URL
             if (view == mImageViewURL) {
-                ///颜色选择器
                 final URLSpanDialogBuilder urlSpanDialogBuilder = URLSpanDialogBuilder
                         .with(view.getContext())
                         .setPositiveButton(android.R.string.ok, new URLSpanDialogBuilder.PickerClickListener() {
@@ -348,8 +373,42 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 return;
             }
 
+            ///原生span（带参数）：TypefaceFont
+            if (view == mTextViewTypefaceFont) {
+                new AlertDialog.Builder(view.getContext())
+                        .setSingleChoiceItems(R.array.typeface_family, StringUtil.getIndex(view.getContext(), R.array.typeface_family, (CharSequence) view.getTag()), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.setSelected(true);
+                                final CharSequence family = StringUtil.getItem(view.getContext(), R.array.typeface_family, which);
+                                ///设置View的tag
+                                view.setTag(family);
+                                mTextViewTypefaceFont.setText(family);
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        ///清除样式
+                        .setNeutralButton("Clear", new DialogInterface.OnClickListener() {  //////??????国际化"Clear"
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.setSelected(false);
+                                ///清除View的tag
+                                view.setTag(null);
+                                mTextViewTypefaceFont.setText(view.getContext().getString(R.string.font));
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                            }
+                        }).show();
+
+                return;
+            }
+
             view.setSelected(!view.isSelected());
             applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
         } else if (isParagraphStyle(view)) {
             view.setSelected(!view.isSelected());
             applyParagraphStyleSpansSelection(view, mRichEditText.getText());
@@ -391,6 +450,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     @Override
     public boolean onLongClick(final View view) {
+        ///原生段落span（带初始化参数）：Quote
         if (view == mImageViewQuote) {
             ///QuoteSpan设置对话框
             QuoteSpanDialogBuilder
@@ -644,10 +704,25 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                         }
                     }
                     ///原生span（带参数）：URL
-                     else if (clazz == URLSpan.class) {
+                    else if (clazz == URLSpan.class) {
                         final String spanLink = ((URLSpan) span).getURL();
                         final String viewLink = (String) mImageViewURL.getTag();
                         if (spanLink.equals(viewLink)) {
+                            isNewSpanNeeded = false;
+                            expendSpan(editable, start, end, spanStart, spanEnd, span, true);
+                        } else {
+                            isNewSpanNeeded = true;
+                            if (expendSpan(editable, start, end, spanStart, spanEnd, span, false)) {
+                                editable.setSpan(span, spanStart, start, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                newCharacterStyleSpanByCompare(clazz, editable, end, spanEnd, span);
+                            }
+                        }
+                    }
+                    ///原生span（带参数）：TypefaceFont
+                    else if (clazz == TypefaceSpan.class) {
+                        final String spanFamily = ((TypefaceSpan) span).getFamily();
+                        final String viewFamily = (String) mTextViewTypefaceFont.getTag();
+                        if (spanFamily.equals(viewFamily)) {
                             isNewSpanNeeded = false;
                             expendSpan(editable, start, end, spanStart, spanEnd, span, true);
                         } else {
@@ -661,6 +736,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                         isNewSpanNeeded = false;
                         expendSpan(editable, start, end, spanStart, spanEnd, span, true);
                     }
+
                 } else {
                     isNewSpanNeeded = false;
                     if (expendSpan(editable, start, end, spanStart, spanEnd, span, false)) {
@@ -749,12 +825,21 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         else if (clazz == URLSpan.class) {
             String link;
             if (compareSpan == null) {
-                final String viewLink = (String) mImageViewURL.getTag();
-                link = viewLink;
+                link = (String) mImageViewURL.getTag();
             } else {
                 link = ((URLSpan) compareSpan).getURL();
             }
             newSpan = new URLSpan(link);
+        }
+        ///原生span（带参数）：TypefaceFont
+        else if (clazz == TypefaceSpan.class) {
+            String family;
+            if (compareSpan == null) {
+                family = (String) mTextViewTypefaceFont.getTag();
+            } else {
+                family = ((TypefaceSpan) compareSpan).getFamily();
+            }
+            newSpan = new TypefaceSpan(family);
 
         } else {
             try {
@@ -773,6 +858,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         ///添加新span
         Object newSpan = null;
 
+        ///原生段落span（带初始化参数）：Quote
         if (clazz == CustomQuoteSpan.class) {
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
@@ -876,6 +962,17 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             } else {
                 final String compareSpanLink = ((URLSpan) compareSpan).getURL();
                 return spanLink.equals(compareSpanLink) ? span : null;
+            }
+        }
+        ///原生span（带参数）：TypefaceFont
+        else if (clazz == TypefaceSpan.class) {
+            final String spanFamily = ((TypefaceSpan) span).getFamily();
+            if (compareSpan == null) {
+                final String viewFamily = (String) mTextViewTypefaceFont.getTag();
+                return spanFamily.equals(viewFamily) ? span : null;
+            } else {
+                final String compareSpanLink = ((TypefaceSpan) compareSpan).getFamily();
+                return spanFamily.equals(compareSpanLink) ? span : null;
             }
         }
 

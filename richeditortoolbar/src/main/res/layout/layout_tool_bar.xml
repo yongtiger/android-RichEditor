@@ -4,95 +4,108 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+<!--    <Spinner-->
+<!--        android:id="@+id/spinner_typeface"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:entries="@array/typeface_family" />-->
+<!--    &lt;!&ndash;    android:prompt="@string/app_name"&ndash;&gt;-->
+<!--    &lt;!&ndash;    android:spinnerMode="dialog"&ndash;&gt;-->
+
     <!--    Just use app:tint/app:backgroundTint instead of android:tint/android:backgroundTint, the tint will take effect below Lollipop.-->
     <!--    https://stackoverflow.com/questions/29890654/appcompatbutton-backgroundtint-api-21-->
 
-    <!--    前景色：app:tint="@color/color_state_image_button"-->
+    <!--    前景色：app:tint="@color/color_state_view"-->
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
 
 <!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
     <ImageView
         android:id="@+id/iv_underline"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_editor_underline"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_strikethrough"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_strikethrough_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_subscript"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_text_fields_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_superscript"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_size_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
 
 <!--    ///原生span：ForegroundColor、BackgroundColor-->
     <ImageView
         android:id="@+id/iv_foreground_color"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_color_text_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_background_color"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_border_color_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
 
 <!--    自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan-->
     <ImageView
         android:id="@+id/iv_align_normal"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_align_left_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_center"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_align_center_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_opposite"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_align_right_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_bold"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_editor_bold"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_italic"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_editor_italic"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_quote"
         android:longClickable="true"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_editor_quote"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_url"
-        app:tint="@color/color_state_image_button"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_insert_link_black_24dp"
-        style="@style/ImageButton" />
+        style="@style/ImageView" />
+
+    <TextView
+        android:id="@+id/tv_typeface_font"
+        android:text="@string/font"
+        style="@style/TextView"/>
 
 </merge>

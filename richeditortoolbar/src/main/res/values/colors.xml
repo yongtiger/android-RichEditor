@@ -2,11 +2,11 @@
 <resources>
 
     <!--前景色-->
-    <color name="colorImageButtonTintDefault">@android:color/black</color>
-    <color name="colorImageButtonTintSelected">@android:color/holo_purple</color>
+    <color name="colorViewTintDefault">@android:color/black</color>
+    <color name="colorViewTintSelected">@android:color/holo_purple</color>
 
     <!--背景色-->
-    <color name="colorImageButtonBackgroundDefault">@android:color/transparent</color>
-    <color name="colorImageButtonBackgroundSelected">@android:color/darker_gray</color>
+    <color name="colorViewBackgroundDefault">@android:color/transparent</color>
+    <color name="colorViewBackgroundSelected">@android:color/darker_gray</color>
 
 </resources>
