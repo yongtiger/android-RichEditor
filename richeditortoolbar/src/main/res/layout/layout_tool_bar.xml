@@ -90,9 +90,9 @@
         style="@style/ImageButton" />
 
     <ImageView
-        android:id="@+id/iv_code"
+        android:id="@+id/iv_url"
         app:tint="@color/color_state_image_button"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/ic_insert_link_black_24dp"
         style="@style/ImageButton" />
 
 </merge>

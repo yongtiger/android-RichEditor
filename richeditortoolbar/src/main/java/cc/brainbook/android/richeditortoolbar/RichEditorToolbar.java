@@ -14,6 +14,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.SubscriptSpan;
 import android.text.style.SuperscriptSpan;
+import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.QuoteSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.builder.URLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
@@ -80,9 +82,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private ImageView mImageViewBold;
     private ImageView mImageViewItalic;
 
-    ///原生span（带参数）：ForegroundColor、BackgroundColor
+    ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
     private ImageView mImageViewForegroundColor;
     private ImageView mImageViewBackgroundColor;
+
+    ///原生span（带参数）：URL
+    private ImageView mImageViewURL;
 
     ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
     private ImageView mImageViewAlignNormal;
@@ -91,9 +96,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     ///原生段落span（带初始化参数）：Quote
     private ImageView mImageViewQuote;
-
-    ///////////////////////////////////////////////////////////
-    private ImageView mImageViewCode;
 
 
     private void init(Context context) {
@@ -131,7 +133,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewItalic, ItalicSpan.class);
 
 
-        /* -------------- 原生span（带参数）：ForegroundColor、BackgroundColor --------------- */
+        /* -------------- 原生span（带背景色参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
         mImageViewForegroundColor.setOnClickListener(this);
         mClassMap.put(mImageViewForegroundColor, ForegroundColorSpan.class);
@@ -139,6 +141,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color);
         mImageViewBackgroundColor.setOnClickListener(this);
         mClassMap.put(mImageViewBackgroundColor, BackgroundColorSpan.class);
+
+
+        /* -------------- 原生span（带参数）：URL --------------- */
+        mImageViewURL = (ImageView) findViewById(R.id.iv_url);
+        mImageViewURL.setOnClickListener(this);
+        mClassMap.put(mImageViewURL, URLSpan.class);
 
 
         /* -------------- 自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
@@ -161,12 +169,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mImageViewQuote.setOnLongClickListener(this);
         mClassMap.put(mImageViewQuote, CustomQuoteSpan.class);
 
-
-//        //////////////////////////////////////////////////////////////////////////
-//        mImageViewCode = (ImageView) findViewById(R.id.iv_code);
-//        mImageViewCode.setOnClickListener(this);
-//        mClassMap.put(mImageViewCode, CodeSpan.class);
-
     }
 
     private boolean isCharacterStyle(View view) {
@@ -177,7 +179,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 || view == mImageViewBold
                 || view == mImageViewItalic
                 || view == mImageViewForegroundColor
-                || view == mImageViewBackgroundColor;
+                || view == mImageViewBackgroundColor
+                || view == mImageViewURL;
     }
     private boolean isParagraphStyle(View view) {
         return view == mImageViewAlignNormal
@@ -224,13 +227,18 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             if (spanStart < selStart || spanStart == selStart && spanStart < selEnd) {  ///!!!!!!!!!!!!
                 view.setSelected(true);
 
-                ///原生span（带参数）：ForegroundColor、BackgroundColor
+                ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
                 if (clazz == ForegroundColorSpan.class) {
-                    @ColorInt int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
+                    @ColorInt final int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
                     view.setBackgroundColor(foregroundColor);
                 } else if (clazz == BackgroundColorSpan.class) {
-                    @ColorInt int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
+                    @ColorInt final int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
                     view.setBackgroundColor(backgroundColor);
+                }
+                ///原生span（带参数）：URL
+                else if (clazz == URLSpan.class) {
+                    final String link = ((URLSpan) span).getURL();
+                    view.setTag(link);
                 }
 
                 return;
@@ -239,9 +247,13 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
         view.setSelected(false);
 
-        ///原生span（带参数）：ForegroundColor、BackgroundColor
+        ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
         if (clazz == ForegroundColorSpan.class || clazz == BackgroundColorSpan.class) {
             view.setBackgroundColor(Color.TRANSPARENT);
+        }
+        ///原生span（带参数）：URL
+        else if (clazz == URLSpan.class) {
+            view.setTag(null);
         }
     }
     private <T> void updateParagraphViews(Class<T> clazz, Editable editable, int currentLineStart, int currentLineEnd, View view) {
@@ -262,7 +274,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     @Override
     public void onClick(final View view) {
         if (isCharacterStyle(view)) {
-            ///原生span（带参数）：ForegroundColor、BackgroundColor
+            ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
             if (view == mImageViewForegroundColor || view == mImageViewBackgroundColor) {
                 ///颜色选择器
                 final ColorPickerDialogBuilder colorPickerDialogBuilder = ColorPickerDialogBuilder
@@ -295,6 +307,43 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     colorPickerDialogBuilder.initialColor(colorDrawable.getColor());
                 }
                 colorPickerDialogBuilder.build().show();
+
+                return;
+            }
+
+            ///原生span（带参数）：URL
+            if (view == mImageViewURL) {
+                ///颜色选择器
+                final URLSpanDialogBuilder urlSpanDialogBuilder = URLSpanDialogBuilder
+                        .with(view.getContext())
+                        .setPositiveButton(android.R.string.ok, new URLSpanDialogBuilder.PickerClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, String link) {
+                                view.setSelected(true);
+                                ///设置View的tag
+                                view.setTag(link);
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        ///清除样式
+                        .setNeutralButton("Clear", new DialogInterface.OnClickListener() {  //////??????国际化"Clear"
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.setSelected(false);
+                                ///清除View的tag
+                                view.setTag(null);
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                            }
+                        });
+                ///初始化
+                if (view.isSelected()) {
+                    final String link = (String) view.getTag();
+                    urlSpanDialogBuilder.initial(link);
+                }
+                urlSpanDialogBuilder.build().show();
 
                 return;
             }
@@ -566,9 +615,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             if (spanStart < start || spanEnd > end) {
                 if (isSelected) {
 
-                    ///原生span（带参数）：ForegroundColor、BackgroundColor
+                    ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
                     if (clazz == ForegroundColorSpan.class) {
-                        @ColorInt int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
+                        @ColorInt final int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
                         final ColorDrawable colorDrawable = (ColorDrawable) mImageViewForegroundColor.getBackground();
                         if (foregroundColor == colorDrawable.getColor()) {
                             isNewSpanNeeded = false;
@@ -581,7 +630,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                             }
                         }
                     } else if (clazz == BackgroundColorSpan.class) {
-                        @ColorInt int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
+                        @ColorInt final int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
                         final ColorDrawable colorDrawable = (ColorDrawable) mImageViewBackgroundColor.getBackground();
                         if (backgroundColor == colorDrawable.getColor()) {
                             isNewSpanNeeded = false;
@@ -593,7 +642,21 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 newCharacterStyleSpanByCompare(clazz, editable, end, spanEnd, span);
                             }
                         }
-
+                    }
+                    ///原生span（带参数）：URL
+                     else if (clazz == URLSpan.class) {
+                        final String spanLink = ((URLSpan) span).getURL();
+                        final String viewLink = (String) mImageViewURL.getTag();
+                        if (spanLink.equals(viewLink)) {
+                            isNewSpanNeeded = false;
+                            expendSpan(editable, start, end, spanStart, spanEnd, span, true);
+                        } else {
+                            isNewSpanNeeded = true;
+                            if (expendSpan(editable, start, end, spanStart, spanEnd, span, false)) {
+                                editable.setSpan(span, spanStart, start, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                newCharacterStyleSpanByCompare(clazz, editable, end, spanEnd, span);
+                            }
+                        }
                     } else {
                         isNewSpanNeeded = false;
                         expendSpan(editable, start, end, spanStart, spanEnd, span, true);
@@ -662,9 +725,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         ///添加新span
         Object newSpan = null;
 
-        ///原生span（带参数）：ForegroundColor、BackgroundColor
+        ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
         if (clazz == ForegroundColorSpan.class) {
-            @ColorInt int foregroundColor;
+            @ColorInt final int foregroundColor;
             if (compareSpan == null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) mImageViewForegroundColor.getBackground();
                 foregroundColor = colorDrawable.getColor();
@@ -673,7 +736,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             }
             newSpan = new ForegroundColorSpan(foregroundColor);
         } else if (clazz == BackgroundColorSpan.class) {
-            @ColorInt int backgroundColor;
+            @ColorInt final int backgroundColor;
             if (compareSpan == null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) mImageViewBackgroundColor.getBackground();
                 backgroundColor = colorDrawable.getColor();
@@ -681,6 +744,17 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 backgroundColor = ((BackgroundColorSpan) compareSpan).getBackgroundColor();
             }
             newSpan = new BackgroundColorSpan(backgroundColor);
+        }
+        ///原生span（带参数）：URL
+        else if (clazz == URLSpan.class) {
+            String link;
+            if (compareSpan == null) {
+                final String viewLink = (String) mImageViewURL.getTag();
+                link = viewLink;
+            } else {
+                link = ((URLSpan) compareSpan).getURL();
+            }
+            newSpan = new URLSpan(link);
 
         } else {
             try {
@@ -773,24 +847,35 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     }
 
     private <T> T getSpanByCompareSpanParameter(Class<T> clazz, T span, T compareSpan) {
-        ///原生span（带参数）：ForegroundColor、BackgroundColor
+        ///原生span（带背景色参数）：ForegroundColor、BackgroundColor
         if (clazz == ForegroundColorSpan.class) {
-            @ColorInt int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
+            @ColorInt final int foregroundColor = ((ForegroundColorSpan) span).getForegroundColor();
             if (compareSpan == null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) mImageViewForegroundColor.getBackground();
                 return foregroundColor == colorDrawable.getColor() ? span : null;
             } else {
-                @ColorInt int compareSpanForegroundColor = ((ForegroundColorSpan) compareSpan).getForegroundColor();
+                @ColorInt final int compareSpanForegroundColor = ((ForegroundColorSpan) compareSpan).getForegroundColor();
                 return foregroundColor == compareSpanForegroundColor ? span : null;
             }
         } else if (clazz == BackgroundColorSpan.class) {
-            @ColorInt int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
+            @ColorInt final int backgroundColor = ((BackgroundColorSpan) span).getBackgroundColor();
             if (compareSpan == null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) mImageViewBackgroundColor.getBackground();
                 return backgroundColor == colorDrawable.getColor() ? span : null;
             } else {
-                @ColorInt int compareSpanBackgroundColor = ((BackgroundColorSpan) compareSpan).getBackgroundColor();
+                @ColorInt final int compareSpanBackgroundColor = ((BackgroundColorSpan) compareSpan).getBackgroundColor();
                 return backgroundColor == compareSpanBackgroundColor ? span : null;
+            }
+        }
+        ///原生span（带参数）：URL
+        else if (clazz == URLSpan.class) {
+            final String spanLink = ((URLSpan) span).getURL();
+            if (compareSpan == null) {
+                final String viewLink = (String) mImageViewURL.getTag();
+                return spanLink.equals(viewLink) ? span : null;
+            } else {
+                final String compareSpanLink = ((URLSpan) compareSpan).getURL();
+                return spanLink.equals(compareSpanLink) ? span : null;
             }
         }
 

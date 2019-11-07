@@ -53,6 +53,7 @@ public class QuoteSpanDialogBuilder {
 	private int defaultMarginTop = 0;
 	private Integer[] initialColor = new Integer[]{null, null, null, null, null};
 
+
 	private QuoteSpanDialogBuilder(Context context) {
 		this(context, 0);
 	}
@@ -185,7 +186,6 @@ public class QuoteSpanDialogBuilder {
 		});
 		return this;
 	}
-
 
 	public QuoteSpanDialogBuilder setPositiveButton(CharSequence text, final PickerClickListener onClickListener) {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
@@ -386,7 +386,7 @@ public class QuoteSpanDialogBuilder {
 		onClickListener.onClick(dialog, selectedColor, allColors);
 	}
 
-	///
+	///[StripWidth/GapWidth]
 	public interface PickerClickListener {
 		void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors, int stripWidth, int gapWidth);
 	}
