@@ -104,8 +104,18 @@
         style="@style/ImageView" />
 
     <TextView
-        android:id="@+id/tv_typeface_font"
-        android:text="@string/font"
+        android:id="@+id/tv_typeface_family"
+        android:text="@string/font_family"
+        style="@style/TextView"/>
+
+    <TextView
+        android:id="@+id/tv_absolute_size"
+        android:text="@string/absolute_size"
+        style="@style/TextView"/>
+
+    <TextView
+        android:id="@+id/tv_relative_size"
+        android:text="@string/relative_size"
         style="@style/TextView"/>
 
 </merge>

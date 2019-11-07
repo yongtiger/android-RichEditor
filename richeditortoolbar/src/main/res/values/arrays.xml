@@ -2,7 +2,33 @@
 <resources>
     <string-array name="typeface_family">
         <item>monospace</item>
-        <item>serif </item>
+        <item>serif</item>
         <item>sans-serif</item>
+    </string-array>
+    <string-array name="absolute_size">
+        <item>36</item>
+        <item>72</item>
+        <item>108</item>
+        <item>144</item>
+        <item>180</item>
+        <item>216</item>
+        <item>252</item>
+        <item>288</item>
+        <item>324</item>
+        <item>360</item>
+        <item>396</item>
+    </string-array>
+    <string-array name="relative_size">
+        <item>0.25</item>
+        <item>0.5</item>
+        <item>1.0</item>
+        <item>1.5</item>
+        <item>2.0</item>
+        <item>2.5</item>
+        <item>3.0</item>
+        <item>3.5</item>
+        <item>4.0</item>
+        <item>4.5</item>
+        <item>5.0</item>
     </string-array>
 </resources>

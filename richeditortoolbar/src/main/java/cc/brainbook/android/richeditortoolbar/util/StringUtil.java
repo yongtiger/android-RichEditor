@@ -8,13 +8,13 @@ public class StringUtil {
         return context.getResources().getTextArray(itemsId);
     }
 
-    public static int getIndex(Context context, @ArrayRes int itemsId, CharSequence item) {
+    public static int getIndex(Context context, @ArrayRes int itemsId, Object item) {
         if (item == null) {
             return -1;
         }
         CharSequence[] items = getItems(context, itemsId);
         for (int i = 0; i < items.length; i++) {
-            if (item.equals(items[i])) {
+            if (items[i].equals(item)) {
                 return i;
             }
         }
