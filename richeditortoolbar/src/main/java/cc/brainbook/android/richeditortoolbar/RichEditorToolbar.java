@@ -38,12 +38,14 @@ import java.util.HashMap;
 
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.builder.BulletSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.QuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.URLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomBulletSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
@@ -60,6 +62,11 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private @ColorInt int mQuoteColor = Color.parseColor("#DDDDDD");
     private int mQuoteStripWidth = 16;
     private int mQuoteGapWidth = 40;
+
+    private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
+    private int mBulletRadius = 16;
+    private int mBulletGapWidth = 40;
+
 
     public RichEditorToolbar(Context context) {
         super(context);
@@ -121,6 +128,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     ///原生段落span（带初始化参数）：Quote
     private ImageView mImageViewQuote;
+
+    ///原生段落span（带初始化参数）：Bullet
+    private ImageView mImageViewBullet;
 
 
     private void init(Context context) {
@@ -224,6 +234,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mImageViewQuote.setOnLongClickListener(this);
         mClassMap.put(mImageViewQuote, CustomQuoteSpan.class);
 
+
+        /* -------------- ///原生段落span（带初始化参数）：Bullet --------------- */
+        mImageViewBullet = (ImageView) findViewById(R.id.iv_bullet);
+        mImageViewBullet.setOnClickListener(this);
+        mImageViewBullet.setOnLongClickListener(this);
+        mClassMap.put(mImageViewBullet, CustomBulletSpan.class);
     }
 
     private boolean isCharacterStyle(View view) {
@@ -246,7 +262,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 || view == mImageViewAlignCenter
                 || view == mImageViewAlignOpposite
                 || view == mImageViewLineDivider
-                || view == mImageViewQuote;
+                || view == mImageViewQuote
+                || view == mImageViewBullet;
     }
 
 
@@ -643,6 +660,25 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     })
                     .setNegativeButton(android.R.string.cancel, null)
                     .initial(mQuoteColor, mQuoteStripWidth, mQuoteGapWidth)
+                    .build().show();
+
+            return true;
+        }
+        ///原生段落span（带初始化参数）：Bullet
+        if (view == mImageViewBullet) {
+            ///BulletSpan设置对话框
+            BulletSpanDialogBuilder
+                    .with(view.getContext())
+                    .setPositiveButton(android.R.string.ok, new BulletSpanDialogBuilder.PickerClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
+                            mBulletColor = selectedColor;
+                            mBulletRadius = stripWidth;
+                            mBulletGapWidth = gapWidth;
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .initial(mBulletColor, mBulletRadius, mBulletGapWidth)
                     .build().show();
 
             return true;
@@ -1116,6 +1152,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
             newSpan = new CustomQuoteSpan(mQuoteColor, mQuoteStripWidth, mQuoteGapWidth);
+        }
+        ///原生段落span（带初始化参数）：Bullet
+        else if (clazz == CustomBulletSpan.class) {
+//            newSpan = new BulletSpan(Color.GREEN);
+//            newSpan = new BulletSpan(40, Color.GREEN, 20); ///Call requires API level 28 (current min is 15)
+            newSpan = new CustomBulletSpan(mBulletGapWidth, mBulletColor, mBulletRadius);
         }
         ///自定义段落span：LineDivider
         else if (clazz == LineDividerSpan.class) {

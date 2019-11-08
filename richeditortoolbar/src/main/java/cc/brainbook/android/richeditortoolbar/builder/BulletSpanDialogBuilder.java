@@ -26,12 +26,12 @@ import cc.brainbook.android.colorpicker.slider.AlphaSlider;
 import cc.brainbook.android.colorpicker.slider.LightnessSlider;
 import cc.brainbook.android.richeditortoolbar.R;
 
-public class QuoteSpanDialogBuilder {
-	///[StripWidth/GapWidth]
-	private int mStripWidth;
+public class BulletSpanDialogBuilder {
+
+	private int mBulletRadius;
 	private int mGapWidth;
-	private TextView mTextViewStripWidth;
-	private SeekBar mSeekBarStripWidth;
+	private TextView mTextViewBulletRadius;
+	private SeekBar mSeekBarBulletRadius;
 	private TextView mTextViewGapWidth;
 	private SeekBar mSeekBarGapWidth;
 
@@ -54,34 +54,33 @@ public class QuoteSpanDialogBuilder {
 	private Integer[] initialColor = new Integer[]{null, null, null, null, null};
 
 
-	private QuoteSpanDialogBuilder(Context context) {
+	private BulletSpanDialogBuilder(Context context) {
 		this(context, 0);
 	}
 
-	private QuoteSpanDialogBuilder(Context context, int theme) {
+	private BulletSpanDialogBuilder(Context context, int theme) {
 		defaultMargin = getDimensionAsPx(context, cc.brainbook.android.colorpicker.R.dimen.default_slider_margin);
 		defaultMarginTop = getDimensionAsPx(context, cc.brainbook.android.colorpicker.R.dimen.default_margin_top);
 
 		colorPickerView = new ColorPickerView(context);
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View layout = inflater.inflate(R.layout.layout_quote_span_dialog, null);
+		final View layout = inflater.inflate(R.layout.layout_bullet_span_dialog, null);
 		pickerContainer = layout.findViewById(R.id.picker_container);
 		pickerContainer.addView(colorPickerView);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
 
-		///[StripWidth/GapWidth]
-		mTextViewStripWidth = layout.findViewById(R.id.tv_strip_width);
-		mSeekBarStripWidth = layout.findViewById(R.id.sb_strip_width);
+		mTextViewBulletRadius = layout.findViewById(R.id.tv_bullet_radius);
+		mSeekBarBulletRadius = layout.findViewById(R.id.sb_bullet_radius);
 		mTextViewGapWidth = layout.findViewById(R.id.tv_gap_width);
 		mSeekBarGapWidth = layout.findViewById(R.id.sb_gap_width);
-		mSeekBarStripWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+		mSeekBarBulletRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                mStripWidth = progress;
-				mTextViewStripWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.quote_span_strip_width), progress));
+                mBulletRadius = progress;
+				mTextViewBulletRadius.setText(String.format(seekBar.getContext().getResources().getString(R.string.bullet_span_bullet_radius), progress));
 			}
 
 			@Override
@@ -94,7 +93,7 @@ public class QuoteSpanDialogBuilder {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mGapWidth = progress;
-				mTextViewGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.quote_span_gap_width), progress));
+				mTextViewGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.bullet_span_gap_width), progress));
 			}
 
 			@Override
@@ -105,30 +104,30 @@ public class QuoteSpanDialogBuilder {
 		});
 	}
 
-	public static QuoteSpanDialogBuilder with(Context context) {
-		return new QuoteSpanDialogBuilder(context);
+	public static BulletSpanDialogBuilder with(Context context) {
+		return new BulletSpanDialogBuilder(context);
 	}
 
-	public static QuoteSpanDialogBuilder with(Context context, int theme) {
-		return new QuoteSpanDialogBuilder(context, theme);
+	public static BulletSpanDialogBuilder with(Context context, int theme) {
+		return new BulletSpanDialogBuilder(context, theme);
 	}
 
-	public QuoteSpanDialogBuilder setTitle(String title) {
+	public BulletSpanDialogBuilder setTitle(String title) {
 		builder.setTitle(title);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setTitle(int titleId) {
+	public BulletSpanDialogBuilder setTitle(int titleId) {
 		builder.setTitle(titleId);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder initialColor(int initialColor) {
+	public BulletSpanDialogBuilder initialColor(int initialColor) {
 		this.initialColor[0] = initialColor;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder initialColors(int[] initialColor) {
+	public BulletSpanDialogBuilder initialColors(int[] initialColor) {
 		for (int i = 0; i < initialColor.length && i < this.initialColor.length; i++) {
 			this.initialColor[i] = initialColor[i];
 		}
@@ -136,38 +135,37 @@ public class QuoteSpanDialogBuilder {
 		return this;
 	}
 
-	///[StripWidth/GapWidth]
-	public QuoteSpanDialogBuilder initial(int initialColor, int stripWidth, int gapWidth) {
+	public BulletSpanDialogBuilder initial(int initialColor, int bulletRadius, int gapWidth) {
 		this.initialColor[0] = initialColor;
 
-		mStripWidth = stripWidth;
+		mBulletRadius = bulletRadius;
 		mGapWidth = gapWidth;
 
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder wheelType(ColorPickerView.WHEEL_TYPE wheelType) {
+	public BulletSpanDialogBuilder wheelType(ColorPickerView.WHEEL_TYPE wheelType) {
 		ColorWheelRenderer renderer = ColorWheelRendererBuilder.getRenderer(wheelType);
 		colorPickerView.setRenderer(renderer);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder density(int density) {
+	public BulletSpanDialogBuilder density(int density) {
 		colorPickerView.setDensity(density);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setOnColorChangedListener(OnColorChangedListener onColorChangedListener) {
+	public BulletSpanDialogBuilder setOnColorChangedListener(OnColorChangedListener onColorChangedListener) {
 		colorPickerView.addOnColorChangedListener(onColorChangedListener);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setOnColorSelectedListener(OnColorSelectedListener onColorSelectedListener) {
+	public BulletSpanDialogBuilder setOnColorSelectedListener(OnColorSelectedListener onColorSelectedListener) {
 		colorPickerView.addOnColorSelectedListener(onColorSelectedListener);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setPositiveButton(CharSequence text, final ColorPickerClickListener onClickListener) {
+	public BulletSpanDialogBuilder setPositiveButton(CharSequence text, final ColorPickerClickListener onClickListener) {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -177,7 +175,7 @@ public class QuoteSpanDialogBuilder {
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setPositiveButton(int textId, final ColorPickerClickListener onClickListener) {
+	public BulletSpanDialogBuilder setPositiveButton(int textId, final ColorPickerClickListener onClickListener) {
 		builder.setPositiveButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -187,101 +185,101 @@ public class QuoteSpanDialogBuilder {
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setPositiveButton(CharSequence text, final PickerClickListener onClickListener) {
+	public BulletSpanDialogBuilder setPositiveButton(CharSequence text, final PickerClickListener onClickListener) {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				int selectedColor = colorPickerView.getSelectedColor();
 				Integer[] allColors = colorPickerView.getAllColors();
-				onClickListener.onClick(dialog, selectedColor, allColors, mStripWidth, mGapWidth);
+				onClickListener.onClick(dialog, selectedColor, allColors, mBulletRadius, mGapWidth);
 			}
 		});
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setPositiveButton(int textId, final PickerClickListener onClickListener) {
+	public BulletSpanDialogBuilder setPositiveButton(int textId, final PickerClickListener onClickListener) {
 		builder.setPositiveButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				int selectedColor = colorPickerView.getSelectedColor();
 				Integer[] allColors = colorPickerView.getAllColors();
-				onClickListener.onClick(dialog, selectedColor, allColors, mStripWidth, mGapWidth);
+				onClickListener.onClick(dialog, selectedColor, allColors, mBulletRadius, mGapWidth);
 			}
 		});
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setNegativeButton(CharSequence text, DialogInterface.OnClickListener onClickListener) {
+	public BulletSpanDialogBuilder setNegativeButton(CharSequence text, DialogInterface.OnClickListener onClickListener) {
 		builder.setNegativeButton(text, onClickListener);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setNegativeButton(int textId, DialogInterface.OnClickListener onClickListener) {
+	public BulletSpanDialogBuilder setNegativeButton(int textId, DialogInterface.OnClickListener onClickListener) {
 		builder.setNegativeButton(textId, onClickListener);
 		return this;
 	}
 
 	///[UPGRADE#setNeutralButton()]
-	public QuoteSpanDialogBuilder setNeutralButton(int textId, DialogInterface.OnClickListener onClickListener) {
+	public BulletSpanDialogBuilder setNeutralButton(int textId, DialogInterface.OnClickListener onClickListener) {
 		builder.setNeutralButton(textId, onClickListener);
 		return this;
 	}
-	public QuoteSpanDialogBuilder setNeutralButton(CharSequence text, DialogInterface.OnClickListener onClickListener) {
+	public BulletSpanDialogBuilder setNeutralButton(CharSequence text, DialogInterface.OnClickListener onClickListener) {
 		builder.setNeutralButton(text, onClickListener);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder noSliders() {
+	public BulletSpanDialogBuilder noSliders() {
 		isLightnessSliderEnabled = false;
 		isAlphaSliderEnabled = false;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder alphaSliderOnly() {
+	public BulletSpanDialogBuilder alphaSliderOnly() {
 		isLightnessSliderEnabled = false;
 		isAlphaSliderEnabled = true;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder lightnessSliderOnly() {
+	public BulletSpanDialogBuilder lightnessSliderOnly() {
 		isLightnessSliderEnabled = true;
 		isAlphaSliderEnabled = false;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder showAlphaSlider(boolean showAlpha) {
+	public BulletSpanDialogBuilder showAlphaSlider(boolean showAlpha) {
 		isAlphaSliderEnabled = showAlpha;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder showLightnessSlider(boolean showLightness) {
+	public BulletSpanDialogBuilder showLightnessSlider(boolean showLightness) {
 		isLightnessSliderEnabled = showLightness;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder showBorder(boolean showBorder) {
+	public BulletSpanDialogBuilder showBorder(boolean showBorder) {
 		isBorderEnabled = showBorder;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder showColorEdit(boolean showEdit) {
+	public BulletSpanDialogBuilder showColorEdit(boolean showEdit) {
 		isColorEditEnabled = showEdit;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setColorEditTextColor(int argb) {
+	public BulletSpanDialogBuilder setColorEditTextColor(int argb) {
 		colorPickerView.setColorEditTextColor(argb);
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder showColorPreview(boolean showPreview) {
+	public BulletSpanDialogBuilder showColorPreview(boolean showPreview) {
 		isPreviewEnabled = showPreview;
 		if (!showPreview)
 			pickerCount = 1;
 		return this;
 	}
 
-	public QuoteSpanDialogBuilder setPickerCount(int pickerCount) throws IndexOutOfBoundsException {
+	public BulletSpanDialogBuilder setPickerCount(int pickerCount) throws IndexOutOfBoundsException {
 		if (pickerCount < 1 || pickerCount > 5)
 			throw new IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors");
 		this.pickerCount = pickerCount;
@@ -351,10 +349,9 @@ public class QuoteSpanDialogBuilder {
 			colorPickerView.setColorPreview(colorPreview, getStartOffset(initialColor));
 		}
 
-		///[StripWidth/GapWidth]
-		mTextViewStripWidth.setText(String.format(context.getResources().getString(R.string.quote_span_strip_width), mStripWidth));
-		mSeekBarStripWidth.setProgress(mStripWidth);
-		mTextViewGapWidth.setText(String.format(context.getResources().getString(R.string.quote_span_gap_width), mGapWidth));
+		mTextViewBulletRadius.setText(String.format(context.getResources().getString(R.string.bullet_span_bullet_radius), mBulletRadius));
+		mSeekBarBulletRadius.setProgress(mBulletRadius);
+		mTextViewGapWidth.setText(String.format(context.getResources().getString(R.string.bullet_span_gap_width), mGapWidth));
 		mSeekBarGapWidth.setProgress(mGapWidth);
 
 		return builder.create();
@@ -386,8 +383,7 @@ public class QuoteSpanDialogBuilder {
 		onClickListener.onClick(dialog, selectedColor, allColors);
 	}
 
-	///[StripWidth/GapWidth]
 	public interface PickerClickListener {
-		void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors, int stripWidth, int gapWidth);
+		void onClick(DialogInterface d, int lastSelectedColor, Integer[] allColors, int bulletRadius, int gapWidth);
 	}
 }

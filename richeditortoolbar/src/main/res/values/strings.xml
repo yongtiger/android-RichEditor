@@ -8,4 +8,6 @@
     <string name="scale_x">ScaleX</string>
     <string name="quote_span_strip_width">Strip width: %1$d</string>
     <string name="quote_span_gap_width">Gap width: %1$d</string>
+    <string name="bullet_span_bullet_radius">Bullet radius: %1$d</string>
+    <string name="bullet_span_gap_width">Gap width: %1$d</string>
 </resources>

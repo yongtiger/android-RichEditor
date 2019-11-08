@@ -98,9 +98,22 @@
         style="@style/ImageView" />
 
     <ImageView
+        android:id="@+id/iv_bullet"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
         android:id="@+id/iv_url"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_insert_link_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_line_divider"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_remove_black_24dp"
         style="@style/ImageView" />
 
     <TextView
@@ -122,11 +135,5 @@
         android:id="@+id/tv_scale_x"
         android:text="@string/scale_x"
         style="@style/TextView"/>
-
-    <ImageView
-        android:id="@+id/iv_line_divider"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_remove_black_24dp"
-        style="@style/ImageView" />
 
 </merge>
