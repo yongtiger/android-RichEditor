@@ -75,7 +75,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
         }
     }
 
-    interface DrawBackgroundCallback {
+    public interface DrawBackgroundCallback {
         void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum);
     }
 

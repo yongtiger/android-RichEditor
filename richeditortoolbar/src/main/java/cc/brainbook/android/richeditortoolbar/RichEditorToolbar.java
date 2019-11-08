@@ -2,7 +2,9 @@ package cc.brainbook.android.richeditortoolbar;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.ColorInt;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +47,7 @@ import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
+import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
@@ -112,6 +115,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private ImageView mImageViewAlignNormal;
     private ImageView mImageViewAlignCenter;
     private ImageView mImageViewAlignOpposite;
+
+    ///自定义段落span：LineDivider
+    private ImageView mImageViewLineDivider;
 
     ///原生段落span（带初始化参数）：Quote
     private ImageView mImageViewQuote;
@@ -206,6 +212,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewAlignOpposite, AlignOppositeSpan.class);
 
 
+        /* -------------- ///自定义段落span：LineDivider --------------- */
+        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
+        mImageViewLineDivider.setOnClickListener(this);
+        mClassMap.put(mImageViewLineDivider, LineDividerSpan.class);
+
+
         /* -------------- ///原生段落span（带初始化参数）：Quote --------------- */
         mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
         mImageViewQuote.setOnClickListener(this);
@@ -233,6 +245,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         return view == mImageViewAlignNormal
                 || view == mImageViewAlignCenter
                 || view == mImageViewAlignOpposite
+                || view == mImageViewLineDivider
                 || view == mImageViewQuote;
     }
 
@@ -1103,7 +1116,17 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
             newSpan = new CustomQuoteSpan(mQuoteColor, mQuoteStripWidth, mQuoteGapWidth);
-        } else {
+        }
+        ///自定义段落span：LineDivider
+        else if (clazz == LineDividerSpan.class) {
+            newSpan = new LineDividerSpan(50, 50, new LineDividerSpan.DrawBackgroundCallback() {
+                @Override
+                public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+                    c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
+                }
+            });
+        }
+        else {
             try {
                 newSpan = clazz.newInstance();
             } catch (IllegalAccessException e) {
