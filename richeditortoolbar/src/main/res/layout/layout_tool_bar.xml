@@ -19,7 +19,65 @@
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
 
-<!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
+<!--    自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan-->
+    <ImageView
+        android:id="@+id/iv_align_normal"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_align_left_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_align_center"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_align_center_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_align_opposite"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_align_right_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_quote"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_quote"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_bullet"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_leading_margin"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_line_divider"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_remove_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_bold"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_bold"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_italic"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_italic"
+        style="@style/ImageView" />
+
+    <!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
     <ImageView
         android:id="@+id/iv_underline"
         app:tint="@color/color_state_view"
@@ -44,8 +102,13 @@
         app:srcCompat="@drawable/ic_format_size_black_24dp"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_url"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_insert_link_black_24dp"
+        style="@style/ImageView" />
 
-<!--    ///原生span：ForegroundColor、BackgroundColor-->
+    <!--    ///原生span：ForegroundColor、BackgroundColor-->
     <ImageView
         android:id="@+id/iv_foreground_color"
         app:tint="@color/color_state_view"
@@ -56,64 +119,6 @@
         android:id="@+id/iv_background_color"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_border_color_black_24dp"
-        style="@style/ImageView" />
-
-
-<!--    自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan-->
-    <ImageView
-        android:id="@+id/iv_align_normal"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_left_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_align_center"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_center_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_align_opposite"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_right_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_bold"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_bold"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_italic"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_italic"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_quote"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_quote"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_bullet"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_list_bulleted_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_url"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_insert_link_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_line_divider"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_remove_black_24dp"
         style="@style/ImageView" />
 
     <TextView

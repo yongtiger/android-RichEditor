@@ -51,7 +51,7 @@ public class URLSpanDialogBuilder {
 		return this;
 	}
 
-	public URLSpanDialogBuilder setPositiveButton(CharSequence text, final PickerClickListener onClickListener) {
+	public URLSpanDialogBuilder setPositiveButton(CharSequence text, final OnClickListener onClickListener) {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -61,7 +61,7 @@ public class URLSpanDialogBuilder {
 		return this;
 	}
 
-	public URLSpanDialogBuilder setPositiveButton(int textId, final PickerClickListener onClickListener) {
+	public URLSpanDialogBuilder setPositiveButton(int textId, final OnClickListener onClickListener) {
 		builder.setPositiveButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -96,7 +96,7 @@ public class URLSpanDialogBuilder {
 		return builder.create();
 	}
 
-	public interface PickerClickListener {
+	public interface OnClickListener {
 		void onClick(DialogInterface d, String link);
 	}
 }

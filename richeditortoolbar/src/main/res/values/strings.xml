@@ -10,4 +10,5 @@
     <string name="quote_span_gap_width">Gap width: %1$d</string>
     <string name="bullet_span_bullet_radius">Bullet radius: %1$d</string>
     <string name="bullet_span_gap_width">Gap width: %1$d</string>
+    <string name="leading_margin_span_indent">Indent: %1$d</string>
 </resources>

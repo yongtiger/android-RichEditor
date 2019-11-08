@@ -15,6 +15,7 @@ import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.LeadingMarginSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.ScaleXSpan;
 import android.text.style.StrikethroughSpan;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.BulletSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.builder.LeadingMarginSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.QuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.URLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
@@ -66,6 +68,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
     private int mBulletRadius = 16;
     private int mBulletGapWidth = 40;
+
+    private int mIndent;
 
 
     public RichEditorToolbar(Context context) {
@@ -131,6 +135,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     ///原生段落span（带初始化参数）：Bullet
     private ImageView mImageViewBullet;
+
+    ///原生段落span（带初始化参数）：LeadingMargin
+    private ImageView mImageViewLeadingMargin;
 
 
     private void init(Context context) {
@@ -240,6 +247,13 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mImageViewBullet.setOnClickListener(this);
         mImageViewBullet.setOnLongClickListener(this);
         mClassMap.put(mImageViewBullet, CustomBulletSpan.class);
+
+
+        /* -------------- ///原生段落span（带初始化参数）：LeadingMargin --------------- */
+        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
+        mImageViewLeadingMargin.setOnClickListener(this);
+        mImageViewLeadingMargin.setOnLongClickListener(this);
+        mClassMap.put(mImageViewLeadingMargin, LeadingMarginSpan.class);
     }
 
     private boolean isCharacterStyle(View view) {
@@ -263,7 +277,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 || view == mImageViewAlignOpposite
                 || view == mImageViewLineDivider
                 || view == mImageViewQuote
-                || view == mImageViewBullet;
+                || view == mImageViewBullet
+                || view == mImageViewLeadingMargin;
     }
 
 
@@ -437,7 +452,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             if (view == mImageViewURL) {
                 final URLSpanDialogBuilder urlSpanDialogBuilder = URLSpanDialogBuilder
                         .with(view.getContext())
-                        .setPositiveButton(android.R.string.ok, new URLSpanDialogBuilder.PickerClickListener() {
+                        .setPositiveButton(android.R.string.ok, new URLSpanDialogBuilder.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String link) {
                                 view.setSelected(true);
@@ -679,6 +694,23 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     })
                     .setNegativeButton(android.R.string.cancel, null)
                     .initial(mBulletColor, mBulletRadius, mBulletGapWidth)
+                    .build().show();
+
+            return true;
+        }
+        ///原生段落span（带初始化参数）：LeadingMargin
+        if (view == mImageViewLeadingMargin) {
+            ///LeadingMarginSpan设置对话框
+            LeadingMarginSpanDialogBuilder
+                    .with(view.getContext())
+                    .setPositiveButton(android.R.string.ok, new LeadingMarginSpanDialogBuilder.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int indent) {
+                            mIndent = indent;
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .initial(mIndent)
                     .build().show();
 
             return true;
@@ -1158,6 +1190,11 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 //            newSpan = new BulletSpan(Color.GREEN);
 //            newSpan = new BulletSpan(40, Color.GREEN, 20); ///Call requires API level 28 (current min is 15)
             newSpan = new CustomBulletSpan(mBulletGapWidth, mBulletColor, mBulletRadius);
+        }
+        ///原生段落span（带初始化参数）：Bullet
+        else if (clazz == LeadingMarginSpan.class) {
+            newSpan = new LeadingMarginSpan.Standard(mIndent);
+//            newSpan = new LeadingMarginSpan.LeadingMarginSpan2.Standard(first, rest);
         }
         ///自定义段落span：LineDivider
         else if (clazz == LineDividerSpan.class) {
