@@ -118,4 +118,9 @@
         android:text="@string/relative_size"
         style="@style/TextView"/>
 
+    <TextView
+        android:id="@+id/tv_scale_x"
+        android:text="@string/scale_x"
+        style="@style/TextView"/>
+
 </merge>

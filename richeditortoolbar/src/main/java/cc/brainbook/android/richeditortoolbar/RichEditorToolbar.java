@@ -14,6 +14,7 @@ import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.text.style.ScaleXSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.SubscriptSpan;
 import android.text.style.SuperscriptSpan;
@@ -104,6 +105,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     ///原生span（带参数）：RelativeSize
     private TextView mTextViewRelativeSize;
 
+    ///原生span（带参数）：ScaleX
+    private TextView mTextViewScaleX;
+
     ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
     private ImageView mImageViewAlignNormal;
     private ImageView mImageViewAlignCenter;
@@ -182,6 +186,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mTextViewRelativeSize, RelativeSizeSpan.class);
 
 
+        /* -------------- ///原生span（带参数）：ScaleX --------------- */
+        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x);
+        mTextViewScaleX.setOnClickListener(this);
+        mClassMap.put(mTextViewScaleX, ScaleXSpan.class);
+
+
         /* -------------- ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
         mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
         mImageViewAlignNormal.setOnClickListener(this);
@@ -216,7 +226,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 || view == mImageViewURL
                 || view == mTextViewTypefaceFamily
                 || view == mTextViewAbsoluteSize
-                || view == mTextViewRelativeSize;
+                || view == mTextViewRelativeSize
+                || view == mTextViewScaleX;
     }
     private boolean isParagraphStyle(View view) {
         return view == mImageViewAlignNormal
@@ -294,6 +305,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     view.setTag(sizeChange);
                     mTextViewRelativeSize.setText(String.valueOf(sizeChange));
                 }
+                ///原生span（带参数）：ScaleX
+                else if (clazz == ScaleXSpan.class) {
+                    final float scaleX = ((ScaleXSpan) span).getScaleX();
+                    view.setTag(scaleX);
+                    mTextViewScaleX.setText(String.valueOf(scaleX));
+                }
 
                 return;
             }
@@ -324,6 +341,11 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         else if (clazz == RelativeSizeSpan.class) {
             view.setTag(null);
             mTextViewRelativeSize.setText(view.getContext().getString(R.string.relative_size));
+        }
+        ///原生span（带参数）：ScaleX
+        else if (clazz == ScaleXSpan.class) {
+            view.setTag(null);
+            mTextViewScaleX.setText(view.getContext().getString(R.string.scale_x));
         }
     }
     private <T> void updateParagraphViews(Class<T> clazz, Editable editable, int currentLineStart, int currentLineEnd, View view) {
@@ -508,6 +530,39 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 ///清除View的tag
                                 view.setTag(null);
                                 mTextViewRelativeSize.setText(view.getContext().getString(R.string.relative_size));
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                            }
+                        }).show();
+
+                return;
+            }
+
+            ///原生span（带参数）：ScaleX
+            if (view == mTextViewScaleX) {
+                new AlertDialog.Builder(view.getContext())
+                        .setSingleChoiceItems(R.array.scale_x, StringUtil.getIndex(view.getContext(), R.array.scale_x, view.getTag()), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.setSelected(true);
+                                final CharSequence scaleX = StringUtil.getItem(view.getContext(), R.array.scale_x, which);
+                                ///设置View的tag
+                                view.setTag(scaleX);
+                                mTextViewScaleX.setText(scaleX);
+                                ///改变selection的span
+                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        ///清除样式
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.setSelected(false);
+                                ///清除View的tag
+                                view.setTag(null);
+                                mTextViewScaleX.setText(view.getContext().getString(R.string.scale_x));
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
                             }
@@ -872,6 +927,21 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 newCharacterStyleSpanByCompare(clazz, editable, end, spanEnd, span);
                             }
                         }
+                    }
+                    ///原生span（带参数）：ScaleX
+                    else if (clazz == ScaleXSpan.class) {
+                        final float spanScaleX = ((ScaleXSpan) span).getScaleX();
+                        final float viewScaleX = Float.parseFloat(mTextViewScaleX.getTag().toString());
+                        if (spanScaleX == viewScaleX) {
+                            isNewSpanNeeded = false;
+                            expendSpan(editable, start, end, spanStart, spanEnd, span, true);
+                        } else {
+                            isNewSpanNeeded = true;
+                            if (expendSpan(editable, start, end, spanStart, spanEnd, span, false)) {
+                                editable.setSpan(span, spanStart, start, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                                newCharacterStyleSpanByCompare(clazz, editable, end, spanEnd, span);
+                            }
+                        }
 
                     } else {
                         isNewSpanNeeded = false;
@@ -1000,6 +1070,16 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 sizeChange = ((RelativeSizeSpan) compareSpan).getSizeChange();
             }
             newSpan = new RelativeSizeSpan(sizeChange);
+        }
+        ///原生span（带参数）：ScaleX
+        else if (clazz == ScaleXSpan.class) {
+            float scaleX;
+            if (compareSpan == null) {
+                scaleX = Float.parseFloat(mTextViewScaleX.getTag().toString());
+            } else {
+                scaleX = ((ScaleXSpan) compareSpan).getScaleX();
+            }
+            newSpan = new ScaleXSpan(scaleX);
 
         } else {
             try {
@@ -1150,11 +1230,22 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         else if (clazz == RelativeSizeSpan.class) {
             final float  spanSizeChange = ((RelativeSizeSpan) span).getSizeChange();
             if (compareSpan == null) {
-                final int viewSizeChange = Integer.parseInt(mTextViewRelativeSize.getTag().toString());
+                final float viewSizeChange = Float.parseFloat(mTextViewRelativeSize.getTag().toString());
                 return spanSizeChange == viewSizeChange ? span : null;
             } else {
                 final float compareSpanSizeChange = ((RelativeSizeSpan) compareSpan).getSizeChange();
                 return spanSizeChange == compareSpanSizeChange ? span : null;
+            }
+        }
+        ///原生span（带参数）：ScaleX
+        else if (clazz == ScaleXSpan.class) {
+            final float  spanScaleX = ((ScaleXSpan) span).getScaleX();
+            if (compareSpan == null) {
+                final float viewScaleX = Float.parseFloat(mTextViewScaleX.getTag().toString());
+                return spanScaleX == viewScaleX ? span : null;
+            } else {
+                final float compareSpanScaleX = ((ScaleXSpan) compareSpan).getScaleX();
+                return spanScaleX == compareSpanScaleX ? span : null;
             }
         }
 

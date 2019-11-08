@@ -31,4 +31,17 @@
         <item>4.5</item>
         <item>5.0</item>
     </string-array>
+    <string-array name="scale_x">
+        <item>0.25</item>
+        <item>0.5</item>
+        <item>1.0</item>
+        <item>1.5</item>
+        <item>2.0</item>
+        <item>2.5</item>
+        <item>3.0</item>
+        <item>3.5</item>
+        <item>4.0</item>
+        <item>4.5</item>
+        <item>5.0</item>
+    </string-array>
 </resources>

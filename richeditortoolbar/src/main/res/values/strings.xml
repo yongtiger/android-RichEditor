@@ -5,6 +5,7 @@
     <string name="font_family">Font</string>
     <string name="absolute_size">Size(px)</string>
     <string name="relative_size">Size(X)</string>
+    <string name="scale_x">ScaleX</string>
     <string name="quote_span_strip_width">Strip width: %1$d</string>
     <string name="quote_span_gap_width">Gap width: %1$d</string>
 </resources>
