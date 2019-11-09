@@ -113,7 +113,12 @@
         app:srcCompat="@drawable/ic_insert_link_black_24dp"
         style="@style/ImageView" />
 
-    <!--    ///原生span：ForegroundColor、BackgroundColor-->
+    <ImageView
+        android:id="@+id/iv_code"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_code"
+        style="@style/ImageView" />
+
     <ImageView
         android:id="@+id/iv_foreground_color"
         app:tint="@color/color_state_view"

@@ -48,6 +48,7 @@ import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBulletSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
@@ -130,6 +131,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     ///字符span（带参数）：URL
     private ImageView mImageViewURL;
 
+    ///字符span（带参数）：Code
+    private ImageView mImageViewCode;
+
     ///字符span（带参数）：ForegroundColor、BackgroundColor
     private ImageView mImageViewForegroundColor;
     private ImageView mImageViewBackgroundColor;
@@ -195,7 +199,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewLeadingMargin, LeadingMarginSpan.Standard.class);
 
 
-        /* -------------- ///自定义段落span：LineDivider --------------- */
+        /* -------------- ///段落span：LineDivider --------------- */
         mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
         mImageViewLineDivider.setOnClickListener(this);
         mImageViewLineDivider.setOnLongClickListener(this);
@@ -236,6 +240,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mClassMap.put(mImageViewURL, URLSpan.class);
 
 
+        /* -------------- ///字符span（带参数）：Code --------------- */
+        mImageViewCode = (ImageView) findViewById(R.id.iv_code);
+        mImageViewCode.setOnClickListener(this);
+        mClassMap.put(mImageViewCode, CodeSpan.class);
+
+
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
         mImageViewForegroundColor.setOnClickListener(this);
@@ -272,29 +282,30 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     }
 
     private boolean isCharacterStyle(View view) {
-        return view == mImageViewUnderline
+        return view == mImageViewBold
+                || view == mImageViewItalic
+                || view == mImageViewUnderline
                 || view == mImageViewStrikeThrough
                 || view == mImageViewSuperscript
                 || view == mImageViewSubscript
-                || view == mImageViewBold
-                || view == mImageViewItalic
+                || view == mImageViewURL
+                || view == mImageViewCode
                 || view == mImageViewForegroundColor
                 || view == mImageViewBackgroundColor
-                || view == mImageViewURL
                 || view == mTextViewTypefaceFamily
                 || view == mTextViewAbsoluteSize
                 || view == mTextViewRelativeSize
                 || view == mTextViewScaleX;
     }
     private boolean isParagraphStyle(View view) {
-        return view == mImageViewAlignNormal
+        return view == mTextViewHead
+                || view == mImageViewQuote
+                || view == mImageViewAlignNormal
                 || view == mImageViewAlignCenter
                 || view == mImageViewAlignOpposite
-                || view == mImageViewLineDivider
-                || view == mImageViewQuote
                 || view == mImageViewBullet
                 || view == mImageViewLeadingMargin
-                || view == mTextViewHead;
+                || view == mImageViewLineDivider;
     }
 
 
@@ -662,7 +673,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
         } else if (isParagraphStyle(view)) {
 
-            ///自定义段落span：LineDivider
+            ///段落span：LineDivider
             if (view == mImageViewLineDivider) {
                 final int[] selectionLines = SpanUtil.getSelectionLines(mRichEditText);
                 if (selectionLines[0] != -1 && selectionLines[1] != -1) {
@@ -714,7 +725,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             applyParagraphStyleSpansSelection(view, mRichEditText.getText());
 
             ///同组选择互斥
-            ///自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
+            ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
             if (view.isSelected()) {
                 if (mClassMap.get(view) == AlignNormalSpan.class) {
                     if (mImageViewAlignCenter.isSelected()) {
@@ -1208,7 +1219,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
-            ///自定义段落span：LineDivider：移除无效的LineDivider
+            ///段落span：LineDivider：移除无效的LineDivider
             if (clazz == LineDividerSpan.class && spanStart == firstLineStart && firstLineStart + 1 != firstLineEnd) {
                 editable.removeSpan(span);
                 continue;
