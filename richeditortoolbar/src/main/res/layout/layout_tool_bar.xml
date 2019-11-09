@@ -19,7 +19,18 @@
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
 
-<!--    自定义段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan-->
+    <TextView
+        android:id="@+id/tv_head"
+        android:text="@string/head"
+        style="@style/TextView"/>
+
+    <ImageView
+        android:id="@+id/iv_quote"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_quote"
+        style="@style/ImageView" />
+
     <ImageView
         android:id="@+id/iv_align_normal"
         app:tint="@color/color_state_view"
@@ -39,13 +50,6 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_quote"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_quote"
-        style="@style/ImageView" />
-
-    <ImageView
         android:id="@+id/iv_bullet"
         android:longClickable="true"
         app:tint="@color/color_state_view"
@@ -61,6 +65,7 @@
 
     <ImageView
         android:id="@+id/iv_line_divider"
+        android:longClickable="true"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_remove_black_24dp"
         style="@style/ImageView" />

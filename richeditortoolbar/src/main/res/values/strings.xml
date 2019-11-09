@@ -2,6 +2,7 @@
     <string name="app_name">RichEditorToolBar</string>
 
     <string name="clear">Clear</string>
+    <string name="head">H</string>
     <string name="font_family">Font</string>
     <string name="absolute_size">Size(px)</string>
     <string name="relative_size">Size(X)</string>
@@ -11,4 +12,6 @@
     <string name="bullet_span_bullet_radius">Bullet radius: %1$d</string>
     <string name="bullet_span_gap_width">Gap width: %1$d</string>
     <string name="leading_margin_span_indent">Indent: %1$d</string>
+    <string name="line_divider_span_margin_top">Margin top: %1$d</string>
+    <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
 </resources>

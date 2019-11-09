@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="typeface_family">
+    <string-array name="head_items">
+        <item>H1</item>
+        <item>H2</item>
+        <item>H3</item>
+        <item>H4</item>
+        <item>H5</item>
+        <item>H6</item>
+    </string-array>
+    <string-array name="typeface_family_items">
         <item>monospace</item>
         <item>serif</item>
         <item>sans-serif</item>
     </string-array>
-    <string-array name="absolute_size">
+    <string-array name="absolute_size_items">
         <item>36</item>
         <item>72</item>
         <item>108</item>
@@ -18,7 +26,7 @@
         <item>360</item>
         <item>396</item>
     </string-array>
-    <string-array name="relative_size">
+    <string-array name="relative_size_items">
         <item>0.25</item>
         <item>0.5</item>
         <item>1.0</item>
@@ -31,7 +39,7 @@
         <item>4.5</item>
         <item>5.0</item>
     </string-array>
-    <string-array name="scale_x">
+    <string-array name="scale_x_items">
         <item>0.25</item>
         <item>0.5</item>
         <item>1.0</item>

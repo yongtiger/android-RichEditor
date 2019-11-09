@@ -2,18 +2,11 @@ package cc.brainbook.android.richeditortoolbar.span;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Parcel;
-import android.support.annotation.NonNull;
-import android.text.ParcelableSpan;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
 
-import java.util.UUID;
-
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, ParcelableSpan {
-    private static final int SPAN_TYPE_ID = UUID.randomUUID().hashCode();
-
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan {
     ///[implements LineHeightSpan]
     private final int mMarginTop;
     private final int mMarginBottom;
@@ -28,49 +21,24 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
         mDrawBackgroundCallback = drawBackgroundCallback;
     }
 
-    public LineDividerSpan(@NonNull Parcel src) {
-        mMarginTop = src.readInt();
-        mMarginBottom = src.readInt();
-    }
-
-    @Override
-    public int getSpanTypeId() {
-        return SPAN_TYPE_ID;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mMarginTop);
-        dest.writeInt(mMarginBottom);
-    }
-
     @Override
     public void chooseHeight(CharSequence text, int start, int end,
                              int spanstartv, int lineHeight, Paint.FontMetricsInt fontMetricsInt) {
-        if (start + 1 < end ||text.charAt(start) != '\n') {
-            return;
+        if (start + 1 == end && text.charAt(start) == '\n') {
+            fontMetricsInt.top -= mMarginTop;
+            fontMetricsInt.ascent -= mMarginTop;
+
+            fontMetricsInt.bottom += mMarginBottom;
+            fontMetricsInt.descent += mMarginBottom;
         }
-
-        fontMetricsInt.top -= mMarginTop;
-        fontMetricsInt.ascent -= mMarginTop;
-
-        fontMetricsInt.bottom += mMarginBottom;
-        fontMetricsInt.descent += mMarginBottom;
     }
 
     ///[implements LineBackgroundSpan]
+    ///drawBackground() is timed to the rate of the flashing cursor which is about 500 ms
+    ///https://stackoverflow.com/questions/43611613/linebackgroundspan-drawbackground-called-repeatedly
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        if (start + 1 < end ||text.charAt(start) != '\n') {
-            return;
-        }
-
-        if (mDrawBackgroundCallback != null) {
+        if (mDrawBackgroundCallback != null && start + 1 == end && text.charAt(start) == '\n') {
             mDrawBackgroundCallback.drawBackground(c, p, left, right, top, baseline, bottom, text, start, end, lnum);
         }
     }
