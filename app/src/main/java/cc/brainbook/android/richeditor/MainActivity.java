@@ -1,12 +1,16 @@
 package cc.brainbook.android.richeditor;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.widget.EditText;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+import cc.brainbook.android.richeditortoolbar.util.ImageUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
         mRichEditorToolbar.setEditText(mRichEditText);
 
 //        mRichEditText.setText("aaaaa\naaaaaaaa\naaaaaaaa\naaaaaaaa\naaa");
+//        final Drawable imageDrawable = getResources().getDrawable(R.drawable.ic_editor_bold);
+////            mImageViewBackgroundColor.setBackground(imageDrawable);
+//        ImageSpan newSpan = new ImageSpan(this, R.drawable.ic_launcher_foreground);
+//        mRichEditText.getText().setSpan(newSpan, 1, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+//
+////        findViewById(R.id.iv_test).setBackground(imageDrawable);
 
         ///test
 //        mRichEditText.setText("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz");

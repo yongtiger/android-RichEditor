@@ -7,6 +7,16 @@ import android.widget.EditText;
 
 public class SpanUtil {
 
+    public static <T> T[] getSelectedSpans(EditText editText, Class<T> clazz) {
+        final int selectionStart = editText.getSelectionStart();
+        final int selectionEnd = editText.getSelectionEnd();
+        if (selectionStart != -1 && selectionEnd != -1) { ///-1 if there is no selection or cursor
+            return editText.getText().getSpans(selectionStart, selectionEnd, clazz);
+        }
+        return null;
+//        return (T[]) Array.newInstance(clazz);  ///https://bbs.csdn.net/topics/370137571, https://blog.csdn.net/qing0706/article/details/51067981
+    }
+
     /**
      * Returns the selected area line numbers.
      *
@@ -62,7 +72,7 @@ public class SpanUtil {
     }
 
     ///test
-    public static <T> void testOutput(Class<T> clazz, Editable editable) {
+    public static <T> void testOutput(Editable editable, Class<T> clazz) {
         final T[] spans = editable.getSpans(0, editable.length(), clazz);
         for (T span : spans) {
             ///忽略getSpans()获取的子类（不是clazz本身）

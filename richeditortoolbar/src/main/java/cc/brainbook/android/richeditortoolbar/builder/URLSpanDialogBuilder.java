@@ -10,7 +10,8 @@ import android.widget.EditText;
 import cc.brainbook.android.richeditortoolbar.R;
 
 public class URLSpanDialogBuilder {
-	private EditText mEditTextLink;
+	private EditText mEditTextText;
+	private EditText mEditTextUrl;
 
 	private AlertDialog.Builder builder;
 
@@ -21,7 +22,8 @@ public class URLSpanDialogBuilder {
 	private URLSpanDialogBuilder(Context context, int theme) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_url_span_dialog, null);
-		mEditTextLink = layout.findViewById(R.id.et_link);
+		mEditTextText = layout.findViewById(R.id.et_text);
+		mEditTextUrl = layout.findViewById(R.id.et_url);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
@@ -45,8 +47,9 @@ public class URLSpanDialogBuilder {
 		return this;
 	}
 
-	public URLSpanDialogBuilder initial(String link) {
-		mEditTextLink.setText(link);
+	public URLSpanDialogBuilder initial(String text, String url) {
+		mEditTextText.setText(text);
+		mEditTextUrl.setText(url);
 
 		return this;
 	}
@@ -55,7 +58,7 @@ public class URLSpanDialogBuilder {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				onClickListener.onClick(dialog, mEditTextLink.getText().toString());
+				onClickListener.onClick(dialog, mEditTextText.getText().toString(), mEditTextUrl.getText().toString());
 			}
 		});
 		return this;
@@ -65,7 +68,7 @@ public class URLSpanDialogBuilder {
 		builder.setPositiveButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				onClickListener.onClick(dialog, mEditTextLink.getText().toString());
+				onClickListener.onClick(dialog, mEditTextText.getText().toString(), mEditTextUrl.getText().toString());
 			}
 		});
 		return this;
@@ -97,6 +100,6 @@ public class URLSpanDialogBuilder {
 	}
 
 	public interface OnClickListener {
-		void onClick(DialogInterface d, String link);
+		void onClick(DialogInterface d, String text, String url);
 	}
 }
