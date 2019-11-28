@@ -1,35 +1,58 @@
 package cc.brainbook.android.richeditor;
 
-import android.graphics.drawable.Drawable;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.style.ImageSpan;
-import android.widget.EditText;
+
+import java.io.File;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.util.ImageUtil;
-import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
+
+    // 要申请的权限
+    private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 版本判断。当手机系统大于 23 时，才有必要去判断权限是否获取
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 检查该权限是否已经获取
+            int i = ContextCompat.checkSelfPermission(this, permissions[0]);
+            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+            if (i != PackageManager.PERMISSION_GRANTED) {
+                // 如果没有授予该权限，就去提示用户请求
+                ActivityCompat.requestPermissions(this, permissions, 321);
+            }
+        }
+
         mRichEditText = findViewById(R.id.edit_text);
         mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
         mRichEditorToolbar.setEditText(mRichEditText);
 
+        ///RichEditor中的ImageSpan存放图片文件的目录（缺省为getExternalCacheDir()）
+        final File imageFilePath = getExternalCacheDir();
+        mRichEditorToolbar.setImageFilePath(imageFilePath);
+
 //        mRichEditText.setText("aaaaa\naaaaaaaa\naaaaaaaa\naaaaaaaa\naaa");
-//        final Drawable imageDrawable = getResources().getDrawable(R.drawable.ic_editor_bold);
-////            mImageViewBackgroundColor.setBackground(imageDrawable);
-//        ImageSpan newSpan = new ImageSpan(this, R.drawable.ic_launcher_foreground);
+//
+//        Drawable drawable = getResources().getDrawable(R.drawable.a);
+//        drawable.setBounds(0, 0, 150, 150); //必须设置图片大小，否则不显示
+//        ImageSpan newSpan = new ImageSpan(drawable);
+
+//        ImageSpan newSpan = new ImageSpan(this, R.drawable.a);///ok
+
 //        mRichEditText.getText().setSpan(newSpan, 1, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
 //
 ////        findViewById(R.id.iv_test).setBackground(imageDrawable);
@@ -70,4 +93,15 @@ public class MainActivity extends AppCompatActivity {
 //        ///https://stackoverflow.com/questions/16558948/how-to-use-textview-getlayout-it-returns-null
 //        SpanUtil.getThisLineStart(mRichEditText, 1);
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        ///[ImageSpanDialogBuilder#onActivityResult()]
+        if (mRichEditorToolbar != null) {
+            mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
 }

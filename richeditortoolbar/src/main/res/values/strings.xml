@@ -14,4 +14,20 @@
     <string name="leading_margin_span_indent">Indent: %1$d</string>
     <string name="line_divider_span_margin_top">Margin top: %1$d</string>
     <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
+
+    <string name="image_span_text">[img src=%1$s width=%2$d height=%3$d align=%4$d]</string>
+    <string name="image_span_display_width">Width: </string>
+    <string name="image_span_display_height">Height: </string>
+    <string name="image_span_align_bottom">Align bottom</string>
+    <string name="image_span_align_baseline">Align baseline</string>
+    <string name="image_span_align_center">Align center</string>
+
+    <string name="label_select_picture">Select Picture</string>
+    <string name="message_cannot_retrieve_selected_image">Cannot retrieve selected image</string>
+    <string name="message_image_select_cancelled">Image select cancelled</string>
+    <string name="message_image_select_failed">Image select failed</string>
+    <string name="message_image_capture_cancelled">Image capture cancelled</string>
+    <string name="message_image_capture_failed">Image capture failed</string>
+    <string name="message_image_draw_failed">Image draw failed</string>
+
 </resources>
