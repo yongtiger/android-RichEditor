@@ -20,7 +20,6 @@ import android.text.TextWatcher;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.ImageSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.ScaleXSpan;
@@ -63,6 +62,7 @@ import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBulletSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
@@ -90,7 +90,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private int mQuoteSpanGapWidth = 40;
 
     ///[ImageSpan]
-    private ImageSpan imagePlaceholderSpan = null;///避免产生重复span！
+    private CustomImageSpan imagePlaceholderSpan = null;///避免产生重复span！
     private ImageSpanDialogBuilder imageSpanDialogBuilder;
     private File mImageFilePath;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
     public void setImageFilePath(File imageFilePath) {
@@ -322,7 +322,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         /* -------------- ///字符span（带参数）：Image --------------- */
         mImageViewImage = (ImageView) findViewById(R.id.iv_image);
         mImageViewImage.setOnClickListener(this);
-        mClassMap.put(mImageViewImage, ImageSpan.class);
+        mClassMap.put(mImageViewImage, CustomImageSpan.class);
 
 
         /* -------------- ///清除样式 --------------- */
@@ -440,10 +440,10 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     }
                 }
                 ///字符span（带参数）：Image
-                else if (clazz == ImageSpan.class) {
+                else if (clazz == CustomImageSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
                         final String text = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
-                        final String src = ((ImageSpan) span).getSource();
+                        final String src = ((CustomImageSpan) span).getSource();
 
                         ///从text中解析出width\height\align
                         final String strWidth = StringUtil.getParameter(text, "width=", " ");
@@ -521,7 +521,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             }
         }
         ///字符span（带参数）：Image
-        else if (clazz == ImageSpan.class) {
+        else if (clazz == CustomImageSpan.class) {
             view.setTag(R.id.image_text, null);
             view.setTag(R.id.image_src, null);
             view.setTag(R.id.image_width, null);
@@ -1701,14 +1701,14 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     }
                 }
                 ///字符span（带参数）：Image
-                else if (clazz == ImageSpan.class) {
+                else if (clazz == CustomImageSpan.class) {
                     final String viewTagText = (String) view.getTag(R.id.image_text);
                     final String viewTagSrc = (String) view.getTag(R.id.image_src);
                     final int viewTagWidth = view.getTag(R.id.image_width) == null ? 0 : (int) view.getTag(R.id.image_width);
                     final int viewTagHeight = view.getTag(R.id.image_height) == null ? 0 : (int) view.getTag(R.id.image_height);
                     final int viewTagAlign = view.getTag(R.id.image_align) == null ? ImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
                     final String compareText = String.valueOf(mRichEditText.getText().toString().toCharArray(), spanStart, spanEnd - spanStart);
-                    final String spanSrc = ((ImageSpan) span).getSource();
+                    final String spanSrc = ((CustomImageSpan) span).getSource();
                     if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
                         mRichEditText.getText().replace(spanStart, spanEnd, viewTagText);
 
@@ -1763,7 +1763,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 }
             }
             ///字符span（带参数）：Image
-            else if (clazz == ImageSpan.class) {
+            else if (clazz == CustomImageSpan.class) {
                 final String viewTagText = (String) view.getTag(R.id.image_text);
                 final String viewTagSrc = (String) view.getTag(R.id.image_src);
                 final int viewTagWidth = view.getTag(R.id.image_width) == null ? 0 : (int) view.getTag(R.id.image_width);
@@ -1905,8 +1905,10 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private <T> void joinSpanByPosition(View view, Class<T> clazz, Editable editable, int position) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, position, position);
         for (T span : spans) {
-            findAndJoinLeftSpan(view, clazz, editable, span);
-            findAndJoinRightSpan(view, clazz, editable, span);
+            final T leftSpan = getLeftSpan(view, clazz, editable, position, span);
+            if (leftSpan != null) {
+                findAndJoinRightSpan(view, clazz, editable, span);
+            }
         }
     }
 
@@ -2040,7 +2042,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                         if (placeholder != null) {
                             ///注意：Drawable必须设置Bounds才能显示
                             placeholder.setBounds(0, 0, viewTagWidth, viewTagHeight);
-                            imagePlaceholderSpan = new ImageSpan(placeholder, viewTagSrc, viewTagAlign);///避免产生重复span！
+                            imagePlaceholderSpan = new CustomImageSpan(placeholder, viewTagSrc, viewTagAlign);///避免产生重复span！
                             editable.setSpan(imagePlaceholderSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         }
                     }
@@ -2054,7 +2056,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                         ///注意：Drawable必须设置Bounds才能显示
                         imageDrawable.setBounds(0, 0, viewTagWidth, viewTagHeight);
-                        editable.setSpan(new ImageSpan(imageDrawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new CustomImageSpan(imageDrawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
 
                     @Override
