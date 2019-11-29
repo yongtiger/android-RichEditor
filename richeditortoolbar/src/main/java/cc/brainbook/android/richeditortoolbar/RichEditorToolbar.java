@@ -1879,14 +1879,14 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     /* ------------------------------------------------------------------------------------------ */
     private <T> void extendOrNewCharacterStyleSpan(View view, Class<T> clazz, Editable editable, int start, int end) {
         ///如果左右有span且参数相等，则延长，否则添加
-        final T leftSpan = getLeftSpan(view, clazz, editable, start, null);
+        final T leftSpan = getLeftSpan(view, clazz, editable, start, end, null);
         if (leftSpan != null) {
             final int leftSpanStart = editable.getSpanStart(leftSpan);
             editable.setSpan(leftSpan, leftSpanStart, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             findAndJoinRightSpan(view, clazz, editable, leftSpan);
             return;
         }
-        final T rightSpan = getRightSpan(view, clazz, editable, end, null);
+        final T rightSpan = getRightSpan(view, clazz, editable, start, end, null);
         if (rightSpan != null) {
             final int rightSpanEnd = editable.getSpanEnd(rightSpan);
             editable.setSpan(rightSpan, start, rightSpanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -1905,7 +1905,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     private <T> void joinSpanByPosition(View view, Class<T> clazz, Editable editable, int position) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, position, position);
         for (T span : spans) {
-            final T leftSpan = getLeftSpan(view, clazz, editable, position, span);
+            final T leftSpan = getLeftSpan(view, clazz, editable, position, position, span);
             if (leftSpan != null) {
                 findAndJoinRightSpan(view, clazz, editable, span);
             }
@@ -1922,7 +1922,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         final int spanEnd = editable.getSpanEnd(span);
 
         int resultStart = spanStart;
-        final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, span);
+        final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
             editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -1937,14 +1937,14 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     private <T> int findAndJoinRightSpan(View view, Class<T> clazz, Editable editable, T span) {
-        final int start = editable.getSpanStart(span);
-        final int end = editable.getSpanEnd(span);
+        final int spanStart = editable.getSpanStart(span);
+        final int spanEnd = editable.getSpanEnd(span);
 
-        int resultEnd = end;
-        final T rightSpan = getRightSpan(view, clazz, editable, end, span);
+        int resultEnd = spanEnd;
+        final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, start, resultEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             editable.removeSpan(rightSpan);
         }
         return resultEnd;
@@ -1952,17 +1952,19 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     /**
      * 获得左边的同类span
+     *
+     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    private <T> T getLeftSpan(View view, Class<T> clazz, Editable editable, int start, T compareSpan) {
+    private <T> T getLeftSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
         if (start == 0) {
             return null;
         }
-        final ArrayList<T> leftSpans = SpanUtil.getFilteredSpans(editable, clazz, start, start);
-        for (T leftSpan : leftSpans) {
-            final int leftSpanStart = editable.getSpanStart(leftSpan);
-            final int leftSpanEnd = editable.getSpanEnd(leftSpan);
-            if (leftSpanStart < start && leftSpanEnd == start) {
-                return filterSpanByCompareSpanOrViewParameter(view, clazz, leftSpan, compareSpan);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, start);
+        for (T span : spans) {
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
+            if (spanStart < start && spanEnd <= end) {
+                return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
             }
         }
         return null;
@@ -1970,17 +1972,19 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     /**
      * 获得右边的同类span
+     *
+     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    private <T> T getRightSpan(View view, Class<T> clazz, Editable editable, int end, T compareSpan) {
+    private <T> T getRightSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
         if (end == editable.length()) {
             return null;
         }
-        final ArrayList<T> rightSpans = SpanUtil.getFilteredSpans(editable, clazz, end, end);
-        for (T rightSpan : rightSpans) {
-            final int rightSpanStart = editable.getSpanStart(rightSpan);
-            final int rightSpanEnd = editable.getSpanEnd(rightSpan);
-            if (rightSpanStart == end && rightSpanEnd > end) {
-                return filterSpanByCompareSpanOrViewParameter(view, clazz, rightSpan, compareSpan);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        for (T span : spans) {
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
+            if (start <= spanStart && end < spanEnd) {
+                return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
             }
         }
         return null;
