@@ -1914,6 +1914,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     /**
      * 左联合并同类span
+     *
+     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     private <T> int findAndJoinLeftSpan(View view, Class<T> clazz, Editable editable, T span) {
         final int spanStart = editable.getSpanStart(span);
@@ -1931,6 +1933,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     /**
      * 右联合并同类span
+     *
+     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     private <T> int findAndJoinRightSpan(View view, Class<T> clazz, Editable editable, T span) {
         final int start = editable.getSpanStart(span);
@@ -1948,8 +1952,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     /**
      * 获得左边的同类span
-     *
-     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     private <T> T getLeftSpan(View view, Class<T> clazz, Editable editable, int start, T compareSpan) {
         if (start == 0) {
@@ -1957,15 +1959,17 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         }
         final ArrayList<T> leftSpans = SpanUtil.getFilteredSpans(editable, clazz, start, start);
         for (T leftSpan : leftSpans) {
-            return filterSpanByCompareSpanOrViewParameter(view, clazz, leftSpan, compareSpan);
+            final int leftSpanStart = editable.getSpanStart(leftSpan);
+            final int leftSpanEnd = editable.getSpanEnd(leftSpan);
+            if (leftSpanStart < start && leftSpanEnd == start) {
+                return filterSpanByCompareSpanOrViewParameter(view, clazz, leftSpan, compareSpan);
+            }
         }
         return null;
     }
 
     /**
      * 获得右边的同类span
-     *
-     * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     private <T> T getRightSpan(View view, Class<T> clazz, Editable editable, int end, T compareSpan) {
         if (end == editable.length()) {
@@ -1973,7 +1977,11 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         }
         final ArrayList<T> rightSpans = SpanUtil.getFilteredSpans(editable, clazz, end, end);
         for (T rightSpan : rightSpans) {
-            return filterSpanByCompareSpanOrViewParameter(view, clazz, rightSpan, compareSpan);
+            final int rightSpanStart = editable.getSpanStart(rightSpan);
+            final int rightSpanEnd = editable.getSpanEnd(rightSpan);
+            if (rightSpanStart == end && rightSpanEnd > end) {
+                return filterSpanByCompareSpanOrViewParameter(view, clazz, rightSpan, compareSpan);
+            }
         }
         return null;
     }
