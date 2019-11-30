@@ -2048,7 +2048,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 .apply(options)
                 .override(mImageOverrideWidth, mImageOverrideHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
 //                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder

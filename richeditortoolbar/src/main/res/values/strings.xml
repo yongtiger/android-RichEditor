@@ -15,9 +15,14 @@
     <string name="line_divider_span_margin_top">Margin top: %1$d</string>
     <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
 
+    <string name="image_span_gallery">Gallery</string>
+    <string name="image_span_camera">Camera</string>
     <string name="image_span_text">[img src=%1$s width=%2$d height=%3$d align=%4$d]</string>
     <string name="image_span_display_width">Width: </string>
     <string name="image_span_display_height">Height: </string>
+    <string name="image_span_constrain">Constrain</string>
+    <string name="image_span_crop">Crop</string>
+    <string name="image_span_draw">Draw</string>
     <string name="image_span_align_bottom">Align bottom</string>
     <string name="image_span_align_baseline">Align baseline</string>
     <string name="image_span_align_center">Align center</string>

@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_alignParentTop="true"
-            android:text="Gallery" />
+            android:text="@string/image_span_gallery" />
 
         <Button
             android:id="@+id/btn_pickup_from_camera"
@@ -25,7 +25,7 @@
             android:layout_alignBaseline="@+id/btn_pickup_from_gallery"
             android:layout_toRightOf="@+id/btn_pickup_from_gallery"
             android:layout_toEndOf="@+id/btn_pickup_from_gallery"
-            android:text="Camera" />
+            android:text="@string/image_span_camera" />
 
         <EditText
             android:id="@+id/et_src"
@@ -38,8 +38,7 @@
 
         <ImageView
             android:id="@+id/iv_preview"
-            android:background="@color/colorViewTintSelected"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_below="@+id/et_src"
@@ -96,7 +95,7 @@
             android:layout_margin="8dp"
             android:layout_below="@+id/tv_display_height"
             android:checked="false"
-            android:text="constrain"/>
+            android:text="@string/image_span_constrain"/>
 
         <Button
             android:id="@+id/btn_display_restore"
@@ -116,7 +115,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:layout_below="@id/cb_display_constrain"
-            android:text="Crop" />
+            android:text="@string/image_span_crop" />
 
         <Button
             android:id="@+id/btn_draw"
@@ -126,7 +125,7 @@
             android:layout_alignBaseline="@+id/btn_crop"
             android:layout_toRightOf="@+id/btn_crop"
             android:layout_toEndOf="@+id/btn_crop"
-            android:text="Draw" />
+            android:text="@string/image_span_draw" />
 
         <RadioGroup
             android:id="@+id/rg_align"
