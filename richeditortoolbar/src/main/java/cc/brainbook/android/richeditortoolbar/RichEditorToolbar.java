@@ -37,6 +37,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -2030,7 +2031,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             imageSpanDialogBuilder.onActivityResult(requestCode, resultCode, data);
         }
     }
-    ///[ImageSpan#loadImage()]
+    ///[ImageSpan#Glide#loadImage()]
     private void loadImage(final Editable editable,
                      final String viewTagSrc,
                      final int viewTagWidth,
@@ -2060,15 +2061,26 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     }
 
                     @Override
-                    public void onResourceReady(@NonNull Drawable imageDrawable, @Nullable Transition<? super Drawable> transition) {
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         ///避免产生重复span！
                         if (imagePlaceholderSpan != null) {
                             editable.removeSpan(imagePlaceholderSpan);
                         }
 
                         ///注意：Drawable必须设置Bounds才能显示
-                        imageDrawable.setBounds(0, 0, viewTagWidth, viewTagHeight);
-                        editable.setSpan(new CustomImageSpan(imageDrawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        resource.setBounds(0, 0, viewTagWidth, viewTagHeight);
+                        editable.setSpan(new CustomImageSpan(resource, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                        ///[ImageSpan#Glide#GifDrawable]
+                        ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
+                        if (resource instanceof GifDrawable) {
+                            ((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
+                            ((GifDrawable) resource).start();
+
+                            ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
+                            ///https://github.com/koral--/android-gif-drawable/issues/516
+                            resource.setCallback(mRichEditText);
+                        }
                     }
 
                     @Override

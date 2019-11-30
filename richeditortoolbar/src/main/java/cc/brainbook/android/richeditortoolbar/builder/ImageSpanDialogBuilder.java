@@ -28,6 +28,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -37,6 +38,7 @@ import com.yalantis.ucrop.util.FileUtils;
 import java.io.File;
 
 import cc.brainbook.android.richeditortoolbar.R;
+import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cn.hzw.doodle.DoodleActivity;
@@ -161,7 +163,7 @@ public class ImageSpanDialogBuilder {
 				///获取图片真正的宽高
 				///https://www.jianshu.com/p/299b637afe7c
 				Glide.with(context.getApplicationContext())
-						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
+//						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
 						.load(src)
 						.apply(options)
 
@@ -173,7 +175,7 @@ public class ImageSpanDialogBuilder {
 						///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
 						///https://github.com/bumptech/glide/issues/3304
 //							.into(new SimpleTarget<Bitmap>() { ... }
-						.into(new CustomTarget<Bitmap>() {
+						.into(new CustomTarget<Drawable>() {
 							@Override
 							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
 								mImageWidth = 0;
@@ -192,9 +194,9 @@ public class ImageSpanDialogBuilder {
 							}
 
 							@Override
-							public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-								mImageWidth = resource.getWidth();
-								mImageHeight = resource.getHeight();
+							public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+								mImageWidth = resource.getIntrinsicWidth();
+								mImageHeight = resource.getIntrinsicHeight();
 
 								if (!isInitializing) {
 									mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
@@ -207,9 +209,16 @@ public class ImageSpanDialogBuilder {
 								mButtonCrop.setEnabled(true);
 								mButtonDraw.setEnabled(true);
 
-								mImageViewPreview.setImageBitmap(resource);
+								mImageViewPreview.setImageDrawable(resource);
 
 								isInitializing = false;
+
+								///[ImageSpan#Glide#GifDrawable]
+								///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
+								if (resource instanceof GifDrawable) {
+									((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
+									((GifDrawable) resource).start();
+								}
 							}
 
 							@Override

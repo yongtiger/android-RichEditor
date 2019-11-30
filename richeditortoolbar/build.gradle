@@ -54,4 +54,5 @@ dependencies {
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
     implementation 'com.github.1993hzw:Doodle:5.5.2'
+
 }

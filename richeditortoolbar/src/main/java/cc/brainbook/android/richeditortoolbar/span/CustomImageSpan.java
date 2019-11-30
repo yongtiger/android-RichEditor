@@ -14,6 +14,8 @@ import java.lang.ref.WeakReference;
 
 ///https://segmentfault.com/a/1190000007133405
 public class CustomImageSpan extends ImageSpan {
+    ///注意：API29开始支持ALIGN_CENTER
+    ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
     public static final int ALIGN_CENTER = 2;
 
     private WeakReference<Drawable> mDrawableRef;
@@ -93,4 +95,5 @@ public class CustomImageSpan extends ImageSpan {
 
         return d;
     }
+
 }
