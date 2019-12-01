@@ -62,9 +62,11 @@ public class ImageSpanDialogBuilder {
 	private File mCachedOriginalImageFile;
 	private File mCachedOldImageFile;
 	private File mCachedImageFile;	///相机拍照、图片Crop剪切生成的图片文件
+	private File mDestinationFile;	///图片Crop、Draw生成的目标文件
     private File mImageFilePath;	///ImageSpan存放图片文件的目录
     public ImageSpanDialogBuilder setImageFilePath(File imageFilePath) {
         mImageFilePath = imageFilePath;
+		mImageFilePath.mkdirs();
         return this;
     }
 
@@ -206,8 +208,6 @@ public class ImageSpanDialogBuilder {
 								mEditTextDisplayWidth.setEnabled(true);
 								mEditTextDisplayHeight.setEnabled(true);
 								mButtonDisplayRestore.setEnabled(true);
-								mButtonCrop.setEnabled(true);
-								mButtonDraw.setEnabled(true);
 
 								mImageViewPreview.setImageDrawable(resource);
 
@@ -218,6 +218,10 @@ public class ImageSpanDialogBuilder {
 								if (resource instanceof GifDrawable) {
 									((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
 									((GifDrawable) resource).start();
+								} else {
+									///GifDrawable禁止Crop和Draw
+									mButtonCrop.setEnabled(true);
+									mButtonDraw.setEnabled(true);
 								}
 							}
 
@@ -301,18 +305,18 @@ public class ImageSpanDialogBuilder {
             @Override
             public void onClick(View view) {
 				final Uri source;
-                final String src = "file://" + mEditTextSrc.getText().toString();
+                final String src = mEditTextSrc.getText().toString();
 				final String imageFileName = FileUtil.generateImageFileName("jpg");
                 if (StringUtil.isUrl(src)) {
 					mCachedImageFile = new File(mImageFilePath, imageFileName);
                     FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mCachedImageFile, Bitmap.CompressFormat.JPEG, 100);
 					source = FileUtil.getUriFromFile(mContext, mCachedImageFile);
                 } else {
-					source = Uri.parse(src);
+					source = Uri.parse("file://" + src);///[FIX#startCrop()#src]加前缀"file://"
 				}
 
-				final File destinationFile = new File(mImageFilePath, "crop_" + imageFileName);
-                startCrop((Activity) mContext, source, Uri.fromFile(destinationFile));
+				mDestinationFile = new File(mImageFilePath, "crop_" + imageFileName);
+                startCrop((Activity) mContext, source, Uri.fromFile(mDestinationFile));
             }
         });
 
@@ -331,8 +335,8 @@ public class ImageSpanDialogBuilder {
                     imagePath = src;
                 }
 
-				final String savePath = new File(mImageFilePath, "draw_" + imageFileName).getAbsolutePath();
-                startDraw((Activity) mContext, imagePath, savePath);
+				mDestinationFile = new File(mImageFilePath, "draw_" + imageFileName);
+                startDraw((Activity) mContext, imagePath, mDestinationFile.getAbsolutePath());
             }
         });
 
@@ -511,7 +515,8 @@ public class ImageSpanDialogBuilder {
 				.addCategory(Intent.CATEGORY_OPENABLE);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			final String[] mimeTypes = {"image/jpeg", "image/png"};
+			///https://stackoverflow.com/questions/23385520/android-available-mime-types
+			final String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png", "image/bmp", "image/gif"};//////??????相册不支持"image/bmp"
 			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
 		}
 
@@ -550,7 +555,6 @@ public class ImageSpanDialogBuilder {
 
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
     private void startCrop(Activity activity, @NonNull Uri source, @NonNull Uri destination) {
-
 		///[FIX#NotFoundException: File res/drawable/ucrop_ic_cross.xml from drawable resource ID]
 		///https://github.com/Yalantis/uCrop/issues/529
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -609,7 +613,11 @@ public class ImageSpanDialogBuilder {
                 final Uri resultUri = UCrop.getOutput(data);
                 if (resultUri != null) {
                     mEditTextSrc.setText(FileUtils.getPath(mContext, resultUri));
-					return;
+					if (mCachedImageFile != null) {
+						mCachedImageFile.delete();
+						mCachedImageFile = null;
+					}
+                    return;
                 }
             } else if (resultCode == UCrop.RESULT_ERROR) {
                 final Throwable cropError = UCrop.getError(data);
@@ -624,6 +632,10 @@ public class ImageSpanDialogBuilder {
             if (data != null) {
 				if (resultCode == DoodleActivity.RESULT_OK) {
 					mEditTextSrc.setText(data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH));
+					if (mCachedImageFile != null) {
+						mCachedImageFile.delete();
+						mCachedImageFile = null;
+					}
 					return;
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
 					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
@@ -631,8 +643,13 @@ public class ImageSpanDialogBuilder {
             }
         }
 
+		if (mDestinationFile != null) {
+			mDestinationFile.delete();
+			mDestinationFile = null;
+		}
 		if (mCachedImageFile != null) {
 			mCachedImageFile.delete();
+			mCachedImageFile = null;
 		}
 	}
 
