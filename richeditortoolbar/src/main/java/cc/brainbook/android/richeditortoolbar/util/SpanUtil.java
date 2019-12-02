@@ -3,6 +3,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 
@@ -16,6 +17,9 @@ public class SpanUtil {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
 
+        ///在Android6.0 以下这个方法返回的数组是有顺序的，但是7.0以上系统这个方法返回的数组顺序有错乱，所以我们需要自己排序
+        ///https://stackoverflow.com/questions/41052172/spannablestringbuilder-getspans-sort-order-is-wrong-on-nougat-7-0-7-1
+        ///https://www.jianshu.com/p/57783747e530
         ///按照span起始位置从小到大排序
         Arrays.sort(spans, new Comparator<T>() {
             @Override
@@ -59,58 +63,29 @@ public class SpanUtil {
 //        return (T[]) Array.newInstance(clazz);  ///https://bbs.csdn.net/topics/370137571, https://blog.csdn.net/qing0706/article/details/51067981
     }
 
-    /**
-     * Returns the selected area line numbers.
-     *
-     * @param editText
-     * @return int[selectionStartLine, selectionEndLine], [-1, -1] if there is no selection or cursor
-     */
-    public static int[] getSelectionLines(EditText editText) {
-        final int[] results = new int[] {-1, -1};
-        final int selectionStart = editText.getSelectionStart();
-        final int selectionEnd = editText.getSelectionEnd();
-        if (selectionStart != -1) { ///-1 if there is no selection or cursor
-            results[0] = getLineForOffset(editText, selectionStart);
-        }
-        if (selectionEnd != -1) { ///-1 if there is no selection or cursor
-            results[1] = getLineForOffset(editText, selectionEnd);
-        }
-        return results;
-    }
-    public static int getLineForOffset(EditText editText, int offset) {
-        final Layout layout = editText.getLayout();
-        if (layout != null) {
-            return layout.getLineForOffset(offset);
-        }
-        return -1;
+    public static int getParagraphStart(Editable editable, int where) {
+        ///DynamicLayout#reflow(CharSequence s, int where, int before, int after)
+        // seek back to the start of the paragraph
+        int find = TextUtils.lastIndexOf(editable, '\n', where - 1);
+        if (find < 0)
+            find = 0;
+        else
+            find++;
+
+        return find;
     }
 
-    /**
-     * Returns the line start position of the current line (which cursor is focusing now).
-     *
-     * @param editText
-     * @return
-     */
-    public static int getLineStart(EditText editText, int line) {
-        final Layout layout = editText.getLayout();
-        if (layout != null) {
-            return layout.getLineStart(line);
-        }
-        return -1;
-    }
+    public static int getParagraphEnd(Editable editable, int where) {
+        ///DynamicLayout#reflow(CharSequence s, int where, int before, int after)
+        // seek forward to the end of the paragraph
+        int len = editable.length();
+        int look = TextUtils.indexOf(editable, '\n', where);
+        if (look < 0)
+            look = len;
+        else
+            look++; // we want the index after the \n
 
-    /**
-     * Returns the line end position of the current line (which cursor is focusing now).
-     *
-     * @param editText
-     * @return
-     */
-    public static int getLineEnd(EditText editText, int line) {
-        final Layout layout = editText.getLayout();
-        if (layout != null) {
-            return layout.getLineEnd(line);
-        }
-        return -1;
+        return look;
     }
 
     /**

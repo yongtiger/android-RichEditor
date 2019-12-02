@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
+import android.widget.TextView;
 
 import java.io.File;
 
@@ -17,6 +19,7 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
+    private TextView mTextViewPreviewText;
 
     // 要申请的权限
     private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -33,13 +36,18 @@ public class MainActivity extends AppCompatActivity {
             // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
             if (i != PackageManager.PERMISSION_GRANTED) {
                 // 如果没有授予该权限，就去提示用户请求
-                ActivityCompat.requestPermissions(this, permissions, 321);
+                ActivityCompat.requestPermissions(this, permissions, 1);
             }
         }
 
-        mRichEditText = findViewById(R.id.edit_text);
+        mRichEditText = findViewById(R.id.et_rich_edit_text);
         mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
         mRichEditorToolbar.setEditText(mRichEditText);
+
+        ///Preview
+        mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
+        mTextViewPreviewText.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+        mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
 
         ///RichEditor中的ImageSpan存放图片文件的目录（缺省为getExternalCacheDir()）
         final File imageFilePath = getExternalCacheDir();

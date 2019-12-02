@@ -75,7 +75,29 @@ import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 //////??????翻屏后，ColorPickerDialog无法显示完全！
 public class RichEditorToolbar extends FlexboxLayout implements View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
     private HashMap<View, Class> mClassMap = new HashMap<>();
+
     private RichEditText mRichEditText;
+    public void setEditText(RichEditText richEditText) {
+        mRichEditText = richEditText;
+        mRichEditText.addTextChangedListener(mRichEditorWatcher);
+        mRichEditText.setOnSelectionChanged(this);
+    }
+
+    ///[Preview]
+    private TextView mTextViewPreviewText;
+    public void setPreviewText(TextView textView) {
+        mTextViewPreviewText = textView;
+    }
+    private boolean enableSelectionChange = true;
+    private void updatePreview() {
+        if (mTextViewPreviewText.getVisibility() == VISIBLE) {
+            ///[enableSelectionChange]禁止onSelectionChanged()
+            ///注意：mTextViewPreviewText.setText()会引起mRichEditText#onSelectionChanged()，从而造成无selection单光标时切换toolbar按钮失效！
+            enableSelectionChange = false;
+            mTextViewPreviewText.setText(mRichEditText.getText());
+            enableSelectionChange = true;
+        }
+    }
 
     private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
     private int mBulletSpanRadius = 16;
@@ -120,12 +142,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     public RichEditorToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
-    }
-
-    public void setEditText(RichEditText richEditText) {
-        mRichEditText = richEditText;
-        mRichEditText.addTextChangedListener(mRichEditorWatcher);
-        mRichEditText.setOnSelectionChanged(this);
     }
 
     ///段落span（带参数）：Head
@@ -185,6 +201,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
     ///清除样式
     private ImageView mImageViewClearSpans;
+
+    ///[Preview]
+    private ImageView mImageViewPreview;
 
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
     private Context mContext;
@@ -341,6 +360,31 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                 clearParagraphSpans(selectionStart, selectionEnd);
                 clearCharacterSpans(selectionStart, selectionEnd);
+
+                ///[Preview]
+                updatePreview();
+            }
+        });
+
+
+        /* -------------- ///[Preview] --------------- */
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+        mImageViewPreview.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                final Intent intent = new Intent(mContext, PreviewActivity.class);
+//                intent.putExtra("preview_text", mRichEditText.getText());
+//                mContext.startActivity(intent);
+                view.setSelected(!view.isSelected());
+
+                if (view.isSelected()) {
+                    mRichEditText.setVisibility(GONE);
+                    mTextViewPreviewText.setVisibility(VISIBLE);
+                    updatePreview();
+                } else {
+                    mRichEditText.setVisibility(VISIBLE);
+                    mTextViewPreviewText.setVisibility(GONE);
+                }
             }
         });
     }
@@ -513,7 +557,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         if (clazz == URLSpan.class) {
             ///初始化对话框：无、单选、多选，只有单选时才初始化对话框
             if (start < end) {
-                final String text = String.valueOf(mRichEditText.getText().toString().toCharArray(), start, end - start);
+                final String text = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 view.setTag(R.id.url_text, text);///以选中的文本作为url_text
                 view.setTag(R.id.url_url, null);
             } else {
@@ -811,19 +855,25 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     @Override
     public void onClick(final View view) {
         if (isParagraphStyle(view)) {
+            final int selectionStart = Selection.getSelectionStart(mRichEditText.getText());
+            final int selectionEnd = Selection.getSelectionEnd(mRichEditText.getText());
+
+            ///[FIX#当单光标位于文本尾部，click段落view后出现首尾相同的新span！且上一行显示view被selected]当单光标位于文本尾部，补插入一个'\n'
+            if (selectionStart == selectionEnd && selectionStart == mRichEditText.getText().length()) {
+                mRichEditText.getText().append('\n');
+                ///调整光标位置到append之前的位置
+//                mRichEditText.setSelection(selectionStart);
+                Selection.setSelection(mRichEditText.getText(), selectionStart);
+            }
 
             ///段落span：LineDivider
             if (view == mImageViewLineDivider) {
-                final int[] selectionLines = SpanUtil.getSelectionLines(mRichEditText);
-                if (selectionLines[0] != -1 && selectionLines[1] != -1) {
-                    for (int i = selectionLines[0]; i <= selectionLines[1]; i++) {
-                        final int selectionLineStart = SpanUtil.getLineStart(mRichEditText, i);
-                        final int selectionLineEnd = SpanUtil.getLineEnd(mRichEditText, i);
-
-                        if (selectionLineStart + 1 != selectionLineEnd || mRichEditText.getText().charAt(selectionLineStart) != '\n') {
-                            return;
-                        }
-                    }
+                ///当下列情况，不能点击LineDivider：
+                ///不是单光标；或光标处于文本尾部；或光标处字符不为'\n'；或光标前一个字符不为'\n'
+                if (selectionStart != selectionEnd || selectionStart == mRichEditText.getText().length()
+                        || mRichEditText.getText().charAt(selectionStart) != '\n'
+                        || selectionStart != 0 && mRichEditText.getText().charAt(selectionStart - 1) != '\n') {
+                    return;
                 }
             }
 
@@ -861,6 +911,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                     ((TextView) view).setText(head);
                                 }
 
+                                ///[Preview]
+                                updatePreview();
+
                                 dialog.dismiss();
                             }
                         })
@@ -883,6 +936,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.head));
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         }).show();
 
@@ -926,6 +982,8 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 }
             }
 
+            ///[Preview]
+            updatePreview();
         } else if (isCharacterStyle(view)) {
 
             ///字符span（带参数）：URL
@@ -957,6 +1015,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -973,9 +1034,12 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
 
-//                                ///清空view tag
+                                ///清空view tag
                                 view.setTag(R.id.url_text, null);
                                 view.setTag(R.id.url_url, null);
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         });
 
@@ -1018,6 +1082,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1034,12 +1101,15 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
 
-//                                ///清空view tag
+                                ///清空view tag
                                 view.setTag(R.id.image_text, null);
                                 view.setTag(R.id.image_src, null);
                                 view.setTag(R.id.image_width, null);
                                 view.setTag(R.id.image_height, null);
                                 view.setTag(R.id.image_align, null);
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         })
                         .setImageFilePath(mImageFilePath);
@@ -1071,6 +1141,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 view.setBackgroundColor(selectedColor);
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1087,6 +1160,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                 view.setBackgroundColor(Color.TRANSPARENT);
                                 ///改变selection的span
                                 applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         });
                 ///初始化颜色为View的背景颜色
@@ -1133,6 +1209,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                     ((TextView) view).setText(family);
                                 }
 
+                                ///[Preview]
+                                updatePreview();
+
                                 dialog.dismiss();
                             }
                         })
@@ -1155,6 +1234,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.font_family));
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         }).show();
 
@@ -1195,6 +1277,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                     ((TextView) view).setText(size);
                                 }
 
+                                ///[Preview]
+                                updatePreview();
+
                                 dialog.dismiss();
                             }
                         })
@@ -1217,6 +1302,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.absolute_size));
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         }).show();
 
@@ -1257,6 +1345,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                     ((TextView) view).setText(sizeChange);
                                 }
 
+                                ///[Preview]
+                                updatePreview();
+
                                 dialog.dismiss();
                             }
                         })
@@ -1279,6 +1370,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.relative_size));
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         }).show();
 
@@ -1319,6 +1413,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                                     ((TextView) view).setText(scaleX);
                                 }
 
+                                ///[Preview]
+                                updatePreview();
+
                                 dialog.dismiss();
                             }
                         })
@@ -1341,6 +1438,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.scale_x));
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         }).show();
 
@@ -1350,6 +1450,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             view.setSelected(!view.isSelected());
 
             applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+
+            ///[Preview]
+            updatePreview();
         }
     }
 
@@ -1432,21 +1535,19 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     /* ----------------- ///[selectionChanged]根据selection更新工具条按钮 ------------------ */
     @Override
     public void selectionChanged(int selectionStart, int selectionEnd) {
-//        Log.d("TAG", "============= selectionChanged ============" + mRichEditText.getText().length());
         Log.d("TAG", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
 
-        int currentLineStart = -1;
-        int currentLineEnd = -1;
-        final int[] selectionLines = SpanUtil.getSelectionLines(mRichEditText);
-        if (selectionLines[0] != -1 && selectionLines[1] != -1) {
-            ///注意：只取第一行作为更新Toolbar的条件！
-            currentLineStart = SpanUtil.getLineStart(mRichEditText, selectionLines[0]);
-            currentLineEnd = SpanUtil.getLineEnd(mRichEditText, selectionLines[0]);
+        ///[enableSelectionChange]禁止onSelectionChanged()
+        if (!enableSelectionChange) {
+            return;
         }
+
+        final int currentParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), selectionStart);
+        final int currentParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), selectionStart);
 
         for (View view : mClassMap.keySet()) {
             if (isParagraphStyle(view)) {
-                updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentLineStart, currentLineEnd);
+                updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentParagraphStart, currentParagraphEnd);
             } else if (isCharacterStyle(view)) {
                 updateCharacterStyleView(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
             }
@@ -1457,14 +1558,20 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
     }
 
     private void applyParagraphStyleSpansSelection(View view, Editable editable) {
-        final int[] selectionLines = SpanUtil.getSelectionLines(mRichEditText);
-        if (selectionLines[0] != -1 && selectionLines[1] != -1) {
-            for (int i = selectionLines[0]; i <= selectionLines[1]; i++) {
-                final int selectionLineStart = SpanUtil.getLineStart(mRichEditText, i);
-                final int selectionLineEnd = SpanUtil.getLineEnd(mRichEditText, i);
+        final int selectionStart = Selection.getSelectionStart(editable);
+        final int selectionEnd = Selection.getSelectionEnd(editable);
 
-                ///调整同类span
-                adjustParagraphStyleSpansSelection(view, mClassMap.get(view), editable, selectionLineStart, selectionLineEnd, view.isSelected());
+        int next;
+        for (int i = selectionStart; i <= selectionEnd; i = next) {
+            final int currentParagraphStart = SpanUtil.getParagraphStart(editable, i);
+            final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
+            next = currentParagraphEnd;
+
+            ///调整同类span
+            adjustParagraphStyleSpansSelection(view, mClassMap.get(view), editable, currentParagraphStart, currentParagraphEnd, view.isSelected());
+
+            if (next >= selectionEnd) {
+                break;
             }
         }
     }
@@ -1539,32 +1646,16 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            final int firstLine = SpanUtil.getLineForOffset(mRichEditText, start);
-            int firstLineStart = -1;
-            int firstLineEnd = -1;
-            if (firstLine != -1) {
-                firstLineStart = SpanUtil.getLineStart(mRichEditText, firstLine);
-                firstLineEnd = SpanUtil.getLineEnd(mRichEditText, firstLine);
-            }
-
-            final int lastLine = SpanUtil.getLineForOffset(mRichEditText, start + count);
-            int lastLineStart = -1;
-            int lastLineEnd = -1;
-            if (lastLine != -1) {
-                if (lastLine == firstLine) {
-                    lastLineStart = firstLineStart;
-                    lastLineEnd = firstLineEnd;
-                } else {
-                    lastLineStart = SpanUtil.getLineStart(mRichEditText, lastLine);
-                    lastLineEnd = SpanUtil.getLineEnd(mRichEditText, lastLine);
-                }
-            }
+            final int firstParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), start);
+            final int firstParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), start);
+            final int lastParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), start + count);
+            final int lastParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), start + count);
 
             for (View view : mClassMap.keySet()) {
                 if (isParagraphStyle(view)) {
                     adjustParagraphStyleSpans(view, mClassMap.get(view), mRichEditText.getText(),
                             start, start + count,
-                            firstLineStart, firstLineEnd, lastLineStart, lastLineEnd, view.isSelected());
+                            firstParagraphStart, firstParagraphEnd, lastParagraphStart, lastParagraphEnd, view.isSelected());
                 } else if (isCharacterStyle(view)) {
                     if (count > 0) {   ///功能三：[TextWatcher#添加]
 //                        //////??????平摊并合并交叉重叠的同类span
@@ -1603,11 +1694,16 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                 s.removeSpan(span);
             }
+
+            ///[Preview]
+            updatePreview();
         }
     };
 
     private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end,
-                                               int firstLineStart, int firstLineEnd, int lastLineStart, int lastLineEnd, boolean isSelected) {
+                                               int firstParagraphStart, int firstParagraphEnd,
+                                               int lastParagraphStart, int lastParagraphEnd,
+                                               boolean isSelected) {
         boolean isSet = false;
 
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
@@ -1615,38 +1711,41 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
-            ///段落span：LineDivider：移除无效的LineDivider
-            if (spanStart == spanEnd || clazz == LineDividerSpan.class && spanStart == firstLineStart && firstLineStart + 1 != firstLineEnd) {
+            ///移除无效的段落span：LineDivider
+            ///当光标位于LineDivider处，输入内容后LineDivider虽然不显示了，但span仍然存在！需要删除span
+            if (clazz == LineDividerSpan.class && spanStart == firstParagraphStart
+                    && firstParagraphStart + 1 != firstParagraphEnd && editable.charAt(firstParagraphStart) != '\n') {
                 editable.removeSpan(span);
                 continue;
             }
 
-            if (spanStart > firstLineStart) {
+            if (spanStart > firstParagraphStart && spanStart < firstParagraphEnd) {
                 editable.removeSpan(span);
-            } else if (spanStart == firstLineStart) {
+            } else if (spanStart == firstParagraphStart) {
                 if (isSet) {
                     editable.removeSpan(span);
                 } else {
-                    if (spanEnd != firstLineEnd) {
-                        editable.setSpan(span, firstLineStart, firstLineEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                    if (spanEnd != firstParagraphEnd) {
+                        editable.setSpan(span, firstParagraphStart, firstParagraphEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                     }
                     isSet = true;
                 }
-            } else {
-                if (spanEnd != firstLineStart) {
-                    editable.setSpan(span, spanStart, firstLineStart, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                }
+            } else if (spanStart < firstParagraphStart && spanEnd != firstParagraphStart) {
+                editable.setSpan(span, spanStart, firstParagraphStart, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             }
         }
 
-        if (firstLineStart != lastLineStart && lastLineStart != lastLineEnd) {
-            final ArrayList<T> endSpans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        ///当下列情况，需要调整一下最后一个段落span的结束位置
+        ///两个以上的段落；且最后段落有内容（不只是'\n'）；段落span与最后段落的结束位置不同
+        if (firstParagraphStart != lastParagraphStart && lastParagraphStart + 1 != lastParagraphEnd) {
+            final ArrayList<T> endSpans = SpanUtil.getFilteredSpans(editable, clazz, lastParagraphStart, lastParagraphEnd);
             for (T span : endSpans) {
-//                final int spanStart = editable.getSpanStart(span);
+                final int spanStart = editable.getSpanStart(span);
                 final int spanEnd = editable.getSpanEnd(span);
 
-                if (spanEnd != lastLineEnd) {
-                    editable.setSpan(span, lastLineStart, lastLineEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                ///段落span与最后段落的结束位置不同
+                if (spanStart == lastParagraphStart && spanEnd != lastParagraphEnd) {
+                    editable.setSpan(span, lastParagraphStart, lastParagraphEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
                 }
             }
         }
@@ -1683,10 +1782,10 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 if (clazz == URLSpan.class) {
                     final String viewTagText = (String) view.getTag(R.id.url_text);
                     final String viewTagUrl = (String) view.getTag(R.id.url_url);
-                    final String compareText = String.valueOf(mRichEditText.getText().toString().toCharArray(), spanStart, spanEnd - spanStart);
+                    final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanUrl = ((URLSpan) span).getURL();
                     if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        mRichEditText.getText().replace(spanStart, spanEnd, viewTagText);
+                        editable.replace(spanStart, spanEnd, viewTagText);
 
                         ///[isUpdateNeeded]
                         view.setSelected(isSelected);
@@ -1708,10 +1807,10 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     final int viewTagWidth = view.getTag(R.id.image_width) == null ? 0 : (int) view.getTag(R.id.image_width);
                     final int viewTagHeight = view.getTag(R.id.image_height) == null ? 0 : (int) view.getTag(R.id.image_height);
                     final int viewTagAlign = view.getTag(R.id.image_align) == null ? ImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
-                    final String compareText = String.valueOf(mRichEditText.getText().toString().toCharArray(), spanStart, spanEnd - spanStart);
+                    final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanSrc = ((CustomImageSpan) span).getSource();
                     if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        mRichEditText.getText().replace(spanStart, spanEnd, viewTagText);
+                        editable.replace(spanStart, spanEnd, viewTagText);
 
                         ///[isUpdateNeeded]
                         view.setSelected(isSelected);
@@ -1754,9 +1853,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
             if (clazz == URLSpan.class) {
                 final String viewTagText = (String) view.getTag(R.id.url_text);
                 final String viewTagUrl = (String) view.getTag(R.id.url_url);
-                final String compareText = String.valueOf(mRichEditText.getText().toString().toCharArray(), start, end - start);
+                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    mRichEditText.getText().replace(start, end, viewTagText);
+                    editable.replace(start, end, viewTagText);
                 } else {
                     if (!TextUtils.isEmpty(viewTagUrl)) {
                         editable.setSpan(new URLSpan(viewTagUrl), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1770,9 +1869,9 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 final int viewTagWidth = view.getTag(R.id.image_width) == null ? 0 : (int) view.getTag(R.id.image_width);
                 final int viewTagHeight = view.getTag(R.id.image_height) == null ? 0 : (int) view.getTag(R.id.image_height);
                 final int viewTagAlign = view.getTag(R.id.image_align) == null ? ImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
-                final String compareText = String.valueOf(mRichEditText.getText().toString().toCharArray(), start, end - start);
+                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    mRichEditText.getText().replace(start, end, viewTagText);
+                    editable.replace(start, end, viewTagText);
                 } else {
                     if (!TextUtils.isEmpty(viewTagSrc)) {
                         loadImage(editable, viewTagSrc, viewTagWidth, viewTagHeight, viewTagAlign, start, end);
@@ -1786,10 +1885,10 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         if (isUpdateNeeded) {
             //        final int selectionStart = mRichEditText.getSelectionStart();
             //        final int selectionEnd = mRichEditText.getSelectionEnd();
-            final int selectionStart = Selection.getSelectionStart(mRichEditText.getText());
-            final int selectionEnd = Selection.getSelectionEnd(mRichEditText.getText());
+            final int selectionStart = Selection.getSelectionStart(editable);
+            final int selectionEnd = Selection.getSelectionEnd(editable);
             if (selectionStart != -1 && selectionEnd != -1) {
-                updateCharacterStyleView(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
+                updateCharacterStyleView(view, mClassMap.get(view), editable, selectionStart, selectionEnd);
             }
         }
 
@@ -1995,20 +2094,14 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
      * 清除区间内的span
      */
     private void clearParagraphSpans(int selectionStart, int selectionEnd) {
-        int currentLineStart = -1;
-        int currentLineEnd = -1;
-        final int[] selectionLines = SpanUtil.getSelectionLines(mRichEditText);
-        if (selectionLines[0] != -1 && selectionLines[1] != -1) {
-            ///注意：只取第一行作为更新Toolbar的条件！
-            currentLineStart = SpanUtil.getLineStart(mRichEditText, selectionLines[0]);
-            currentLineEnd = SpanUtil.getLineEnd(mRichEditText, selectionLines[0]);
-        }
+        final int currentParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), selectionStart);
+        final int currentParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), selectionStart);
 
         for (View view : mClassMap.keySet()) {
             if (isParagraphStyle(view)) {
                 SpanUtil.removeSpans(mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
+                updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentParagraphStart, currentParagraphEnd);
             }
-            updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentLineStart, currentLineEnd);
         }
     }
     private void clearCharacterSpans(int selectionStart, int selectionEnd) {

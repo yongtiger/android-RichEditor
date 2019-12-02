@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="cc.brainbook.android.richeditortoolbar" >
+    package="cc.brainbook.android.richeditortoolbar">
 
     <application>
 
-        <!--///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop-->
+        <!-- ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>
 

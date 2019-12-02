@@ -161,4 +161,10 @@
         app:srcCompat="@drawable/ic_remove_circle_black_24dp"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_preview"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_local_parking_black_24dp"
+        style="@style/ImageView" />
+
 </merge>
