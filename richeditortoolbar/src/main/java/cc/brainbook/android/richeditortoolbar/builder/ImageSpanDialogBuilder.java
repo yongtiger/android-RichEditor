@@ -38,7 +38,6 @@ import com.yalantis.ucrop.util.FileUtils;
 import java.io.File;
 
 import cc.brainbook.android.richeditortoolbar.R;
-import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cn.hzw.doodle.DoodleActivity;

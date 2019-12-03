@@ -73,7 +73,7 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 //////??????翻屏后，ColorPickerDialog无法显示完全！
-public class RichEditorToolbar extends FlexboxLayout implements View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
+public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callback, View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
     private HashMap<View, Class> mClassMap = new HashMap<>();
 
     private RichEditText mRichEditText;
@@ -372,9 +372,6 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
         mImageViewPreview.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-//                final Intent intent = new Intent(mContext, PreviewActivity.class);
-//                intent.putExtra("preview_text", mRichEditText.getText());
-//                mContext.startActivity(intent);
                 view.setSelected(!view.isSelected());
 
                 if (view.isSelected()) {
@@ -384,6 +381,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                 } else {
                     mRichEditText.setVisibility(VISIBLE);
                     mTextViewPreviewText.setVisibility(GONE);
+                    mTextViewPreviewText.setText(null);
                 }
             }
         });
@@ -2172,7 +2170,7 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
 
                             ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
                             ///https://github.com/koral--/android-gif-drawable/issues/516
-                            resource.setCallback(mRichEditText);
+                            resource.setCallback(RichEditorToolbar.this);
                         }
                     }
 
@@ -2180,4 +2178,33 @@ public class RichEditorToolbar extends FlexboxLayout implements View.OnClickList
                     public void onLoadCleared(@Nullable Drawable placeholder) {}
                 });
     }
+
+    ///[ImageSpan#Glide#GifDrawable]
+    ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
+    @Override
+    public void invalidateDrawable(@NonNull Drawable drawable) {
+        ///注意：实测此方法不闪烁！
+        ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
+        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(mRichEditText.getText(), drawable);
+        if (imageSpan != null) {
+            final Editable editable = mRichEditText.getText();
+            if (!TextUtils.isEmpty(editable)) {
+                final int spanStart = editable.getSpanStart(imageSpan);
+                final int spanEnd = editable.getSpanEnd(imageSpan);
+                final int spanFlags = editable.getSpanFlags(imageSpan);
+
+                ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
+//                editable.removeSpan(imageSpan);
+                editable.setSpan(imageSpan, spanStart, spanEnd, spanFlags);
+
+                if (!TextUtils.isEmpty(mTextViewPreviewText.getText())) {
+//                    mTextViewPreviewText.invalidateDrawable(drawable);//////??????无效！
+                    mTextViewPreviewText.invalidate();
+                }
+            }
+        } else {
+            super.invalidateDrawable(drawable);
+        }
+    }
+
 }

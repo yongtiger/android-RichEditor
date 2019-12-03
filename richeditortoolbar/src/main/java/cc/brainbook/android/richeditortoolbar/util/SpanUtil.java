@@ -1,5 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -9,6 +10,8 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+
+import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
 public class SpanUtil {
 
@@ -139,6 +142,22 @@ public class SpanUtil {
             }
             editable.removeSpan(span);
         }
+    }
+
+    public static CustomImageSpan getImageSpan(Editable editable, Drawable drawable) {
+        CustomImageSpan imageSpan = null;
+        if (!TextUtils.isEmpty(editable)) {
+            final CustomImageSpan[] spans = editable.getSpans(0, editable.length(), CustomImageSpan.class);
+            if (spans != null && spans.length > 0) {
+                for (CustomImageSpan span : spans) {
+                    if (drawable == span.getDrawable()) {
+                        imageSpan = span;
+                    }
+                }
+            }
+        }
+
+        return imageSpan;
     }
 
     ///test
