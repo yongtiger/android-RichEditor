@@ -12,10 +12,9 @@ import android.text.style.ImageSpan;
 
 import java.lang.ref.WeakReference;
 
-///https://segmentfault.com/a/1190000007133405
+//////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
+///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
 public class CustomImageSpan extends ImageSpan {
-    ///注意：API29开始支持ALIGN_CENTER
-    ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
     public static final int ALIGN_CENTER = 2;
 
     private WeakReference<Drawable> mDrawableRef;
@@ -40,42 +39,50 @@ public class CustomImageSpan extends ImageSpan {
         super(context, resourceId, verticalAlignment);
     }
 
-    @Override public int getSize(Paint paint, CharSequence text, int start, int end,
-                                 Paint.FontMetricsInt fontMetricsInt) {
+    ///https://segmentfault.com/a/1190000007133405
+    @Override
+    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end,
+                                 Paint.FontMetricsInt fm) {
         if (getVerticalAlignment() != ALIGN_CENTER) {
-            return super.getSize(paint, text, start, end, fontMetricsInt);
+            return super.getSize(paint, text, start, end, fm);
         }
 
         Drawable drawable = getDrawable();
         Rect rect = drawable.getBounds();
-        if (fontMetricsInt != null) {
+        if (fm != null) {
             Paint.FontMetricsInt fmPaint = paint.getFontMetricsInt();
             int fontHeight = fmPaint.descent - fmPaint.ascent;
             int drHeight = rect.bottom - rect.top;
             int centerY = fmPaint.ascent + fontHeight / 2;
 
-            fontMetricsInt.ascent = centerY - drHeight / 2;
-            fontMetricsInt.top = fontMetricsInt.ascent;
-            fontMetricsInt.bottom = centerY + drHeight / 2;
-            fontMetricsInt.descent = fontMetricsInt.bottom;
+            fm.ascent = centerY - drHeight / 2;
+            fm.top = fm.ascent;
+            fm.bottom = centerY + drHeight / 2;
+            fm.descent = fm.bottom;
         }
         return rect.right;
     }
 
     @Override
-    public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y,
-                     int bottom, Paint paint) {
+    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y,
+                     int bottom, @NonNull Paint paint) {
         if (getVerticalAlignment() != ALIGN_CENTER) {
             super.draw(canvas, text, start, end, x, top, y, bottom, paint);
             return;
         }
+
         Drawable drawable = getCachedDrawable();
         canvas.save();
         Paint.FontMetricsInt fm = paint.getFontMetricsInt();
-        int fontHeight = fm.descent - fm.ascent;
-        int centerY = y + fm.descent - fontHeight / 2;
+//        int transY = (bottom - top) / 2 - b.getBounds().height() / 2;   //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
+
+        int transY = (y + fm.descent + y + fm.ascent) / 2 - drawable.getBounds().bottom / 2;    ///实测有效！https://www.jianshu.com/p/add321678859
+
+        ///https://segmentfault.com/a/1190000007133405，但存在bug！
+//        int fontHeight = fm.descent - fm.ascent;
+//        int centerY = y + fm.descent - fontHeight / 2;
 //        int transY = centerY - (drawable.getBounds().bottom - drawable.getBounds().top) / 2;
-        int transY = (y + fm.descent + y + fm.ascent) / 2 - drawable.getBounds().bottom / 2;//////??????https://www.jianshu.com/p/add321678859
+
         canvas.translate(x, transY);
         drawable.draw(canvas);
         canvas.restore();
@@ -90,7 +97,7 @@ public class CustomImageSpan extends ImageSpan {
 
         if (d == null) {
             d = getDrawable();
-            mDrawableRef = new WeakReference<>(d);
+            mDrawableRef = new WeakReference<Drawable>(d);
         }
 
         return d;
