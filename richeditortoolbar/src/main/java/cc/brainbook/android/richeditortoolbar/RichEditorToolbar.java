@@ -3,11 +3,14 @@ package cc.brainbook.android.richeditortoolbar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,11 +33,13 @@ import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
@@ -48,9 +53,12 @@ import com.google.android.flexbox.FlexboxLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
+import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.BulletSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.ImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LeadingMarginSpanDialogBuilder;
@@ -69,11 +77,15 @@ import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.util.ParcelableUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 //////??????翻屏后，ColorPickerDialog无法显示完全！
 public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callback, View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
+    public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
+    public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
+
     private HashMap<View, Class> mClassMap = new HashMap<>();
 
     private RichEditText mRichEditText;
@@ -199,11 +211,16 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
     ///字符span（带参数）：Image
     private ImageView mImageViewImage;
 
+    ///[Preview]
+    private ImageView mImageViewPreview;
+
     ///清除样式
     private ImageView mImageViewClearSpans;
 
-    ///[Preview]
-    private ImageView mImageViewPreview;
+    ///[草稿Draft]
+    private ImageView mImageViewSaveDraft;
+    private ImageView mImageViewRestoreDraft;
+    private ImageView mImageViewClearDraft;
 
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
     private Context mContext;
@@ -345,6 +362,26 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mClassMap.put(mImageViewImage, CustomImageSpan.class);
 
 
+        /* -------------- ///[Preview] --------------- */
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+        mImageViewPreview.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setSelected(!view.isSelected());
+
+                if (view.isSelected()) {
+                    mRichEditText.setVisibility(GONE);
+                    mTextViewPreviewText.setVisibility(VISIBLE);
+                    updatePreview();
+                } else {
+                    mRichEditText.setVisibility(VISIBLE);
+                    mTextViewPreviewText.setVisibility(GONE);
+                    mTextViewPreviewText.setText(null);
+                }
+            }
+        });
+
+
         /* -------------- ///清除样式 --------------- */
         mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
         mImageViewClearSpans.setOnClickListener(new OnClickListener() {
@@ -367,24 +404,88 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         });
 
 
-        /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
-        mImageViewPreview.setOnClickListener(new OnClickListener() {
+        /* -------------- ///[草稿Draft] --------------- */
+        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft);
+        mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
             @Override
-            public void onClick(View view) {
-                view.setSelected(!view.isSelected());
+            public void onClick(View v) {
+                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                if (view.isSelected()) {
-                    mRichEditText.setVisibility(GONE);
-                    mTextViewPreviewText.setVisibility(VISIBLE);
-                    updatePreview();
+                final TextBean textBean = new TextBean();
+                textBean.setText(mRichEditText.getText().toString());
+
+                final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+                for (Class clazz : mClassMap.values()) {
+                    SpanUtil.saveDraft(spanBeans, clazz, mRichEditText.getText());
+                }
+                textBean.setSpans(spanBeans);
+
+                final byte[] bytes = ParcelableUtil.marshall(textBean);
+                editor.putString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
+
+                ///注意：commit是同步写，可能会阻塞主线程，因此不建议
+//                editor.commit();
+                editor.apply();
+
+                if (checkDraft()) {
+                    Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
                 } else {
-                    mRichEditText.setVisibility(VISIBLE);
-                    mTextViewPreviewText.setVisibility(GONE);
-                    mTextViewPreviewText.setText(null);
+                    Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_failed, Toast.LENGTH_SHORT).show();
                 }
             }
         });
+        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft);
+        mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+                if (TextUtils.isEmpty(draftText)) {
+                    return;
+                }
+                final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
+                final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
+                mRichEditText.setText(textBean.getText());
+
+                final Editable editable = mRichEditText.getText();
+                final List<SpanBean> spanBeans = textBean.getSpans();
+                SpanUtil.restoreDraft(spanBeans, editable);
+
+                Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft);
+        mImageViewClearDraft.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+
+                if (!checkDraft()) {
+                    Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_failed, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        ///初始化时检查有无草稿Draft
+        if (checkDraft()) {
+            Toast.makeText(mContext.getApplicationContext(), R.string.has_draft, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    ///[草稿Draft]
+    private boolean checkDraft() {
+        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+        final boolean hasDraft = !TextUtils.isEmpty(draftText);
+        mImageViewRestoreDraft.setEnabled(hasDraft);
+        mImageViewRestoreDraft.setSelected(hasDraft);
+        mImageViewClearDraft.setEnabled(hasDraft);
+        return hasDraft;
     }
 
     private boolean isParagraphStyle(View view) {

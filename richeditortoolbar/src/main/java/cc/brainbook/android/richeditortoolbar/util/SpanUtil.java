@@ -1,6 +1,7 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -10,7 +11,9 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
+import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
 public class SpanUtil {
@@ -158,6 +161,34 @@ public class SpanUtil {
         }
 
         return imageSpan;
+    }
+
+    public static <T extends Parcelable> void saveDraft(List<SpanBean> spanBeans, Class<T> clazz, Editable editable) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, 0, editable.length());
+        for (T span : spans) {
+            ///注意：必须过滤掉没有CREATOR变量的span！
+            ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
+            try {
+                clazz.getField("CREATOR");
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+                final int spanFlags = editable.getSpanFlags(span);
+                final SpanBean<T> spanBean = new SpanBean<>(span, spanStart, spanEnd, spanFlags);
+                spanBeans.add(spanBean);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static <T extends Parcelable> void restoreDraft(List<SpanBean> spanBeans, Editable editable) {
+        for (SpanBean spanBean : spanBeans) {
+            final int spanStart = spanBean.getSpanStart();
+            final int spanEnd = spanBean.getSpanEnd();
+            final int spanFlags = spanBean.getSpanFlags();
+            final Parcelable span = spanBean.getSpan();
+            editable.setSpan(span, spanStart, spanEnd, spanFlags);
+        }
     }
 
     ///test

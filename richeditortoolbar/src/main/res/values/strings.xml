@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">RichEditorToolBar</string>
 
+    <string name="save_draft_successful">Save draft successful</string>
+    <string name="save_draft_failed">Save draft failed</string>
+    <string name="restore_draft_successful">Restore draft successful</string>
+    <string name="restore_draft_failed">Restore draft failed</string>
+    <string name="clear_draft_successful">Clear draft successful</string>
+    <string name="clear_draft_failed">Clear draft failed</string>
+    <string name="has_draft">Has draft</string>
+
     <string name="clear">Clear</string>
     <string name="head">H</string>
     <string name="font_family">Font</string>
