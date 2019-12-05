@@ -14,6 +14,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.Toast;
 
+import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
+
 public class RichEditText extends AppCompatEditText {
     private OnSelectionChanged mOnSelectionChanged;
     private RichEditorToolbar mRichEditorToolbar;
@@ -57,7 +59,7 @@ public class RichEditText extends AppCompatEditText {
     }
 
 
-    /* --------------- ///[TextContextMenu#Cut/Copy/Paste] --------------- */
+    /* --------------- ///[TextContextMenu#Clipboard] --------------- */
     ///参考TextView#onTextContextMenuItem(int id)
     ///注意：一个App可含有多个RichEditor，多个App的所有RichEditor共享剪切板的存储空间！所以可以实现跨进程复制粘贴
     @Override
@@ -80,7 +82,7 @@ public class RichEditText extends AppCompatEditText {
 
                     ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                     ///而且应该保存到进程App共享空间！
-                    mRichEditorToolbar.saveSpansSelection(getText(), min, max);
+                    SpanUtil.saveSpansSelection(mRichEditorToolbar.getClassMap(), mRichEditorToolbar.getClipboardFile(), getText(), min, max);
 
                     getText().delete(min, max);
                 } else {
@@ -101,7 +103,7 @@ public class RichEditText extends AppCompatEditText {
 
                     ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                     ///而且应该保存到进程App共享空间！
-                    mRichEditorToolbar.saveSpansSelection(getText(), min, max);
+                    SpanUtil.saveSpansSelection(mRichEditorToolbar.getClassMap(), mRichEditorToolbar.getClipboardFile(), getText(), min, max);
 
                     ///调整Selection来实现关闭TextContextMenuItem
                     setSelection(min);
@@ -136,7 +138,7 @@ public class RichEditText extends AppCompatEditText {
         if (clip != null) {
             boolean didFirst = false;
             for (int i = 0; i < clip.getItemCount(); i++) {
-                final Editable paste;
+                final SpannableStringBuilder paste;
                 if (withFormatting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     paste = new SpannableStringBuilder(clip.getItemAt(i).coerceToStyledText(getContext()));
                 } else {
@@ -147,11 +149,13 @@ public class RichEditText extends AppCompatEditText {
                 if (!TextUtils.isEmpty(paste)) {
                     if (!didFirst) {
 
-                        //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-//                        final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
-//                        if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            mRichEditorToolbar.loadSpans(paste);
-//                        }
+                        if (withFormatting) {   ///如果为paint text则不执行loadSpans
+                            //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+//                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
+//                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
+                            SpanUtil.loadSpans(mRichEditorToolbar.getClipboardFile(), paste);
+//                            }
+                        }
 
                         Selection.setSelection(getText(), max);
                         getText().replace(min, max, paste);

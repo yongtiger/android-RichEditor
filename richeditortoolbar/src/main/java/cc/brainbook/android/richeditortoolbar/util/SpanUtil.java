@@ -1,19 +1,25 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
+import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
 public abstract class SpanUtil {
@@ -191,6 +197,44 @@ public abstract class SpanUtil {
             final Parcelable span = spanBean.getSpan();
             editable.setSpan(span, spanStart, spanEnd, spanFlags);
         }
+    }
+
+
+    public static void saveSpansSelection(HashMap<View, Class> classHashMap, File draftFile, Editable editable, int selectionStart, int selectionEnd) {
+        final TextBean textBean = new TextBean();
+        final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
+        textBean.setText(subSequence.toString());
+
+        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+        for (Class clazz : classHashMap.values()) {
+            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+        }
+        textBean.setSpans(spanBeans);
+
+        final byte[] bytes = ParcelableUtil.marshall(textBean);
+
+        FileUtil.writeFile(draftFile, Base64.encodeToString(bytes, 0));
+    }
+
+    ///从进程App共享空间恢复spans
+    public static void loadSpans(File draftFile, Editable editable) {
+        final String draftText = FileUtil.readFile(draftFile);
+        if (TextUtils.isEmpty(draftText)) {
+            return;
+        }
+
+        final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
+        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
+        //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+        if (!TextUtils.equals(textBean.getText(), editable)) {
+            return;
+        }
+
+        ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
+        editable.clearSpans();
+
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        SpanUtil.loadSpanBeans(spanBeans, editable);
     }
 
     ///test

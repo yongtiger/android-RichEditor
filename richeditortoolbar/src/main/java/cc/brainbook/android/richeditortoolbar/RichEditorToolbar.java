@@ -77,7 +77,6 @@ import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.ParcelableUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
@@ -87,9 +86,31 @@ import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callback, View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
-    public static final String DRAFT_FILE_NAME = "rich_editor_draft_file";
+    public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
+
+
+    /* --------------- ///[TextContextMenu#Clipboard] --------------- */
+    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
+    ///Environment.getDataDirectory() Permission denied
+    ///在/data文件夹进行操作是不被允许的!
+    ///能操作文件夹只有两个地方：
+    ///1.sdcard
+    ///2./data/<package_name>/files/
+    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
+//    private File mClipboardFile = new File(Environment.getDataDirectory() + File.separator + CLIPBOARD_FILE_NAME);
+    private File mClipboardFile = new File(Environment.getExternalStorageDirectory() + File.separator + CLIPBOARD_FILE_NAME);
+    public File getClipboardFile() {
+        return mClipboardFile;
+    }
+    public void setClipboardFile(File clipboardFile) {
+        mClipboardFile = clipboardFile;
+    }
+
 
     private HashMap<View, Class> mClassMap = new HashMap<>();
+    public HashMap<View, Class> getClassMap() {
+        return mClassMap;
+    }
 
     private RichEditText mRichEditText;
     public void setEditText(RichEditText richEditText) {
@@ -390,10 +411,12 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewClearSpans.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                final Editable editable = mRichEditText.getText();
+
                 //        final int selectionStart = mRichEditText.getSelectionStart();
                 //        final int selectionEnd = mRichEditText.getSelectionEnd();
-                final int selectionStart = Selection.getSelectionStart(mRichEditText.getText());
-                final int selectionEnd = Selection.getSelectionEnd(mRichEditText.getText());
+                final int selectionStart = Selection.getSelectionStart(editable);
+                final int selectionEnd = Selection.getSelectionEnd(editable);
                 if (selectionStart == -1 || selectionEnd == -1 || selectionStart == selectionEnd) {
                     return;
                 }
@@ -412,12 +435,14 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Editable editable = mRichEditText.getText();
+
                 final TextBean textBean = new TextBean();
-                textBean.setText(mRichEditText.getText().toString());
+                textBean.setText(editable.toString());
 
                 final ArrayList<SpanBean> spanBeans = new ArrayList<>();
                 for (Class clazz : mClassMap.values()) {
-                    SpanUtil.addSpanBeans(spanBeans, clazz, mRichEditText.getText(), 0, mRichEditText.getText().length());
+                    SpanUtil.addSpanBeans(spanBeans, clazz, editable, 0, editable.length());
                 }
                 textBean.setSpans(spanBeans);
 
@@ -946,25 +971,27 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
     /* ----------------- ///[onClick]点击更新ImageView，并且当selectionStart != selectionEnd时改变selection的span ------------------ */
     @Override
     public void onClick(final View view) {
+        final Editable editable = mRichEditText.getText();
+
         if (isParagraphStyle(view)) {
-            final int selectionStart = Selection.getSelectionStart(mRichEditText.getText());
-            final int selectionEnd = Selection.getSelectionEnd(mRichEditText.getText());
+            final int selectionStart = Selection.getSelectionStart(editable);
+            final int selectionEnd = Selection.getSelectionEnd(editable);
 
             ///[FIX#当单光标位于文本尾部，click段落view后出现首尾相同的新span！且上一行显示view被selected]当单光标位于文本尾部，补插入一个'\n'
-            if (selectionStart == selectionEnd && selectionStart == mRichEditText.getText().length()) {
-                mRichEditText.getText().append('\n');
+            if (selectionStart == selectionEnd && selectionStart == editable.length()) {
+                editable.append('\n');
                 ///调整光标位置到append之前的位置
 //                mRichEditText.setSelection(selectionStart);
-                Selection.setSelection(mRichEditText.getText(), selectionStart);
+                Selection.setSelection(editable, selectionStart);
             }
 
             ///段落span：LineDivider
             if (view == mImageViewLineDivider) {
                 ///当下列情况，不能点击LineDivider：
                 ///不是单光标；或光标处于文本尾部；或光标处字符不为'\n'；或光标前一个字符不为'\n'
-                if (selectionStart != selectionEnd || selectionStart == mRichEditText.getText().length()
-                        || mRichEditText.getText().charAt(selectionStart) != '\n'
-                        || selectionStart != 0 && mRichEditText.getText().charAt(selectionStart - 1) != '\n') {
+                if (selectionStart != selectionEnd || selectionStart == editable.length()
+                        || editable.charAt(selectionStart) != '\n'
+                        || selectionStart != 0 && editable.charAt(selectionStart - 1) != '\n') {
                     return;
                 }
             }
@@ -995,7 +1022,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(head);
 
                                 ///改变selection的span
-                                applyParagraphStyleSpansSelection(view, mRichEditText.getText());
+                                applyParagraphStyleSpansSelection(view, editable);
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
@@ -1021,7 +1048,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyParagraphStyleSpansSelection(view, mRichEditText.getText());
+                                applyParagraphStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(null);
@@ -1039,7 +1066,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
 
             view.setSelected(!view.isSelected());
 
-            applyParagraphStyleSpansSelection(view, mRichEditText.getText());
+            applyParagraphStyleSpansSelection(view, editable);
 
             ///同组选择互斥
             ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
@@ -1047,29 +1074,29 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 if (mClassMap.get(view) == AlignNormalSpan.class) {
                     if (mImageViewAlignCenter.isSelected()) {
                         mImageViewAlignCenter.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignCenter, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignCenter, editable);
                     }
                     if (mImageViewAlignOpposite.isSelected()) {
                         mImageViewAlignOpposite.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignOpposite, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignOpposite, editable);
                     }
                 } else if (mClassMap.get(view) == AlignCenterSpan.class) {
                     if (mImageViewAlignNormal.isSelected()) {
                         mImageViewAlignNormal.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignNormal, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignNormal, editable);
                     }
                     if (mImageViewAlignOpposite.isSelected()) {
                         mImageViewAlignOpposite.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignOpposite, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignOpposite, editable);
                     }
                 } else if (mClassMap.get(view) == AlignOppositeSpan.class) {
                     if (mImageViewAlignNormal.isSelected()) {
                         mImageViewAlignNormal.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignNormal, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignNormal, editable);
                     }
                     if (mImageViewAlignCenter.isSelected()) {
                         mImageViewAlignCenter.setSelected(false);
-                        applyParagraphStyleSpansSelection(mImageViewAlignCenter, mRichEditText.getText());
+                        applyParagraphStyleSpansSelection(mImageViewAlignCenter, editable);
                     }
                 }
             }
@@ -1106,7 +1133,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(R.id.url_url, url);
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///[Preview]
                                 updatePreview();
@@ -1124,7 +1151,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(R.id.url_text, null);
@@ -1173,7 +1200,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(R.id.image_align, align);
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///[Preview]
                                 updatePreview();
@@ -1191,7 +1218,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(R.id.image_text, null);
@@ -1232,7 +1259,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 ///设置View的背景颜色
                                 view.setBackgroundColor(selectedColor);
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///[Preview]
                                 updatePreview();
@@ -1251,7 +1278,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 ///清除View的背景颜色
                                 view.setBackgroundColor(Color.TRANSPARENT);
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///[Preview]
                                 updatePreview();
@@ -1293,7 +1320,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(family);
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
@@ -1319,7 +1346,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(null);
@@ -1361,7 +1388,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(Integer.parseInt(size.toString()));
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
@@ -1387,7 +1414,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(null);
@@ -1429,7 +1456,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(Float.parseFloat(sizeChange.toString()));
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
@@ -1455,7 +1482,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(null);
@@ -1497,7 +1524,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 view.setTag(Float.parseFloat(scaleX.toString()));
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
@@ -1523,7 +1550,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                                 }
 
                                 ///改变selection的span
-                                applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+                                applyCharacterStyleSpansSelection(view, editable);
 
                                 ///清空view tag
                                 view.setTag(null);
@@ -1541,7 +1568,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
 
             view.setSelected(!view.isSelected());
 
-            applyCharacterStyleSpansSelection(view, mRichEditText.getText());
+            applyCharacterStyleSpansSelection(view, editable);
 
             ///[Preview]
             updatePreview();
@@ -1634,18 +1661,20 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
             return;
         }
 
-        final int currentParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), selectionStart);
-        final int currentParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), selectionStart);
+        final Editable editable = mRichEditText.getText();
+
+        final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
+        final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, selectionStart);
 
         for (View view : mClassMap.keySet()) {
             if (isParagraphStyle(view)) {
-                updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentParagraphStart, currentParagraphEnd);
+                updateParagraphView(view, mClassMap.get(view), editable, currentParagraphStart, currentParagraphEnd);
             } else if (isCharacterStyle(view)) {
-                updateCharacterStyleView(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
+                updateCharacterStyleView(view, mClassMap.get(view), editable, selectionStart, selectionEnd);
             }
 
             ///test
-            SpanUtil.testOutput(mRichEditText.getText(), mClassMap.get(view));
+            SpanUtil.testOutput(editable, mClassMap.get(view));
         }
     }
 
@@ -1738,31 +1767,33 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            final int firstParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), start);
-            final int firstParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), start);
-            final int lastParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), start + count);
-            final int lastParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), start + count);
+            final Editable editable = mRichEditText.getText();
+
+            final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
+            final int firstParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
+            final int lastParagraphStart = SpanUtil.getParagraphStart(editable, start + count);
+            final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, start + count);
 
             for (View view : mClassMap.keySet()) {
                 if (isParagraphStyle(view)) {
-                    adjustParagraphStyleSpans(view, mClassMap.get(view), mRichEditText.getText(),
+                    adjustParagraphStyleSpans(view, mClassMap.get(view), editable,
                             start, start + count,
                             firstParagraphStart, firstParagraphEnd, lastParagraphStart, lastParagraphEnd, view.isSelected());
                 } else if (isCharacterStyle(view)) {
                     if (count > 0) {   ///功能三：[TextWatcher#添加]
 //                        //////??????平摊并合并交叉重叠的同类span
-//                        flatSpans(mClassMap.get(view), mRichEditText.getText(), adjustStart, adjustStart + adjustCount);
+//                        flatSpans(mClassMap.get(view), editable, adjustStart, adjustStart + adjustCount);
 
                         if (isBlockCharacterStyle(view)) {
-                            adjustBlockCharacterStyleSpans(view, mClassMap.get(view), mRichEditText.getText(), start, start + count, view.isSelected(), false);
+                            adjustBlockCharacterStyleSpans(view, mClassMap.get(view), editable, start, start + count, view.isSelected(), false);
                         } else {
                             ///adjustCharacterStyleSpans()与adjustCharacterStyleSpansSelection()完全相同！
-                            adjustCharacterStyleSpans(view, mClassMap.get(view), mRichEditText.getText(), start, start + count, view.isSelected(), false);
+                            adjustCharacterStyleSpans(view, mClassMap.get(view), editable, start, start + count, view.isSelected(), false);
                         }
                     } else if (before > 0) {    ///功能四：[TextWatcher]删除，删除后如果没添加内容（即count == 0且before > 0），则合并同类span
                         ///合并同类span
-                        if (!isBlockCharacterStyle(view) && mRichEditText.getText().length() > 0) {///[BUG]模拟器中：当文本长度为0，调用joinSpanByPosition()死机！要保证mRichEditText.getText().length() > 0
-                            joinSpanByPosition(view, mClassMap.get(view), mRichEditText.getText(), start);
+                        if (!isBlockCharacterStyle(view) && editable.length() > 0) {///[BUG]模拟器中：当文本长度为0，调用joinSpanByPosition()死机！要保证editable.length() > 0
+                            joinSpanByPosition(view, mClassMap.get(view), editable, start);
                         }
                     }
                 }
@@ -2186,26 +2217,30 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
      * 清除区间内的span
      */
     private void clearParagraphSpans(int selectionStart, int selectionEnd) {
-        final int currentParagraphStart = SpanUtil.getParagraphStart(mRichEditText.getText(), selectionStart);
-        final int currentParagraphEnd = SpanUtil.getParagraphEnd(mRichEditText.getText(), selectionStart);
+        final Editable editable = mRichEditText.getText();
+
+        final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
+        final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, selectionStart);
 
         for (View view : mClassMap.keySet()) {
             if (isParagraphStyle(view)) {
-                SpanUtil.removeSpans(mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
-                updateParagraphView(view, mClassMap.get(view), mRichEditText.getText(), currentParagraphStart, currentParagraphEnd);
+                SpanUtil.removeSpans(mClassMap.get(view), editable, selectionStart, selectionEnd);
+                updateParagraphView(view, mClassMap.get(view), editable, currentParagraphStart, currentParagraphEnd);
             }
         }
     }
     private void clearCharacterSpans(int selectionStart, int selectionEnd) {
+        final Editable editable = mRichEditText.getText();
+
         for (View view : mClassMap.keySet()) {
             if (isCharacterStyle(view)) {
                 ///调整同类span
                 if (isBlockCharacterStyle(view)) {
-                    adjustBlockCharacterStyleSpans(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd, false, true);
+                    adjustBlockCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, false, true);
                 } else {
-                    adjustCharacterStyleSpans(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd, false, true);
+                    adjustCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, false, true);
                 }
-                updateCharacterStyleView(view, mClassMap.get(view), mRichEditText.getText(), selectionStart, selectionEnd);
+                updateCharacterStyleView(view, mClassMap.get(view), editable, selectionStart, selectionEnd);
             }
         }
     }
@@ -2277,11 +2312,12 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
     @Override
     public void invalidateDrawable(@NonNull Drawable drawable) {
+        final Editable editable = mRichEditText.getText();
+
         ///注意：实测此方法不闪烁！
         ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
-        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(mRichEditText.getText(), drawable);
+        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(editable, drawable);
         if (imageSpan != null) {
-            final Editable editable = mRichEditText.getText();
             if (!TextUtils.isEmpty(editable)) {
                 final int spanStart = editable.getSpanStart(imageSpan);
                 final int spanEnd = editable.getSpanEnd(imageSpan);
@@ -2299,57 +2335,6 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         } else {
             super.invalidateDrawable(drawable);
         }
-    }
-
-
-    /* --------------- ///[TextContextMenu#Cut/Copy/Paste] --------------- */
-    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
-
-    ///Environment.getDataDirectory() Permission denied
-    ///在/data文件夹进行操作是不被允许的!
-    ///能操作文件夹只有两个地方：
-    ///1.sdcard
-    ///2./data/<package_name>/files/
-    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
-//    private File mDraftFile = new File(Environment.getDataDirectory() + File.separator + DRAFT_FILE_NAME);
-    private File mDraftFile = new File(Environment.getExternalStorageDirectory() + File.separator + DRAFT_FILE_NAME);
-    public File getDraftFile() {
-        return mDraftFile;
-    }
-    public void setDraftFile(File draftFile) {
-        mDraftFile = draftFile;
-    }
-
-    public void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd) {
-        final TextBean textBean = new TextBean();
-        final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
-        textBean.setText(subSequence.toString());
-
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class clazz : mClassMap.values()) {
-            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
-        }
-        textBean.setSpans(spanBeans);
-
-        final byte[] bytes = ParcelableUtil.marshall(textBean);
-
-        FileUtil.writeFile(mDraftFile, Base64.encodeToString(bytes, 0));
-    }
-
-    ///从进程App共享空间恢复spans
-    public void loadSpans(Editable editable) {
-        final String draftText = FileUtil.readFile(mDraftFile);
-        if (TextUtils.isEmpty(draftText)) {
-            return;
-        }
-        final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
-        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-        //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-        if (!TextUtils.equals(textBean.getText(), editable)) {
-            return;
-        }
-        final List<SpanBean> spanBeans = textBean.getSpans();
-        SpanUtil.loadSpanBeans(spanBeans, editable);
     }
 
 }
