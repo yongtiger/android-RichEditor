@@ -9,8 +9,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -77,7 +77,9 @@ import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.ParcelableUtil;
+import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
@@ -85,6 +87,7 @@ import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callback, View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
+    public static final String DRAFT_FILE_NAME = "rich_editor_draft_file";
 
     private HashMap<View, Class> mClassMap = new HashMap<>();
 
@@ -93,6 +96,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mRichEditText = richEditText;
         mRichEditText.addTextChangedListener(mRichEditorWatcher);
         mRichEditText.setOnSelectionChanged(this);
+        mRichEditText.setRichEditorToolbar(this);
     }
 
     ///[Preview]
@@ -232,7 +236,6 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         setFlexWrap(FlexWrap.WRAP);
 
         LayoutInflater.from(context).inflate(R.layout.layout_tool_bar, this, true);
-
 
         /* -------------- ///段落span（带参数）：Head --------------- */
         mTextViewHead = (TextView) findViewById(R.id.tv_head);
@@ -409,24 +412,18 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-                final SharedPreferences.Editor editor = sharedPreferences.edit();
-
                 final TextBean textBean = new TextBean();
                 textBean.setText(mRichEditText.getText().toString());
 
                 final ArrayList<SpanBean> spanBeans = new ArrayList<>();
                 for (Class clazz : mClassMap.values()) {
-                    SpanUtil.saveDraft(spanBeans, clazz, mRichEditText.getText());
+                    SpanUtil.addSpanBeans(spanBeans, clazz, mRichEditText.getText(), 0, mRichEditText.getText().length());
                 }
                 textBean.setSpans(spanBeans);
 
                 final byte[] bytes = ParcelableUtil.marshall(textBean);
-                editor.putString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
-                ///注意：commit是同步写，可能会阻塞主线程，因此不建议
-//                editor.commit();
-                editor.apply();
+                PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                 if (checkDraft()) {
                     Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
@@ -439,8 +436,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-                final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+                final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
                 if (TextUtils.isEmpty(draftText)) {
                     return;
                 }
@@ -450,7 +446,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
 
                 final Editable editable = mRichEditText.getText();
                 final List<SpanBean> spanBeans = textBean.getSpans();
-                SpanUtil.restoreDraft(spanBeans, editable);
+                SpanUtil.loadSpanBeans(spanBeans, editable);
 
                 Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
             }
@@ -459,10 +455,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewClearDraft.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-                final SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
+                PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME);
 
                 if (!checkDraft()) {
                     Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
@@ -2178,7 +2171,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         if (end == editable.length()) {
             return null;
         }
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, end, end);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -2306,6 +2299,57 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         } else {
             super.invalidateDrawable(drawable);
         }
+    }
+
+
+    /* --------------- ///[TextContextMenu#Cut/Copy/Paste] --------------- */
+    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
+
+    ///Environment.getDataDirectory() Permission denied
+    ///在/data文件夹进行操作是不被允许的!
+    ///能操作文件夹只有两个地方：
+    ///1.sdcard
+    ///2./data/<package_name>/files/
+    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
+//    private File mDraftFile = new File(Environment.getDataDirectory() + File.separator + DRAFT_FILE_NAME);
+    private File mDraftFile = new File(Environment.getExternalStorageDirectory() + File.separator + DRAFT_FILE_NAME);
+    public File getDraftFile() {
+        return mDraftFile;
+    }
+    public void setDraftFile(File draftFile) {
+        mDraftFile = draftFile;
+    }
+
+    public void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd) {
+        final TextBean textBean = new TextBean();
+        final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
+        textBean.setText(subSequence.toString());
+
+        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+        for (Class clazz : mClassMap.values()) {
+            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+        }
+        textBean.setSpans(spanBeans);
+
+        final byte[] bytes = ParcelableUtil.marshall(textBean);
+
+        FileUtil.writeFile(mDraftFile, Base64.encodeToString(bytes, 0));
+    }
+
+    ///从进程App共享空间恢复spans
+    public void loadSpans(Editable editable) {
+        final String draftText = FileUtil.readFile(mDraftFile);
+        if (TextUtils.isEmpty(draftText)) {
+            return;
+        }
+        final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
+        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
+        //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+        if (!TextUtils.equals(textBean.getText(), editable)) {
+            return;
+        }
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        SpanUtil.loadSpanBeans(spanBeans, editable);
     }
 
 }

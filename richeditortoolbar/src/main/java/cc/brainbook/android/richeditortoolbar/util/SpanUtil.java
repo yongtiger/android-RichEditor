@@ -16,7 +16,7 @@ import java.util.List;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
-public class SpanUtil {
+public abstract class SpanUtil {
 
     public static <T> ArrayList<T> getFilteredSpans(final Editable editable, Class<T> clazz, int start, int end) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
@@ -94,7 +94,7 @@ public class SpanUtil {
     }
 
     /**
-     * 清除掉已经被删除的span，否则将会产生多余的无效span！
+     * 清除区间内的span
      */
     public static <T> void removeSpans(Class<T> clazz, Editable editable, int start, int end) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
@@ -163,8 +163,8 @@ public class SpanUtil {
         return imageSpan;
     }
 
-    public static <T extends Parcelable> void saveDraft(List<SpanBean> spanBeans, Class<T> clazz, Editable editable) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, 0, editable.length());
+    public static <T extends Parcelable> void addSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
         for (T span : spans) {
             ///注意：必须过滤掉没有CREATOR变量的span！
             ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
@@ -173,7 +173,9 @@ public class SpanUtil {
                 final int spanStart = editable.getSpanStart(span);
                 final int spanEnd = editable.getSpanEnd(span);
                 final int spanFlags = editable.getSpanFlags(span);
-                final SpanBean<T> spanBean = new SpanBean<>(span, spanStart, spanEnd, spanFlags);
+                final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
+                final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
+                final SpanBean<T> spanBean = new SpanBean<>(span, adjustSpanStart, adjustSpanEnd, spanFlags);
                 spanBeans.add(spanBean);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
@@ -181,7 +183,7 @@ public class SpanUtil {
         }
     }
 
-    public static <T extends Parcelable> void restoreDraft(List<SpanBean> spanBeans, Editable editable) {
+    public static void loadSpanBeans(List<SpanBean> spanBeans, Editable editable) {
         for (SpanBean spanBean : spanBeans) {
             final int spanStart = spanBean.getSpanStart();
             final int spanEnd = spanBean.getSpanEnd();
@@ -206,5 +208,4 @@ public class SpanUtil {
         }
     }
 
-    private SpanUtil() {}
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.ArrayRes;
 import android.text.TextUtils;
 
-public class StringUtil {
+public abstract class StringUtil {
     public static CharSequence[] getItems(Context context, @ArrayRes int itemsId) {
         return context.getResources().getTextArray(itemsId);
     }
@@ -45,5 +45,4 @@ public class StringUtil {
         return src.startsWith("http://") || src.startsWith("https://");
     }
 
-    private StringUtil() {}
 }

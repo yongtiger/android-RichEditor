@@ -43,4 +43,6 @@
     <string name="message_image_capture_failed">Image capture failed</string>
     <string name="message_image_draw_failed">Image draw failed</string>
 
+    <string name="failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
+
 </resources>

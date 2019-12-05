@@ -9,7 +9,10 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class FileUtil {
+public abstract class FileUtil {
 
     public static String generateImageFileName(String suffix) {
         ///注意：尽量不要用空格、冒号、下划线、减号等特殊字符！
@@ -115,5 +118,43 @@ public class FileUtil {
         }
     }
 
-    private FileUtil() {}
+    public static String readFile(File file) {
+        return readFile(file, 1024);
+    }
+    public static String readFile(File file, int bufferSize) {
+        final StringBuilder contentBuilder = new StringBuilder();
+        try {
+            final FileInputStream fileInputStream = new FileInputStream(file);
+            final BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+
+            final byte[] buffer = new byte[bufferSize];
+            int flag;
+            while ((flag = bufferedInputStream.read(buffer)) != -1) {
+                contentBuilder.append(new String(buffer, 0, flag));
+            }
+
+            bufferedInputStream.close();
+            return contentBuilder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void writeFile(File file, String content) {
+        writeFile(file, content, 0);
+    }
+    public static void writeFile(File file, String content, int bufferSize) {
+        try {
+            final FileOutputStream fileOutputStream = new FileOutputStream(file);
+            final BufferedOutputStream bufferedOutputStream = bufferSize == 0 ?
+                    new BufferedOutputStream(fileOutputStream) : new BufferedOutputStream(fileOutputStream, bufferSize);
+            bufferedOutputStream.write(content.getBytes(),0,content.getBytes().length);
+            bufferedOutputStream.flush();
+            bufferedOutputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
