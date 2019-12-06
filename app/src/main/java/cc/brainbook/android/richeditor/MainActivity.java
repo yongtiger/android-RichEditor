@@ -40,11 +40,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        mRichEditText = findViewById(R.id.et_rich_edit_text);
         mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
+
+        mRichEditText = findViewById(R.id.et_rich_edit_text);
         mRichEditorToolbar.setEditText(mRichEditText);
 
-        ///Preview
+        ///RichEditor中的ImageSpan存放图片文件的目录（缺省为getExternalCacheDir()）
+        final File imageFilePath = getExternalCacheDir();
+        mRichEditorToolbar.setImageFilePath(imageFilePath);
+
+
+        /* ------------- ///[Preview] ------------- */
         mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
 
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
@@ -54,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
 
-        ///RichEditor中的ImageSpan存放图片文件的目录（缺省为getExternalCacheDir()）
-        final File imageFilePath = getExternalCacheDir();
-        mRichEditorToolbar.setImageFilePath(imageFilePath);
     }
 
     @Override

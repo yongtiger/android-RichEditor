@@ -44,5 +44,6 @@
     <string name="message_image_draw_failed">Image draw failed</string>
 
     <string name="failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
+    <string name="please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
 
 </resources>

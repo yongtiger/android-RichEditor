@@ -14,14 +14,10 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.Toast;
 
-import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
-
 public class RichEditText extends AppCompatEditText {
     private OnSelectionChanged mOnSelectionChanged;
-    private RichEditorToolbar mRichEditorToolbar;
-
     public interface OnSelectionChanged {
-        void selectionChanged(int selStart, int selEnd);
+        void selectionChanged(int selectionStart, int selectionEnd);
     }
 
     public RichEditText(Context context) {
@@ -54,12 +50,23 @@ public class RichEditText extends AppCompatEditText {
         mOnSelectionChanged = selectionChanged;
     }
 
-    public void setRichEditorToolbar(RichEditorToolbar richEditorToolbar) {
-        mRichEditorToolbar = richEditorToolbar;
-    }
-
 
     /* --------------- ///[TextContextMenu#Clipboard] --------------- */
+    public interface SaveSpansSelectionCallback {
+        void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd);
+    }
+    interface LoadSpansCallback {
+        void loadSpans(Editable editable);
+    }
+    private SaveSpansSelectionCallback mSaveSpansSelectionCallback;
+    private LoadSpansCallback mLoadSpansCallback;
+    public void setSaveSpansSelectionCallback(SaveSpansSelectionCallback saveSpansSelectionCallback) {
+        mSaveSpansSelectionCallback = saveSpansSelectionCallback;
+    }
+    public void setLoadSpansCallback(LoadSpansCallback loadSpansCallback) {
+        mLoadSpansCallback = loadSpansCallback;
+    }
+
     ///参考TextView#onTextContextMenuItem(int id)
     ///注意：一个App可含有多个RichEditor，多个App的所有RichEditor共享剪切板的存储空间！所以可以实现跨进程复制粘贴
     @Override
@@ -80,9 +87,11 @@ public class RichEditText extends AppCompatEditText {
                 final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
                 if (setPrimaryClip(cutData)) {
 
-                    ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                    ///而且应该保存到进程App共享空间！
-                    SpanUtil.saveSpansSelection(mRichEditorToolbar.getClassMap(), mRichEditorToolbar.getClipboardFile(), getText(), min, max);
+                    if (mSaveSpansSelectionCallback != null) {
+                        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
+                        ///而且应该保存到进程App共享空间！
+                        mSaveSpansSelectionCallback.saveSpansSelection(getText(), min, max);
+                    }
 
                     getText().delete(min, max);
                 } else {
@@ -101,9 +110,11 @@ public class RichEditText extends AppCompatEditText {
                 final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
                 if (setPrimaryClip(copyData)) {
 
-                    ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                    ///而且应该保存到进程App共享空间！
-                    SpanUtil.saveSpansSelection(mRichEditorToolbar.getClassMap(), mRichEditorToolbar.getClipboardFile(), getText(), min, max);
+                    if (mSaveSpansSelectionCallback != null) {
+                        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
+                        ///而且应该保存到进程App共享空间！
+                        mSaveSpansSelectionCallback.saveSpansSelection(getText(), min, max);
+                    }
 
                     ///调整Selection来实现关闭TextContextMenuItem
                     setSelection(min);
@@ -120,6 +131,19 @@ public class RichEditText extends AppCompatEditText {
                 return true;
             case android.R.id.pasteAsPlainText:
                 paste(min, max, false /* withFormatting */);
+                return true;
+
+            case android.R.id.undo:
+                ///屏蔽掉系统Undo/Redo
+                Toast.makeText(getContext(),
+                        R.string.please_try_undo_redo_in_toolbar,
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            case android.R.id.redo:
+                ///屏蔽掉系统Undo/Redo
+                Toast.makeText(getContext(),
+                        R.string.please_try_undo_redo_in_toolbar,
+                        Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 break;
@@ -149,11 +173,12 @@ public class RichEditText extends AppCompatEditText {
                 if (!TextUtils.isEmpty(paste)) {
                     if (!didFirst) {
 
-                        if (withFormatting) {   ///如果为paint text则不执行loadSpans
+                        ///如果为paint text则不执行loadSpans
+                        if (withFormatting && mLoadSpansCallback != null) {
                             //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
 //                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
 //                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            SpanUtil.loadSpans(mRichEditorToolbar.getClipboardFile(), paste);
+                            mLoadSpansCallback.loadSpans(paste);
 //                            }
                         }
 
@@ -171,8 +196,7 @@ public class RichEditText extends AppCompatEditText {
 
     @CheckResult
     private boolean setPrimaryClip(ClipData clip) {
-        ClipboardManager clipboard =
-                (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         try {
             clipboard.setPrimaryClip(clip);
         } catch (Throwable t) {

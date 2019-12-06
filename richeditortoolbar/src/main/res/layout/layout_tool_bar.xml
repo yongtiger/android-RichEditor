@@ -183,4 +183,16 @@
         app:srcCompat="@drawable/ic_clear_draft_black_24dp"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_undo"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_undo_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_redo"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_redo_black_24dp"
+        style="@style/ImageView" />
+
 </merge>

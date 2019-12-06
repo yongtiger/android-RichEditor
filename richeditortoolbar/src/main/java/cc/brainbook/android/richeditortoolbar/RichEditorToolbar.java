@@ -65,6 +65,7 @@ import cc.brainbook.android.richeditortoolbar.builder.LeadingMarginSpanDialogBui
 import cc.brainbook.android.richeditortoolbar.builder.LineDividerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.QuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.URLSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
@@ -82,49 +83,213 @@ import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
+
 //////??????翻屏后，ColorPickerDialog无法显示完全！
-public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callback, View.OnClickListener, View.OnLongClickListener, RichEditText.OnSelectionChanged {
+public class RichEditorToolbar extends FlexboxLayout implements
+        Drawable.Callback, View.OnClickListener, View.OnLongClickListener,
+        RichEditText.OnSelectionChanged,
+        RichEditText.SaveSpansSelectionCallback, RichEditText.LoadSpansCallback {
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
 
-
-    /* --------------- ///[TextContextMenu#Clipboard] --------------- */
-    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
-    ///Environment.getDataDirectory() Permission denied
-    ///在/data文件夹进行操作是不被允许的!
-    ///能操作文件夹只有两个地方：
-    ///1.sdcard
-    ///2./data/<package_name>/files/
-    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
-//    private File mClipboardFile = new File(Environment.getDataDirectory() + File.separator + CLIPBOARD_FILE_NAME);
-    private File mClipboardFile = new File(Environment.getExternalStorageDirectory() + File.separator + CLIPBOARD_FILE_NAME);
-    public File getClipboardFile() {
-        return mClipboardFile;
-    }
-    public void setClipboardFile(File clipboardFile) {
-        mClipboardFile = clipboardFile;
-    }
-
-
     private HashMap<View, Class> mClassMap = new HashMap<>();
-    public HashMap<View, Class> getClassMap() {
-        return mClassMap;
-    }
 
     private RichEditText mRichEditText;
     public void setEditText(RichEditText richEditText) {
         mRichEditText = richEditText;
-        mRichEditText.addTextChangedListener(mRichEditorWatcher);
+        mRichEditText.addTextChangedListener(new RichTextWatcher());
         mRichEditText.setOnSelectionChanged(this);
-        mRichEditText.setRichEditorToolbar(this);
+        mRichEditText.setSaveSpansSelectionCallback(this);
+        mRichEditText.setLoadSpansCallback(this);
     }
 
-    ///[Preview]
+    public RichEditText getRichEditText() {
+        return mRichEditText;
+    }
+
+
+    /* ---------------- ///段落span（带参数）：Head ---------------- */
+    private TextView mTextViewHead;
+
+    /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
+    private ImageView mImageViewQuote;
+    private @ColorInt int mQuoteSpanColor = Color.parseColor("#DDDDDD");
+    private int mQuoteSpanStripWidth = 16;
+    private int mQuoteSpanGapWidth = 40;
+
+    /* ---------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan ---------------- */
+    private ImageView mImageViewAlignNormal;
+    private ImageView mImageViewAlignCenter;
+    private ImageView mImageViewAlignOpposite;
+
+    /* ---------------- ///段落span（带初始化参数）：Bullet ---------------- */
+    private ImageView mImageViewBullet;
+    private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
+    private int mBulletSpanRadius = 16;
+    private int mBulletSpanGapWidth = 40;
+
+    /* ---------------- ///段落span（带初始化参数）：LeadingMargin ---------------- */
+    private ImageView mImageViewLeadingMargin;
+    private int mLeadingMarginSpanIndent = 40;
+
+    /* ---------------- ///段落span：LineDivider ---------------- */
+    private ImageView mImageViewLineDivider;
+    private int mLineDividerSpanMarginTop = 50;
+    private int mLineDividerSpanMarginBottom = 50;
+
+    /* ---------------- ///字符span：Bold、Italic ---------------- */
+    private ImageView mImageViewBold;
+    private ImageView mImageViewItalic;
+
+    /* ---------------- ///字符span：Underline、StrikeThrough、Subscript、Superscript ---------------- */
+    private ImageView mImageViewUnderline;
+    private ImageView mImageViewStrikeThrough;
+    private ImageView mImageViewSubscript;
+    private ImageView mImageViewSuperscript;
+
+    /* ---------------- ///字符span（带参数）：Code ---------------- */
+    private ImageView mImageViewCode;
+
+    /* ---------------- ///字符span（带参数）：ForegroundColor、BackgroundColor ---------------- */
+    private ImageView mImageViewForegroundColor;
+    private ImageView mImageViewBackgroundColor;
+
+    /* ---------------- ///字符span（带参数）：TypefaceFamily ---------------- */
+    private TextView mTextViewTypefaceFamily;
+
+    /* ---------------- ///字符span（带参数）：AbsoluteSize ---------------- */
+    private TextView mTextViewAbsoluteSize;
+
+    /* ---------------- ///字符span（带参数）：RelativeSize ---------------- */
+    private TextView mTextViewRelativeSize;
+
+    /* ---------------- ///字符span（带参数）：ScaleX ---------------- */
+    private TextView mTextViewScaleX;
+
+    /* ---------------- ///字符span（带参数）：URL ---------------- */
+    private ImageView mImageViewURL;
+
+    /* ---------------- ///字符span（带参数）：Image ---------------- */
+    private ImageView mImageViewImage;
+    private CustomImageSpan imagePlaceholderSpan = null;///避免产生重复span！
+    private ImageSpanDialogBuilder imageSpanDialogBuilder;
+
+    private File mImageFilePath;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
+    public void setImageFilePath(File imageFilePath) {
+        mImageFilePath = imageFilePath;
+    }
+    private int mImageOverrideWidth = 1000;
+    private int mImageOverrideHeight = 1000;
+    public void setImageOverrideWidth(int imageOverrideWidth) {
+        mImageOverrideWidth = imageOverrideWidth;
+    }
+    public void setImageOverrideHeight(int imageOverrideHeight) {
+        mImageOverrideHeight = imageOverrideHeight;
+    }
+
+    ///[ImageSpan#ImageSpanDialogBuilder#onActivityResult()]
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (imageSpanDialogBuilder != null) {
+            imageSpanDialogBuilder.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    ///[ImageSpan#Glide#loadImage()]
+    private void loadImage(final Editable editable,
+                           final String viewTagSrc,
+                           final int viewTagWidth,
+                           final int viewTagHeight,
+                           final int viewTagAlign,
+                           final int start, final int end) {
+        ///Glide下载图片（使用已经缓存的图片）给imageView
+        ///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
+        //////??????placeholer（占位符）、error（错误符）、fallback（后备回调符）
+        final RequestOptions options = new RequestOptions()
+                .placeholder(R.drawable.ic_image_black_24dp); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
+        Glide.with(getContext())
+                .load(viewTagSrc)
+                .apply(options)
+                .override(mImageOverrideWidth, mImageOverrideHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
+//                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+                .into(new CustomTarget<Drawable>() {
+                    @Override
+                    public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
+                        if (placeholder != null) {
+                            ///注意：Drawable必须设置Bounds才能显示
+                            placeholder.setBounds(0, 0, viewTagWidth, viewTagHeight);
+                            imagePlaceholderSpan = new CustomImageSpan(placeholder, viewTagSrc, viewTagAlign);///避免产生重复span！
+                            editable.setSpan(imagePlaceholderSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                    }
+
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        ///避免产生重复span！
+                        if (imagePlaceholderSpan != null) {
+                            editable.removeSpan(imagePlaceholderSpan);
+                        }
+
+                        ///注意：Drawable必须设置Bounds才能显示
+                        resource.setBounds(0, 0, viewTagWidth, viewTagHeight);
+                        editable.setSpan(new CustomImageSpan(resource, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                        ///[ImageSpan#Glide#GifDrawable]
+                        ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
+                        if (resource instanceof GifDrawable) {
+                            ((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
+                            ((GifDrawable) resource).start();
+
+                            ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
+                            ///https://github.com/koral--/android-gif-drawable/issues/516
+                            resource.setCallback(RichEditorToolbar.this);
+                        }
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {}
+                });
+    }
+
+    ///[ImageSpan#Glide#GifDrawable]
+    ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
+    @Override
+    public void invalidateDrawable(@NonNull Drawable drawable) {
+        final Editable editable = mRichEditText.getText();
+
+        ///注意：实测此方法不闪烁！
+        ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
+        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(editable, drawable);
+        if (imageSpan != null) {
+            if (!TextUtils.isEmpty(editable)) {
+                final int spanStart = editable.getSpanStart(imageSpan);
+                final int spanEnd = editable.getSpanEnd(imageSpan);
+                final int spanFlags = editable.getSpanFlags(imageSpan);
+
+                ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
+//                editable.removeSpan(imageSpan);
+                editable.setSpan(imageSpan, spanStart, spanEnd, spanFlags);
+
+                if (!TextUtils.isEmpty(mTextViewPreviewText.getText())) {
+//                    mTextViewPreviewText.invalidateDrawable(drawable);//////??????无效！
+                    mTextViewPreviewText.invalidate();
+                }
+            }
+        } else {
+            super.invalidateDrawable(drawable);
+        }
+    }
+
+    /* ---------------- ///[Preview] ---------------- */
+    private ImageView mImageViewPreview;
+
     private TextView mTextViewPreviewText;
     public void setPreviewText(TextView textView) {
         mTextViewPreviewText = textView;
     }
+
     private boolean enableSelectionChange = true;
     private void updatePreview() {
         if (mTextViewPreviewText.getVisibility() == VISIBLE) {
@@ -136,35 +301,62 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         }
     }
 
-    private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
-    private int mBulletSpanRadius = 16;
-    private int mBulletSpanGapWidth = 40;
+    /* ---------------- ///[清除样式] ---------------- */
+    private ImageView mImageViewClearSpans;
 
-    private int mLeadingMarginSpanIndent = 40;
+    /* ---------------- ///[草稿Draft] ---------------- */
+    private ImageView mImageViewSaveDraft;
+    private ImageView mImageViewRestoreDraft;
+    private ImageView mImageViewClearDraft;
 
-    private int mLineDividerSpanMarginTop = 50;
-    private int mLineDividerSpanMarginBottom = 50;
-
-    private @ColorInt int mQuoteSpanColor = Color.parseColor("#DDDDDD");
-    private int mQuoteSpanStripWidth = 16;
-    private int mQuoteSpanGapWidth = 40;
-
-    ///[ImageSpan]
-    private CustomImageSpan imagePlaceholderSpan = null;///避免产生重复span！
-    private ImageSpanDialogBuilder imageSpanDialogBuilder;
-    private File mImageFilePath;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
-    public void setImageFilePath(File imageFilePath) {
-        mImageFilePath = imageFilePath;
+    private boolean checkDraft() {
+        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+        final boolean hasDraft = !TextUtils.isEmpty(draftText);
+        mImageViewRestoreDraft.setEnabled(hasDraft);
+        mImageViewRestoreDraft.setSelected(hasDraft);
+        mImageViewClearDraft.setEnabled(hasDraft);
+        return hasDraft;
     }
 
-    private int mImageOverrideWidth = 1000;
-    private int mImageOverrideHeight = 1000;
-    public void setImageOverrideWidth(int mImageOverrideWidth) {
-        this.mImageOverrideWidth = mImageOverrideWidth;
+    /* ---------------- ///[TextContextMenu#Clipboard] ---------------- */
+    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
+    ///Environment.getDataDirectory() Permission denied
+    ///在/data文件夹进行操作是不被允许的!
+    ///能操作文件夹只有两个地方：
+    ///1.sdcard
+    ///2./data/<package_name>/files/
+    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
+//    private File mClipboardFile = new File(Environment.getDataDirectory() + File.separator + CLIPBOARD_FILE_NAME);
+    private File mClipboardFile = new File(Environment.getExternalStorageDirectory() + File.separator + CLIPBOARD_FILE_NAME);
+
+    @Override
+    public void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd) {
+        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
+        ///而且应该保存到进程App共享空间！
+        SpanUtil.saveSpansSelection(mClassMap, mClipboardFile, editable, selectionStart, selectionEnd);
     }
-    public void setImageOverrideHeight(int mImageOverrideHeight) {
-        this.mImageOverrideHeight = mImageOverrideHeight;
+
+    @Override
+    public void loadSpans(Editable editable) {
+        SpanUtil.loadSpans(mClipboardFile, editable);
     }
+
+    /* ---------------- ///[Undo/Redo] ---------------- */
+    private ImageView mImageViewUndo;
+    private ImageView mImageViewRedo;
+    private UndoRedoHelper mUndoRedoHelper = new UndoRedoHelper(this);
+
+    /**
+     * Is undo/redo being performed? This member signals if an undo/redo
+     * operation is currently being performed. Changes in the text during
+     * undo/redo are not recorded because it would mess up the undo history.
+     */
+    public boolean mIsUndoOrRedo = false;
+
+    /* ------------------------------------------------ */
+    ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
+    private Context mContext;
 
     public RichEditorToolbar(Context context) {
         super(context);
@@ -181,95 +373,25 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         init(context);
     }
 
-    ///段落span（带参数）：Head
-    private TextView mTextViewHead;
-
-    ///段落span（带初始化参数）：Quote
-    private ImageView mImageViewQuote;
-
-    ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
-    private ImageView mImageViewAlignNormal;
-    private ImageView mImageViewAlignCenter;
-    private ImageView mImageViewAlignOpposite;
-
-    ///段落span（带初始化参数）：Bullet
-    private ImageView mImageViewBullet;
-
-    ///段落span（带初始化参数）：LeadingMargin
-    private ImageView mImageViewLeadingMargin;
-
-    ///段落span：LineDivider
-    private ImageView mImageViewLineDivider;
-
-    ///字符span：Bold、Italic
-    private ImageView mImageViewBold;
-    private ImageView mImageViewItalic;
-
-    ///字符span：Underline、StrikeThrough、Subscript、Superscript
-    private ImageView mImageViewUnderline;
-    private ImageView mImageViewStrikeThrough;
-    private ImageView mImageViewSubscript;
-    private ImageView mImageViewSuperscript;
-
-    ///字符span（带参数）：Code
-    private ImageView mImageViewCode;
-
-    ///字符span（带参数）：ForegroundColor、BackgroundColor
-    private ImageView mImageViewForegroundColor;
-    private ImageView mImageViewBackgroundColor;
-
-    ///字符span（带参数）：TypefaceFamily
-    private TextView mTextViewTypefaceFamily;
-
-    ///字符span（带参数）：AbsoluteSize
-    private TextView mTextViewAbsoluteSize;
-
-    ///字符span（带参数）：RelativeSize
-    private TextView mTextViewRelativeSize;
-
-    ///字符span（带参数）：ScaleX
-    private TextView mTextViewScaleX;
-
-    ///字符span（带参数）：URL
-    private ImageView mImageViewURL;
-
-    ///字符span（带参数）：Image
-    private ImageView mImageViewImage;
-
-    ///[Preview]
-    private ImageView mImageViewPreview;
-
-    ///清除样式
-    private ImageView mImageViewClearSpans;
-
-    ///[草稿Draft]
-    private ImageView mImageViewSaveDraft;
-    private ImageView mImageViewRestoreDraft;
-    private ImageView mImageViewClearDraft;
-
-    ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
-    private Context mContext;
-
-    private void init(Context context) {
+    public void init(Context context) {
         mContext = context;
 
-        setFlexDirection(FlexDirection.ROW);
+         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
-        LayoutInflater.from(context).inflate(R.layout.layout_tool_bar, this, true);
+        LayoutInflater.from(mContext).inflate(R.layout.layout_tool_bar, this, true);
+
 
         /* -------------- ///段落span（带参数）：Head --------------- */
         mTextViewHead = (TextView) findViewById(R.id.tv_head);
         mTextViewHead.setOnClickListener(this);
         mClassMap.put(mTextViewHead, HeadSpan.class);
 
-
         /* -------------- ///段落span（带初始化参数）：Quote --------------- */
         mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
         mImageViewQuote.setOnClickListener(this);
         mImageViewQuote.setOnLongClickListener(this);
         mClassMap.put(mImageViewQuote, CustomQuoteSpan.class);
-
 
         /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
         mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
@@ -284,13 +406,11 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewAlignOpposite.setOnClickListener(this);
         mClassMap.put(mImageViewAlignOpposite, AlignOppositeSpan.class);
 
-
         /* -------------- ///段落span（带初始化参数）：Bullet --------------- */
         mImageViewBullet = (ImageView) findViewById(R.id.iv_bullet);
         mImageViewBullet.setOnClickListener(this);
         mImageViewBullet.setOnLongClickListener(this);
         mClassMap.put(mImageViewBullet, CustomBulletSpan.class);
-
 
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
         mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
@@ -298,13 +418,11 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewLeadingMargin.setOnLongClickListener(this);
         mClassMap.put(mImageViewLeadingMargin, LeadingMarginSpan.Standard.class);
 
-
         /* -------------- ///段落span：LineDivider --------------- */
         mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
         mImageViewLineDivider.setOnClickListener(this);
         mImageViewLineDivider.setOnLongClickListener(this);
         mClassMap.put(mImageViewLineDivider, LineDividerSpan.class);
-
 
         /* -------------- ///字符span：Bold、Italic --------------- */
         mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
@@ -314,7 +432,6 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewItalic = (ImageView) findViewById(R.id.iv_italic);
         mImageViewItalic.setOnClickListener(this);
         mClassMap.put(mImageViewItalic, ItalicSpan.class);
-
 
         /* ------------ ///字符span：Underline、StrikeThrough、Subscript、Superscript ------------ */
         mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline);
@@ -333,12 +450,10 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewSubscript.setOnClickListener(this);
         mClassMap.put(mImageViewSubscript, SubscriptSpan.class);
 
-
         /* -------------- ///字符span（带参数）：Code --------------- */
         mImageViewCode = (ImageView) findViewById(R.id.iv_code);
         mImageViewCode.setOnClickListener(this);
         mClassMap.put(mImageViewCode, CodeSpan.class);
-
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
@@ -349,42 +464,35 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
         mImageViewBackgroundColor.setOnClickListener(this);
         mClassMap.put(mImageViewBackgroundColor, BackgroundColorSpan.class);
 
-
         /* -------------- ///字符span（带参数）：TypefaceFamily --------------- */
         mTextViewTypefaceFamily = (TextView) findViewById(R.id.tv_typeface_family);
         mTextViewTypefaceFamily.setOnClickListener(this);
         mClassMap.put(mTextViewTypefaceFamily, TypefaceSpan.class);
-
 
         /* -------------- ///字符span（带参数）：AbsoluteSize --------------- */
         mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size);
         mTextViewAbsoluteSize.setOnClickListener(this);
         mClassMap.put(mTextViewAbsoluteSize, AbsoluteSizeSpan.class);
 
-
         /* -------------- ///字符span（带参数）：RelativeSize --------------- */
         mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size);
         mTextViewRelativeSize.setOnClickListener(this);
         mClassMap.put(mTextViewRelativeSize, RelativeSizeSpan.class);
-
 
         /* -------------- ///字符span（带参数）：ScaleX --------------- */
         mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x);
         mTextViewScaleX.setOnClickListener(this);
         mClassMap.put(mTextViewScaleX, ScaleXSpan.class);
 
-
         /* -------------- ///字符span（带参数）：URL --------------- */
         mImageViewURL = (ImageView) findViewById(R.id.iv_url);
         mImageViewURL.setOnClickListener(this);
         mClassMap.put(mImageViewURL, URLSpan.class);
 
-
         /* -------------- ///字符span（带参数）：Image --------------- */
         mImageViewImage = (ImageView) findViewById(R.id.iv_image);
         mImageViewImage.setOnClickListener(this);
         mClassMap.put(mImageViewImage, CustomImageSpan.class);
-
 
         /* -------------- ///[Preview] --------------- */
         mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
@@ -405,14 +513,12 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
             }
         });
 
-
-        /* -------------- ///清除样式 --------------- */
+        /* -------------- ///[清除样式] --------------- */
         mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
         mImageViewClearSpans.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Editable editable = mRichEditText.getText();
-
                 //        final int selectionStart = mRichEditText.getSelectionStart();
                 //        final int selectionEnd = mRichEditText.getSelectionEnd();
                 final int selectionStart = Selection.getSelectionStart(editable);
@@ -428,7 +534,6 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 updatePreview();
             }
         });
-
 
         /* -------------- ///[草稿Draft] --------------- */
         mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft);
@@ -457,6 +562,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 }
             }
         });
+
         mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft);
         mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
             @Override
@@ -476,6 +582,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
             }
         });
+
         mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft);
         mImageViewClearDraft.setOnClickListener(new OnClickListener() {
             @Override
@@ -489,21 +596,27 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 }
             }
         });
+
         ///初始化时检查有无草稿Draft
         if (checkDraft()) {
             Toast.makeText(mContext.getApplicationContext(), R.string.has_draft, Toast.LENGTH_SHORT).show();
         }
-    }
 
-    ///[草稿Draft]
-    private boolean checkDraft() {
-        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
-        final boolean hasDraft = !TextUtils.isEmpty(draftText);
-        mImageViewRestoreDraft.setEnabled(hasDraft);
-        mImageViewRestoreDraft.setSelected(hasDraft);
-        mImageViewClearDraft.setEnabled(hasDraft);
-        return hasDraft;
+        /* ------------------- ///[Undo/Redo] ------------------- */
+        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo);
+        mImageViewUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mUndoRedoHelper.undo();
+            }
+        });
+        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo);
+        mImageViewRedo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mUndoRedoHelper.redo();
+            }
+        });
     }
 
     private boolean isParagraphStyle(View view) {
@@ -1674,7 +1787,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
             }
 
             ///test
-            SpanUtil.testOutput(editable, mClassMap.get(view));
+            if (DEBUG) SpanUtil.testOutput(editable, mClassMap.get(view));
         }
     }
 
@@ -1752,9 +1865,18 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
     /* ----------------- ///[TextWatcher] ------------------ */
     ///注意：语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或回车分割）
     ///解决方法：android:inputType="textVisiblePassword"
-    private TextWatcher mRichEditorWatcher = new TextWatcher() {
+    private final class RichTextWatcher implements TextWatcher {
+        ///[Undo/Redo]
+        private CharSequence mBeforeChange;
+        private CharSequence mAfterChange;
+
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            ///[Undo/Redo]
+            if (mIsUndoOrRedo) {
+                return;
+            }
+
             if (count > 0) {    ///[TextWatcher#删除]
                 for (View view : mClassMap.keySet()) {
                     if (isCharacterStyle(view)) {
@@ -1763,10 +1885,18 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                     }
                 }
             }
+
+            ///[Undo/Redo]
+            mBeforeChange = s.subSequence(start, start + count);
         }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            ///[Undo/Redo]
+            if (mIsUndoOrRedo) {
+                return;
+            }
+
             final Editable editable = mRichEditText.getText();
 
             final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
@@ -1798,6 +1928,10 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                     }
                 }
             }
+
+            ///[Undo/Redo]
+            mAfterChange = s.subSequence(start, start + count);
+            mUndoRedoHelper.addHistory(start, mBeforeChange, mAfterChange);
         }
 
         @Override
@@ -1821,7 +1955,7 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
             ///[Preview]
             updatePreview();
         }
-    };
+    }
 
     private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end,
                                                int firstParagraphStart, int firstParagraphEnd,
@@ -2242,98 +2376,6 @@ public class RichEditorToolbar extends FlexboxLayout implements Drawable.Callbac
                 }
                 updateCharacterStyleView(view, mClassMap.get(view), editable, selectionStart, selectionEnd);
             }
-        }
-    }
-
-    ///[ImageSpan#ImageSpanDialogBuilder#onActivityResult()]
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (imageSpanDialogBuilder != null) {
-            imageSpanDialogBuilder.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-    ///[ImageSpan#Glide#loadImage()]
-    private void loadImage(final Editable editable,
-                     final String viewTagSrc,
-                     final int viewTagWidth,
-                     final int viewTagHeight,
-                     final int viewTagAlign,
-                     final int start, final int end) {
-        ///Glide下载图片（使用已经缓存的图片）给imageView
-        ///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-        //////??????placeholer（占位符）、error（错误符）、fallback（后备回调符）
-        final RequestOptions options = new RequestOptions()
-                .placeholder(R.drawable.ic_image_black_24dp); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
-        Glide.with(getContext())
-                .load(viewTagSrc)
-                .apply(options)
-                .override(mImageOverrideWidth, mImageOverrideHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
-//                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
-                .into(new CustomTarget<Drawable>() {
-                    @Override
-                    public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
-                        if (placeholder != null) {
-                            ///注意：Drawable必须设置Bounds才能显示
-                            placeholder.setBounds(0, 0, viewTagWidth, viewTagHeight);
-                            imagePlaceholderSpan = new CustomImageSpan(placeholder, viewTagSrc, viewTagAlign);///避免产生重复span！
-                            editable.setSpan(imagePlaceholderSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        }
-                    }
-
-                    @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        ///避免产生重复span！
-                        if (imagePlaceholderSpan != null) {
-                            editable.removeSpan(imagePlaceholderSpan);
-                        }
-
-                        ///注意：Drawable必须设置Bounds才能显示
-                        resource.setBounds(0, 0, viewTagWidth, viewTagHeight);
-                        editable.setSpan(new CustomImageSpan(resource, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        ///[ImageSpan#Glide#GifDrawable]
-                        ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
-                        if (resource instanceof GifDrawable) {
-                            ((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
-                            ((GifDrawable) resource).start();
-
-                            ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
-                            ///https://github.com/koral--/android-gif-drawable/issues/516
-                            resource.setCallback(RichEditorToolbar.this);
-                        }
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {}
-                });
-    }
-
-    ///[ImageSpan#Glide#GifDrawable]
-    ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
-    @Override
-    public void invalidateDrawable(@NonNull Drawable drawable) {
-        final Editable editable = mRichEditText.getText();
-
-        ///注意：实测此方法不闪烁！
-        ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
-        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(editable, drawable);
-        if (imageSpan != null) {
-            if (!TextUtils.isEmpty(editable)) {
-                final int spanStart = editable.getSpanStart(imageSpan);
-                final int spanEnd = editable.getSpanEnd(imageSpan);
-                final int spanFlags = editable.getSpanFlags(imageSpan);
-
-                ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
-//                editable.removeSpan(imageSpan);
-                editable.setSpan(imageSpan, spanStart, spanEnd, spanFlags);
-
-                if (!TextUtils.isEmpty(mTextViewPreviewText.getText())) {
-//                    mTextViewPreviewText.invalidateDrawable(drawable);//////??????无效！
-                    mTextViewPreviewText.invalidate();
-                }
-            }
-        } else {
-            super.invalidateDrawable(drawable);
         }
     }
 
