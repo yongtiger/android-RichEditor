@@ -195,4 +195,10 @@
         app:srcCompat="@drawable/ic_redo_black_24dp"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_save"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_save_black_24dp"
+        style="@style/ImageView" />
+
 </merge>

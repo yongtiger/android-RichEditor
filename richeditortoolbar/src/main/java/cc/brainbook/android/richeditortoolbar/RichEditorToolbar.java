@@ -89,7 +89,8 @@ import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 public class RichEditorToolbar extends FlexboxLayout implements
         Drawable.Callback, View.OnClickListener, View.OnLongClickListener,
         RichEditText.OnSelectionChanged,
-        RichEditText.SaveSpansSelectionCallback, RichEditText.LoadSpansCallback {
+        RichEditText.SaveSpansSelectionCallback, RichEditText.LoadSpansCallback,
+        UndoRedoHelper.OnPositionChangedListener {
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
@@ -345,14 +346,24 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ---------------- ///[Undo/Redo] ---------------- */
     private ImageView mImageViewUndo;
     private ImageView mImageViewRedo;
+    private ImageView mImageViewSave;
     private UndoRedoHelper mUndoRedoHelper = new UndoRedoHelper(this);
+    @Override
+    public void onPositionChangedListener(int position, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition) {
+        mImageViewUndo.setSelected(isCanUndo);
+        mImageViewUndo.setEnabled(isCanUndo);
+        mImageViewRedo.setSelected(isCanRedo);
+        mImageViewRedo.setEnabled(isCanRedo);
+        mImageViewSave.setSelected(!isSavedPosition);
+        mImageViewSave.setEnabled(!isSavedPosition);
+    }
 
     /**
      * Is undo/redo being performed? This member signals if an undo/redo
      * operation is currently being performed. Changes in the text during
      * undo/redo are not recorded because it would mess up the undo history.
      */
-    public boolean mIsUndoOrRedo = false;
+    public boolean isUndoOrRedo = false;
 
     /* ------------------------------------------------ */
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
@@ -617,6 +628,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.redo();
             }
         });
+        mImageViewSave = (ImageView) findViewById(R.id.iv_save);
+        mImageViewSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mUndoRedoHelper.setSavedPosition();
+                mImageViewSave.setSelected(false);
+                mImageViewSave.setEnabled(false);
+            }
+        });
+
+        ///初始化时设置Undo/Redo各按钮的状态
+        mUndoRedoHelper.clearHistory();
     }
 
     private boolean isParagraphStyle(View view) {
@@ -1770,7 +1793,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         Log.d("TAG", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
 
         ///[enableSelectionChange]禁止onSelectionChanged()
-        if (!enableSelectionChange) {
+        ///[Undo/Redo]
+        if (!enableSelectionChange || isUndoOrRedo) {
             return;
         }
 
@@ -1867,13 +1891,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     ///解决方法：android:inputType="textVisiblePassword"
     private final class RichTextWatcher implements TextWatcher {
         ///[Undo/Redo]
+        private int mStart;
         private CharSequence mBeforeChange;
         private CharSequence mAfterChange;
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             ///[Undo/Redo]
-            if (mIsUndoOrRedo) {
+            if (isUndoOrRedo) {
                 return;
             }
 
@@ -1893,7 +1918,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             ///[Undo/Redo]
-            if (mIsUndoOrRedo) {
+            if (isUndoOrRedo) {
                 return;
             }
 
@@ -1931,11 +1956,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             ///[Undo/Redo]
             mAfterChange = s.subSequence(start, start + count);
-            mUndoRedoHelper.addHistory(start, mBeforeChange, mAfterChange);
+            mStart = start;
         }
 
         @Override
         public void afterTextChanged(Editable s) {
+            ///[Undo/Redo]
+            if (isUndoOrRedo) {
+                return;
+            }
+
             ///消除EditText输入时自动产生UnderlineSpan
             ///https://stackoverflow.com/questions/35323111/android-edittext-is-underlined-when-typing
             ///https://stackoverflow.com/questions/46822580/edittext-remove-black-underline-while-typing/47704299#47704299
@@ -1954,6 +1984,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             ///[Preview]
             updatePreview();
+
+            ///[Undo/Redo]
+            mUndoRedoHelper.addHistory(UndoRedoHelper.TEXT_CHANGED_ACTION, mStart, mBeforeChange, mAfterChange);
         }
     }
 

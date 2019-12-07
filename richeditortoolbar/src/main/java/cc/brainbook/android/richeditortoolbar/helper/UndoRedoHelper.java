@@ -4,33 +4,62 @@ import java.util.LinkedList;
 
 import android.text.Editable;
 import android.text.Selection;
-import android.text.TextWatcher;
-import android.text.style.UnderlineSpan;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
+    public static final int TEXT_CHANGED_ACTION = 0;
 
     private RichEditorToolbar mRichEditorToolbar;
-
     private History mHistory;
 
-    // =================================================================== //
+    ///[SavedPosition]
+    public interface OnPositionChangedListener {
+        void onPositionChangedListener(int position, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition);
+    }
+    private OnPositionChangedListener mOnPositionChangedListener;
+    private void onPositionChanged() {
+        if (mOnPositionChangedListener != null) {
+            mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, isCanUndo(), isCanRedo(), isSavedPosition());
+        }
+    }
+
+    ///设置保存的位置
+    public void setSavedPosition() {
+        mHistory.mSavedPosition = mHistory.mPosition;
+    }
+
+    public boolean isSavedPosition() {
+        return mHistory.mSavedPosition == mHistory.mPosition;
+    }
+
+    ///Label
+    private String getLabel(int id) {
+        switch (id) {
+            case TEXT_CHANGED_ACTION:
+                return "Text changed";
+
+            /// others
+
+            default:
+                return null;
+        }
+    }
+
 
     public UndoRedoHelper(RichEditorToolbar richEditorToolbar) {
         mRichEditorToolbar = richEditorToolbar;
+        mOnPositionChangedListener = richEditorToolbar;
         mHistory = new History();
     }
 
-    // =================================================================== //
-
     /**
-     * Set the maximum history size. If size is negative, then history size is
+     * Set the history size. If size is negative, then history size is
      * only limited by the device memory.
      */
     public void setHistorySize(int historySize) {
-        mHistory.setHistorySize(historySize);
+        mHistory.setSize(historySize);
     }
 
     /**
@@ -38,78 +67,78 @@ public class UndoRedoHelper {
      */
     public void clearHistory() {
         mHistory.clear();
+
+        ///[SavedPosition]
+        onPositionChanged();
     }
 
-    public void addHistory(int start, CharSequence beforeChange, CharSequence afterChange) {
-        mHistory.add(new EditItem(start, beforeChange, afterChange));
+    public void addHistory(int id, int start, CharSequence beforeChange, CharSequence afterChange) {
+        mHistory.add(new Action(id, start, beforeChange, afterChange));
+
+        ///[SavedPosition]
+        onPositionChanged();
     }
 
     /**
      * Can undo be performed?
      */
-    public boolean getCanUndo() {
-        return (mHistory.mmPosition > 0);
+    public boolean isCanUndo() {
+        return (mHistory.mPosition > 0);
     }
 
     /**
      * Perform undo.
      */
     public void undo() {
-        EditItem edit = mHistory.getPrevious();
-        if (edit == null) {
+        final Action action = mHistory.previous();
+        if (action == null) {
             return;
         }
 
-        Editable editable = mRichEditorToolbar.getRichEditText().getText();
-        int start = edit.mmStart;
-        int end = start + (edit.mmAfter != null ? edit.mmAfter.length() : 0);
+        final Editable editable = mRichEditorToolbar.getRichEditText().getText();
+        final int start = action.mStart;
+        final int end = start + (action.mAfter != null ? action.mAfter.length() : 0);
 
-        mRichEditorToolbar.mIsUndoOrRedo = true;
-        editable.replace(start, end, edit.mmBefore);
-        mRichEditorToolbar.mIsUndoOrRedo = false;
+        mRichEditorToolbar.isUndoOrRedo = true;
+        editable.replace(start, end, action.mBefore);
+        mRichEditorToolbar.isUndoOrRedo = false;
 
-//        // This will get rid of underlines inserted when editor tries to come
-//        // up with a suggestion.
-//        for (Object o : editable.getSpans(0, editable.length(), UnderlineSpan.class)) {
-//            editable.removeSpan(o);
-//        }
+        Selection.setSelection(editable, action.mBefore == null ? start
+                : (start + action.mBefore.length()));
 
-        Selection.setSelection(editable, edit.mmBefore == null ? start
-                : (start + edit.mmBefore.length()));
+        ///[SavedPosition]
+        onPositionChanged();
     }
 
     /**
      * Can redo be performed?
      */
-    public boolean getCanRedo() {
-        return (mHistory.mmPosition < mHistory.mmHistory.size());
+    public boolean isCanRedo() {
+        return (mHistory.mPosition < mHistory.mHistory.size());
     }
 
     /**
      * Perform redo.
      */
     public void redo() {
-        EditItem edit = mHistory.getNext();
-        if (edit == null) {
+        final Action action = mHistory.next();
+        if (action == null) {
             return;
         }
 
-        Editable editable = mRichEditorToolbar.getRichEditText().getText();
-        int start = edit.mmStart;
-        int end = start + (edit.mmBefore != null ? edit.mmBefore.length() : 0);
+        final Editable editable = mRichEditorToolbar.getRichEditText().getText();
+        final int start = action.mStart;
+        final int end = start + (action.mBefore != null ? action.mBefore.length() : 0);
 
-        mRichEditorToolbar.mIsUndoOrRedo = true;
-        editable.replace(start, end, edit.mmAfter);
-        mRichEditorToolbar.mIsUndoOrRedo = false;
+        mRichEditorToolbar.isUndoOrRedo = true;
+        editable.replace(start, end, action.mAfter);
+        mRichEditorToolbar.isUndoOrRedo = false;
 
-//        // This will get rid of underlines inserted when editor tries to come
-//        // up with a suggestion.
-//        for (Object o : editable.getSpans(0, editable.length(), UnderlineSpan.class)) {
-//            editable.removeSpan(o);
-//        }
+        Selection.setSelection(editable, action.mAfter == null ? start
+                : (start + action.mAfter.length()));
 
-        Selection.setSelection(editable, edit.mmAfter == null ? start
-                : (start + edit.mmAfter.length()));
+        ///[SavedPosition]
+        onPositionChanged();
     }
 
     // =================================================================== //
@@ -118,117 +147,121 @@ public class UndoRedoHelper {
      * Keeps track of all the edit history of a text.
      */
     private final class History {
+        /**
+         * The position from which an Action will be retrieved when next()
+         * is called. If previous() has not been called, this has the same
+         * value as mHistory.size().
+         */
+        private int mPosition = 0;
+
+        ///[SavedPosition]保存的位置（可用于提示disable编辑器的save按钮）
+        private int mSavedPosition = 0;
 
         /**
-         * The position from which an EditItem will be retrieved when getNext()
-         * is called. If getPrevious() has not been called, this has the same
-         * value as mmHistory.size().
+         * history size.
          */
-        private int mmPosition = 0;
-
-        /**
-         * Maximum undo history size.
-         */
-        private int mmMaxHistorySize = -1;
+        private int mSize = -1;
 
         /**
          * The list of edits in chronological order.
          */
-        private final LinkedList<EditItem> mmHistory = new LinkedList<EditItem>();
+        private final LinkedList<Action> mHistory = new LinkedList<Action>();
+
+        /**
+         * Traverses the history backward by one position, returns and item at that position.
+         */
+        private Action previous() {
+            if (mPosition == 0) {
+                return null;
+            }
+            mPosition--;
+            return mHistory.get(mPosition);
+        }
+
+        /**
+         * Traverses the history forward by one position, returns and item at that position.
+         */
+        private Action next() {
+            if (mPosition >= mHistory.size()) {
+                return null;
+            }
+
+            final Action item = mHistory.get(mPosition);
+            mPosition++;
+            return item;
+        }
 
         /**
          * Clear history.
          */
         private void clear() {
-            mmPosition = 0;
-            mmHistory.clear();
+            mSavedPosition = mPosition == mSavedPosition ? 0 : -1;   ///[SavedPosition]
+            mPosition = 0;
+            mHistory.clear();
         }
 
         /**
-         * Adds a new edit operation to the history at the current position. If
-         * executed after a call to getPrevious() removes all the future history
+         * Adds a new edit operation to the history at the current position.
+         * If executed after a call to previous() removes all the future history
          * (elements with positions >= current history position).
          */
-        private void add(EditItem item) {
-            while (mmHistory.size() > mmPosition) {
-                mmHistory.removeLast();
+        private void add(Action action) {
+            while (mHistory.size() > mPosition) {
+                mHistory.removeLast();
             }
-            mmHistory.add(item);
-            mmPosition++;
+            mHistory.add(action);
+            mPosition++;
 
-            if (mmMaxHistorySize >= 0) {
-                trimHistory();
+            if (mSize >= 0) {
+                trim();
             }
         }
 
         /**
-         * Set the maximum history size. If size is negative, then history size
+         * Set the history size. If size is negative, then history size
          * is only limited by the device memory.
          */
-        private void setHistorySize(int historySize) {
-            mmMaxHistorySize = historySize;
-            if (mmMaxHistorySize >= 0) {
-                trimHistory();
+        private void setSize(int historySize) {
+            mSize = historySize;
+            if (mSize >= 0) {
+                trim();
             }
         }
 
         /**
-         * Trim history when it exceeds max history size.
+         * Trim history when it exceeds history size.
          */
-        private void trimHistory() {
-            while (mmHistory.size() > mmMaxHistorySize) {
-                mmHistory.removeFirst();
-                mmPosition--;
+        private void trim() {
+            while (mHistory.size() > mSize) {
+                mHistory.removeFirst();
+                mPosition--;
+                mSavedPosition--;   ///[SavedPosition]
             }
 
-            if (mmPosition < 0) {
-                mmPosition = 0;
+            if (mPosition < 0) {
+                mPosition = 0;
             }
-        }
-
-        /**
-         * Traverses the history backward by one position, returns and item at
-         * that position.
-         */
-        private EditItem getPrevious() {
-            if (mmPosition == 0) {
-                return null;
-            }
-            mmPosition--;
-            return mmHistory.get(mmPosition);
-        }
-
-        /**
-         * Traverses the history forward by one position, returns and item at
-         * that position.
-         */
-        private EditItem getNext() {
-            if (mmPosition >= mmHistory.size()) {
-                return null;
-            }
-
-            EditItem item = mmHistory.get(mmPosition);
-            mmPosition++;
-            return item;
         }
     }
 
     /**
      * Represents the changes performed by a single edit operation.
      */
-    private final class EditItem {
-        private final int mmStart;
-        private final CharSequence mmBefore;
-        private final CharSequence mmAfter;
+    private final class Action {
+        private final int mId;
+        private final int mStart;
+        private final CharSequence mBefore;
+        private final CharSequence mAfter;
 
         /**
-         * Constructs EditItem of a modification that was applied at position
+         * Constructs Action of a modification that was applied at position
          * start and replaced CharSequence before with CharSequence after.
          */
-        public EditItem(int start, CharSequence before, CharSequence after) {
-            mmStart = start;
-            mmBefore = before;
-            mmAfter = after;
+        public Action(int id, int start, CharSequence before, CharSequence after) {
+            mId = id;
+            mStart = start;
+            mBefore = before;
+            mAfter = after;
         }
     }
 
