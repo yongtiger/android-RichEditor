@@ -178,7 +178,7 @@ public class RichEditText extends AppCompatEditText {
                             //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
 //                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
 //                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            mLoadSpansCallback.loadSpans(paste);
+                            mLoadSpansCallback.loadSpans(paste);//////////////////////////
 //                            }
                         }
 

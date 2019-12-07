@@ -6,17 +6,9 @@ import android.os.Parcelable;
 ///保存Parcelable：marshall/unmarshall
 ///https://blog.csdn.net/jielundewode/article/details/78342191
 public abstract class ParcelableUtil {
-    public static byte[] marshall(Object object) {
-        byte[] bytes = new byte[0];
-        if (object instanceof Parcelable) {
-            final Parcelable parcelable = (Parcelable) object;
-            final Parcel parcel = Parcel.obtain();
-            parcel.setDataPosition(0);
-            parcelable.writeToParcel(parcel, 0);
-            bytes = parcel.marshall();
-            parcel.recycle();
-
-        }
+    public static byte[] marshall(Parcel parcel) {
+        final byte[] bytes = parcel.marshall();
+        parcel.recycle();
         return bytes;
     }
 
@@ -27,4 +19,15 @@ public abstract class ParcelableUtil {
         return parcel;
     }
 
+    public static Parcel getParcel(Object object) {
+        if (object instanceof Parcelable) {
+            final Parcelable parcelable = (Parcelable) object;
+            final Parcel parcel = Parcel.obtain();
+            parcel.setDataPosition(0);
+            parcelable.writeToParcel(parcel, 0);
+            return parcel;
+        } else {
+            return null;
+        }
+    }
 }

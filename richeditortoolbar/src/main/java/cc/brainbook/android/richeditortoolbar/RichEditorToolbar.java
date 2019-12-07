@@ -98,14 +98,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private HashMap<View, Class> mClassMap = new HashMap<>();
 
     private RichEditText mRichEditText;
-    public void setEditText(RichEditText richEditText) {
-        mRichEditText = richEditText;
-        mRichEditText.addTextChangedListener(new RichTextWatcher());
-        mRichEditText.setOnSelectionChanged(this);
-        mRichEditText.setSaveSpansSelectionCallback(this);
-        mRichEditText.setLoadSpansCallback(this);
-    }
-
     public RichEditText getRichEditText() {
         return mRichEditText;
     }
@@ -335,7 +327,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd) {
         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
         ///而且应该保存到进程App共享空间！
-        SpanUtil.saveSpansSelection(mClassMap, mClipboardFile, editable, selectionStart, selectionEnd);
+        SpanUtil.saveSpansSelection(mClipboardFile, mClassMap, editable, selectionStart, selectionEnd);
     }
 
     @Override
@@ -347,15 +339,33 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewUndo;
     private ImageView mImageViewRedo;
     private ImageView mImageViewSave;
+
     private UndoRedoHelper mUndoRedoHelper = new UndoRedoHelper(this);
+
+    public void initUndoRedo() {
+        mUndoRedoHelper.clearHistory();
+
+        final Editable editable = mRichEditText.getText();
+        mUndoRedoHelper.addHistory(UndoRedoHelper.INIT_ACTION, -1, null, null,
+                SpanUtil.getParcelBySelection(mClassMap, editable, 0, editable.length(), false));
+    }
+
+    public void setHistorySize(int historySize) {
+        mUndoRedoHelper.setHistorySize(historySize);
+    }
+
     @Override
-    public void onPositionChangedListener(int position, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition) {
+    public void onPositionChangedListener(int position, UndoRedoHelper.Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition) {
         mImageViewUndo.setSelected(isCanUndo);
         mImageViewUndo.setEnabled(isCanUndo);
         mImageViewRedo.setSelected(isCanRedo);
         mImageViewRedo.setEnabled(isCanRedo);
         mImageViewSave.setSelected(!isSavedPosition);
         mImageViewSave.setEnabled(!isSavedPosition);
+
+        if (isSetSpans && action != null) {
+            SpanUtil.setSpansByParcel(mRichEditText.getText(), action.getmParcel());
+        }
     }
 
     /**
@@ -364,6 +374,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
      * undo/redo are not recorded because it would mess up the undo history.
      */
     public boolean isUndoOrRedo = false;
+
 
     /* ------------------------------------------------ */
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
@@ -553,17 +564,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             public void onClick(View v) {
                 final Editable editable = mRichEditText.getText();
 
-                final TextBean textBean = new TextBean();
-                textBean.setText(editable.toString());
-
-                final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-                for (Class clazz : mClassMap.values()) {
-                    SpanUtil.addSpanBeans(spanBeans, clazz, editable, 0, editable.length());
-                }
-                textBean.setSpans(spanBeans);
-
-                final byte[] bytes = ParcelableUtil.marshall(textBean);
-
+                final Parcel parcel = SpanUtil.getParcelBySelection(mClassMap, editable, 0, editable.length(), true);
+                final byte[] bytes = ParcelableUtil.marshall(parcel);
                 PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                 if (checkDraft()) {
@@ -632,14 +634,23 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mUndoRedoHelper.setSavedPosition();
+                mUndoRedoHelper.resetSavedPosition();
                 mImageViewSave.setSelected(false);
                 mImageViewSave.setEnabled(false);
             }
         });
 
-        ///初始化时设置Undo/Redo各按钮的状态
-        mUndoRedoHelper.clearHistory();
+    }
+
+    public void setupEditText(RichEditText richEditText) {
+        mRichEditText = richEditText;
+        mRichEditText.addTextChangedListener(new RichTextWatcher());
+        mRichEditText.setOnSelectionChanged(this);
+        mRichEditText.setSaveSpansSelectionCallback(this);
+        mRichEditText.setLoadSpansCallback(this);
+
+        ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
+        initUndoRedo();
     }
 
     private boolean isParagraphStyle(View view) {
@@ -1897,11 +1908,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            ///[Undo/Redo]
-            if (isUndoOrRedo) {
-                return;
-            }
-
             if (count > 0) {    ///[TextWatcher#删除]
                 for (View view : mClassMap.keySet()) {
                     if (isCharacterStyle(view)) {
@@ -1909,6 +1915,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         SpanUtil.removeSpans(mClassMap.get(view), mRichEditText.getText(), start, start + count);
                     }
                 }
+            }
+
+            ///[Undo/Redo]
+            if (isUndoOrRedo) {
+                return;
             }
 
             ///[Undo/Redo]
@@ -1961,11 +1972,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         @Override
         public void afterTextChanged(Editable s) {
-            ///[Undo/Redo]
-            if (isUndoOrRedo) {
-                return;
-            }
-
             ///消除EditText输入时自动产生UnderlineSpan
             ///https://stackoverflow.com/questions/35323111/android-edittext-is-underlined-when-typing
             ///https://stackoverflow.com/questions/46822580/edittext-remove-black-underline-while-typing/47704299#47704299
@@ -1986,7 +1992,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
             updatePreview();
 
             ///[Undo/Redo]
-            mUndoRedoHelper.addHistory(UndoRedoHelper.TEXT_CHANGED_ACTION, mStart, mBeforeChange, mAfterChange);
+            if (isUndoOrRedo) {
+                return;
+            }
+
+            ///[Undo/Redo]
+            mUndoRedoHelper.addHistory(UndoRedoHelper.TEXT_CHANGED_ACTION, mStart, mBeforeChange, mAfterChange,
+                    SpanUtil.getParcelBySelection(mClassMap, s, 0, s.length(), false));
         }
     }
 

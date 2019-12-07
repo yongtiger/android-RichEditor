@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 版本判断。当手机系统大于 23 时，才有必要去判断权限是否获取
+        ///当手机系统大于 23 时，才有必要去判断权限是否获取
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // 检查该权限是否已经获取
             int i = ContextCompat.checkSelfPermission(this, permissions[0]);
@@ -41,24 +41,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
-
         mRichEditText = findViewById(R.id.et_rich_edit_text);
-        mRichEditorToolbar.setEditText(mRichEditText);
 
-        ///RichEditor中的ImageSpan存放图片文件的目录（缺省为getExternalCacheDir()）
-        final File imageFilePath = getExternalCacheDir();
-        mRichEditorToolbar.setImageFilePath(imageFilePath);
-
-
-        /* ------------- ///[Preview] ------------- */
+        ///[Preview]
         mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
-
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
         ///设置TextView可点击，比如响应URLSpan点击事件。LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
         mTextViewPreviewText.setMovementMethod(LinkMovementMethod.getInstance());
 //        mTextViewPreviewText.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
 
+
+        /* -------------- ///设置 -------------- */
+        ///（可选）设置编辑器初始文本
+        mRichEditText.setText("aaabbb");
+        ///（必选）RichEditorToolbar设置编辑器
+        mRichEditorToolbar.setupEditText(mRichEditText);
+
+        ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
+        mRichEditorToolbar.setHistorySize(2);
+
+        ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
+
+        ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录
+        final File imageFilePath = getExternalCacheDir();
+        mRichEditorToolbar.setImageFilePath(imageFilePath);
 
     }
 

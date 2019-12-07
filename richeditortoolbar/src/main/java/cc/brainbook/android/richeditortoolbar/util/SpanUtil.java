@@ -194,24 +194,15 @@ public abstract class SpanUtil {
             final int spanStart = spanBean.getSpanStart();
             final int spanEnd = spanBean.getSpanEnd();
             final int spanFlags = spanBean.getSpanFlags();
-            final Parcelable span = spanBean.getSpan();
+            final Object span = spanBean.getSpan();
             editable.setSpan(span, spanStart, spanEnd, spanFlags);
         }
     }
 
-
-    public static void saveSpansSelection(HashMap<View, Class> classHashMap, File draftFile, Editable editable, int selectionStart, int selectionEnd) {
-        final TextBean textBean = new TextBean();
-        final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
-        textBean.setText(subSequence.toString());
-
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class clazz : classHashMap.values()) {
-            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
-        }
-        textBean.setSpans(spanBeans);
-
-        final byte[] bytes = ParcelableUtil.marshall(textBean);
+    ///保存spans到进程App共享空间
+    public static void saveSpansSelection(File draftFile, HashMap<View, Class> classHashMap, Editable editable, int selectionStart, int selectionEnd) {
+        final Parcel parcel = getParcelBySelection(classHashMap, editable, selectionStart, selectionEnd, true);
+        final byte[] bytes = ParcelableUtil.marshall(parcel);
 
         FileUtil.writeFile(draftFile, Base64.encodeToString(bytes, 0));
     }
@@ -231,8 +222,31 @@ public abstract class SpanUtil {
         }
 
         ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
+        ///注意：必须保证selectionChanged()不被执行！否则死循环！
         editable.clearSpans();
 
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        SpanUtil.loadSpanBeans(spanBeans, editable);
+    }
+
+    public static Parcel getParcelBySelection(HashMap<View, Class> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = new TextBean();
+        if (isSetText) {
+            final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
+            textBean.setText(subSequence.toString());
+        }
+
+        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+        for (Class clazz : classHashMap.values()) {
+            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+        }
+        textBean.setSpans(spanBeans);
+
+        return ParcelableUtil.getParcel(textBean);
+    }
+
+    public static void setSpansByParcel(Editable editable, Parcel parcel) {
+        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
         final List<SpanBean> spanBeans = textBean.getSpans();
         SpanUtil.loadSpanBeans(spanBeans, editable);
     }

@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.helper;
 
 import java.util.LinkedList;
 
+import android.os.Parcel;
 import android.text.Editable;
 import android.text.Selection;
 
@@ -9,27 +10,27 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
-    public static final int TEXT_CHANGED_ACTION = 0;
+    public static final int INIT_ACTION = 0;
+    public static final int TEXT_CHANGED_ACTION = 1;
 
     private RichEditorToolbar mRichEditorToolbar;
     private History mHistory;
 
-    ///[SavedPosition]
+    ///[PositionChanged]
     public interface OnPositionChangedListener {
-        void onPositionChangedListener(int position, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition);
+        void onPositionChangedListener(int position, Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition);
     }
     private OnPositionChangedListener mOnPositionChangedListener;
-    private void onPositionChanged() {
+    private void onPositionChanged(Action action, boolean isSetSpans) {
         if (mOnPositionChangedListener != null) {
-            mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, isCanUndo(), isCanRedo(), isSavedPosition());
+            mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, action, isSetSpans, isCanUndo(), isCanRedo(), isSavedPosition());
         }
     }
 
-    ///设置保存的位置
-    public void setSavedPosition() {
+    ///[SavedPosition]设置保存的位置
+    public void resetSavedPosition() {
         mHistory.mSavedPosition = mHistory.mPosition;
     }
-
     public boolean isSavedPosition() {
         return mHistory.mSavedPosition == mHistory.mPosition;
     }
@@ -37,6 +38,8 @@ public class UndoRedoHelper {
     ///Label
     public String getLabel(int id) {
         switch (id) {
+            case INIT_ACTION:
+                return "Init";
             case TEXT_CHANGED_ACTION:
                 return "Text changed";
 
@@ -67,16 +70,14 @@ public class UndoRedoHelper {
      */
     public void clearHistory() {
         mHistory.clear();
-
-        ///[SavedPosition]
-        onPositionChanged();
     }
 
-    public void addHistory(int id, int start, CharSequence beforeChange, CharSequence afterChange) {
-        mHistory.add(new Action(id, start, beforeChange, afterChange));
+    public void addHistory(int id, int start, CharSequence beforeChange, CharSequence afterChange, Parcel parcel) {
+        final Action action = new Action(id, start, beforeChange, afterChange, parcel);
+        mHistory.add(action);
 
-        ///[SavedPosition]
-        onPositionChanged();
+        ///[PositionChanged]
+        onPositionChanged(action, false);
     }
 
     /**
@@ -90,7 +91,7 @@ public class UndoRedoHelper {
      * Can redo be performed?
      */
     public boolean isCanRedo() {
-        return (mHistory.mPosition < mHistory.mHistory.size());
+        return (mHistory.mPosition + 1 < mHistory.mHistory.size());
     }
 
     /**
@@ -102,7 +103,7 @@ public class UndoRedoHelper {
             return;
         }
 
-        replace(action.mStart, action.mAfter, action.mBefore);
+        replace(action, action.mAfter, action.mBefore);
     }
 
     /**
@@ -114,21 +115,22 @@ public class UndoRedoHelper {
             return;
         }
 
-        replace(action.mStart, action.mBefore, action.mAfter);
+        replace(action, action.mBefore, action.mAfter);
     }
 
-    private void replace(int start, CharSequence originalText, CharSequence newText) {
+    private void replace(Action action, CharSequence originalText, CharSequence newText) {
         final Editable editable = mRichEditorToolbar.getRichEditText().getText();
+        final int start = action.mStart;
         final int end = start + (originalText != null ? originalText.length() : 0);
 
         mRichEditorToolbar.isUndoOrRedo = true;
         editable.replace(start, end, newText);
+
+        ///[PositionChanged]
+        onPositionChanged(action, true);
         mRichEditorToolbar.isUndoOrRedo = false;
 
         Selection.setSelection(editable, newText == null ? start : (start + newText.length()));
-
-        ///[SavedPosition]
-        onPositionChanged();
     }
 
     /**
@@ -140,10 +142,10 @@ public class UndoRedoHelper {
          * is called. If previous() has not been called, this has the same
          * value as mHistory.size().
          */
-        private int mPosition = 0;
+        private int mPosition = -1;
 
         ///[SavedPosition]保存的位置（可用于提示disable编辑器的save按钮）
-        private int mSavedPosition = 0;
+        private int mSavedPosition = -1;
 
         /**
          * history size.
@@ -162,21 +164,22 @@ public class UndoRedoHelper {
             if (mPosition == 0) {
                 return null;
             }
+
+            final Action action = mHistory.get(mPosition);
             mPosition--;
-            return mHistory.get(mPosition);
+            return action;
         }
 
         /**
          * Traverses the history forward by one position, returns and item at that position.
          */
         private Action next() {
+            mPosition++;
             if (mPosition >= mHistory.size()) {
                 return null;
             }
 
-            final Action item = mHistory.get(mPosition);
-            mPosition++;
-            return item;
+            return mHistory.get(mPosition);
         }
 
         /**
@@ -184,7 +187,7 @@ public class UndoRedoHelper {
          */
         private void clear() {
             mSavedPosition = mPosition == mSavedPosition ? 0 : -1;   ///[SavedPosition]
-            mPosition = 0;
+            mPosition = -1;
             mHistory.clear();
         }
 
@@ -194,11 +197,11 @@ public class UndoRedoHelper {
          * (elements with positions >= current history position).
          */
         private void add(Action action) {
+            mPosition++;
             while (mHistory.size() > mPosition) {
                 mHistory.removeLast();
             }
             mHistory.add(action);
-            mPosition++;
 
             if (mSize >= 0) {
                 trim();
@@ -223,7 +226,7 @@ public class UndoRedoHelper {
             while (mHistory.size() > mSize) {
                 mHistory.removeFirst();
                 mPosition--;
-                mSavedPosition--;   ///[SavedPosition]
+                mSavedPosition--;   ///[SavedPosition]注意：有可能小于-1！
             }
 
             if (mPosition < 0) {
@@ -235,21 +238,47 @@ public class UndoRedoHelper {
     /**
      * Represents the changes performed by a single edit operation.
      */
-    private final class Action {
+    public final class Action {
         private final int mId;
         private final int mStart;
         private final CharSequence mBefore;
         private final CharSequence mAfter;
+        private Parcel mParcel;
 
         /**
          * Constructs Action of a modification that was applied at position
          * start and replaced CharSequence before with CharSequence after.
          */
-        public Action(int id, int start, CharSequence before, CharSequence after) {
+        public Action(int id, int start, CharSequence before, CharSequence after, Parcel parcel) {
             mId = id;
             mStart = start;
             mBefore = before;
             mAfter = after;
+            mParcel = parcel;
+        }
+
+        public int getmId() {
+            return mId;
+        }
+
+        public int getmStart() {
+            return mStart;
+        }
+
+        public CharSequence getmBefore() {
+            return mBefore;
+        }
+
+        public CharSequence getmAfter() {
+            return mAfter;
+        }
+
+        public Parcel getmParcel() {
+            return mParcel;
+        }
+
+        public void setmParcel(Parcel mParcel) {
+            this.mParcel = mParcel;
         }
     }
 
