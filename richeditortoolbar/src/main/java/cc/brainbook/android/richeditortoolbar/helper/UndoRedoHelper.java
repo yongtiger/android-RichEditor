@@ -35,7 +35,7 @@ public class UndoRedoHelper {
     }
 
     ///Label
-    private String getLabel(int id) {
+    public String getLabel(int id) {
         switch (id) {
             case TEXT_CHANGED_ACTION:
                 return "Text changed";
@@ -87,6 +87,13 @@ public class UndoRedoHelper {
     }
 
     /**
+     * Can redo be performed?
+     */
+    public boolean isCanRedo() {
+        return (mHistory.mPosition < mHistory.mHistory.size());
+    }
+
+    /**
      * Perform undo.
      */
     public void undo() {
@@ -95,26 +102,7 @@ public class UndoRedoHelper {
             return;
         }
 
-        final Editable editable = mRichEditorToolbar.getRichEditText().getText();
-        final int start = action.mStart;
-        final int end = start + (action.mAfter != null ? action.mAfter.length() : 0);
-
-        mRichEditorToolbar.isUndoOrRedo = true;
-        editable.replace(start, end, action.mBefore);
-        mRichEditorToolbar.isUndoOrRedo = false;
-
-        Selection.setSelection(editable, action.mBefore == null ? start
-                : (start + action.mBefore.length()));
-
-        ///[SavedPosition]
-        onPositionChanged();
-    }
-
-    /**
-     * Can redo be performed?
-     */
-    public boolean isCanRedo() {
-        return (mHistory.mPosition < mHistory.mHistory.size());
+        replace(action.mStart, action.mAfter, action.mBefore);
     }
 
     /**
@@ -126,22 +114,22 @@ public class UndoRedoHelper {
             return;
         }
 
+        replace(action.mStart, action.mBefore, action.mAfter);
+    }
+
+    private void replace(int start, CharSequence originalText, CharSequence newText) {
         final Editable editable = mRichEditorToolbar.getRichEditText().getText();
-        final int start = action.mStart;
-        final int end = start + (action.mBefore != null ? action.mBefore.length() : 0);
+        final int end = start + (originalText != null ? originalText.length() : 0);
 
         mRichEditorToolbar.isUndoOrRedo = true;
-        editable.replace(start, end, action.mAfter);
+        editable.replace(start, end, newText);
         mRichEditorToolbar.isUndoOrRedo = false;
 
-        Selection.setSelection(editable, action.mAfter == null ? start
-                : (start + action.mAfter.length()));
+        Selection.setSelection(editable, newText == null ? start : (start + newText.length()));
 
         ///[SavedPosition]
         onPositionChanged();
     }
-
-    // =================================================================== //
 
     /**
      * Keeps track of all the edit history of a text.
