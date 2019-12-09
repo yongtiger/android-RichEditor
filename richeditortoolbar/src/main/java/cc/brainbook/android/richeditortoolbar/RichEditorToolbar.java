@@ -575,6 +575,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 ///[Preview]
                 updatePreview();
+
+                ///[Undo/Redo]
+                mUndoRedoHelper.addHistory(UndoRedoHelper.SPANS_CLEARED_ACTION, selectionStart, null, null,
+                        RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
             }
         });
 

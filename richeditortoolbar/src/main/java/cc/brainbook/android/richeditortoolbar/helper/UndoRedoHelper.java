@@ -12,6 +12,7 @@ public class UndoRedoHelper {
     public static final int INIT_ACTION = 0;
     public static final int TEXT_CHANGED_ACTION = 1;
     public static final int DRAFT_RESTORED_ACTION = 2;
+    public static final int SPANS_CLEARED_ACTION = 3;
 
     private RichEditorToolbar mRichEditorToolbar;
     private History mHistory;
@@ -44,6 +45,8 @@ public class UndoRedoHelper {
                 return "Text changed";
             case DRAFT_RESTORED_ACTION:
                 return "Draft restored";
+            case SPANS_CLEARED_ACTION:
+                return "Spans cleared";
 
             /// others
 
@@ -128,13 +131,17 @@ public class UndoRedoHelper {
         final int end = start + (originalText != null ? originalText.length() : 0);
 
         mRichEditorToolbar.isUndoOrRedo = true;
-        editable.replace(start, end, newText);
+        if (newText != null) {
+            editable.replace(start, end, newText);
+        }
 
         ///[PositionChanged]
         onPositionChanged( true);
         mRichEditorToolbar.isUndoOrRedo = false;
 
-        Selection.setSelection(editable, newText == null ? start : (start + newText.length()));
+        if (newText != null) {
+            Selection.setSelection(editable, start + newText.length());
+        }
     }
 
     /**
