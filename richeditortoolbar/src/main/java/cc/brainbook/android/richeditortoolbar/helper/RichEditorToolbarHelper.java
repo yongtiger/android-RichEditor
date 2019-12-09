@@ -33,24 +33,18 @@ public abstract class RichEditorToolbarHelper {
         return ParcelUtil.marshall(textBean);
     }
 
-    ///注意：EditText editText和Editable editable只能设置其中一个
-    public static boolean loadSpans(EditText editText, Editable editable, byte[] bytes) {
+    public static boolean loadSpans(Editable editable, byte[] bytes) {
         final TextBean textBean = createTextBean(bytes);
         if (textBean != null) {
-            if (editText == null) {
-                if (textBean.getText() != null) {
-                    //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-                    if (!TextUtils.equals(textBean.getText(), editable)) {
-                        return false;
-                    }
-
-                    ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
-                    ///注意：必须保证selectionChanged()不被执行！否则死循环！
-                    editable.clearSpans();
+            if (textBean.getText() != null) {
+                //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+                if (!TextUtils.equals(textBean.getText(), editable)) {
+                    return false;
                 }
-            } else {
-                editText.setText(textBean.getText());
-                editable = editText.getText();
+
+                ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
+                ///注意：必须保证selectionChanged()不被执行！否则死循环！
+                editable.clearSpans();
             }
 
             final List<SpanBean> spanBeans = textBean.getSpans();
@@ -62,7 +56,7 @@ public abstract class RichEditorToolbarHelper {
         return false;
     }
 
-    private static void setSpanFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+    public static void setSpanFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
         if (spanBeans != null) {
             for (SpanBean spanBean : spanBeans) {
                 final int spanStart = spanBean.getSpanStart();
@@ -74,7 +68,7 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
-    private static <T extends Parcelable> void getSpanToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
+    public static <T extends Parcelable> void getSpanToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
         for (T span : spans) {
             ///注意：必须过滤掉没有CREATOR变量的span！
@@ -94,7 +88,7 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
-    private static TextBean createTextBean(byte[] bytes) {
+    public static TextBean createTextBean(byte[] bytes) {
         final Parcel parcel = ParcelUtil.unmarshall(bytes);
         if (parcel == null) {
             return null;

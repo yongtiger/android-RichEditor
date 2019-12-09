@@ -2,7 +2,6 @@ package cc.brainbook.android.richeditortoolbar.helper;
 
 import java.util.LinkedList;
 
-import android.os.Parcel;
 import android.text.Editable;
 import android.text.Selection;
 
@@ -12,6 +11,7 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 public class UndoRedoHelper {
     public static final int INIT_ACTION = 0;
     public static final int TEXT_CHANGED_ACTION = 1;
+    public static final int DRAFT_RESTORED_ACTION = 2;
 
     private RichEditorToolbar mRichEditorToolbar;
     private History mHistory;
@@ -42,6 +42,8 @@ public class UndoRedoHelper {
                 return "Init";
             case TEXT_CHANGED_ACTION:
                 return "Text changed";
+            case DRAFT_RESTORED_ACTION:
+                return "Draft restored";
 
             /// others
 

@@ -53,9 +53,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
+import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.BulletSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.ImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LeadingMarginSpanDialogBuilder;
@@ -341,7 +344,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 return;
             }
 
-            RichEditorToolbarHelper.loadSpans(null, editable, bytes);
+            RichEditorToolbarHelper.loadSpans(editable, bytes);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -381,7 +384,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 //            mRichEditText.getText().clearSpans(); ///[FIX#误删除了其它有用的spans！]
             SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
 
-            RichEditorToolbarHelper.loadSpans(null, mRichEditText.getText(), action.getBytes());
+            RichEditorToolbarHelper.loadSpans(mRichEditText.getText(), action.getBytes());
         }
     }
 
@@ -602,7 +605,24 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     return;
                 }
 
-                if (RichEditorToolbarHelper.loadSpans(mRichEditText, null, Base64.decode(draftText, Base64.DEFAULT))) {
+                final TextBean textBean = RichEditorToolbarHelper.createTextBean(Base64.decode(draftText, Base64.DEFAULT));
+                if (textBean != null) {
+                    final String beforeChange = mRichEditText.getText().toString();
+
+                    isUndoOrRedo = true;
+                    mRichEditText.setText(textBean.getText());
+                    isUndoOrRedo = false;
+
+                    final Editable editable = mRichEditText.getText();
+                    final List<SpanBean> spanBeans = textBean.getSpans();
+                    RichEditorToolbarHelper.setSpanFromSpanBeans(spanBeans, editable);
+
+                    Selection.setSelection(editable, 0);
+
+                    ///[Undo/Redo]
+                    mUndoRedoHelper.addHistory(UndoRedoHelper.DRAFT_RESTORED_ACTION, 0, beforeChange, editable.toString(),
+                            RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+
                     Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
                 }
             }
