@@ -11,6 +11,7 @@ import android.support.v4.content.FileProvider;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -21,7 +22,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public abstract class FileUtil {
-
     public static String generateImageFileName(String suffix) {
         ///注意：尽量不要用空格、冒号、下划线、减号等特殊字符！
         ///比如：URI的fromFile方法会将路径中的空格用“%20”取代，而个别手机（如酷派7260）系统自带的相机没有将“%20”读成空格，拍照后的照片的名字是123%201.jpg
@@ -118,42 +118,64 @@ public abstract class FileUtil {
         }
     }
 
-    public static String readFile(File file) {
-        return readFile(file, 1024);
+    public static byte[] readFile(File file) throws IOException {
+        return readFile(file, 4096);
     }
-    public static String readFile(File file, int bufferSize) {
-        final StringBuilder contentBuilder = new StringBuilder();
+    public static byte[] readFile(File file, int bufferSize) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        FileInputStream fileInputStream = null;
+        BufferedInputStream bufferedInputStream = null;
         try {
-            final FileInputStream fileInputStream = new FileInputStream(file);
-            final BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+            byteArrayOutputStream = new ByteArrayOutputStream();
+            fileInputStream = new FileInputStream(file);
+            bufferedInputStream = new BufferedInputStream(fileInputStream);
 
             final byte[] buffer = new byte[bufferSize];
-            int flag;
-            while ((flag = bufferedInputStream.read(buffer)) != -1) {
-                contentBuilder.append(new String(buffer, 0, flag));
+            int read;
+            while ((read = bufferedInputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, read);
             }
 
             bufferedInputStream.close();
-            return contentBuilder.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            return byteArrayOutputStream.toByteArray();
+        } finally {
+            try {
+                if (byteArrayOutputStream != null)
+                    byteArrayOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                if (bufferedInputStream != null)
+                    bufferedInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static void writeFile(File file, String content) {
-        writeFile(file, content, 0);
+    public static void writeFile(File file, byte[] bytes) throws IOException {
+        writeFile(file, bytes, 0);
+//        writeFile(file, bytes, 4096);
     }
-    public static void writeFile(File file, String content, int bufferSize) {
+    public static void writeFile(File file, byte[] bytes, int bufferSize) throws IOException {
+        FileOutputStream fileOutputStream = null;
+        BufferedOutputStream bufferedOutputStream = null;
         try {
-            final FileOutputStream fileOutputStream = new FileOutputStream(file);
-            final BufferedOutputStream bufferedOutputStream = bufferSize == 0 ?
+            fileOutputStream = new FileOutputStream(file);
+            bufferedOutputStream = bufferSize == 0 ?
                     new BufferedOutputStream(fileOutputStream) : new BufferedOutputStream(fileOutputStream, bufferSize);
-            bufferedOutputStream.write(content.getBytes(),0,content.getBytes().length);
+            bufferedOutputStream.write(bytes,0, bytes.length);
             bufferedOutputStream.flush();
             bufferedOutputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } finally {
+            try {
+                if (bufferedOutputStream != null)
+                    bufferedOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

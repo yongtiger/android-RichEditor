@@ -33,16 +33,16 @@ public class RichEditText extends AppCompatEditText {
     }
 
     @Override
-    protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-        super.onTextChanged(text, start, lengthBefore, lengthAfter);
+    protected void onTextChanged(CharSequence text, int start, int before, int after) {
+        super.onTextChanged(text, start, before, after);
     }
 
     @Override
-    protected void onSelectionChanged(int selStart, int selEnd) {
-        super.onSelectionChanged(selStart, selEnd);
+    protected void onSelectionChanged(int selectionStart, int selectionEnd) {
+        super.onSelectionChanged(selectionStart, selectionEnd);
 
         if (mOnSelectionChanged != null) {
-            mOnSelectionChanged.selectionChanged(selStart, selEnd);
+            mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
         }
     }
 
@@ -52,16 +52,16 @@ public class RichEditText extends AppCompatEditText {
 
 
     /* --------------- ///[TextContextMenu#Clipboard] --------------- */
-    public interface SaveSpansSelectionCallback {
-        void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd);
+    public interface SaveSpansCallback {
+        void saveSpans(Editable editable, int selectionStart, int selectionEnd);
     }
     interface LoadSpansCallback {
         void loadSpans(Editable editable);
     }
-    private SaveSpansSelectionCallback mSaveSpansSelectionCallback;
+    private SaveSpansCallback mSaveSpansCallback;
     private LoadSpansCallback mLoadSpansCallback;
-    public void setSaveSpansSelectionCallback(SaveSpansSelectionCallback saveSpansSelectionCallback) {
-        mSaveSpansSelectionCallback = saveSpansSelectionCallback;
+    public void setSaveSpansCallback(SaveSpansCallback saveSpansCallback) {
+        mSaveSpansCallback = saveSpansCallback;
     }
     public void setLoadSpansCallback(LoadSpansCallback loadSpansCallback) {
         mLoadSpansCallback = loadSpansCallback;
@@ -87,10 +87,10 @@ public class RichEditText extends AppCompatEditText {
                 final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
                 if (setPrimaryClip(cutData)) {
 
-                    if (mSaveSpansSelectionCallback != null) {
+                    if (mSaveSpansCallback != null) {
                         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                         ///而且应该保存到进程App共享空间！
-                        mSaveSpansSelectionCallback.saveSpansSelection(getText(), min, max);
+                        mSaveSpansCallback.saveSpans(getText(), min, max);
                     }
 
                     getText().delete(min, max);
@@ -110,15 +110,13 @@ public class RichEditText extends AppCompatEditText {
                 final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
                 if (setPrimaryClip(copyData)) {
 
-                    if (mSaveSpansSelectionCallback != null) {
+                    if (mSaveSpansCallback != null) {
                         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                         ///而且应该保存到进程App共享空间！
-                        mSaveSpansSelectionCallback.saveSpansSelection(getText(), min, max);
+                        mSaveSpansCallback.saveSpans(getText(), min, max);
                     }
 
-                    ///调整Selection来实现关闭TextContextMenuItem
-                    setSelection(min);
-                    setSelection(min, max);
+                    //////??????关闭TextContextMenuItem
 
                 } else {
                     Toast.makeText(getContext(),
@@ -178,7 +176,7 @@ public class RichEditText extends AppCompatEditText {
                             //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
 //                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
 //                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            mLoadSpansCallback.loadSpans(paste);//////////////////////////
+                            mLoadSpansCallback.loadSpans(paste);
 //                            }
                         }
 

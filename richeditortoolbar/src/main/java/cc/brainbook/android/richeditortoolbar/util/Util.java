@@ -6,7 +6,6 @@ import android.content.ContextWrapper;
 import android.view.View;
 
 public abstract class Util {
-
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
     ///java.lang.ClassCastException: android.support.v7.widget.TintContextWrapper cannot be cast to android.app.Activity
     ///https://blog.csdn.net/liuxu0703/article/details/70145168

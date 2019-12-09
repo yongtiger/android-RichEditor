@@ -1,29 +1,21 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
-import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
-import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
 public abstract class SpanUtil {
-
     public static <T> ArrayList<T> getFilteredSpans(final Editable editable, Class<T> clazz, int start, int end) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
@@ -75,7 +67,7 @@ public abstract class SpanUtil {
     }
 
     public static int getParagraphStart(Editable editable, int where) {
-        ///DynamicLayout#reflow(CharSequence s, int where, int before, int after)
+        ///参考DynamicLayout#reflow(CharSequence s, int where, int before, int after)
         // seek back to the start of the paragraph
         int find = TextUtils.lastIndexOf(editable, '\n', where - 1);
         if (find < 0)
@@ -87,7 +79,7 @@ public abstract class SpanUtil {
     }
 
     public static int getParagraphEnd(Editable editable, int where) {
-        ///DynamicLayout#reflow(CharSequence s, int where, int before, int after)
+        ///参考DynamicLayout#reflow(CharSequence s, int where, int before, int after)
         // seek forward to the end of the paragraph
         int len = editable.length();
         int look = TextUtils.indexOf(editable, '\n', where);
@@ -100,7 +92,7 @@ public abstract class SpanUtil {
     }
 
     /**
-     * 清除区间内的span
+     * 清除区间[start, end]内的spans
      */
     public static <T> void removeSpans(Class<T> clazz, Editable editable, int start, int end) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
@@ -114,7 +106,16 @@ public abstract class SpanUtil {
     }
 
     /**
-     * 平摊并合并交叉重叠的同类span
+     * 清除所有spans
+     */
+    public static void clearAllSpans(HashMap<View, Class> classHashMap, Editable editable) {
+        for (View view : classHashMap.keySet()) {
+            SpanUtil.removeSpans(classHashMap.get(view), editable, 0, editable.length());
+        }
+    }
+
+    /**
+     * 平摊并合并交叉重叠的同类spans
      *
      * 本编辑器内部添加逻辑不会产生交叉重叠，以防从编辑器外部或HTML转换后可能会产生的交叉重叠
      * 注意：暂时没有考虑ForegroundColor、BackgroundColor等带参数的span！即参数不同的同类span都视为相等而合并
@@ -153,7 +154,7 @@ public abstract class SpanUtil {
         }
     }
 
-    public static CustomImageSpan getImageSpan(Editable editable, Drawable drawable) {
+    public static CustomImageSpan getImageSpanByDrawable(Editable editable, Drawable drawable) {
         CustomImageSpan imageSpan = null;
         if (!TextUtils.isEmpty(editable)) {
             final CustomImageSpan[] spans = editable.getSpans(0, editable.length(), CustomImageSpan.class);
@@ -169,96 +170,15 @@ public abstract class SpanUtil {
         return imageSpan;
     }
 
-    public static <T extends Parcelable> void addSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
-        for (T span : spans) {
-            ///注意：必须过滤掉没有CREATOR变量的span！
-            ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
-            try {
-                clazz.getField("CREATOR");
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
-                final int spanFlags = editable.getSpanFlags(span);
-                final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
-                final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
-                final SpanBean<T> spanBean = new SpanBean<>(span, adjustSpanStart, adjustSpanEnd, spanFlags);
-                spanBeans.add(spanBean);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
-    public static void loadSpanBeans(List<SpanBean> spanBeans, Editable editable) {
-        for (SpanBean spanBean : spanBeans) {
-            final int spanStart = spanBean.getSpanStart();
-            final int spanEnd = spanBean.getSpanEnd();
-            final int spanFlags = spanBean.getSpanFlags();
-            final Object span = spanBean.getSpan();
-            editable.setSpan(span, spanStart, spanEnd, spanFlags);
-        }
-    }
-
-    ///保存spans到进程App共享空间
-    public static void saveSpansSelection(File draftFile, HashMap<View, Class> classHashMap, Editable editable, int selectionStart, int selectionEnd) {
-        final Parcel parcel = getParcelBySelection(classHashMap, editable, selectionStart, selectionEnd, true);
-        final byte[] bytes = ParcelableUtil.marshall(parcel);
-
-        FileUtil.writeFile(draftFile, Base64.encodeToString(bytes, 0));
-    }
-
-    ///从进程App共享空间恢复spans
-    public static void loadSpans(File draftFile, Editable editable) {
-        final String draftText = FileUtil.readFile(draftFile);
-        if (TextUtils.isEmpty(draftText)) {
-            return;
-        }
-
-        final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
-        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-        //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-        if (!TextUtils.equals(textBean.getText(), editable)) {
-            return;
-        }
-
-        ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
-        ///注意：必须保证selectionChanged()不被执行！否则死循环！
-        editable.clearSpans();
-
-        final List<SpanBean> spanBeans = textBean.getSpans();
-        SpanUtil.loadSpanBeans(spanBeans, editable);
-    }
-
-    public static Parcel getParcelBySelection(HashMap<View, Class> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = new TextBean();
-        if (isSetText) {
-            final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
-            textBean.setText(subSequence.toString());
-        }
-
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class clazz : classHashMap.values()) {
-            SpanUtil.addSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
-        }
-        textBean.setSpans(spanBeans);
-
-        return ParcelableUtil.getParcel(textBean);
-    }
-
-    public static void setSpansByParcel(Editable editable, Parcel parcel) {
-        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-        final List<SpanBean> spanBeans = textBean.getSpans();
-        SpanUtil.loadSpanBeans(spanBeans, editable);
-    }
-
-    ///test
+    /* ---------------------- ///test ---------------------- */
     public static <T> void testOutput(Editable editable, Class<T> clazz) {
         final T[] spans = editable.getSpans(0, editable.length(), clazz);
         for (T span : spans) {
-            ///忽略getSpans()获取的子类（不是clazz本身）
-            if (span.getClass() != clazz) {
-                continue;
-            }
+//            ///忽略getSpans()获取的子类（不是clazz本身）
+//            if (span.getClass() != clazz) {
+//                continue;
+//            }
 
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);

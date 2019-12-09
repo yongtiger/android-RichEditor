@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import java.io.File;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
@@ -53,18 +55,20 @@ public class MainActivity extends AppCompatActivity {
 
         /* -------------- ///设置 -------------- */
         ///（可选）设置编辑器初始文本
-        mRichEditText.setText("aaabbb");
+        mRichEditText.setText("aaabbbccc"); ///test
+        mRichEditText.getText().setSpan(new BoldSpan(), 3, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+
         ///（必选）RichEditorToolbar设置编辑器
         mRichEditorToolbar.setupEditText(mRichEditText);
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
-        mRichEditorToolbar.setHistorySize(2);
+//        mRichEditorToolbar.setHistorySize(2); ///test
 
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
 
         ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录
-        final File imageFilePath = getExternalCacheDir();
+        final File imageFilePath = getExternalCacheDir();   ///test
         mRichEditorToolbar.setImageFilePath(imageFilePath);
 
     }

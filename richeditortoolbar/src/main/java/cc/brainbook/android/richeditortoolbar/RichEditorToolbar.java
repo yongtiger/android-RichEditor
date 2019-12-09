@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.os.Parcel;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -51,20 +50,19 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayout;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import cc.brainbook.android.colorpicker.builder.ColorPickerClickListener;
 import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
-import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.BulletSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.ImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LeadingMarginSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LineDividerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.QuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.URLSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
@@ -78,18 +76,17 @@ import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.util.ParcelableUtil;
+import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
-//////??????翻屏后，ColorPickerDialog无法显示完全！
 public class RichEditorToolbar extends FlexboxLayout implements
         Drawable.Callback, View.OnClickListener, View.OnLongClickListener,
         RichEditText.OnSelectionChanged,
-        RichEditText.SaveSpansSelectionCallback, RichEditText.LoadSpansCallback,
+        RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
@@ -254,7 +251,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///注意：实测此方法不闪烁！
         ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
-        final CustomImageSpan imageSpan = SpanUtil.getImageSpan(editable, drawable);
+        final CustomImageSpan imageSpan = SpanUtil.getImageSpanByDrawable(editable, drawable);
         if (imageSpan != null) {
             if (!TextUtils.isEmpty(editable)) {
                 final int spanStart = editable.getSpanStart(imageSpan);
@@ -324,15 +321,30 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private File mClipboardFile = new File(Environment.getExternalStorageDirectory() + File.separator + CLIPBOARD_FILE_NAME);
 
     @Override
-    public void saveSpansSelection(Editable editable, int selectionStart, int selectionEnd) {
-        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-        ///而且应该保存到进程App共享空间！
-        SpanUtil.saveSpansSelection(mClipboardFile, mClassMap, editable, selectionStart, selectionEnd);
+    public void saveSpans(Editable editable, int selectionStart, int selectionEnd) {
+        ///保存spans到进程App共享空间
+        ///注意：由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans，而且应该保存到进程App共享空间！
+        try {
+            final byte[] bytes = RichEditorToolbarHelper.saveSpans(mClassMap, editable, selectionStart, selectionEnd, true);
+            FileUtil.writeFile(mClipboardFile, bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void loadSpans(Editable editable) {
-        SpanUtil.loadSpans(mClipboardFile, editable);
+        ///从进程App共享空间恢复spans
+        try {
+            final byte[] bytes = FileUtil.readFile(mClipboardFile);
+            if (bytes == null) {
+                return;
+            }
+
+            RichEditorToolbarHelper.loadSpans(null, editable, bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /* ---------------- ///[Undo/Redo] ---------------- */
@@ -347,7 +359,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         final Editable editable = mRichEditText.getText();
         mUndoRedoHelper.addHistory(UndoRedoHelper.INIT_ACTION, -1, null, null,
-                SpanUtil.getParcelBySelection(mClassMap, editable, 0, editable.length(), false));
+                RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
     }
 
     public void setHistorySize(int historySize) {
@@ -364,7 +376,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewSave.setEnabled(!isSavedPosition);
 
         if (isSetSpans && action != null) {
-            SpanUtil.setSpansByParcel(mRichEditText.getText(), action.getmParcel());
+            ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
+            ///注意：必须保证selectionChanged()不被执行！否则死循环！
+//            mRichEditText.getText().clearSpans(); ///[FIX#误删除了其它有用的spans！]
+            SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
+
+            RichEditorToolbarHelper.loadSpans(null, mRichEditText.getText(), action.getBytes());
         }
     }
 
@@ -541,6 +558,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             @Override
             public void onClick(View view) {
                 final Editable editable = mRichEditText.getText();
+
                 //        final int selectionStart = mRichEditText.getSelectionStart();
                 //        final int selectionEnd = mRichEditText.getSelectionEnd();
                 final int selectionStart = Selection.getSelectionStart(editable);
@@ -564,8 +582,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             public void onClick(View v) {
                 final Editable editable = mRichEditText.getText();
 
-                final Parcel parcel = SpanUtil.getParcelBySelection(mClassMap, editable, 0, editable.length(), true);
-                final byte[] bytes = ParcelableUtil.marshall(parcel);
+                final byte[] bytes = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), true);
                 PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                 if (checkDraft()) {
@@ -584,15 +601,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 if (TextUtils.isEmpty(draftText)) {
                     return;
                 }
-                final Parcel parcel = ParcelableUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT));
-                final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-                mRichEditText.setText(textBean.getText());
 
-                final Editable editable = mRichEditText.getText();
-                final List<SpanBean> spanBeans = textBean.getSpans();
-                SpanUtil.loadSpanBeans(spanBeans, editable);
-
-                Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
+                if (RichEditorToolbarHelper.loadSpans(mRichEditText, null, Base64.decode(draftText, Base64.DEFAULT))) {
+                    Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -639,14 +651,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mImageViewSave.setEnabled(false);
             }
         });
-
     }
 
     public void setupEditText(RichEditText richEditText) {
         mRichEditText = richEditText;
         mRichEditText.addTextChangedListener(new RichTextWatcher());
         mRichEditText.setOnSelectionChanged(this);
-        mRichEditText.setSaveSpansSelectionCallback(this);
+        mRichEditText.setSaveSpansCallback(this);
         mRichEditText.setLoadSpansCallback(this);
 
         ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
@@ -1903,11 +1914,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private final class RichTextWatcher implements TextWatcher {
         ///[Undo/Redo]
         private int mStart;
-        private CharSequence mBeforeChange;
-        private CharSequence mAfterChange;
+        private String mBeforeChange;
+        private String mAfterChange;
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            ///[Undo/Redo]
+            if (isUndoOrRedo) {
+                return;
+            }
+
             if (count > 0) {    ///[TextWatcher#删除]
                 for (View view : mClassMap.keySet()) {
                     if (isCharacterStyle(view)) {
@@ -1918,12 +1934,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///[Undo/Redo]
-            if (isUndoOrRedo) {
-                return;
-            }
-
-            ///[Undo/Redo]
-            mBeforeChange = s.subSequence(start, start + count);
+            mBeforeChange = s.subSequence(start, start + count).toString();
         }
 
         @Override
@@ -1966,12 +1977,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///[Undo/Redo]
-            mAfterChange = s.subSequence(start, start + count);
+            mAfterChange = s.subSequence(start, start + count).toString();
             mStart = start;
         }
 
         @Override
         public void afterTextChanged(Editable s) {
+            ///[Undo/Redo]
+            if (isUndoOrRedo) {
+                return;
+            }
+
             ///消除EditText输入时自动产生UnderlineSpan
             ///https://stackoverflow.com/questions/35323111/android-edittext-is-underlined-when-typing
             ///https://stackoverflow.com/questions/46822580/edittext-remove-black-underline-while-typing/47704299#47704299
@@ -1992,13 +2008,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             updatePreview();
 
             ///[Undo/Redo]
-            if (isUndoOrRedo) {
-                return;
-            }
-
-            ///[Undo/Redo]
             mUndoRedoHelper.addHistory(UndoRedoHelper.TEXT_CHANGED_ACTION, mStart, mBeforeChange, mAfterChange,
-                    SpanUtil.getParcelBySelection(mClassMap, s, 0, s.length(), false));
+                    RichEditorToolbarHelper.saveSpans(mClassMap, s, 0, s.length(), false));
         }
     }
 
@@ -2393,33 +2404,33 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /**
-     * 清除区间内的span
+     * 清除区间内的spans
      */
-    private void clearParagraphSpans(int selectionStart, int selectionEnd) {
+    private void clearParagraphSpans(int start, int end) {
         final Editable editable = mRichEditText.getText();
 
-        final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
-        final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, selectionStart);
+        final int currentParagraphStart = SpanUtil.getParagraphStart(editable, start);
+        final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
 
         for (View view : mClassMap.keySet()) {
             if (isParagraphStyle(view)) {
-                SpanUtil.removeSpans(mClassMap.get(view), editable, selectionStart, selectionEnd);
+                SpanUtil.removeSpans(mClassMap.get(view), editable, start, end);
                 updateParagraphView(view, mClassMap.get(view), editable, currentParagraphStart, currentParagraphEnd);
             }
         }
     }
-    private void clearCharacterSpans(int selectionStart, int selectionEnd) {
+    private void clearCharacterSpans(int start, int end) {
         final Editable editable = mRichEditText.getText();
 
         for (View view : mClassMap.keySet()) {
             if (isCharacterStyle(view)) {
                 ///调整同类span
                 if (isBlockCharacterStyle(view)) {
-                    adjustBlockCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, false, true);
+                    adjustBlockCharacterStyleSpans(view, mClassMap.get(view), editable, start, end, false, true);
                 } else {
-                    adjustCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, false, true);
+                    adjustCharacterStyleSpans(view, mClassMap.get(view), editable, start, end, false, true);
                 }
-                updateCharacterStyleView(view, mClassMap.get(view), editable, selectionStart, selectionEnd);
+                updateCharacterStyleView(view, mClassMap.get(view), editable, start, end);
             }
         }
     }

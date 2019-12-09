@@ -13,7 +13,7 @@ public abstract class StringUtil {
         if (item == null) {
             return -1;
         }
-        CharSequence[] items = getItems(context, itemsId);
+        final CharSequence[] items = getItems(context, itemsId);
         for (int i = 0; i < items.length; i++) {
             if (items[i].equals(item)) {
                 return i;
@@ -23,7 +23,7 @@ public abstract class StringUtil {
     }
 
     public static CharSequence getItem(Context context, @ArrayRes int itemsId, int index) {
-        CharSequence[] items = getItems(context, itemsId);
+        final CharSequence[] items = getItems(context, itemsId);
         if (index < 0 || index >= items.length) {
             return null;
         } else {

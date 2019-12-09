@@ -21,9 +21,9 @@ public class UndoRedoHelper {
         void onPositionChangedListener(int position, Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition);
     }
     private OnPositionChangedListener mOnPositionChangedListener;
-    private void onPositionChanged(Action action, boolean isSetSpans) {
+    private void onPositionChanged(boolean isSetSpans) {
         if (mOnPositionChangedListener != null) {
-            mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, action, isSetSpans, isCanUndo(), isCanRedo(), isSavedPosition());
+            mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, mHistory.current(), isSetSpans, isCanUndo(), isCanRedo(), isSavedPosition());
         }
     }
 
@@ -72,12 +72,12 @@ public class UndoRedoHelper {
         mHistory.clear();
     }
 
-    public void addHistory(int id, int start, CharSequence beforeChange, CharSequence afterChange, Parcel parcel) {
-        final Action action = new Action(id, start, beforeChange, afterChange, parcel);
+    public void addHistory(int id, int start, String beforeChange, String afterChange, byte[] bytes) {
+        final Action action = new Action(id, start, beforeChange, afterChange, bytes);
         mHistory.add(action);
 
         ///[PositionChanged]
-        onPositionChanged(action, false);
+        onPositionChanged(false);
     }
 
     /**
@@ -98,24 +98,26 @@ public class UndoRedoHelper {
      * Perform undo.
      */
     public void undo() {
-        final Action action = mHistory.previous();
-        if (action == null) {
+        final Action currentAction = mHistory.current();
+        final Action previousAction = mHistory.previous();
+        if (previousAction == null) {
             return;
         }
 
-        replace(action, action.mAfter, action.mBefore);
+        replace(currentAction, currentAction.mAfter, currentAction.mBefore);
     }
 
     /**
      * Perform redo.
      */
     public void redo() {
-        final Action action = mHistory.next();
-        if (action == null) {
+//        final Action currentAction = mHistory.current();
+        final Action nextAction = mHistory.next();
+        if (nextAction == null) {
             return;
         }
 
-        replace(action, action.mBefore, action.mAfter);
+        replace(nextAction, nextAction.mBefore, nextAction.mAfter);
     }
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {
@@ -127,7 +129,7 @@ public class UndoRedoHelper {
         editable.replace(start, end, newText);
 
         ///[PositionChanged]
-        onPositionChanged(action, true);
+        onPositionChanged( true);
         mRichEditorToolbar.isUndoOrRedo = false;
 
         Selection.setSelection(editable, newText == null ? start : (start + newText.length()));
@@ -157,29 +159,28 @@ public class UndoRedoHelper {
          */
         private final LinkedList<Action> mHistory = new LinkedList<Action>();
 
+        private Action current() {
+            return mHistory.get(mPosition);
+        }
+
         /**
          * Traverses the history backward by one position, returns and item at that position.
          */
         private Action previous() {
-            if (mPosition == 0) {
+            if (mPosition <= 0) {
                 return null;
             }
-
-            final Action action = mHistory.get(mPosition);
-            mPosition--;
-            return action;
+            return mHistory.get(--mPosition);
         }
 
         /**
          * Traverses the history forward by one position, returns and item at that position.
          */
         private Action next() {
-            mPosition++;
-            if (mPosition >= mHistory.size()) {
+            if (mPosition + 1 >= mHistory.size()) {
                 return null;
             }
-
-            return mHistory.get(mPosition);
+            return mHistory.get(++mPosition);
         }
 
         /**
@@ -243,42 +244,42 @@ public class UndoRedoHelper {
         private final int mStart;
         private final CharSequence mBefore;
         private final CharSequence mAfter;
-        private Parcel mParcel;
+        private byte[] mBytes;
 
         /**
          * Constructs Action of a modification that was applied at position
          * start and replaced CharSequence before with CharSequence after.
          */
-        public Action(int id, int start, CharSequence before, CharSequence after, Parcel parcel) {
+        public Action(int id, int start, CharSequence before, CharSequence after, byte[] bytes) {
             mId = id;
             mStart = start;
             mBefore = before;
             mAfter = after;
-            mParcel = parcel;
+            mBytes = bytes;
         }
 
-        public int getmId() {
+        public int getId() {
             return mId;
         }
 
-        public int getmStart() {
+        public int getStart() {
             return mStart;
         }
 
-        public CharSequence getmBefore() {
+        public CharSequence getBefore() {
             return mBefore;
         }
 
-        public CharSequence getmAfter() {
+        public CharSequence getAfter() {
             return mAfter;
         }
 
-        public Parcel getmParcel() {
-            return mParcel;
+        public byte[] getBytes() {
+            return mBytes;
         }
 
-        public void setmParcel(Parcel mParcel) {
-            this.mParcel = mParcel;
+        public void setBytes(byte[] mBytes) {
+            this.mBytes = mBytes;
         }
     }
 
