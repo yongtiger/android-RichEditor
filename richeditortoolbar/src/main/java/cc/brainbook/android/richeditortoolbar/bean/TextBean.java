@@ -4,11 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class TextBean implements Parcelable {
     private String text;
-    private List<SpanBean> spans;
+    private ArrayList<SpanBean> spans;
 
     public String getText() {
         return text;
@@ -18,23 +17,25 @@ public class TextBean implements Parcelable {
         this.text = text;
     }
 
-    public List<SpanBean> getSpans() {
+    public ArrayList<SpanBean> getSpans() {
         return spans;
     }
 
-    public void setSpans(List<SpanBean> spans) {
+    public void setSpans(ArrayList<SpanBean> spans) {
         this.spans = spans;
     }
 
     public TextBean() {
         // initialization
-        spans = new ArrayList<SpanBean>();
+        spans = new ArrayList<>();
     }
 
     protected TextBean(Parcel in) {
         this();
         text = in.readString();
         in.readTypedList(spans, SpanBean.CREATOR);
+//        spans = in.createTypedArrayList(SpanBean.CREATOR);
+//        spans = in.readArrayList(SpanBean.class.getClassLoader());
     }
 
     public static final Creator<TextBean> CREATOR = new Creator<TextBean>() {
@@ -58,5 +59,7 @@ public class TextBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(text);
         dest.writeTypedList(spans);
+//        dest.writeList(spans);
+//        dest.writeParcelableArray(spans.toArray(new SpanBean[0]), flags); ///https://stackoverflow.com/questions/1056683/should-we-use-type-cast-for-the-object-toarray
     }
 }

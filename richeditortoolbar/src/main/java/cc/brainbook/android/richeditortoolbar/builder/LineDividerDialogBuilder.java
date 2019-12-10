@@ -29,8 +29,8 @@ public class LineDividerDialogBuilder {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.layout_line_divider_span_dialog, null);
 
-        mTextViewMarginTop = layout.findViewById(R.id.tv_margin_top);
-        mSeekBarMarginTop = layout.findViewById(R.id.sb_margin_top);
+        mTextViewMarginTop = (TextView) layout.findViewById(R.id.tv_margin_top);
+        mSeekBarMarginTop = (SeekBar) layout.findViewById(R.id.sb_margin_top);
         mSeekBarMarginTop.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -45,8 +45,8 @@ public class LineDividerDialogBuilder {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        mTextViewMarginBottom = layout.findViewById(R.id.tv_margin_bottom);
-        mSeekBarMarginBottom = layout.findViewById(R.id.sb_margin_bottom);
+        mTextViewMarginBottom = (TextView) layout.findViewById(R.id.tv_margin_bottom);
+        mSeekBarMarginBottom = (SeekBar) layout.findViewById(R.id.sb_margin_bottom);
         mSeekBarMarginBottom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

@@ -1,11 +1,15 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import android.text.Editable;
 import android.text.Selection;
+import android.util.Log;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+
+import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
@@ -13,6 +17,7 @@ public class UndoRedoHelper {
     public static final int TEXT_CHANGED_ACTION = 1;
     public static final int DRAFT_RESTORED_ACTION = 2;
     public static final int SPANS_CLEARED_ACTION = 3;
+    public static final int BOLD_SPAN_CHANGED_ACTION = 10;
 
     private RichEditorToolbar mRichEditorToolbar;
     private History mHistory;
@@ -47,6 +52,8 @@ public class UndoRedoHelper {
                 return "Draft restored";
             case SPANS_CLEARED_ACTION:
                 return "Spans cleared";
+            case BOLD_SPAN_CHANGED_ACTION:
+                return "Bold span changed";
 
             /// others
 
@@ -81,6 +88,8 @@ public class UndoRedoHelper {
         final Action action = new Action(id, start, beforeChange, afterChange, bytes);
         mHistory.add(action);
 
+        Log.d("TAG", "addHistory: " + action);
+
         ///[PositionChanged]
         onPositionChanged(false);
     }
@@ -109,6 +118,8 @@ public class UndoRedoHelper {
             return;
         }
 
+        if (DEBUG) Log.d("TAG", "Undo [" + getLabel(currentAction.getId()) + "]");
+
         replace(currentAction, currentAction.mAfter, currentAction.mBefore);
     }
 
@@ -121,6 +132,8 @@ public class UndoRedoHelper {
         if (nextAction == null) {
             return;
         }
+
+        if (DEBUG) Log.d("TAG", "Redo [" + getLabel(nextAction.getId()) + "]");
 
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
     }
@@ -289,6 +302,17 @@ public class UndoRedoHelper {
 
         public void setBytes(byte[] mBytes) {
             this.mBytes = mBytes;
+        }
+
+        @Override
+        public String toString() {
+            return "Action{" +
+                    "mId=" + mId +
+                    ", mStart=" + mStart +
+                    ", mBefore=" + mBefore +
+                    ", mAfter=" + mAfter +
+                    ", mBytes=" + Arrays.toString(mBytes) +
+                    '}';
         }
     }
 

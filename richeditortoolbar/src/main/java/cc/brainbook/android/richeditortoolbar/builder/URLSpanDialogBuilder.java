@@ -22,8 +22,8 @@ public class URLSpanDialogBuilder {
 	private URLSpanDialogBuilder(Context context, int theme) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_url_span_dialog, null);
-		mEditTextText = layout.findViewById(R.id.et_text);
-		mEditTextUrl = layout.findViewById(R.id.et_url);
+		mEditTextText = (EditText) layout.findViewById(R.id.et_text);
+		mEditTextUrl = (EditText) layout.findViewById(R.id.et_url);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);

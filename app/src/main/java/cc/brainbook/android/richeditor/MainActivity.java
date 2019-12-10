@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        mRichEditorToolbar = findViewById(R.id.rich_editor_tool_bar);
-        mRichEditText = findViewById(R.id.et_rich_edit_text);
+        mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
+        mRichEditText = (RichEditText) findViewById(R.id.et_rich_edit_text);
 
         ///[Preview]
         mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
@@ -56,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
         /* -------------- ///设置 -------------- */
         ///（可选）设置编辑器初始文本
         mRichEditText.setText("aaabbbccc"); ///test
-        mRichEditText.getText().setSpan(new BoldSpan(), 3, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+        mRichEditText.getText().setSpan(new BoldSpan(), 3, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
 
         ///（必选）RichEditorToolbar设置编辑器
         mRichEditorToolbar.setupEditText(mRichEditText);

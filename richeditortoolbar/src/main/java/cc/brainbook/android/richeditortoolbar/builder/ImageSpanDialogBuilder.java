@@ -110,7 +110,7 @@ public class ImageSpanDialogBuilder {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_image_span_dialog, null);
 
-		mButtonPickFromGallery = layout.findViewById(R.id.btn_pickup_from_gallery);
+		mButtonPickFromGallery = (Button) layout.findViewById(R.id.btn_pickup_from_gallery);
 		mButtonPickFromGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -119,7 +119,7 @@ public class ImageSpanDialogBuilder {
 			}
 		});
 
-		mButtonPickFromCamera = layout.findViewById(R.id.btn_pickup_from_camera);
+		mButtonPickFromCamera = (Button) layout.findViewById(R.id.btn_pickup_from_camera);
 		mButtonPickFromCamera.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -128,7 +128,7 @@ public class ImageSpanDialogBuilder {
 			}
 		});
 
-		mEditTextSrc = layout.findViewById(R.id.et_src);
+		mEditTextSrc = (EditText) layout.findViewById(R.id.et_src);
 		mEditTextSrc.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -238,9 +238,9 @@ public class ImageSpanDialogBuilder {
 			public void afterTextChanged(Editable s) {}
 		});
 
-		mImageViewPreview = layout.findViewById(R.id.iv_preview);
+		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
 
-		mEditTextDisplayWidth = layout.findViewById(R.id.et_display_width);
+		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
 		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -259,7 +259,7 @@ public class ImageSpanDialogBuilder {
 			@Override
 			public void afterTextChanged(Editable s) {}
 		});
-		mEditTextDisplayHeight = layout.findViewById(R.id.et_display_height);
+		mEditTextDisplayHeight = (EditText) layout.findViewById(R.id.et_display_height);
 		mEditTextDisplayHeight.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -279,7 +279,7 @@ public class ImageSpanDialogBuilder {
 			public void afterTextChanged(Editable s) {}
 		});
 
-		mCheckBoxDisplayConstrain = layout.findViewById(R.id.cb_display_constrain);
+		mCheckBoxDisplayConstrain = (CheckBox) layout.findViewById(R.id.cb_display_constrain);
 		mCheckBoxDisplayConstrain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -290,7 +290,7 @@ public class ImageSpanDialogBuilder {
 				}
 			}
 		});
-		mButtonDisplayRestore = layout.findViewById(R.id.btn_display_restore);
+		mButtonDisplayRestore = (Button) layout.findViewById(R.id.btn_display_restore);
 		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -299,7 +299,7 @@ public class ImageSpanDialogBuilder {
 			}
 		});
 
-        mButtonCrop = layout.findViewById(R.id.btn_crop);
+        mButtonCrop = (Button) layout.findViewById(R.id.btn_crop);
         mButtonCrop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -319,7 +319,7 @@ public class ImageSpanDialogBuilder {
             }
         });
 
-        mButtonDraw = layout.findViewById(R.id.btn_draw);
+        mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
         mButtonDraw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -339,7 +339,7 @@ public class ImageSpanDialogBuilder {
             }
         });
 
-		mRadioGroup = layout.findViewById(R.id.rg_align);
+		mRadioGroup = (RadioGroup) layout.findViewById(R.id.rg_align);
 		mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -352,9 +352,9 @@ public class ImageSpanDialogBuilder {
 				}
 			}
 		});
-		mRadioButtonAlignBottom = layout.findViewById(R.id.rb_align_bottom);
-		mRadioButtonAlignBaseline = layout.findViewById(R.id.rb_align_baseline);
-		mRadioButtonAlignCenter = layout.findViewById(R.id.rb_align_center);
+		mRadioButtonAlignBottom = (RadioButton) layout.findViewById(R.id.rb_align_bottom);
+		mRadioButtonAlignBaseline = (RadioButton) layout.findViewById(R.id.rb_align_baseline);
+		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);

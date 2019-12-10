@@ -418,7 +418,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void init(Context context) {
         mContext = context;
 
-         setFlexDirection(FlexDirection.ROW);
+        setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
         LayoutInflater.from(mContext).inflate(R.layout.layout_tool_bar, this, true);
@@ -577,7 +577,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 updatePreview();
 
                 ///[Undo/Redo]
-                mUndoRedoHelper.addHistory(UndoRedoHelper.SPANS_CLEARED_ACTION, selectionStart, null, null,
+                mUndoRedoHelper.addHistory(UndoRedoHelper.SPANS_CLEARED_ACTION, -1, null, null,
                         RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
             }
         });
@@ -718,6 +718,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean isBlockCharacterStyle(View view) {
         return view == mImageViewURL
                 || view == mImageViewImage;
+    }
+    private int getActionId(View view) {
+        if (view == mImageViewBold) {
+            return UndoRedoHelper.BOLD_SPAN_CHANGED_ACTION;
+//        } else if (view == mImageViewBold) {
+//            /// todo ...
+        } else {
+            return -1;
+        }
     }
 
     private <T> void updateParagraphView(View view, Class<T> clazz, Editable editable, int start, int end) {
@@ -1200,20 +1209,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     view.setSelected(true);
                                 }
 
-                                ///保存参数到view tag
-                                view.setTag(head);
-
-                                ///改变selection的span
-                                applyParagraphStyleSpansSelection(view, editable);
-
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
                                 if (!head.equals(((TextView) view).getText().toString())) {
-                                    ((TextView) view).setText(head);
-                                }
+                                    ///保存参数到view tag
+                                    view.setTag(head);
 
-                                ///[Preview]
-                                updatePreview();
+                                    ///改变selection的span
+                                    applyParagraphStyleSpansSelection(view, editable);
+
+                                    ((TextView) view).setText(head);
+
+                                    ///[Preview]
+                                    updatePreview();
+                                }
 
                                 dialog.dismiss();
                             }
@@ -1282,9 +1291,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             }
-
-            ///[Preview]
-            updatePreview();
         } else if (isCharacterStyle(view)) {
 
             ///字符span（带参数）：URL
@@ -1751,10 +1757,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
             view.setSelected(!view.isSelected());
 
             applyCharacterStyleSpansSelection(view, editable);
-
-            ///[Preview]
-            updatePreview();
         }
+
+        ///[Preview]
+        updatePreview();
     }
 
     @Override
@@ -1878,6 +1884,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 break;
             }
         }
+
+        ///[Undo/Redo]
+        if (getActionId(view) >= 0) {
+            mUndoRedoHelper.addHistory(getActionId(view), -1, null, null,
+                    RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+        }
     }
     private <T> void adjustParagraphStyleSpansSelection(View view, Class<T> clazz, Editable editable, int start, int end, boolean isSelected) {
         boolean isNewSpanNeeded = true;  ///changed内容是否需要新添加span
@@ -1928,6 +1940,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
             adjustBlockCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, view.isSelected(), true);
         } else {
             adjustCharacterStyleSpans(view, mClassMap.get(view), editable, selectionStart, selectionEnd, view.isSelected(), true);
+        }
+
+        ///[Undo/Redo]
+        if (getActionId(view) >= 0) {
+            mUndoRedoHelper.addHistory(getActionId(view), -1, null, null,
+                    RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
         }
     }
 

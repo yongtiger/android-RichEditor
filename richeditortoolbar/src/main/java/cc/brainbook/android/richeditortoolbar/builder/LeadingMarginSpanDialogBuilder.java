@@ -26,8 +26,8 @@ public class LeadingMarginSpanDialogBuilder {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_leading_margin_span_dialog, null);
 
-		mTextViewIndent = layout.findViewById(R.id.tv_indent);
-		mSeekBarIndent = layout.findViewById(R.id.sb_indent);
+		mTextViewIndent = (TextView) layout.findViewById(R.id.tv_indent);
+		mSeekBarIndent = (SeekBar) layout.findViewById(R.id.sb_indent);
 		mSeekBarIndent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

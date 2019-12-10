@@ -66,17 +66,17 @@ public class QuoteSpanDialogBuilder {
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_quote_span_dialog, null);
-		pickerContainer = layout.findViewById(R.id.picker_container);
+		pickerContainer = (LinearLayout) layout.findViewById(R.id.picker_container);
 		pickerContainer.addView(colorPickerView);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
 
 		///[StripWidth/GapWidth]
-		mTextViewStripWidth = layout.findViewById(R.id.tv_strip_width);
-		mSeekBarStripWidth = layout.findViewById(R.id.sb_strip_width);
-		mTextViewGapWidth = layout.findViewById(R.id.tv_gap_width);
-		mSeekBarGapWidth = layout.findViewById(R.id.sb_gap_width);
+		mTextViewStripWidth = (TextView) layout.findViewById(R.id.tv_strip_width);
+		mSeekBarStripWidth = (SeekBar) layout.findViewById(R.id.sb_strip_width);
+		mTextViewGapWidth = (TextView) layout.findViewById(R.id.tv_gap_width);
+		mSeekBarGapWidth = (SeekBar) layout.findViewById(R.id.sb_gap_width);
 		mSeekBarStripWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

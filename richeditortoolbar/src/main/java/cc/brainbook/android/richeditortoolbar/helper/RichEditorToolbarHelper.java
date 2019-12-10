@@ -13,6 +13,7 @@ import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
+import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
@@ -80,7 +81,7 @@ public abstract class RichEditorToolbarHelper {
                 final int spanFlags = editable.getSpanFlags(span);
                 final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
                 final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
-                final SpanBean<T> spanBean = new SpanBean<>(span, adjustSpanStart, adjustSpanEnd, spanFlags);
+                final SpanBean spanBean = new SpanBean((BoldSpan) span, adjustSpanStart, adjustSpanEnd, spanFlags);
                 spanBeans.add(spanBean);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
@@ -89,14 +90,17 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static TextBean createTextBean(byte[] bytes) {
-        final Parcel parcel = ParcelUtil.unmarshall(bytes);
-        if (parcel == null) {
-            return null;
-        }
+        ///https://stackoverflow.com/questions/18000093/how-to-marshall-and-unmarshall-a-parcelable-to-a-byte-array-with-help-of-parcel
+        final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
+//        final Parcel parcel = ParcelUtil.unmarshall(bytes);
+//        if (parcel == null) {
+//            return null;
+//        }
+//
+//        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
+//
+//        parcel.recycle();   ///使用完parcel后应及时回收
 
-        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-
-        parcel.recycle();   ///使用完parcel后应及时回收
         return textBean;
     }
 

@@ -66,16 +66,16 @@ public class BulletSpanDialogBuilder {
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_bullet_span_dialog, null);
-		pickerContainer = layout.findViewById(R.id.picker_container);
+		pickerContainer = (LinearLayout) layout.findViewById(R.id.picker_container);
 		pickerContainer.addView(colorPickerView);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
 
-		mTextViewBulletRadius = layout.findViewById(R.id.tv_bullet_radius);
-		mSeekBarBulletRadius = layout.findViewById(R.id.sb_bullet_radius);
-		mTextViewGapWidth = layout.findViewById(R.id.tv_gap_width);
-		mSeekBarGapWidth = layout.findViewById(R.id.sb_gap_width);
+		mTextViewBulletRadius = (TextView) layout.findViewById(R.id.tv_bullet_radius);
+		mSeekBarBulletRadius = (SeekBar) layout.findViewById(R.id.sb_bullet_radius);
+		mTextViewGapWidth = (TextView) layout.findViewById(R.id.tv_gap_width);
+		mSeekBarGapWidth = (SeekBar) layout.findViewById(R.id.sb_gap_width);
 		mSeekBarBulletRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

@@ -3,11 +3,13 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class SpanBean<T extends Parcelable> implements Parcelable {
+import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+
+public class SpanBean implements Parcelable {
     private int spanStart;
     private int spanEnd;
     private int spanFlags;
-    private T span;
+    private BoldSpan span;
 
     public int getSpanStart() {
         return spanStart;
@@ -33,15 +35,15 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         this.spanFlags = spanFlags;
     }
 
-    public T getSpan() {
+    public BoldSpan getSpan() {
         return span;
     }
 
-    public void setSpan(T span) {
+    public void setSpan(BoldSpan span) {
         this.span = span;
     }
 
-    public SpanBean(T span, int spanStart, int spanEnd, int spanFlags) {
+    public SpanBean(BoldSpan span, int spanStart, int spanEnd, int spanFlags) {
         this.spanStart = spanStart;
         this.spanEnd = spanEnd;
         this.spanFlags = spanFlags;
@@ -52,7 +54,9 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         spanStart = in.readInt();
         spanEnd = in.readInt();
         spanFlags = in.readInt();
-        span = in.readParcelable(getClass().getClassLoader());
+//        span = in.readParcelable(getClass().getClassLoader());
+        span = in.readParcelable(BoldSpan.class.getClassLoader());
+//        span = in.readParcelable(null);
     }
 
     public static final Creator<SpanBean> CREATOR = new Creator<SpanBean>() {
