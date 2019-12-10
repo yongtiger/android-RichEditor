@@ -80,6 +80,7 @@ import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
+import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
@@ -609,7 +610,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     return;
                 }
 
-                final TextBean textBean = RichEditorToolbarHelper.createTextBean(Base64.decode(draftText, Base64.DEFAULT));
+                final TextBean textBean = ParcelUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT), TextBean.CREATOR);
                 if (textBean != null) {
                     final String beforeChange = mRichEditText.getText().toString();
 

@@ -1,11 +1,9 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +33,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static boolean loadSpans(Editable editable, byte[] bytes) {
-        final TextBean textBean = createTextBean(bytes);
+        final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
         if (textBean != null) {
             if (textBean.getText() != null) {
                 //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
@@ -87,21 +85,6 @@ public abstract class RichEditorToolbarHelper {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static TextBean createTextBean(byte[] bytes) {
-        ///https://stackoverflow.com/questions/18000093/how-to-marshall-and-unmarshall-a-parcelable-to-a-byte-array-with-help-of-parcel
-        final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
-//        final Parcel parcel = ParcelUtil.unmarshall(bytes);
-//        if (parcel == null) {
-//            return null;
-//        }
-//
-//        final TextBean textBean = TextBean.CREATOR.createFromParcel(parcel);
-//
-//        parcel.recycle();   ///使用完parcel后应及时回收
-
-        return textBean;
     }
 
 }

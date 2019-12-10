@@ -31,7 +31,6 @@ public abstract class ParcelUtil {
 
         final Parcel parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
-        ///must call setDataPosition(0) after unmarshalling your data
         parcel.setDataPosition(0);  ///注意：必须执行parcel.setDataPosition(0)，而且在parcel.unmarshall()之后
 
         return parcel;
@@ -43,7 +42,7 @@ public abstract class ParcelUtil {
             return null;
         }
 
-        Parcel parcel = unmarshall(bytes);
+        final Parcel parcel = unmarshall(bytes);
         T result = creator.createFromParcel(parcel);
         parcel.recycle();
         return result;
