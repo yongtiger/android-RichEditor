@@ -3,13 +3,11 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
-
-public class SpanBean implements Parcelable {
+public class SpanBean<T extends Parcelable> implements Parcelable {
     private int spanStart;
     private int spanEnd;
     private int spanFlags;
-    private BoldSpan span;
+    private T span;
 
     public int getSpanStart() {
         return spanStart;
@@ -35,15 +33,15 @@ public class SpanBean implements Parcelable {
         this.spanFlags = spanFlags;
     }
 
-    public BoldSpan getSpan() {
+    public T getSpan() {
         return span;
     }
 
-    public void setSpan(BoldSpan span) {
+    public void setSpan(T span) {
         this.span = span;
     }
 
-    public SpanBean(BoldSpan span, int spanStart, int spanEnd, int spanFlags) {
+    public SpanBean(T span, int spanStart, int spanEnd, int spanFlags) {
         this.spanStart = spanStart;
         this.spanEnd = spanEnd;
         this.spanFlags = spanFlags;
@@ -54,9 +52,12 @@ public class SpanBean implements Parcelable {
         spanStart = in.readInt();
         spanEnd = in.readInt();
         spanFlags = in.readInt();
-//        span = in.readParcelable(getClass().getClassLoader());
-        span = in.readParcelable(BoldSpan.class.getClassLoader());
 //        span = in.readParcelable(null);
+        span = in.readParcelable(getClass().getClassLoader());
+//        span = in.readParcelable(Thread.currentThread().getContextClassLoader());
+        //////??????Java中泛型得到T.class
+        ///https://www.cnblogs.com/EasonJim/p/8289778.html
+        ///http://www.blogjava.net/calvin/archive/2009/12/10/43830.html
     }
 
     public static final Creator<SpanBean> CREATOR = new Creator<SpanBean>() {

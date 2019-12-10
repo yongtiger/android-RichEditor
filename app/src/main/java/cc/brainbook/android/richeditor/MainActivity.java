@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
         /* -------------- ///设置 -------------- */
         ///（可选）设置编辑器初始文本
-        mRichEditText.setText("aaabbbccc"); ///test
-        mRichEditText.getText().setSpan(new BoldSpan(), 3, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
+        mRichEditText.getText().setSpan(new BoldSpan(), 2, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
         mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
 
         ///（必选）RichEditorToolbar设置编辑器

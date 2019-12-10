@@ -34,8 +34,6 @@ public class TextBean implements Parcelable {
         this();
         text = in.readString();
         in.readTypedList(spans, SpanBean.CREATOR);
-//        spans = in.createTypedArrayList(SpanBean.CREATOR);
-//        spans = in.readArrayList(SpanBean.class.getClassLoader());
     }
 
     public static final Creator<TextBean> CREATOR = new Creator<TextBean>() {
@@ -59,7 +57,5 @@ public class TextBean implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(text);
         dest.writeTypedList(spans);
-//        dest.writeList(spans);
-//        dest.writeParcelableArray(spans.toArray(new SpanBean[0]), flags); ///https://stackoverflow.com/questions/1056683/should-we-use-type-cast-for-the-object-toarray
     }
 }

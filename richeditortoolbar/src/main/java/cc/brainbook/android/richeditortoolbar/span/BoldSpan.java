@@ -35,4 +35,6 @@ public class BoldSpan extends StyleSpan implements Parcelable {
         return 0;
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {}
 }

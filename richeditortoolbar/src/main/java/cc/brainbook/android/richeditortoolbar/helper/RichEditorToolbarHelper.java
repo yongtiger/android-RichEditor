@@ -79,7 +79,7 @@ public abstract class RichEditorToolbarHelper {
                 final int spanFlags = editable.getSpanFlags(span);
                 final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
                 final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
-                final SpanBean spanBean = new SpanBean((BoldSpan) span, adjustSpanStart, adjustSpanEnd, spanFlags);
+                final SpanBean<T> spanBean = new SpanBean<>(span, adjustSpanStart, adjustSpanEnd, spanFlags);
                 spanBeans.add(spanBean);
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
