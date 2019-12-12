@@ -232,16 +232,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mPlaceholderResourceId = placeholderResourceId;
     }
 
-    ///[pasteOffset]
-    ///使用pasteOffset区分是否为paste操作，如offset为-1则不是，offset大于等于0则是
-    ///如果pasteEditable为null，则忽略pasteOffset（即pasteOffset为-1）
-    ///说明：当paste含有ImageSpan的文本时，有可能造成已经replace完了paste文本才完成Glide异步加载图片，
-    ///此时loadImage仍然执行paste的setSpan，而此时应该执行mRichEditText的setSpan！
-    //////??????注意：有可能存在Glide多线程的同步问题！
-    public int pasteOffset;
-
     private void loadImage(final String viewTagSrc, final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
-                     final Editable pasteEditable, final int start, final int end) {
+                     final Editable pasteEditable, final int pasteOffset, final int start, final int end) {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(mContext);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
@@ -253,8 +245,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         glideImageLoader.setDrawableCallback(this);
         glideImageLoader.setCallback(new GlideImageLoader.Callback() {
+            ///[GlideImageLoader#isAsync]GlideImageLoader是否为异步加载图片
+            ///说明：当paste含有ImageSpan的文本时，有可能造成已经replace完了paste文本才完成Glide异步加载图片，
+            ///此时loadImage仍然执行paste的setSpan，而此时应该执行mRichEditText的setSpan！
+            private boolean isAsync = false;
+
             @Override
             public void onLoadStarted(@Nullable Drawable placeholderDrawable) {
+                isAsync = true;
+
                 if (placeholderDrawable != null) {
                     placeholderDrawable.setBounds(0, 0, viewTagWidth, viewTagHeight);   ///注意：Drawable必须设置Bounds才能显示
 
@@ -271,27 +270,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
             public void onResourceReady(@NonNull Drawable drawable) {
                 drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
 
-                ///[pasteOffset]
-                if (pasteOffset == -1) {
-                    if (pasteEditable == null) {
-                        mRichEditText.getText().removeSpan(imagePlaceholderSpan);
-                        mRichEditText.getText().setSpan(new CustomImageSpan(drawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    } else {
-                        pasteEditable.removeSpan(imagePlaceholderSpan);
-                        pasteEditable.setSpan(new CustomImageSpan(drawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    }
-                } else {
+                if (isAsync || pasteEditable == null) {
                     mRichEditText.getText().removeSpan(imagePlaceholderSpan);
-                    mRichEditText.getText().setSpan(new CustomImageSpan(drawable, viewTagSrc, viewTagAlign), start + pasteOffset, end + pasteOffset, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    mRichEditText.getText().setSpan(new CustomImageSpan(drawable, viewTagSrc, viewTagAlign),
+                            pasteEditable == null ? start : start + pasteOffset, pasteEditable == null ? end : end + pasteOffset, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } else {
+                    pasteEditable.removeSpan(imagePlaceholderSpan);
+                    pasteEditable.setSpan(new CustomImageSpan(drawable, viewTagSrc, viewTagAlign), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
-
-                ///[pasteOffset]使用完pasteOffset后重置为-1
-                pasteOffset = -1;
             }
         });
-
-        ///[pasteOffset]使用pasteOffset前重置为-1
-        pasteOffset = -1;
 
         ///[ImageSpan#Glide#loadImage()]
         glideImageLoader.loadImage(viewTagSrc);
@@ -357,6 +345,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
+    ///[pasteEditable/pasteOffset]
+    ///使用pasteOffset区分是否为paste操作，如offset为-1则不是，offset大于等于0则是
+    ///如果pasteEditable为null，则忽略pasteOffset（即pasteOffset为-1）
     @Override
     public void loadSpans(Editable pasteEditable, int pasteOffset) {
         ///从进程App共享空间恢复spans
@@ -367,10 +358,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///执行setSpanFromSpanBeans及后处理
-            postSetSpanFromSpanBeans(pasteEditable, RichEditorToolbarHelper.loadSpans(pasteEditable, bytes));
-
-            ///[pasteOffset]设置pasteOffset以区分Glide异步加载图片
-            this.pasteOffset = pasteOffset;
+            postSetSpanFromSpanBeans(pasteEditable, pasteOffset, RichEditorToolbarHelper.loadSpans(pasteEditable, bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -411,7 +399,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
 
             ///执行setSpanFromSpanBeans及后处理
-            postSetSpanFromSpanBeans(null, RichEditorToolbarHelper.loadSpans(mRichEditText.getText(), action.getBytes()));
+            postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpans(mRichEditText.getText(), action.getBytes()));
         }
     }
 
@@ -643,7 +631,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final Editable editable = mRichEditText.getText();
                     final List<SpanBean> spanBeans = textBean.getSpans();
                     ///执行setSpanFromSpanBeans及后处理
-                    postSetSpanFromSpanBeans(null, RichEditorToolbarHelper.setSpanFromSpanBeans(spanBeans, editable));
+                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.setSpanFromSpanBeans(spanBeans, editable));
 
                     ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
                     ///解决：此时应手动调用selectionChanged()来更新view的select状态
@@ -2264,7 +2252,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanSrc = ((CustomImageSpan) span).getSource();
                     if (isFromSelection && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        ///忽略TextWatcher
+                        ///忽略TextWatcher中的UndoRedo
                         isSkipUndoRedo = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
                         Selection.setSelection(editable, start, start + viewTagText.length());
@@ -2283,7 +2271,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             editable.removeSpan(span);
 
                             ///[ImageSpan#Glide#GifDrawable]
-                            loadImage(viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, null, start, end);
+                            loadImage(viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, null, -1, start, end);
                         }
                     }
                 }
@@ -2342,7 +2330,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 } else {
                     if (!TextUtils.isEmpty(viewTagSrc)) {
                         ///[ImageSpan#Glide#GifDrawable]
-                        loadImage(viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, null, start, end);
+                        loadImage(viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, null, -1, start, end);
                     }
                 }
             }
@@ -2591,7 +2579,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     ///执行setSpanFromSpanBeans后处理
     ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
-    private void postSetSpanFromSpanBeans(Editable pasteEditable, ArrayList<Object> spanList) {
+    private void postSetSpanFromSpanBeans(Editable pasteEditable, int pasteOffset, ArrayList<Object> spanList) {
         if (spanList == null) {
             return;
         }
@@ -2605,21 +2593,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int drawableWidth = ((CustomImageSpan) span).getDrawableWidth();
                 final int drawableHeight = ((CustomImageSpan) span).getDrawableHeight();
 
-                ///[pasteOffset]
                 if (pasteEditable == null) {
                     final int spanStart = mRichEditText.getText().getSpanStart(span);
                     final int spanEnd = mRichEditText.getText().getSpanEnd(span);
                     mRichEditText.getText().removeSpan(span);
 
                     ///[ImageSpan#Glide#GifDrawable]
-                    loadImage(source, verticalAlignment, drawableWidth, drawableHeight, null, spanStart, spanEnd);
+                    loadImage(source, verticalAlignment, drawableWidth, drawableHeight, null, -1, spanStart, spanEnd);
                 } else {
                     final int spanStart = pasteEditable.getSpanStart(span);
                     final int spanEnd = pasteEditable.getSpanEnd(span);
                     pasteEditable.removeSpan(span);
 
                     ///[ImageSpan#Glide#GifDrawable]
-                    loadImage(source, verticalAlignment, drawableWidth, drawableHeight, pasteEditable, spanStart, spanEnd);
+                    loadImage(source, verticalAlignment, drawableWidth, drawableHeight, pasteEditable, pasteOffset, spanStart, spanEnd);
                 }
             }
         }
