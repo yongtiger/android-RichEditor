@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
-public class CodeSpan extends ReplacementSpan {
+public class CodeSpan extends ReplacementSpan implements Parcelable {
 
     private static final int CODE_COLOR = Color.parseColor("#F0F0F0");
 
@@ -37,5 +39,27 @@ public class CodeSpan extends ReplacementSpan {
         drawable.draw(canvas);
         canvas.drawText(text, start, end, x + padding * 2, y, paint);
     }
+
+
+    public static final Creator<CodeSpan> CREATOR = new Creator<CodeSpan>() {
+        @Override
+        public CodeSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            return new CodeSpan();
+        }
+
+        @Override
+        public CodeSpan[] newArray(int size) {
+            return new CodeSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {}
 
 }

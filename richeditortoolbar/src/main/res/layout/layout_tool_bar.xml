@@ -125,7 +125,7 @@
         style="@style/ImageView" />
 
     <TextView
-        android:id="@+id/tv_typeface_family"
+        android:id="@+id/tv_font_family"
         android:text="@string/font_family"
         style="@style/TextView"/>
 

@@ -132,4 +132,34 @@ public class CustomBulletSpan extends BulletSpan {
         }
     }
 
+
+    public static final Creator<CustomBulletSpan> CREATOR = new Creator<CustomBulletSpan>() {
+        @Override
+        public CustomBulletSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            final int gapWidth = in.readInt();
+            @ColorInt final int color = in.readInt();
+            final boolean wantColor = in.readInt() == 1;
+            @IntRange(from = 0) final int bulletRadius = in.readInt();
+            return new CustomBulletSpan(gapWidth, color, wantColor, bulletRadius);
+        }
+
+        @Override
+        public CustomBulletSpan[] newArray(int size) {
+            return new CustomBulletSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mGapWidth);
+        dest.writeInt(mColor);
+        dest.writeInt(mWantColor ? 1 : 0);
+        dest.writeInt(mBulletRadius);
+    }
 }

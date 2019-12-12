@@ -3,9 +3,11 @@ package cc.brainbook.android.richeditortoolbar.helper;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.Selection;
 import android.util.Log;
+import android.widget.Toast;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 
@@ -14,11 +16,36 @@ import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
     public static final int INIT_ACTION = 0;
-    public static final int TEXT_CHANGED_ACTION = 1;
-    public static final int DRAFT_RESTORED_ACTION = 2;
-    public static final int SPANS_CLEARED_ACTION = 3;
-    public static final int BOLD_SPAN_CHANGED_ACTION = 10;
+    public static final int CHANGE_TEXT_ACTION = 1;
+    public static final int RESTORE_DRAFT_ACTION = 2;
+    public static final int CLEAR_SPANS_ACTION = 3;
 
+    public static final int CHANGE_HEAD_SPAN_ACTION = 10;
+    public static final int CHANGE_QUOTE_SPAN_ACTION = 11;
+    public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 12;
+    public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 13;
+    public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 14;
+    public static final int CHANGE_BULLET_SPAN_ACTION = 15;
+    public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 16;
+    public static final int CHANGE_LINE_DIVIDER_SPAN_ACTION = 17;
+    public static final int CHANGE_BOLD_SPAN_ACTION = 20;
+    public static final int CHANGE_ITALIC_SPAN_ACTION = 21;
+    public static final int CHANGE_UNDERLINE_SPAN_ACTION = 22;
+    public static final int CHANGE_STRIKE_THROUGH_SPAN_ACTION = 23;
+    public static final int CHANGE_SUBSCRIPT_SPAN_ACTION = 24;
+    public static final int CHANGE_SUPERSCRIPT_SPAN_ACTION = 25;
+    public static final int CHANGE_CODE_SPAN_ACTION = 26;
+    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 27;
+    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 28;
+    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 29;
+    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 30;
+    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 31;
+    public static final int CHANGE_SCALE_X_SPAN_ACTION = 32;
+    public static final int CHANGE_URL_SPAN_ACTION = 33;
+    public static final int CHANGE_IMAGE_SPAN_ACTION = 34;
+
+
+    private Context mContext;
     private RichEditorToolbar mRichEditorToolbar;
     private History mHistory;
 
@@ -45,17 +72,61 @@ public class UndoRedoHelper {
     public String getLabel(int id) {
         switch (id) {
             case INIT_ACTION:
-                return "Init";
-            case TEXT_CHANGED_ACTION:
-                return "Text changed";
-            case DRAFT_RESTORED_ACTION:
-                return "Draft restored";
-            case SPANS_CLEARED_ACTION:
-                return "Spans cleared";
-            case BOLD_SPAN_CHANGED_ACTION:
-                return "Bold span changed";
+                return "init";
+            case CHANGE_TEXT_ACTION:
+                return "change text";
+            case RESTORE_DRAFT_ACTION:
+                return "restore draft";
+            case CLEAR_SPANS_ACTION:
+                return "clear spans";
 
-            /// others
+            case CHANGE_HEAD_SPAN_ACTION:
+                return "change head span";
+            case CHANGE_QUOTE_SPAN_ACTION:
+                return "change quote span";
+            case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
+                return "change align normal span";
+            case CHANGE_ALIGN_CENTER_SPAN_ACTION:
+                return "change align center span";
+            case CHANGE_ALIGN_OPPOSITE_SPAN_ACTION:
+                return "change align opposite span";
+            case CHANGE_BULLET_SPAN_ACTION:
+                return "change bullet span";
+            case CHANGE_LEADING_MARGIN_SPAN_ACTION:
+                return "change leading margin span";
+            case CHANGE_LINE_DIVIDER_SPAN_ACTION:
+                return "change line divider span";
+
+            case CHANGE_BOLD_SPAN_ACTION:
+                return "change bold span";
+            case CHANGE_ITALIC_SPAN_ACTION:
+                return "change italic span";
+            case CHANGE_UNDERLINE_SPAN_ACTION:
+                return "change underline span";
+            case CHANGE_STRIKE_THROUGH_SPAN_ACTION:
+                return "change strike through span";
+            case CHANGE_SUBSCRIPT_SPAN_ACTION:
+                return "change subscript span";
+            case CHANGE_SUPERSCRIPT_SPAN_ACTION:
+                return "change superscript span";
+            case CHANGE_CODE_SPAN_ACTION:
+                return "change code span";
+            case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
+                return "change foreground color span";
+            case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:
+                return "change background color span";
+            case CHANGE_FONT_FAMILY_SPAN_ACTION:
+                return "change font family span";
+            case CHANGE_ABSOLUTE_SIZE_SPAN_ACTION:
+                return "change absolute size span";
+            case CHANGE_RELATIVE_SIZE_SPAN_ACTION:
+                return "change relative size span";
+            case CHANGE_SCALE_X_SPAN_ACTION:
+                return "change scale x span";
+            case CHANGE_URL_SPAN_ACTION:
+                return "change url span";
+            case CHANGE_IMAGE_SPAN_ACTION:
+                return "change image span";
 
             default:
                 return null;
@@ -63,7 +134,8 @@ public class UndoRedoHelper {
     }
 
 
-    public UndoRedoHelper(RichEditorToolbar richEditorToolbar) {
+    public UndoRedoHelper(Context context, RichEditorToolbar richEditorToolbar) {
+        mContext = context;
         mRichEditorToolbar = richEditorToolbar;
         mOnPositionChangedListener = richEditorToolbar;
         mHistory = new History();
@@ -88,7 +160,7 @@ public class UndoRedoHelper {
         final Action action = new Action(id, start, beforeChange, afterChange, bytes);
         mHistory.add(action);
 
-        Log.d("TAG", "addHistory: " + action);
+        if (DEBUG) Log.d("TAG", "addHistory: " + action);
 
         ///[PositionChanged]
         onPositionChanged(false);
@@ -118,9 +190,9 @@ public class UndoRedoHelper {
             return;
         }
 
-        if (DEBUG) Log.d("TAG", "Undo [" + getLabel(currentAction.getId()) + "]");
-
         replace(currentAction, currentAction.mAfter, currentAction.mBefore);
+
+        Toast.makeText(mContext.getApplicationContext(), "Undo: " + getLabel(currentAction.getId()), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -133,27 +205,35 @@ public class UndoRedoHelper {
             return;
         }
 
-        if (DEBUG) Log.d("TAG", "Redo [" + getLabel(nextAction.getId()) + "]");
-
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
+
+        Toast.makeText(mContext.getApplicationContext(), "Redo: " + getLabel(nextAction.getId()), Toast.LENGTH_SHORT).show();
     }
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {
         final Editable editable = mRichEditorToolbar.getRichEditText().getText();
         final int start = action.mStart;
-        final int end = start + (originalText != null ? originalText.length() : 0);
+        final int end = start + (originalText == null ? 0 : originalText.length());
 
-        mRichEditorToolbar.isUndoOrRedo = true;
+        ///忽略TextWatcher
+        mRichEditorToolbar.isSkipTextWatcher = true;
         if (newText != null) {
             editable.replace(start, end, newText);
         }
 
         ///[PositionChanged]
         onPositionChanged( true);
-        mRichEditorToolbar.isUndoOrRedo = false;
+        mRichEditorToolbar.isSkipTextWatcher = false;
 
-        if (newText != null) {
-            Selection.setSelection(editable, start + newText.length());
+        ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
+        ///解决：此时应手动调用selectionChanged()来更新view的select状态
+        final int selectionStart = Selection.getSelectionStart(editable);
+        final int selectionEnd = Selection.getSelectionEnd(editable);
+        final int newSelectionEnd = start + (newText == null ? 0 : newText.length());
+        if (selectionStart == selectionEnd && newSelectionEnd == selectionEnd) {
+            mRichEditorToolbar.selectionChanged(newSelectionEnd, newSelectionEnd);
+        } else {
+            Selection.setSelection(editable, start + (newText == null ? 0 : newText.length()));
         }
     }
 

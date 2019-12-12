@@ -11,7 +11,6 @@ import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
@@ -32,13 +31,13 @@ public abstract class RichEditorToolbarHelper {
         return ParcelUtil.marshall(textBean);
     }
 
-    public static boolean loadSpans(Editable editable, byte[] bytes) {
+    public static ArrayList<Object> loadSpans(Editable editable, byte[] bytes) {
         final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
         if (textBean != null) {
             if (textBean.getText() != null) {
                 //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
                 if (!TextUtils.equals(textBean.getText(), editable)) {
-                    return false;
+                    return null;
                 }
 
                 ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
@@ -47,15 +46,15 @@ public abstract class RichEditorToolbarHelper {
             }
 
             final List<SpanBean> spanBeans = textBean.getSpans();
-            setSpanFromSpanBeans(spanBeans, editable);
 
-            return true;
+            return setSpanFromSpanBeans(spanBeans, editable);
         }
 
-        return false;
+        return null;
     }
 
-    public static void setSpanFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+    public static ArrayList<Object> setSpanFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+        final ArrayList<Object> resultSpanList = new ArrayList<>();
         if (spanBeans != null) {
             for (SpanBean spanBean : spanBeans) {
                 final int spanStart = spanBean.getSpanStart();
@@ -63,8 +62,10 @@ public abstract class RichEditorToolbarHelper {
                 final int spanFlags = spanBean.getSpanFlags();
                 final Object span = spanBean.getSpan();
                 editable.setSpan(span, spanStart, spanEnd, spanFlags);
+                resultSpanList.add(span);
             }
         }
+        return resultSpanList;
     }
 
     public static <T extends Parcelable> void getSpanToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {

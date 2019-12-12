@@ -1,42 +1,44 @@
 package cc.brainbook.android.richeditortoolbar.span;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.style.ImageSpan;
 
 import java.lang.ref.WeakReference;
 
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
-public class CustomImageSpan extends ImageSpan {
+public class CustomImageSpan extends ImageSpan implements Parcelable {
     public static final int ALIGN_CENTER = 2;
+
+    private int mVerticalAlignment;
+    private int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
+    public int getDrawableWidth() {
+        return mDrawableWidth;
+    }
+    public int getDrawableHeight() {
+        return mDrawableHeight;
+    }
+
+    @Nullable
+    private String mSource;
 
     private WeakReference<Drawable> mDrawableRef;
 
-    public CustomImageSpan(@NonNull Context context, @NonNull Bitmap bitmap, int verticalAlignment) {
-        super(context, bitmap, verticalAlignment);
-    }
-
-    public CustomImageSpan(@NonNull Drawable drawable, int verticalAlignment) {
-        super(drawable, verticalAlignment);
-    }
-
     public CustomImageSpan(@NonNull Drawable drawable, @NonNull String source, int verticalAlignment) {
         super(drawable, source, verticalAlignment);
-    }
-
-    public CustomImageSpan(@NonNull Context context, @NonNull Uri uri, int verticalAlignment) {
-        super(context, uri, verticalAlignment);
-    }
-
-    public CustomImageSpan(@NonNull Context context, int resourceId, int verticalAlignment) {
-        super(context, resourceId, verticalAlignment);
+        mSource = source;
+        mVerticalAlignment = verticalAlignment;
+        mDrawableWidth = drawable.getBounds().right;
+        mDrawableHeight = drawable.getBounds().bottom;
     }
 
     ///https://segmentfault.com/a/1190000007133405
@@ -101,6 +103,47 @@ public class CustomImageSpan extends ImageSpan {
         }
 
         return d;
+    }
+
+
+    public static final Creator<CustomImageSpan> CREATOR = new Creator<CustomImageSpan>() {
+        @Override
+        public CustomImageSpan createFromParcel(Parcel in) {
+            final String source = in.readString();
+            final int verticalAlignment = in.readInt();
+
+            ///获取Parcel中保存的drawable宽高
+            final int drawableWidth = in.readInt();
+            final int drawableHeight = in.readInt();
+
+            ///注意：构造要求必须有drawable！设置临时drawable，以后会用GlideImageLoader替换掉
+            final Drawable drawable = new ColorDrawable(Color.TRANSPARENT);
+
+            ///注意：Drawable必须设置Bounds才能显示
+            drawable.setBounds(0, 0, drawableWidth, drawableHeight);
+
+            return new CustomImageSpan(drawable, source, verticalAlignment);
+        }
+
+        @Override
+        public CustomImageSpan[] newArray(int size) {
+            return new CustomImageSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mSource);
+        dest.writeInt(mVerticalAlignment);
+
+        ///保存drawable的宽高到Parcel
+        dest.writeInt(mDrawableWidth);
+        dest.writeInt(mDrawableHeight);
     }
 
 }

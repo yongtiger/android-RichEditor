@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.span;
 
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Parcel;
 import android.support.annotation.StringDef;
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
@@ -178,6 +179,35 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
             fm.bottom += mMarginBottom;
             fm.descent += mMarginBottom;
         }
+    }
+
+
+    public static final Creator<HeadSpan> CREATOR = new Creator<HeadSpan>() {
+        @Override
+        public HeadSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            @Head final String head = in.readString();
+            final int marginTop = in.readInt();
+            final int marginBottom = in.readInt();
+            return new HeadSpan(head, marginTop, marginBottom);
+        }
+
+        @Override
+        public HeadSpan[] newArray(int size) {
+            return new HeadSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mHead);
+        dest.writeInt(mMarginTop);
+        dest.writeInt(mMarginBottom);
     }
 
 }

@@ -2,21 +2,30 @@ package cc.brainbook.android.richeditortoolbar.span;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
 
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan {
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable {
     ///[implements LineHeightSpan]
     private final int mMarginTop;
     private final int mMarginBottom;
 
     ///[implements LineBackgroundSpan]
-    private LineDividerSpan.DrawBackgroundCallback mDrawBackgroundCallback;
+    private DrawBackgroundCallback mDrawBackgroundCallback;
+    public void setDrawBackgroundCallback(DrawBackgroundCallback drawBackgroundCallback) {
+        mDrawBackgroundCallback = drawBackgroundCallback;
+    }
 
-    public LineDividerSpan(int marginTop, int marginBottom, LineDividerSpan.DrawBackgroundCallback drawBackgroundCallback) {
+    public LineDividerSpan(int marginTop, int marginBottom) {
         mMarginTop = marginTop;
         mMarginBottom = marginBottom;
+    }
+
+    public LineDividerSpan(int marginTop, int marginBottom, DrawBackgroundCallback drawBackgroundCallback) {
+        this(marginTop, marginBottom);
 
         mDrawBackgroundCallback = drawBackgroundCallback;
     }
@@ -45,6 +54,34 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan {
 
     public interface DrawBackgroundCallback {
         void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum);
+    }
+
+
+    ///注意：mDrawBackgroundCallback需要执行setSpanFromSpanBeans后处理
+    public static final Creator<LineDividerSpan> CREATOR = new Creator<LineDividerSpan>() {
+        @Override
+        public LineDividerSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            final int marginTop = in.readInt();
+            final int marginBottom = in.readInt();
+            return new LineDividerSpan(marginTop, marginBottom);
+        }
+
+        @Override
+        public LineDividerSpan[] newArray(int size) {
+            return new LineDividerSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mMarginTop);
+        dest.writeInt(mMarginBottom);
     }
 
 }

@@ -1,10 +1,12 @@
 package cc.brainbook.android.richeditortoolbar.span;
 
 import android.graphics.Paint;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.style.LineHeightSpan;
 
 ///[UPGRADE#LineMarginSpan]
-public class LineMarginSpan implements LineHeightSpan {
+public class LineMarginSpan implements LineHeightSpan, Parcelable {
 
     private final int mMarginTop;
     private final int mMarginBottom;
@@ -24,4 +26,32 @@ public class LineMarginSpan implements LineHeightSpan {
             fm.descent += mMarginBottom;
         }
     }
+
+
+    public static final Creator<LineMarginSpan> CREATOR = new Creator<LineMarginSpan>() {
+        @Override
+        public LineMarginSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            final int marginTop = in.readInt();
+            final int marginBottom = in.readInt();
+            return new LineMarginSpan(marginTop, marginBottom);
+        }
+
+        @Override
+        public LineMarginSpan[] newArray(int size) {
+            return new LineMarginSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mMarginTop);
+        dest.writeInt(mMarginBottom);
+    }
+
 }

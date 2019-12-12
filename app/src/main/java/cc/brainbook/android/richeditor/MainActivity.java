@@ -3,6 +3,8 @@ package cc.brainbook.android.richeditor;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -55,22 +57,26 @@ public class MainActivity extends AppCompatActivity {
 
         /* -------------- ///设置 -------------- */
         ///（可选）设置编辑器初始文本
-        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
-        mRichEditText.getText().setSpan(new BoldSpan(), 2, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
-        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+//        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
+//        mRichEditText.getText().setSpan(new BoldSpan(), 2, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
+//        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
 
         ///（必选）RichEditorToolbar设置编辑器
         mRichEditorToolbar.setupEditText(mRichEditText);
 
-        ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
-//        mRichEditorToolbar.setHistorySize(2); ///test
-
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
+
+        ///（必选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
+        mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
+//        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.ic_image_black_24dp);
 
         ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录
         final File imageFilePath = getExternalCacheDir();   ///test
         mRichEditorToolbar.setImageFilePath(imageFilePath);
+
+        ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
+//        mRichEditorToolbar.setHistorySize(2); ///test
 
     }
 

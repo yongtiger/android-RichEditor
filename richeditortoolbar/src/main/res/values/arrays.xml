@@ -8,7 +8,7 @@
         <item>H5</item>
         <item>H6</item>
     </string-array>
-    <string-array name="typeface_family_items">
+    <string-array name="font_family_items">
         <item>monospace</item>
         <item>serif</item>
         <item>sans-serif</item>

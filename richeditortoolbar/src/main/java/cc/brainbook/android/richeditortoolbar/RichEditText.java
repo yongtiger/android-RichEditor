@@ -56,7 +56,7 @@ public class RichEditText extends AppCompatEditText {
         void saveSpans(Editable editable, int selectionStart, int selectionEnd);
     }
     interface LoadSpansCallback {
-        void loadSpans(Editable editable);
+        void loadSpans(Editable editable, int offset);
     }
     private SaveSpansCallback mSaveSpansCallback;
     private LoadSpansCallback mLoadSpansCallback;
@@ -116,7 +116,7 @@ public class RichEditText extends AppCompatEditText {
                         mSaveSpansCallback.saveSpans(getText(), min, max);
                     }
 
-                    //////??????关闭TextContextMenuItem
+                    //////??????如何关闭TextContextMenuItem
 
                 } else {
                     Toast.makeText(getContext(),
@@ -176,7 +176,7 @@ public class RichEditText extends AppCompatEditText {
                             //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
 //                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
 //                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            mLoadSpansCallback.loadSpans(paste);
+                            mLoadSpansCallback.loadSpans(paste, min);
 //                            }
                         }
 

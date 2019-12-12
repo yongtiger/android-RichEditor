@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.span;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Parcel;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.Px;
@@ -27,6 +28,8 @@ public class CustomQuoteSpan extends QuoteSpan {
      */
     public static final int STANDARD_GAP_WIDTH_PX = 40;
 
+    @ColorInt
+    private final int mColor;
     @Px
     private final int mStripeWidth;
     @Px
@@ -41,6 +44,7 @@ public class CustomQuoteSpan extends QuoteSpan {
     public CustomQuoteSpan(@ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
         super(color);
+        mColor = color;
         mStripeWidth = stripeWidth;
         mGapWidth = gapWidth;
     }
@@ -80,5 +84,34 @@ public class CustomQuoteSpan extends QuoteSpan {
 
         p.setStyle(style);
         p.setColor(color);
+    }
+
+
+    public static final Creator<CustomQuoteSpan> CREATOR = new Creator<CustomQuoteSpan>() {
+        @Override
+        public CustomQuoteSpan createFromParcel(Parcel in) {
+            ///注意：必须按照成员变量声明的顺序！
+            @ColorInt int color = in.readInt();
+            @Px final int stripeWidth = in.readInt();
+            @Px final int gapWidth = in.readInt();
+            return new CustomQuoteSpan(color, stripeWidth, gapWidth);
+        }
+
+        @Override
+        public CustomQuoteSpan[] newArray(int size) {
+            return new CustomQuoteSpan[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mColor);
+        dest.writeInt(mStripeWidth);
+        dest.writeInt(mGapWidth);
     }
 }
