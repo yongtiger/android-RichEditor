@@ -151,6 +151,18 @@
         style="@style/ImageView" />
 
     <ImageView
+        android:id="@+id/iv_video"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_videocam_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_audio"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_audiotrack_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
         android:id="@+id/iv_image"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_insert_photo_black_24dp"

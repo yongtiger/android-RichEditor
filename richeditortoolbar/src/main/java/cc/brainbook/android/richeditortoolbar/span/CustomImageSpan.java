@@ -11,12 +11,18 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.style.ImageSpan;
+import android.util.Log;
+import android.view.View;
 
 import java.lang.ref.WeakReference;
 
+import cc.brainbook.android.richeditortoolbar.Clickable;
+
+import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
+
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
-public class CustomImageSpan extends ImageSpan implements Parcelable {
+public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable {
     public static final int ALIGN_CENTER = 2;
 
     private int mVerticalAlignment;
@@ -29,12 +35,20 @@ public class CustomImageSpan extends ImageSpan implements Parcelable {
     }
 
     @Nullable
+    private String mUri;    ///media source
+    @Nullable
+    public String getUri() {
+        return mUri;
+    }
+
+    @Nullable
     private String mSource;
 
     private WeakReference<Drawable> mDrawableRef;
 
-    public CustomImageSpan(@NonNull Drawable drawable, @NonNull String source, int verticalAlignment) {
+    public CustomImageSpan(@NonNull Drawable drawable, @Nullable String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, source, verticalAlignment);
+        mUri = uri;
         mSource = source;
         mVerticalAlignment = verticalAlignment;
         mDrawableWidth = drawable.getBounds().right;
@@ -105,10 +119,15 @@ public class CustomImageSpan extends ImageSpan implements Parcelable {
         return d;
     }
 
+    @Override
+    public void onClick(View widget) {
+        if (DEBUG) Log.d("TAG", "onClick: ");
+    }
 
     public static final Creator<CustomImageSpan> CREATOR = new Creator<CustomImageSpan>() {
         @Override
         public CustomImageSpan createFromParcel(Parcel in) {
+            final String uri = in.readString();
             final String source = in.readString();
             final int verticalAlignment = in.readInt();
 
@@ -122,7 +141,7 @@ public class CustomImageSpan extends ImageSpan implements Parcelable {
             ///注意：Drawable必须设置Bounds才能显示
             drawable.setBounds(0, 0, drawableWidth, drawableHeight);
 
-            return new CustomImageSpan(drawable, source, verticalAlignment);
+            return new CustomImageSpan(drawable, uri, source, verticalAlignment);
         }
 
         @Override
@@ -138,6 +157,7 @@ public class CustomImageSpan extends ImageSpan implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mUri);
         dest.writeString(mSource);
         dest.writeInt(mVerticalAlignment);
 

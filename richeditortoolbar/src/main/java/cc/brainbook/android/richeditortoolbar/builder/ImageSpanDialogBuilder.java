@@ -1,11 +1,13 @@
 package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -52,9 +54,17 @@ public class ImageSpanDialogBuilder {
 	public static final int ALIGN_CENTER = 2;
 	public static final int DEFAULT_ALIGN = ALIGN_BOTTOM;
 
-	private static final int REQUEST_CODE_PICK_FROM_GALLERY = 1;
-	private static final int REQUEST_CODE_PICK_FROM_CAMERA = 2;
-	private static final int REQUEST_CODE_DRAW = 3;
+	private static final int REQUEST_CODE_PICK_FROM_VIDEO_MEDIA = 1;
+	private static final int REQUEST_CODE_PICK_FROM_AUDIO_MEDIA = 2;
+	private static final int REQUEST_CODE_PICK_FROM_VIDEO_RECORDER = 3;
+	private static final int REQUEST_CODE_PICK_FROM_AUDIO_RECORDER = 4;
+	private static final int REQUEST_CODE_PICK_FROM_GALLERY = 5;
+	private static final int REQUEST_CODE_PICK_FROM_CAMERA = 6;
+	private static final int REQUEST_CODE_DRAW = 10;
+
+
+	private int mMediaType;	///0: image; 1: video; 2: audio
+	private String mDefaultImageFileName;	///缺省的media图片
 
 	private int mImageOverrideWidth = 1000;
 	private int mImageOverrideHeight = 1000;
@@ -74,9 +84,12 @@ public class ImageSpanDialogBuilder {
 	private int mImageWidth;
 	private int mImageHeight;
 
+	private Button mButtonPickFromMedia;
+	private Button mButtonPickFromRecorder;
+	private EditText mEditTextUri;
+
 	private Button mButtonPickFromGallery;
 	private Button mButtonPickFromCamera;
-
 	private EditText mEditTextSrc;
 
 	private ImageView mImageViewPreview;
@@ -99,23 +112,51 @@ public class ImageSpanDialogBuilder {
 	///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
 	private Context mContext;
 
-	private ImageSpanDialogBuilder(Context context) {
-		this(context, 0);
+	private ImageSpanDialogBuilder(Context context, int mediaType) {
+		this(context, 0, mediaType);
 	}
 
-	private ImageSpanDialogBuilder(final Context context, int theme) {
+	private ImageSpanDialogBuilder(final Context context, int theme, int mediaType) {
         mContext = context;
+		mMediaType = mediaType;
 		mImageFilePath = context.getExternalCacheDir();///设置ImageSpan存放图片文件的缺省目录
+
+		if (mMediaType != 0) {
+			mDefaultImageFileName = "file:///android_asset/" + (mMediaType ==1 ? "video.png" : "audio.png");
+		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_image_span_dialog, null);
+
+		mButtonPickFromMedia = (Button) layout.findViewById(R.id.btn_pickup_from_media);
+		mButtonPickFromMedia.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromMedia();
+			}
+		});
+
+		mButtonPickFromRecorder = (Button) layout.findViewById(R.id.btn_pickup_from_recorder);
+		mButtonPickFromRecorder.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromRecorder();
+			}
+		});
+
+		mEditTextUri = (EditText) layout.findViewById(R.id.et_uri);
+
+		if (mMediaType != 0) {
+			mButtonPickFromMedia.setVisibility(View.VISIBLE);
+			mButtonPickFromRecorder.setVisibility(View.VISIBLE);
+			mEditTextUri.setVisibility(View.VISIBLE);
+		}
 
 		mButtonPickFromGallery = (Button) layout.findViewById(R.id.btn_pickup_from_gallery);
 		mButtonPickFromGallery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
-				pickFromGallery(context);
+				pickFromGallery();
 			}
 		});
 
@@ -123,8 +164,7 @@ public class ImageSpanDialogBuilder {
 		mButtonPickFromCamera.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
-				pickFromCamera(context);
+				pickFromCamera();
 			}
 		});
 
@@ -360,12 +400,12 @@ public class ImageSpanDialogBuilder {
 		builder.setView(layout);
 	}
 
-	public static ImageSpanDialogBuilder with(Context context) {
-		return new ImageSpanDialogBuilder(context);
+	public static ImageSpanDialogBuilder with(Context context, int mediaType) {
+		return new ImageSpanDialogBuilder(context, mediaType);
 	}
 
-	public static ImageSpanDialogBuilder with(Context context, int theme) {
-		return new ImageSpanDialogBuilder(context, theme);
+	public static ImageSpanDialogBuilder with(Context context, int theme, int mediaType) {
+		return new ImageSpanDialogBuilder(context, theme, mediaType);
 	}
 
 	public ImageSpanDialogBuilder setTitle(String title) {
@@ -379,10 +419,12 @@ public class ImageSpanDialogBuilder {
 	}
 
 	private boolean isInitializing;
-	public ImageSpanDialogBuilder initial(String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
+	public ImageSpanDialogBuilder initial(String uri, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
 		isInitializing = true;
 		mImageOverrideWidth = imageOverrideWidth;
 		mImageOverrideHeight = imageOverrideHeight;
+
+		mEditTextUri.setText(uri);
 
 		if (!TextUtils.isEmpty(src) && !StringUtil.isUrl(src)) {
 			final File srcFile = new File(src);
@@ -391,10 +433,16 @@ public class ImageSpanDialogBuilder {
 			}
 		}
 
-		mEditTextSrc.setText(src);
-
-		mEditTextDisplayWidth.setText(String.valueOf(width));
-		mEditTextDisplayHeight.setText(String.valueOf(height));
+		///设置缺省的media图片
+		if (TextUtils.isEmpty(src) && mMediaType != 0) {
+			mEditTextSrc.setText(mDefaultImageFileName);
+			mEditTextDisplayWidth.setText(String.valueOf(mImageOverrideWidth));
+			mEditTextDisplayHeight.setText(String.valueOf(mImageOverrideHeight));
+		} else {
+			mEditTextSrc.setText(src);
+			mEditTextDisplayWidth.setText(String.valueOf(width));
+			mEditTextDisplayHeight.setText(String.valueOf(height));
+		}
 
 		mVerticalAlignment = align;
 		if (align == ALIGN_BOTTOM) {
@@ -474,10 +522,11 @@ public class ImageSpanDialogBuilder {
 	}
 
 	public interface OnClickListener {
-		void onClick(DialogInterface d, String src, int width, int height, int align);
+		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
 	public void doPositiveAction(OnClickListener onClickListener, DialogInterface dialog) {
+		final String uri = mEditTextUri.getText().toString();
 		final String src = mEditTextSrc.getText().toString();
 		if (mCachedOriginalImageFile != null
 				&& !TextUtils.isEmpty(src) && !StringUtil.isUrl(src)
@@ -486,6 +535,7 @@ public class ImageSpanDialogBuilder {
 		}
 
 		onClickListener.onClick(dialog,
+				uri,
 				src,
 				Integer.parseInt(mEditTextDisplayWidth.getText().toString()),
 				Integer.parseInt(mEditTextDisplayHeight.getText().toString()),
@@ -504,11 +554,38 @@ public class ImageSpanDialogBuilder {
 			mCachedOriginalImageFile.delete();
 		}
 
-		onClickListener.onClick(dialog, null,0,0,0);
+		onClickListener.onClick(dialog, null, null,0,0,0);
+	}
+
+
+	///[媒体选择器#Autio/Video媒体库]
+	private void pickFromMedia() {
+		final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+				.setType(mMediaType == 1 ? "video/*" : "audio/*")
+				.addCategory(Intent.CATEGORY_OPENABLE);
+
+		try {
+			((Activity) mContext).startActivityForResult(
+					Intent.createChooser(intent, mContext.getString(mMediaType == 1 ? R.string.label_select_video : R.string.label_select_audio)),
+					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	///[媒体选择器#Autio/Video媒体录制]
+	private void pickFromRecorder() {
+		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+
+		try {
+			((Activity) mContext).startActivityForResult(intent, mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	///[图片选择器#相册图库]
-	private void pickFromGallery(Context context) {
+	private void pickFromGallery() {
 		final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
 				.setType("image/*")
 				.addCategory(Intent.CATEGORY_OPENABLE);
@@ -525,19 +602,23 @@ public class ImageSpanDialogBuilder {
 //            activity.startActivityForResult(Intent.createChooser(intent, context.getString(R.string.label_select_picture)),
 //                    REQUEST_CODE_PICK_FROM_GALLERY);
 //        }
-		((Activity) mContext).startActivityForResult(Intent.createChooser(intent, context.getString(R.string.label_select_picture)),
-				REQUEST_CODE_PICK_FROM_GALLERY);
+		try {
+			((Activity) mContext).startActivityForResult(Intent.createChooser(intent, mContext.getString(R.string.label_select_picture)),
+					REQUEST_CODE_PICK_FROM_GALLERY);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	///[图片选择器#相机拍照]
-	private void pickFromCamera(Context context) {
+	private void pickFromCamera() {
 		// create Intent to take a picture and return control to the calling application
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
 		// Ensure that there's a camera activity to handle the intent
-		if (intent.resolveActivity(context.getPackageManager()) != null) {
+		if (intent.resolveActivity(mContext.getPackageManager()) != null) {
 			mCachedImageFile = new File(mImageFilePath, FileUtil.generateImageFileName("jpg"));
-            final Uri imageUri = FileUtil.getUriFromFile(context, mCachedImageFile);
+            final Uri imageUri = FileUtil.getUriFromFile(mContext, mCachedImageFile);
             // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
             // 返回图片在onActivityResult中通过以下代码获取
             // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -548,7 +629,11 @@ public class ImageSpanDialogBuilder {
 //            if (activity != null) {
 //                activity.startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 //            }
-			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
+			try {
+				((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 
@@ -568,13 +653,79 @@ public class ImageSpanDialogBuilder {
         final DoodleParams params = new DoodleParams(); // 涂鸦参数
 		params.mImagePath = imagePath; // the file path of image
 		params.mSavePath = savePath;
-		DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
+		try {
+			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	///[ImageSpanDialogBuilder#onActivityResult()]
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		///[媒体选择器#Video/Audio媒体库]
+		if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					final Uri selectedUri = data.getData();
+					if (selectedUri != null) {
+						mEditTextUri.setText(FileUtils.getPath(mContext, selectedUri));
+
+						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
+							///生成视频的第一帧图片
+							final File thumbnailFile = generateThumbnail(selectedUri);
+							mEditTextSrc.setText(thumbnailFile.getAbsolutePath());
+						}
+
+						return;
+					} else {
+						Toast.makeText(mContext.getApplicationContext(),
+								mMediaType == 1 ? R.string.message_cannot_retrieve_selected_video : R.string.message_cannot_retrieve_selected_audio,
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		///[媒体选择器#Video/Audio媒体录制]
+		else if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_RECORDER) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					final Uri selectedUri = data.getData();
+					if (selectedUri != null) {
+						mEditTextUri.setText(FileUtils.getPath(mContext, selectedUri));
+
+						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
+							///生成视频的第一帧图片
+							final File thumbnailFile = generateThumbnail(selectedUri);
+							mEditTextSrc.setText(thumbnailFile.getAbsolutePath());
+						}
+
+						return;
+					} else {
+						Toast.makeText(mContext.getApplicationContext(),
+								mMediaType == 1 ? R.string.message_cannot_retrieve_selected_video : R.string.message_cannot_retrieve_selected_audio,
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
 		///[图片选择器#相册图库]
-		if (requestCode == REQUEST_CODE_PICK_FROM_GALLERY) {
+		else if (requestCode == REQUEST_CODE_PICK_FROM_GALLERY) {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
 					final Uri selectedUri = data.getData();
@@ -650,6 +801,20 @@ public class ImageSpanDialogBuilder {
 			mCachedImageFile.delete();
 			mCachedImageFile = null;
 		}
+	}
+
+	///生成视频的第一帧图片
+	private File generateThumbnail(Uri videoUri) {
+		final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		mmr.setDataSource(mContext, videoUri);
+		final Bitmap bitmap = mmr.getFrameAtTime();
+		mmr.release();//释放资源
+
+		final String imageFileName = FileUtil.generateImageFileName("jpg");
+		final File file = new File(mImageFilePath, imageFileName);
+		FileUtil.saveBitmapToFile(bitmap, file, Bitmap.CompressFormat.JPEG, 90);
+
+		return file;
 	}
 
 }

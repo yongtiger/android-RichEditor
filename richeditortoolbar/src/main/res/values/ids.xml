@@ -6,6 +6,7 @@
     <item name="url_url" type="id" />
 
     <item name="image_text" type="id" />
+    <item name="image_uri" type="id" />
     <item name="image_src" type="id" />
     <item name="image_width" type="id" />
     <item name="image_height" type="id" />

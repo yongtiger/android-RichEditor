@@ -10,15 +10,13 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import java.io.File;
 
+import cc.brainbook.android.richeditortoolbar.EnhancedMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
@@ -51,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
         ///设置TextView可点击，比如响应URLSpan点击事件。LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
-        mTextViewPreviewText.setMovementMethod(LinkMovementMethod.getInstance());
+//        mTextViewPreviewText.setMovementMethod(LinkMovementMethod.getInstance());
+        mTextViewPreviewText.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
 //        mTextViewPreviewText.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
 
 

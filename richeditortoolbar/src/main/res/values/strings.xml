@@ -23,9 +23,12 @@
     <string name="line_divider_span_margin_top">Margin top: %1$d</string>
     <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
 
+    <string name="image_span_media">Media</string>
+    <string name="image_span_recorder">Recorder</string>
     <string name="image_span_gallery">Gallery</string>
     <string name="image_span_camera">Camera</string>
-    <string name="image_span_text">[img src=%1$s width=%2$d height=%3$d align=%4$d]</string>
+    <string name="image_span_text">[img src=%1$s src=%1$s width=%2$d height=%3$d align=%4$d]</string>
+    <string name="image_span_media_text">[img uri=%1$s src=%2$s width=%3$d height=%4$d align=%5$d]</string>
     <string name="image_span_display_width">Width: </string>
     <string name="image_span_display_height">Height: </string>
     <string name="image_span_constrain">Constrain</string>
@@ -35,15 +38,29 @@
     <string name="image_span_align_baseline">Align baseline</string>
     <string name="image_span_align_center">Align center</string>
 
+    <string name="label_select_video">Select Video</string>
+    <string name="label_select_audio">Select Audio</string>
     <string name="label_select_picture">Select Picture</string>
-    <string name="message_cannot_retrieve_selected_image">Cannot retrieve selected image</string>
     <string name="message_image_select_cancelled">Image select cancelled</string>
     <string name="message_image_select_failed">Image select failed</string>
     <string name="message_image_capture_cancelled">Image capture cancelled</string>
     <string name="message_image_capture_failed">Image capture failed</string>
-    <string name="message_image_draw_failed">Image draw failed</string>
+    <string name="message_cannot_retrieve_selected_image">Cannot retrieve selected image</string>
+    <string name="message_video_select_cancelled">Video select cancelled</string>
+    <string name="message_video_select_failed">Video select failed</string>
+    <string name="message_video_capture_cancelled">Video capture cancelled</string>
+    <string name="message_video_capture_failed">Video capture failed</string>
+    <string name="message_cannot_retrieve_selected_video">Cannot retrieve selected video</string>
+    <string name="message_audio_select_cancelled">Audio select cancelled</string>
+    <string name="message_audio_select_failed">Audio select failed</string>
+    <string name="message_audio_capture_cancelled">Audio capture cancelled</string>
+    <string name="message_audio_capture_failed">Audio capture failed</string>
+    <string name="message_cannot_retrieve_selected_audio">Cannot retrieve selected audio</string>
 
+    <string name="message_image_draw_failed">Image draw failed</string>
     <string name="failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
     <string name="please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
+
+    <string name="error_activity_not_found">Error: Activity not found</string>
 
 </resources>

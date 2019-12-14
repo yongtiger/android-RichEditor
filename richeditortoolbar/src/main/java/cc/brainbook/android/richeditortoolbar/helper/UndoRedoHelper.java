@@ -43,6 +43,8 @@ public class UndoRedoHelper {
     public static final int CHANGE_SCALE_X_SPAN_ACTION = 32;
     public static final int CHANGE_URL_SPAN_ACTION = 33;
     public static final int CHANGE_IMAGE_SPAN_ACTION = 34;
+    public static final int CHANGE_VIDEO_SPAN_ACTION = 35;
+    public static final int CHANGE_AUDIO_SPAN_ACTION = 36;
 
 
     private Context mContext;
@@ -127,6 +129,10 @@ public class UndoRedoHelper {
                 return "change url span";
             case CHANGE_IMAGE_SPAN_ACTION:
                 return "change image span";
+            case CHANGE_VIDEO_SPAN_ACTION:
+                return "change video span";
+            case CHANGE_AUDIO_SPAN_ACTION:
+                return "change audio span";
 
             default:
                 return null;
