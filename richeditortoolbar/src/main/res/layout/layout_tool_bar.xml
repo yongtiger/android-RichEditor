@@ -49,6 +49,13 @@
         style="@style/ImageView" />
 
     <ImageView
+        android:id="@+id/iv_leading_margin"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
         android:id="@+id/iv_bullet"
         android:longClickable="true"
         app:tint="@color/color_state_view"
@@ -56,10 +63,10 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_leading_margin"
+        android:id="@+id/iv_list"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
+        app:srcCompat="@drawable/ic_format_list_numbered_black_24dp"
         style="@style/ImageView" />
 
     <ImageView

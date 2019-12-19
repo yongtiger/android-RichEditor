@@ -51,11 +51,6 @@ public class CustomBulletSpan extends BulletSpan {
         mWantColor = wantColor;
     }
 
-    @Override
-    public int getLeadingMargin(boolean first) {
-        return 2 * mBulletRadius + mGapWidth;
-    }
-
     /**
      * Get the distance, in pixels, between the bullet point and the paragraph.
      *
@@ -84,28 +79,34 @@ public class CustomBulletSpan extends BulletSpan {
     }
 
     @Override
+    public int getLeadingMargin(boolean first) {
+        return 2 * mBulletRadius + mGapWidth;
+    }
+
+    @Override
     public void drawLeadingMargin(@NonNull Canvas canvas, @NonNull Paint paint, int x, int dir,
                                   int top, int baseline, int bottom,
                                   @NonNull CharSequence text, int start, int end,
                                   boolean first, @Nullable Layout layout) {
-        if (((Spanned) text).getSpanStart(this) == start) {
+        if (first) {
             Paint.Style style = paint.getStyle();
-            int oldcolor = 0;
+            int oldColor = 0;
 
             if (mWantColor) {
-                oldcolor = paint.getColor();
+                oldColor = paint.getColor();
                 paint.setColor(mColor);
             }
 
             paint.setStyle(Paint.Style.FILL);
 
-            if (layout != null) {
-                // "bottom" position might include extra space as a result of line spacing
-                // configuration. Subtract extra space in order to show bullet in the vertical
-                // center of characters.
-                final int line = layout.getLineForOffset(start);
-//                bottom = bottom - layout.getLineExtra(line);  ///hidden!!!
-            }
+//////??????
+//            if (layout != null) {
+//                // "bottom" position might include extra space as a result of line spacing
+//                // configuration. Subtract extra space in order to show bullet in the vertical
+//                // center of characters.
+//                final int line = layout.getLineForOffset(start);
+////                bottom = bottom - layout.getLineExtra(line);  ///hidden!!!
+//            }
 
             final float yPosition = (top + bottom) / 2f;
             final float xPosition = x + dir * mBulletRadius;
@@ -125,7 +126,7 @@ public class CustomBulletSpan extends BulletSpan {
             }
 
             if (mWantColor) {
-                paint.setColor(oldcolor);
+                paint.setColor(oldColor);
             }
 
             paint.setStyle(style);
@@ -158,8 +159,8 @@ public class CustomBulletSpan extends BulletSpan {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mGapWidth);
+        dest.writeInt(mBulletRadius);
         dest.writeInt(mColor);
         dest.writeInt(mWantColor ? 1 : 0);
-        dest.writeInt(mBulletRadius);
     }
 }

@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         /* -------------- ///设置 -------------- */
-        ///（可选）设置编辑器初始文本
+//        ///（可选）设置编辑器初始文本
 //        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
 //        mRichEditText.getText().setSpan(new BoldSpan(), 2, 3, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
 //        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_INCLUSIVE);    ///test
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        ///[ImageSpanDialogBuilder#onActivityResult()]
+        ///[ClickImageSpanDialogBuilder#onActivityResult()]
         if (mRichEditorToolbar != null) {
             mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
         }

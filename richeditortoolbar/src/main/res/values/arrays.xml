@@ -52,4 +52,33 @@
         <item>4.5</item>
         <item>5.0</item>
     </string-array>
+
+    <integer-array name="list_type_ids">
+        <item name="unordered_empty">0</item>
+        <item name="unordered_circle">1</item>
+        <item name="unordered_square">2</item>
+        <item name="unordered_circle_hollow">11</item>
+        <item name="unordered_square_hollow">12</item>
+        <item name="ordered_letter">-1</item>
+        <item name="ordered_number">-2</item>
+        <item name="ordered_roman_number">-3</item>
+        <item name="ordered_letter_quote">-11</item>
+        <item name="ordered_number_quote">-12</item>
+        <item name="ordered_roman_number_quote">-13</item>
+    </integer-array>
+    <string-array name="list_type_labels">
+        <item>Unordered empty</item>
+        <item>● Unordered circle</item>
+        <item>■ Unordered square</item>
+        <item>○ Unordered circle hollow</item>
+        <item>□ Unordered square hollow</item>
+        <item>a. Ordered letter</item>
+        <item>1. Ordered number</item>
+        <item>I. Ordered roman number</item>
+        <item>(a) Ordered letter quote</item>
+        <item>(1) Ordered number quote</item>
+        <item>(I) Ordered roman number quote</item>
+    </string-array>
+    <integer name="default_list_type_id">1</integer>
+
 </resources>

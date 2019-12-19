@@ -16,7 +16,7 @@ import android.view.View;
 
 import java.lang.ref.WeakReference;
 
-import cc.brainbook.android.richeditortoolbar.Clickable;
+import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 

@@ -48,7 +48,7 @@ import cn.hzw.doodle.DoodleParams;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class ImageSpanDialogBuilder {
+public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	public static final int ALIGN_BOTTOM = 0;
 	public static final int ALIGN_BASELINE = 1;
 	public static final int ALIGN_CENTER = 2;
@@ -73,7 +73,7 @@ public class ImageSpanDialogBuilder {
 	private File mCachedImageFile;	///相机拍照、图片Crop剪切生成的图片文件
 	private File mDestinationFile;	///图片Crop、Draw生成的目标文件
     private File mImageFilePath;	///ImageSpan存放图片文件的目录
-    public ImageSpanDialogBuilder setImageFilePath(File imageFilePath) {
+    public ClickImageSpanDialogBuilder setImageFilePath(File imageFilePath) {
         mImageFilePath = imageFilePath;
 		mImageFilePath.mkdirs();
         return this;
@@ -107,27 +107,50 @@ public class ImageSpanDialogBuilder {
 	private RadioButton mRadioButtonAlignBaseline;
 	private RadioButton mRadioButtonAlignCenter;
 
-	private AlertDialog.Builder builder;
 
-	///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
-	private Context mContext;
-
-	private ImageSpanDialogBuilder(Context context, int mediaType) {
-		this(context, 0, mediaType);
+	public interface OnClickListener {
+		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
-	private ImageSpanDialogBuilder(final Context context, int theme, int mediaType) {
-        mContext = context;
-		mMediaType = mediaType;
-		mImageFilePath = context.getExternalCacheDir();///设置ImageSpan存放图片文件的缺省目录
+	private boolean isInitializing;
+	public ClickImageSpanDialogBuilder initial(String uri, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
+		isInitializing = true;
+		mImageOverrideWidth = imageOverrideWidth;
+		mImageOverrideHeight = imageOverrideHeight;
 
-		if (mMediaType != 0) {
-			mDefaultImageFileName = "file:///android_asset/" + (mMediaType ==1 ? "video.png" : "audio.png");
+		mEditTextUri.setText(uri);
+
+		if (!TextUtils.isEmpty(src) && !StringUtil.isUrl(src)) {
+			final File srcFile = new File(src);
+			if (mImageFilePath.equals(srcFile.getParentFile())) {
+				mCachedOriginalImageFile = srcFile;
+			}
 		}
 
-		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View layout = inflater.inflate(R.layout.layout_image_span_dialog, null);
+		///设置缺省的media图片
+		if (TextUtils.isEmpty(src) && mMediaType != 0) {
+			mEditTextSrc.setText(mDefaultImageFileName);
+			mEditTextDisplayWidth.setText(String.valueOf(mImageOverrideWidth));
+			mEditTextDisplayHeight.setText(String.valueOf(mImageOverrideHeight));
+		} else {
+			mEditTextSrc.setText(src);
+			mEditTextDisplayWidth.setText(String.valueOf(width));
+			mEditTextDisplayHeight.setText(String.valueOf(height));
+		}
 
+		mVerticalAlignment = align;
+		if (align == ALIGN_BOTTOM) {
+			mRadioButtonAlignBottom.setChecked(true);
+		} else if (align == ALIGN_BASELINE) {
+			mRadioButtonAlignBaseline.setChecked(true);
+		} else if (align == ALIGN_CENTER) {
+			mRadioButtonAlignCenter.setChecked(true);
+		}
+
+		return this;
+	}
+
+	private void initView(View layout) {
 		mButtonPickFromMedia = (Button) layout.findViewById(R.id.btn_pickup_from_media);
 		mButtonPickFromMedia.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -203,7 +226,7 @@ public class ImageSpanDialogBuilder {
 
 				///获取图片真正的宽高
 				///https://www.jianshu.com/p/299b637afe7c
-				Glide.with(context.getApplicationContext())
+				Glide.with(mContext.getApplicationContext())
 //						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
 						.load(src)
 						.apply(options)
@@ -339,45 +362,45 @@ public class ImageSpanDialogBuilder {
 			}
 		});
 
-        mButtonCrop = (Button) layout.findViewById(R.id.btn_crop);
-        mButtonCrop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+		mButtonCrop = (Button) layout.findViewById(R.id.btn_crop);
+		mButtonCrop.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
 				final Uri source;
-                final String src = mEditTextSrc.getText().toString();
+				final String src = mEditTextSrc.getText().toString();
 				final String imageFileName = FileUtil.generateImageFileName("jpg");
-                if (StringUtil.isUrl(src)) {
+				if (StringUtil.isUrl(src)) {
 					mCachedImageFile = new File(mImageFilePath, imageFileName);
-                    FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mCachedImageFile, Bitmap.CompressFormat.JPEG, 100);
+					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mCachedImageFile, Bitmap.CompressFormat.JPEG, 100);
 					source = FileUtil.getUriFromFile(mContext, mCachedImageFile);
-                } else {
+				} else {
 					source = Uri.parse("file://" + src);///[FIX#startCrop()#src]加前缀"file://"
 				}
 
 				mDestinationFile = new File(mImageFilePath, "crop_" + imageFileName);
-                startCrop((Activity) mContext, source, Uri.fromFile(mDestinationFile));
-            }
-        });
+				startCrop((Activity) mContext, source, Uri.fromFile(mDestinationFile));
+			}
+		});
 
-        mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
-        mButtonDraw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String imagePath;
-                final String src = mEditTextSrc.getText().toString();
+		mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
+		mButtonDraw.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				final String imagePath;
+				final String src = mEditTextSrc.getText().toString();
 				final String imageFileName = FileUtil.generateImageFileName("jpg");
-                if (StringUtil.isUrl(src)) {
+				if (StringUtil.isUrl(src)) {
 					mCachedImageFile = new File(mImageFilePath, imageFileName);
 					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mCachedImageFile, Bitmap.CompressFormat.JPEG, 100);
-                    imagePath = mCachedImageFile.getAbsolutePath();
-                } else {
-                    imagePath = src;
-                }
+					imagePath = mCachedImageFile.getAbsolutePath();
+				} else {
+					imagePath = src;
+				}
 
 				mDestinationFile = new File(mImageFilePath, "draw_" + imageFileName);
-                startDraw((Activity) mContext, imagePath, mDestinationFile.getAbsolutePath());
-            }
-        });
+				startDraw((Activity) mContext, imagePath, mDestinationFile.getAbsolutePath());
+			}
+		});
 
 		mRadioGroup = (RadioGroup) layout.findViewById(R.id.rg_align);
 		mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -395,68 +418,50 @@ public class ImageSpanDialogBuilder {
 		mRadioButtonAlignBottom = (RadioButton) layout.findViewById(R.id.rb_align_bottom);
 		mRadioButtonAlignBaseline = (RadioButton) layout.findViewById(R.id.rb_align_baseline);
 		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
+	}
+
+
+	private ClickImageSpanDialogBuilder(Context context, int mediaType) {
+		this(context, 0, mediaType);
+	}
+
+	private ClickImageSpanDialogBuilder(final Context context, int theme, int mediaType) {
+        mContext = context;
+
+		mMediaType = mediaType;
+		mImageFilePath = context.getExternalCacheDir();///设置ImageSpan存放图片文件的缺省目录
+
+		if (mMediaType != 0) {
+			mDefaultImageFileName = "file:///android_asset/" + (mMediaType ==1 ? "video.png" : "audio.png");
+		}
+
+		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final View layout = inflater.inflate(R.layout.layout_click_image_span_dialog, null);
+
+		initView(layout);
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
 	}
 
-	public static ImageSpanDialogBuilder with(Context context, int mediaType) {
-		return new ImageSpanDialogBuilder(context, mediaType);
+
+	public static ClickImageSpanDialogBuilder with(Context context, int mediaType) {
+		return new ClickImageSpanDialogBuilder(context, mediaType);
 	}
 
-	public static ImageSpanDialogBuilder with(Context context, int theme, int mediaType) {
-		return new ImageSpanDialogBuilder(context, theme, mediaType);
+	public static ClickImageSpanDialogBuilder with(Context context, int theme, int mediaType) {
+		return new ClickImageSpanDialogBuilder(context, theme, mediaType);
 	}
 
-	public ImageSpanDialogBuilder setTitle(String title) {
-		builder.setTitle(title);
-		return this;
+
+	public AlertDialog build() {
+		Context context = builder.getContext();
+
+		return builder.create();
 	}
 
-	public ImageSpanDialogBuilder setTitle(int titleId) {
-		builder.setTitle(titleId);
-		return this;
-	}
 
-	private boolean isInitializing;
-	public ImageSpanDialogBuilder initial(String uri, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
-		isInitializing = true;
-		mImageOverrideWidth = imageOverrideWidth;
-		mImageOverrideHeight = imageOverrideHeight;
-
-		mEditTextUri.setText(uri);
-
-		if (!TextUtils.isEmpty(src) && !StringUtil.isUrl(src)) {
-			final File srcFile = new File(src);
-			if (mImageFilePath.equals(srcFile.getParentFile())) {
-				mCachedOriginalImageFile = srcFile;
-			}
-		}
-
-		///设置缺省的media图片
-		if (TextUtils.isEmpty(src) && mMediaType != 0) {
-			mEditTextSrc.setText(mDefaultImageFileName);
-			mEditTextDisplayWidth.setText(String.valueOf(mImageOverrideWidth));
-			mEditTextDisplayHeight.setText(String.valueOf(mImageOverrideHeight));
-		} else {
-			mEditTextSrc.setText(src);
-			mEditTextDisplayWidth.setText(String.valueOf(width));
-			mEditTextDisplayHeight.setText(String.valueOf(height));
-		}
-
-		mVerticalAlignment = align;
-		if (align == ALIGN_BOTTOM) {
-			mRadioButtonAlignBottom.setChecked(true);
-		} else if (align == ALIGN_BASELINE) {
-			mRadioButtonAlignBaseline.setChecked(true);
-		} else if (align == ALIGN_CENTER) {
-			mRadioButtonAlignCenter.setChecked(true);
-		}
-
-		return this;
-	}
-
-	public ImageSpanDialogBuilder setPositiveButton(CharSequence text, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setPositiveButton(CharSequence text, final OnClickListener onClickListener) {
 		builder.setPositiveButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -466,7 +471,7 @@ public class ImageSpanDialogBuilder {
 		return this;
 	}
 
-	public ImageSpanDialogBuilder setPositiveButton(int textId, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setPositiveButton(int textId, final OnClickListener onClickListener) {
 		builder.setPositiveButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -476,7 +481,7 @@ public class ImageSpanDialogBuilder {
 		return this;
 	}
 
-	public ImageSpanDialogBuilder setNegativeButton(CharSequence text, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setNegativeButton(CharSequence text, final OnClickListener onClickListener) {
 		builder.setNegativeButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -486,7 +491,7 @@ public class ImageSpanDialogBuilder {
 		return this;
 	}
 
-	public ImageSpanDialogBuilder setNegativeButton(int textId, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setNegativeButton(int textId, final OnClickListener onClickListener) {
 		builder.setNegativeButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -496,7 +501,7 @@ public class ImageSpanDialogBuilder {
 		return this;
 	}
 
-	public ImageSpanDialogBuilder setNeutralButton(int textId, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setNeutralButton(int textId, final OnClickListener onClickListener) {
 		builder.setNeutralButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -505,7 +510,7 @@ public class ImageSpanDialogBuilder {
 		});
 		return this;
 	}
-	public ImageSpanDialogBuilder setNeutralButton(CharSequence text, final OnClickListener onClickListener) {
+	public ClickImageSpanDialogBuilder setNeutralButton(CharSequence text, final OnClickListener onClickListener) {
 		builder.setNeutralButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -513,16 +518,6 @@ public class ImageSpanDialogBuilder {
 			}
 		});
 		return this;
-	}
-
-	public AlertDialog build() {
-		Context context = builder.getContext();
-
-		return builder.create();
-	}
-
-	public interface OnClickListener {
-		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
 	public void doPositiveAction(OnClickListener onClickListener, DialogInterface dialog) {
@@ -660,7 +655,7 @@ public class ImageSpanDialogBuilder {
 		}
 	}
 
-	///[ImageSpanDialogBuilder#onActivityResult()]
+	///[ClickImageSpanDialogBuilder#onActivityResult()]
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		///[媒体选择器#Video/Audio媒体库]
 		if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {

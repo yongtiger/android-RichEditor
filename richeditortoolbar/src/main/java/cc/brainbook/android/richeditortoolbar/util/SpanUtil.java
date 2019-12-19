@@ -14,8 +14,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 
 public abstract class SpanUtil {
+    /**
+     * 获得排序和过滤后的spans
+     */
     public static <T> ArrayList<T> getFilteredSpans(final Editable editable, Class<T> clazz, int start, int end) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
@@ -55,19 +59,27 @@ public abstract class SpanUtil {
         return filteredSpans;
     }
 
+    /**
+     * 获取光标选择区间的spans
+     */
     public static <T> ArrayList<T> getSelectedSpans(EditText editText, Class<T> clazz) {
         ArrayList<T> filteredSpans = new ArrayList<>();
         final int selectionStart = editText.getSelectionStart();
         final int selectionEnd = editText.getSelectionEnd();
         if (selectionStart != -1 && selectionEnd != -1) { ///-1 if there is no selection or cursor
-            filteredSpans = SpanUtil.getFilteredSpans(editText.getText(), clazz, selectionStart, selectionEnd);
+            filteredSpans = getFilteredSpans(editText.getText(), clazz, selectionStart, selectionEnd);
         }
+
         return filteredSpans;
 //        return (T[]) Array.newInstance(clazz);  ///https://bbs.csdn.net/topics/370137571, https://blog.csdn.net/qing0706/article/details/51067981
     }
 
+    /**
+     * 获得段落首尾
+     *
+     * 参考：DynamicLayout#reflow(CharSequence s, int where, int before, int after)
+     */
     public static int getParagraphStart(Editable editable, int where) {
-        ///参考DynamicLayout#reflow(CharSequence s, int where, int before, int after)
         // seek back to the start of the paragraph
         int find = TextUtils.lastIndexOf(editable, '\n', where - 1);
         if (find < 0)
@@ -77,9 +89,7 @@ public abstract class SpanUtil {
 
         return find;
     }
-
     public static int getParagraphEnd(Editable editable, int where) {
-        ///参考DynamicLayout#reflow(CharSequence s, int where, int before, int after)
         // seek forward to the end of the paragraph
         int len = editable.length();
         int look = TextUtils.indexOf(editable, '\n', where);
@@ -95,7 +105,7 @@ public abstract class SpanUtil {
      * 清除区间[start, end]内的spans
      */
     public static <T> void removeSpans(Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = getFilteredSpans(editable, clazz, start, end);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -106,11 +116,38 @@ public abstract class SpanUtil {
     }
 
     /**
+     * 清除段落区间[start, end]内的spans
+     *
+     * 注意：start, end可以相等
+     */
+    public static <T> void removeParagraphSpans(Class<T> clazz, Editable editable, int start, int end) {
+        int next;
+        for (int i = start; i <= end; i = next) { ///单选（start == end)时也能loop
+            final int currentParagraphStart = SpanUtil.getParagraphStart(editable, i);
+            final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
+            next = currentParagraphEnd;
+
+            final ArrayList<T> spans = getFilteredSpans(editable, clazz, currentParagraphStart, currentParagraphEnd);
+            for (T span : spans) {
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+                if (spanStart == currentParagraphStart && spanEnd == currentParagraphEnd) {
+                    editable.removeSpan(span);
+                }
+            }
+
+            if (next >= end) {
+                break;
+            }
+        }
+    }
+
+    /**
      * 清除所有spans
      */
     public static void clearAllSpans(HashMap<View, Class> classHashMap, Editable editable) {
         for (View view : classHashMap.keySet()) {
-            SpanUtil.removeSpans(classHashMap.get(view), editable, 0, editable.length());
+            removeSpans(classHashMap.get(view), editable, 0, editable.length());
         }
     }
 
@@ -122,7 +159,7 @@ public abstract class SpanUtil {
      */
     public static <T> void flatSpans(Class<T> clazz, Editable editable, int start, int end) {
         T currentSpan = null;
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = getFilteredSpans(editable, clazz, start, end);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -154,6 +191,9 @@ public abstract class SpanUtil {
         }
     }
 
+    /**
+     * 通过Drawable获取ImageSpan
+     */
     public static CustomImageSpan getImageSpanByDrawable(Editable editable, Drawable drawable) {
         CustomImageSpan imageSpan = null;
         if (!TextUtils.isEmpty(editable)) {
@@ -183,6 +223,13 @@ public abstract class SpanUtil {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
             Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
+
+            ///段落span（带初始化参数）：List
+            if (span.getClass() == ListSpan.class) {
+                Log.d("TAG", ((ListSpan) span).getListType() + ", "
+                        + ((ListSpan) span).getNestingLevel() + ", "
+                        + ((ListSpan) span).getOrderIndex());
+            }
         }
     }
 

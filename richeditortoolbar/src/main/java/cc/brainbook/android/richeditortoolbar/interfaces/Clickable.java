@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditortoolbar;
+package cc.brainbook.android.richeditortoolbar.interfaces;
 
 import android.view.View;
 

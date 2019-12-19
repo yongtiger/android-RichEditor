@@ -7,7 +7,6 @@ import android.os.Build;
 import android.support.annotation.CheckResult;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
-import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -180,7 +179,7 @@ public class RichEditText extends AppCompatEditText {
 //                            }
                         }
 
-                        Selection.setSelection(getText(), max);
+//                        Selection.setSelection(getText(), max);
                         getText().replace(min, max, paste);
                         didFirst = true;
                     } else {
