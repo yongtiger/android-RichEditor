@@ -86,6 +86,7 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+import cc.brainbook.android.richeditortoolbar.util.Util;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
@@ -100,6 +101,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
 
     private HashMap<View, Class> mClassMap = new HashMap<>();
+    public HashMap<View, Class> getClassMap() {
+        return mClassMap;
+    }
 
     private RichEditText mRichEditText;
     public RichEditText getRichEditText() {
@@ -463,7 +467,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///保存spans到进程App共享空间
         ///注意：由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans，而且应该保存到进程App共享空间！
         try {
-            final byte[] bytes = RichEditorToolbarHelper.saveSpans(mClassMap, editable, selectionStart, selectionEnd, true);
+            final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, selectionStart, selectionEnd, true);
             FileUtil.writeFile(mClipboardFile, bytes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -483,7 +487,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///执行setSpanFromSpanBeans及后处理
-            postSetSpanFromSpanBeans(pasteEditable, pasteOffset, RichEditorToolbarHelper.loadSpans(pasteEditable, bytes));
+            postSetSpanFromSpanBeans(pasteEditable, pasteOffset, RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -501,7 +505,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         final Editable editable = mRichEditText.getText();
         mUndoRedoHelper.addHistory(UndoRedoHelper.INIT_ACTION, 0, null, null,
-                RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
     }
 
     public void setHistorySize(int historySize) {
@@ -524,7 +528,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
 
             ///执行setSpanFromSpanBeans及后处理
-            postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpans(mRichEditText.getText(), action.getBytes()));
+            postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()));
         }
     }
 
@@ -722,7 +726,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 ///[Undo/Redo]
                 mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_SPANS_ACTION, selectionStart, null, null,
-                        RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                        RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
             }
         });
 
@@ -733,7 +737,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             public void onClick(View v) {
                 final Editable editable = mRichEditText.getText();
 
-                final byte[] bytes = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), true);
+                final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), true);
                 PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                 if (checkDraft()) {
@@ -768,7 +772,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final Editable editable = mRichEditText.getText();
                     final List<SpanBean> spanBeans = textBean.getSpans();
                     ///执行setSpanFromSpanBeans及后处理
-                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.setSpanFromSpanBeans(spanBeans, editable));
+                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
 
                     ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
                     ///解决：此时应手动调用selectionChanged()来更新view的select状态
@@ -783,7 +787,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                     ///[Undo/Redo]
                     mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
-                            RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                            RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
 
                     Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
                 }
@@ -2207,7 +2211,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///test
-            if (DEBUG) SpanUtil.testOutput(editable, mClassMap.get(view));
+            if (DEBUG) Util.testOutput(editable, mClassMap.get(view));
         }
     }
 
@@ -2246,7 +2250,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[Undo/Redo]
         if (getActionId(view) >= 0) {
             mUndoRedoHelper.addHistory(getActionId(view), selectionEnd, beforeChange, afterChange,
-                    RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                    RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
         }
     }
     private <T> void adjustParagraphStyleSpansSelection(View view, Class<T> clazz, Editable editable, int start, int end, boolean isSelected, boolean isRemove) {
@@ -2365,10 +2369,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.addHistory(getActionId(view), selectionStart,
                         editable.subSequence(selectionStart, selectionEnd).toString(),
                         editable.subSequence(afterSelectionStart, afterSelectionEnd).toString(),
-                        RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                        RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
             } else{
                 mUndoRedoHelper.addHistory(getActionId(view), selectionStart, null, null,
-                        RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false));
+                        RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
             }
         }
     }
@@ -2495,7 +2499,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///[Undo/Redo]
             if (!isSkipUndoRedo) {
                 mUndoRedoHelper.addHistory(UndoRedoHelper.CHANGE_TEXT_ACTION, mStart, mBeforeChange, mAfterChange,
-                        RichEditorToolbarHelper.saveSpans(mClassMap, s, 0, s.length(), false));
+                        RichEditorToolbarHelper.toByteArray(mClassMap, s, 0, s.length(), false));
             }
         }
     }

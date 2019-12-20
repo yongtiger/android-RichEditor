@@ -210,27 +210,4 @@ public abstract class SpanUtil {
         return imageSpan;
     }
 
-
-    /* ---------------------- ///test ---------------------- */
-    public static <T> void testOutput(Editable editable, Class<T> clazz) {
-        final T[] spans = editable.getSpans(0, editable.length(), clazz);
-        for (T span : spans) {
-            ///忽略getSpans()获取的子类（不是clazz本身）
-            if (span.getClass() != clazz) {
-                continue;
-            }
-
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
-            Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
-
-            ///段落span（带初始化参数）：List
-            if (span.getClass() == ListSpan.class) {
-                Log.d("TAG", ((ListSpan) span).getListType() + ", "
-                        + ((ListSpan) span).getNestingLevel() + ", "
-                        + ((ListSpan) span).getOrderIndex());
-            }
-        }
-    }
-
 }

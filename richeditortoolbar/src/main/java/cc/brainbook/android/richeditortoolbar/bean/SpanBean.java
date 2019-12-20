@@ -8,6 +8,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
     private int spanEnd;
     private int spanFlags;
     private T span;
+    private String spanClassName;
 
     public int getSpanStart() {
         return spanStart;
@@ -41,11 +42,20 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         this.span = span;
     }
 
-    public SpanBean(T span, int spanStart, int spanEnd, int spanFlags) {
+    public String getSpanClassName() {
+        return spanClassName;
+    }
+
+    public void setSpanClassName(String spanClassName) {
+        this.spanClassName = spanClassName;
+    }
+
+    public SpanBean(T span, String spanClassName, int spanStart, int spanEnd, int spanFlags) {
         this.spanStart = spanStart;
         this.spanEnd = spanEnd;
         this.spanFlags = spanFlags;
         this.span = span;
+        this.spanClassName = spanClassName;
     }
 
     protected SpanBean(Parcel in) {
@@ -59,6 +69,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         ///http://www.blogjava.net/calvin/archive/2009/12/10/43830.html
         span = in.readParcelable(getClass().getClassLoader());
 //        span = in.readParcelable(Thread.currentThread().getContextClassLoader()); ///不使用span的类型
+        spanClassName = in.readString();
     }
 
     public static final Creator<SpanBean> CREATOR = new Creator<SpanBean>() {
@@ -84,5 +95,6 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         dest.writeInt(spanEnd);
         dest.writeInt(spanFlags);
         dest.writeParcelable(span, flags);
+        dest.writeString(spanClassName);
     }
 }
