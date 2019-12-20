@@ -1,10 +1,7 @@
 package cc.brainbook.android.richeditor;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.view.View;
@@ -18,15 +15,8 @@ import java.util.HashMap;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -54,7 +44,7 @@ public class ListSpanTest {
 //        onView(withId(R.id.et_rich_edit_text)).perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard()); //line 1
 //        onView(withText("Say hello!")).perform(click()); //line 2
 //        String expectedText = "Hello, " + STRING_TO_BE_TYPED + "!";
-//        onView(withId(cc.brainbook.android.richeditortoolbar.R.id.textView)).check(matches(withText(expectedText))); //line 3
+//        onView(withId(R.id.textView)).check(matches(withText(expectedText))); //line 3
 
 
         mActivityRule.getActivity().runOnUiThread(new Runnable() {
@@ -65,25 +55,28 @@ public class ListSpanTest {
         });
     }
 
-    public void testCase1() {
-        ///创建文本
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder("a");
+    ///[单选、粘贴（全span）]
+    private void testCase1() {
 
-        ///添加span
-        BoldSpan boldSpan = new BoldSpan();
-        spannableStringBuilder.setSpan(boldSpan, 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        /* --------------- 初始化 --------------- */
+        SpannableStringBuilder initText = new SpannableStringBuilder("a");
+        initText.setSpan(new ListSpan(), 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         // todo ...
 
-        ///设置EditText
-        mRichEditText.setText(spannableStringBuilder);
+        mRichEditText.setText(initText);
 
 
-        Editable editable = mRichEditText.getText();
-        String result = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
+        /* --------------- 操作 --------------- */
+        SpannableStringBuilder actionText = new SpannableStringBuilder("b");
+        actionText.setSpan(new ListSpan(), 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        // todo ...
 
-        ///断言文本
-        assertEquals("{\"spans\":[{\"span\":{\"mStyle\":1},\"spanClassName\":\"BoldSpan\"," +
-                "\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}", result);
+        mRichEditText.getText().replace(1, 1, actionText);
+
+
+        /* --------------- 检查结果 --------------- */
+        String result = RichEditorToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        assertEquals("{\"spans\":[{\"span\":{\"mIndentWidth\":80,\"mIndicatorColor\":14540253,\"mIndicatorGapWidth\":40,\"mIndicatorText\":\"●\",\"mIndicatorWidth\":20,\"mListType\":1,\"mNestingLevel\":0,\"mOrderIndex\":1,\"mWantColor\":false},\"spanClassName\":\"ListSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"ab\"}", result);
 
     }
 }
