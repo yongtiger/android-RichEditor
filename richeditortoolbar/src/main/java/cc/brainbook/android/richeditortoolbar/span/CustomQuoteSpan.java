@@ -28,8 +28,6 @@ public class CustomQuoteSpan extends QuoteSpan {
      */
     public static final int STANDARD_GAP_WIDTH_PX = 40;
 
-    @ColorInt
-    private final int mColor;
     @Px
     private final int mStripeWidth;
     @Px
@@ -44,7 +42,6 @@ public class CustomQuoteSpan extends QuoteSpan {
     public CustomQuoteSpan(@ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
         super(color);
-        mColor = color;
         mStripeWidth = stripeWidth;
         mGapWidth = gapWidth;
     }
@@ -110,7 +107,7 @@ public class CustomQuoteSpan extends QuoteSpan {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mColor);
+        dest.writeInt(getColor());
         dest.writeInt(mStripeWidth);
         dest.writeInt(mGapWidth);
     }

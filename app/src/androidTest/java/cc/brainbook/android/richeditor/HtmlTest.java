@@ -66,7 +66,7 @@ public class HtmlTest {
 
 
 //    @Test
-//    public void testEmpty() {
+//    public void testEmpty() {    /////////////////////////////////////OK
 //        check("",
 //                "{\"spans\":[],\"text\":\"\"}",
 //                "",
@@ -126,71 +126,79 @@ public class HtmlTest {
 //    }
 
 //    @Test
-//    public void testTagH() {////////////////////
+//    public void testTagH() {
 //        check("",
 //                "{\"spans\":[],\"text\":\"\"}",
 //                "",
 //                "");
 //    }
 //
-//    @Test
-//    public void testTagBlockquote() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
-//
-    ///b/strong
     @Test
-    public void testTagB() {
-        check("<b>a</b>",
-                "{\"spans\":[],\"text\":\"\"}",
-                "",
-                "");
+    public void testTagBlockquote() {    /////////////////////////////////////OK
+        check("<blockquote>a</blockquote>",
+                "{\"spans\":[{\"span\":{\"mGapWidth\":40,\"mStripeWidth\":16,\"mColor\":-2236963},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\n\\n\"}",
+                "<blockquote><p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n",
+                "<blockquote><p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
+                        "<br>\n" +
+                        "</blockquote>\n" +
+                        "<br>\n" +
+                        "<br>\n");
     }
+//
+//
+//    ///b/strong
+//    @Test
+//    public void testTagB() {    /////////////////////////////////////OK
+//        check("<b>a</b>",
+//                "{\"spans\":[{\"span\":{\"mStyle\":1},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><b>a</b></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><b>a</b></p>\n");
+//    }
 //
 //    ///i/em/cite/dfn/
 //    @Test
-//    public void testTagI() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagI() {    /////////////////////////////////////OK
+//        check("<i>a</i>",
+//                "{\"spans\":[{\"span\":{\"mStyle\":2},\"spanClassName\":\"ItalicSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><i>a</i></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><i>a</i></p>\n");
 //    }
 //
 //    @Test
-//    public void testTagU() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagU() {    /////////////////////////////////////OK
+//        check("<u>a</u>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomUnderlineSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><u>a</u></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><u>a</u></p>\n");
 //    }
 //
 //    ///s/strike/del
 //    @Test
-//    public void testTagS() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagS() {    /////////////////////////////////////OK
+//        check("<s>a</s>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><strike>a</strike></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><strike>a</strike></p>\n");
 //    }
 //
 //    @Test
-//    public void testTagSup() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagSup() {    /////////////////////////////////////OK
+//        check("<sup>a</sup>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSuperscriptSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><sup>a</sup></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><sup>a</sup></p>\n");
 //    }
 //
 //    @Test
-//    public void testTagSub() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagSub() {    /////////////////////////////////////OK
+//        check("<sub>a</sub>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSubscriptSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><sub>a</sub></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><sub>a</sub></p>\n");
 //    }
 //
 //    @Test

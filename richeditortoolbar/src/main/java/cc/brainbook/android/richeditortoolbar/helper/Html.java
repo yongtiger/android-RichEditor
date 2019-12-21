@@ -34,12 +34,9 @@ import android.text.style.CharacterStyle;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.ParagraphStyle;
-import android.text.style.QuoteSpan;
 import android.text.style.RelativeSizeSpan;
-import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.SubscriptSpan;
-import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
@@ -62,6 +59,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cc.brainbook.android.richeditortoolbar.R;
+import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomStrikethroughSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomSubscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomSuperscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
+import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 
 ///[UPGRADE#android.text.Html]
 /**
@@ -331,16 +335,16 @@ public class Html {
                                   int option) {
         int next;
         for (int i = start; i < end; i = next) {
-            next = text.nextSpanTransition(i, end, QuoteSpan.class);
-            QuoteSpan[] quotes = text.getSpans(i, next, QuoteSpan.class);
+            next = text.nextSpanTransition(i, end, CustomQuoteSpan.class);  ///[UPGRADE#android.text.Html]CustomQuoteSpan
+            CustomQuoteSpan[] quotes = text.getSpans(i, next, CustomQuoteSpan.class);   ///[UPGRADE#android.text.Html]CustomQuoteSpan
 
-            for (QuoteSpan quote : quotes) {
+            for (CustomQuoteSpan quote : quotes) {  ///[UPGRADE#android.text.Html]CustomQuoteSpan
                 out.append("<blockquote>");
             }
 
             withinBlockquote(out, text, i, next, option);
 
-            for (QuoteSpan quote : quotes) {
+            for (CustomQuoteSpan quote : quotes) {  ///[UPGRADE#android.text.Html]CustomQuoteSpan
                 out.append("</blockquote>\n");
             }
         }
@@ -535,7 +539,9 @@ public class Html {
                         out.append("<tt>");
                     }
                 }
-                if (style[j] instanceof SuperscriptSpan) {
+                ///[UPGRADE#android.text.Html]
+//                if (style[j] instanceof SuperscriptSpan) {
+                if (style[j] instanceof CustomSuperscriptSpan) {
                     out.append("<sup>");
                 }
                 if (style[j] instanceof SubscriptSpan) {
@@ -544,7 +550,9 @@ public class Html {
                 if (style[j] instanceof UnderlineSpan) {
                     out.append("<u>");
                 }
-                if (style[j] instanceof StrikethroughSpan) {
+                ///[UPGRADE#android.text.Html]
+//                if (style[j] instanceof StrikethroughSpan) {
+                if (style[j] instanceof CustomStrikethroughSpan) {
                     ///[UPGRADE#android.text.Html]
 //                    out.append("<span style=\"text-decoration:line-through;\">");
                     out.append("<strike>");
@@ -608,7 +616,9 @@ public class Html {
                 if (style[j] instanceof URLSpan) {
                     out.append("</a>");
                 }
-                if (style[j] instanceof StrikethroughSpan) {
+                ///[UPGRADE#android.text.Html]
+//                if (style[j] instanceof StrikethroughSpan) {
+                if (style[j] instanceof CustomStrikethroughSpan) {
 //                    out.append("</span>");
                     out.append("</strike>");
                 }
@@ -618,7 +628,9 @@ public class Html {
                 if (style[j] instanceof SubscriptSpan) {
                     out.append("</sub>");
                 }
-                if (style[j] instanceof SuperscriptSpan) {
+                ///[UPGRADE#android.text.Html]
+//                if (style[j] instanceof SuperscriptSpan) {
+                if (style[j] instanceof CustomSuperscriptSpan) {
                     out.append("</sup>");
                 }
                 if (style[j] instanceof TypefaceSpan) {
@@ -867,17 +879,29 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (tag.equalsIgnoreCase("span")) {
             endCssStyle(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("strong")) {
-            end(mSpannableStringBuilder, Bold.class, new StyleSpan(Typeface.BOLD));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Bold.class, new StyleSpan(Typeface.BOLD));
+            end(mSpannableStringBuilder, Bold.class, new BoldSpan());
         } else if (tag.equalsIgnoreCase("b")) {
-            end(mSpannableStringBuilder, Bold.class, new StyleSpan(Typeface.BOLD));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Bold.class, new StyleSpan(Typeface.BOLD));
+            end(mSpannableStringBuilder, Bold.class, new BoldSpan());
         } else if (tag.equalsIgnoreCase("em")) {
-            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            end(mSpannableStringBuilder, Italic.class, new ItalicSpan());
         } else if (tag.equalsIgnoreCase("cite")) {
-            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            end(mSpannableStringBuilder, Italic.class, new ItalicSpan());
         } else if (tag.equalsIgnoreCase("dfn")) {
-            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            end(mSpannableStringBuilder, Italic.class, new ItalicSpan());
         } else if (tag.equalsIgnoreCase("i")) {
-            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Italic.class, new StyleSpan(Typeface.ITALIC));
+            end(mSpannableStringBuilder, Italic.class, new ItalicSpan());
         } else if (tag.equalsIgnoreCase("big")) {
             end(mSpannableStringBuilder, Big.class, new RelativeSizeSpan(1.25f));
         } else if (tag.equalsIgnoreCase("small")) {
@@ -891,17 +915,29 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (tag.equalsIgnoreCase("a")) {
             endA(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("u")) {
-            end(mSpannableStringBuilder, Underline.class, new UnderlineSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Underline.class, new UnderlineSpan());
+            end(mSpannableStringBuilder, Underline.class, new CustomUnderlineSpan());
         } else if (tag.equalsIgnoreCase("del")) {
-            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            end(mSpannableStringBuilder, Strikethrough.class, new CustomStrikethroughSpan());
         } else if (tag.equalsIgnoreCase("s")) {
-            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            end(mSpannableStringBuilder, Strikethrough.class, new CustomStrikethroughSpan());
         } else if (tag.equalsIgnoreCase("strike")) {
-            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Strikethrough.class, new StrikethroughSpan());
+            end(mSpannableStringBuilder, Strikethrough.class, new CustomStrikethroughSpan());
         } else if (tag.equalsIgnoreCase("sup")) {
-            end(mSpannableStringBuilder, Super.class, new SuperscriptSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Super.class, new SuperscriptSpan());
+            end(mSpannableStringBuilder, Super.class, new CustomSuperscriptSpan());
         } else if (tag.equalsIgnoreCase("sub")) {
-            end(mSpannableStringBuilder, Sub.class, new SubscriptSpan());
+            ///[UPGRADE#android.text.Html]
+//            end(mSpannableStringBuilder, Sub.class, new SubscriptSpan());
+            end(mSpannableStringBuilder, Sub.class, new CustomSubscriptSpan());
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
@@ -1024,7 +1060,9 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private static void endBlockquote(Editable text) {
         endBlockElement(text);
-        end(text, Blockquote.class, new QuoteSpan());
+        ///[UPGRADE#android.text.Html]
+//        end(text, Blockquote.class, new QuoteSpan());
+        end(text, Blockquote.class, new CustomQuoteSpan());
     }
 
     private void startHeading(Editable text, Attributes attributes, int level) {
@@ -1114,7 +1152,9 @@ class HtmlToSpannedConverter implements ContentHandler {
     private static void endCssStyle(Editable text) {
         Strikethrough s = getLast(text, Strikethrough.class);
         if (s != null) {
-            setSpanFromMark(text, s, new StrikethroughSpan());
+            ///[UPGRADE#android.text.Html]
+//            setSpanFromMark(text, s, new StrikethroughSpan());
+            setSpanFromMark(text, s, new CustomStrikethroughSpan());
         }
 
         Background b = getLast(text, Background.class);
