@@ -9,10 +9,10 @@ import android.support.annotation.IntRange;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
-import cc.brainbook.android.richeditortoolbar.util.ListSpanUtil;
+import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
 
-import static cc.brainbook.android.richeditortoolbar.util.ListSpanUtil.INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
-import static cc.brainbook.android.richeditortoolbar.util.ListSpanUtil.LIST_TYPE_UNORDERED_CIRCLE;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
 
 public class ListSpan implements LeadingMarginSpan, Parcelable {
     public static final int DEFAULT_LIST_TYPE = LIST_TYPE_UNORDERED_CIRCLE;
@@ -144,7 +144,7 @@ public class ListSpan implements LeadingMarginSpan, Parcelable {
 
             paint.setStyle(Paint.Style.FILL);
 
-            final String textToDraw = ListSpanUtil.getIndicatorText(mListType, mOrderIndex);
+            final String textToDraw = ListSpanHelper.getIndicatorText(mListType, mOrderIndex);
             final float textStart = x + dir * (mNestingLevel * mIndentWidth);
             canvas.drawText(textToDraw, textStart, baseline, paint);
 

@@ -81,7 +81,7 @@ import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ArrayUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
-import cc.brainbook.android.richeditortoolbar.util.ListSpanUtil;
+import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
@@ -198,7 +198,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             if (nestingLevelAndOrderIndex[0] != rightSpan.getNestingLevel() || nestingLevelAndOrderIndex[1] != rightSpan.getOrderIndex()) {
                 editable.removeSpan(rightSpan);
 
-                final String indicatorText = ListSpanUtil.getIndicatorText(listType, nestingLevelAndOrderIndex[1]);
+                final String indicatorText = ListSpanHelper.getIndicatorText(listType, nestingLevelAndOrderIndex[1]);
                 final ListSpan listSpan = new ListSpan(listType, indicatorText, nestingLevelAndOrderIndex[0], nestingLevelAndOrderIndex[1],
                         mIndentWidth, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
                 editable.setSpan(listSpan, currentStart, currentEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -1192,7 +1192,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int[] nestingLevelAndOrderIndex = getNestingLevelAndOrderIndex(listType, editable, start, end);
                 final int nestingLevel = nestingLevelAndOrderIndex[0];
                 final int orderIndex = nestingLevelAndOrderIndex[1];
-                final String indicatorText = ListSpanUtil.getIndicatorText(listType, orderIndex);
+                final String indicatorText = ListSpanHelper.getIndicatorText(listType, orderIndex);
                 newSpan = new ListSpan(listType, indicatorText, nestingLevel, orderIndex,
                         mIndentWidth, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
             }

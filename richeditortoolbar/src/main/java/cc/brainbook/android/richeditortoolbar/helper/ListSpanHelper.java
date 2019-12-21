@@ -1,8 +1,8 @@
-package cc.brainbook.android.richeditortoolbar.util;
+package cc.brainbook.android.richeditortoolbar.helper;
 
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
 ///Unicode在线转换工具：http://tool.chinaz.com/tools/unicode.aspx, http://www.jsons.cn/unicode/
-public class ListSpanUtil {
+public class ListSpanHelper {
     public static final int LIST_TYPE_UNORDERED_EMPTY = 0;
     public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_EMPTY = "";
     public static final int LIST_TYPE_UNORDERED_CIRCLE = 1;
