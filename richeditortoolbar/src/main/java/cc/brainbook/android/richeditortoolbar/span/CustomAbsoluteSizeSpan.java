@@ -5,9 +5,14 @@ import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 
-public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan {
+import com.google.gson.annotations.Expose;
 
+public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan {
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     private final int mSize;
+    @Expose
     private final boolean mDip;
 
     /**
@@ -25,30 +30,6 @@ public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan {
         super(size, dip);
         mSize = size;
         mDip = dip;
-    }
-
-    /**
-     * Get the text size. This is in physical pixels if {@link #getDip()} returns false or in
-     * device-independent pixels if {@link #getDip()} returns true.
-     *
-     * @return the text size, either in physical pixels or device-independent pixels.
-     * @see AbsoluteSizeSpan#AbsoluteSizeSpan(int, boolean)
-     */
-    public int getSize() {
-        return mSize;
-    }
-
-    /**
-     * Returns whether the size is in device-independent pixels or not, depending on the
-     * <code>dip</code> flag passed in {@link #CustomAbsoluteSizeSpan(int, boolean)}
-     *
-     * @return <code>true</code> if the size is in device-independent pixels, <code>false</code>
-     * otherwise
-     *
-     * @see #CustomAbsoluteSizeSpan(int, boolean)
-     */
-    public boolean getDip() {
-        return mDip;
     }
 
     @Override

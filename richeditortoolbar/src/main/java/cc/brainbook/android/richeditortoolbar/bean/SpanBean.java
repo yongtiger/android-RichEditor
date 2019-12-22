@@ -3,11 +3,18 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 public class SpanBean<T extends Parcelable> implements Parcelable {
+    @Expose
     private int spanStart;
+    @Expose
     private int spanEnd;
+    @Expose
     private int spanFlags;
+    @Expose
     private T span;
+    @Expose
     private String spanClassName;
 
     public int getSpanStart() {

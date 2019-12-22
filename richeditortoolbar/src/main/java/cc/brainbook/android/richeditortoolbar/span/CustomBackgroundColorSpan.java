@@ -4,7 +4,12 @@ import android.os.Parcel;
 import android.support.annotation.ColorInt;
 import android.text.style.BackgroundColorSpan;
 
+import com.google.gson.annotations.Expose;
+
 public class CustomBackgroundColorSpan extends BackgroundColorSpan {
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     @ColorInt
     private int mColor;
 

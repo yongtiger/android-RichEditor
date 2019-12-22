@@ -5,18 +5,19 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.text.style.TypefaceSpan;
 
+import com.google.gson.annotations.Expose;
+
 public class CustomFontFamilySpan extends TypefaceSpan implements Parcelable {
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     @Nullable
     private final String mFamily;
+
 
     public CustomFontFamilySpan(@Nullable String family) {
         super(family);
         mFamily = family;
-    }
-
-    @Nullable
-    public String getFamily() {
-        return mFamily;
     }
 
 

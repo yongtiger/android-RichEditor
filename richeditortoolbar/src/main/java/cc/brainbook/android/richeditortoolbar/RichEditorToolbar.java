@@ -965,10 +965,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 ///段落span（带参数）：Head
                 if (clazz == HeadSpan.class) {
-                    final String head = ((HeadSpan) span).getHead();
-                    view.setTag(head);
-                    if (!head.equals(((TextView) view).getText().toString())) {
-                        ((TextView) view).setText(head);
+                    final int level = ((HeadSpan) span).getLevel();
+                    view.setTag(level);
+                    final String headText = HeadSpan.getHeadText(level);
+                    if (!headText.equals(((TextView) view).getText().toString())) {
+                        ((TextView) view).setText(headText);
                     }
                 }
 
@@ -1160,8 +1161,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///段落span（带参数）：Head
         if (clazz == HeadSpan.class) {
             if (view.getTag() != null) {
-                final String viewTagHead = (String) view.getTag();
-                newSpan = new HeadSpan(viewTagHead);
+                final int viewTagLevel = (int) view.getTag();
+                newSpan = new HeadSpan(viewTagLevel);
             }
         }
 
@@ -2276,9 +2277,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                     ///段落span（带参数）：Head
                     if (clazz == HeadSpan.class) {
-                        final String spanHead = ((HeadSpan) span).getHead();
-                        final String viewTagHead = (String) view.getTag();
-                        if (!spanHead.equals(viewTagHead)) {
+                        final int spanLevel = ((HeadSpan) span).getLevel();
+                        final int viewTagLevel = view.getTag() == null ? 0 : (int) view.getTag();
+                        if (spanLevel != viewTagLevel) {
                             isNewSpanNeeded = true;
                             editable.removeSpan(span);
                         }

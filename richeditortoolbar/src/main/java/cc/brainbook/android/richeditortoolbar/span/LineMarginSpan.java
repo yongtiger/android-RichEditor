@@ -5,11 +5,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.LineHeightSpan;
 
+import com.google.gson.annotations.Expose;
+
 ///[UPGRADE#LineMarginSpan]
 public class LineMarginSpan implements LineHeightSpan, Parcelable {
+    @Expose
+    private final int mMarginTop, mMarginBottom;
 
-    private final int mMarginTop;
-    private final int mMarginBottom;
 
     public LineMarginSpan(int mMarginTop, int mMarginBottom) {
         this.mMarginTop = mMarginTop;

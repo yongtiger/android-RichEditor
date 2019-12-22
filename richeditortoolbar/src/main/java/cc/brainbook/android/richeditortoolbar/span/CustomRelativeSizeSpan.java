@@ -6,7 +6,12 @@ import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.RelativeSizeSpan;
 
+import com.google.gson.annotations.Expose;
+
 public class CustomRelativeSizeSpan extends RelativeSizeSpan {
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     private final float mProportion;
 
     public CustomRelativeSizeSpan(@FloatRange(from = 0) float proportion) {

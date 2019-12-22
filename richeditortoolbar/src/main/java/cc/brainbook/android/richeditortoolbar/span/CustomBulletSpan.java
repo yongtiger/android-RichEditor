@@ -14,6 +14,8 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BulletSpan;
 
+import com.google.gson.annotations.Expose;
+
 public class CustomBulletSpan extends BulletSpan {
     // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
     private static final int STANDARD_BULLET_RADIUS = 20;
@@ -21,13 +23,18 @@ public class CustomBulletSpan extends BulletSpan {
     @ColorInt
     private static final int STANDARD_COLOR = 0xffdddddd;
 
+
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     @Px
-    private final int mGapWidth;
-    @Px
-    private final int mBulletRadius;
+    private final int mGapWidth, mBulletRadius;
+
     private Path mBulletPath = null;
+    @Expose
     @ColorInt
     private final int mColor;
+    @Expose
     private final boolean mWantColor;
 
 

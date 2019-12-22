@@ -7,11 +7,13 @@ import android.os.Parcelable;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
 
+import com.google.gson.annotations.Expose;
+
 ///[UPGRADE#LineDividerSpan]
 public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable {
     ///[implements LineHeightSpan]
-    private final int mMarginTop;
-    private final int mMarginBottom;
+    @Expose
+    private final int mMarginTop, mMarginBottom;
 
     ///[implements LineBackgroundSpan]
     private DrawBackgroundCallback mDrawBackgroundCallback;

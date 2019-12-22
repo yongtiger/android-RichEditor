@@ -8,16 +8,28 @@ import android.text.TextPaint;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.LineHeightSpan;
 
+import com.google.gson.annotations.Expose;
+
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\HeadSpan.java
 public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
-    @StringDef({Head.H1, Head.H2, Head.H3, Head.H4, Head.H5, Head.H6})
-    public @interface Head {
-        String H1 = "H1";
-        String H2 = "H2";
-        String H3 = "H3";
-        String H4 = "H4";
-        String H5 = "H5";
-        String H6 = "H6";
+    //////??????参考Html.HEADING_SIZES
+    public static String getHeadText(int level) {
+        switch (level) {
+            case 0:
+                return "H1";
+            case 1:
+                return "H2";
+            case 2:
+                return "H3";
+            case 3:
+                return "H4";
+            case 4:
+                return "H5";
+            case 5:
+                return "H6";
+            default:
+                return "H";
+        }
     }
 
     private static final int H1_SIZE = 280;
@@ -26,19 +38,19 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
     private static final int H4_SIZE = 160;
     private static final int H5_SIZE = 120;
     private static final int H6_SIZE = 80;
-    private static int getHeadSize(@Head String head) {
-        switch (head) {
-            case Head.H1:
+    private static int getHeadSize(int level) {
+        switch (level) {
+            case 0:
                 return H1_SIZE;
-            case Head.H2:
+            case 1:
                 return H2_SIZE;
-            case Head.H3:
+            case 2:
                 return H3_SIZE;
-            case Head.H4:
+            case 3:
                 return H4_SIZE;
-            case Head.H5:
+            case 4:
                 return H5_SIZE;
-            case Head.H6:
+            case 5:
                 return H6_SIZE;
             default:
                 return 0;
@@ -51,19 +63,19 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
     private static final int H4_DEFAULT_MARGIN_TOP = 30;
     private static final int H5_DEFAULT_MARGIN_TOP = 20;
     private static final int H6_DEFAULT_MARGIN_TOP = 10;
-    private static int getHeadDefaultMarginTop(@Head String head) {
-        switch (head) {
-            case Head.H1:
+    private static int getHeadDefaultMarginTop(int level) {
+        switch (level) {
+            case 0:
                 return H1_DEFAULT_MARGIN_TOP;
-            case Head.H2:
+            case 1:
                 return H2_DEFAULT_MARGIN_TOP;
-            case Head.H3:
+            case 2:
                 return H3_DEFAULT_MARGIN_TOP;
-            case Head.H4:
+            case 3:
                 return H4_DEFAULT_MARGIN_TOP;
-            case Head.H5:
+            case 4:
                 return H5_DEFAULT_MARGIN_TOP;
-            case Head.H6:
+            case 5:
                 return H6_DEFAULT_MARGIN_TOP;
             default:
                 return 0;
@@ -76,43 +88,41 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
     private static final int H4_DEFAULT_MARGIN_BOTTOM = 30;
     private static final int H5_DEFAULT_MARGIN_BOTTOM = 20;
     private static final int H6_DEFAULT_MARGIN_BOTTOM = 10;
-    private static int getHeadDefaultMarginBottom(@Head String head) {
-        switch (head) {
-            case Head.H1:
+    private static int getHeadDefaultMarginBottom(int level) {
+        switch (level) {
+            case 0:
                 return H1_DEFAULT_MARGIN_BOTTOM;
-            case Head.H2:
+            case 1:
                 return H2_DEFAULT_MARGIN_BOTTOM;
-            case Head.H3:
+            case 2:
                 return H3_DEFAULT_MARGIN_BOTTOM;
-            case Head.H4:
+            case 3:
                 return H4_DEFAULT_MARGIN_BOTTOM;
-            case Head.H5:
+            case 4:
                 return H5_DEFAULT_MARGIN_BOTTOM;
-            case Head.H6:
+            case 5:
                 return H6_DEFAULT_MARGIN_BOTTOM;
             default:
                 return 0;
         }
     }
 
-    @Head
-    private final String mHead;
-    @Head
-    public String getHead() {
-        return mHead;
+    @Expose
+    private int mLevel;
+    public int getLevel() {
+        return mLevel;
     }
 
-    public HeadSpan(@Head String head) {
-        this(head, getHeadDefaultMarginTop(head), getHeadDefaultMarginBottom(head));
+    public HeadSpan(int level) {
+        this(level, getHeadDefaultMarginTop(level), getHeadDefaultMarginBottom(level));
     }
 
-    public HeadSpan(@Head String head, int marginTop, int marginBottom) {
-        super(getHeadSize(head));
-        mHead = head;
+    public HeadSpan(int level, int marginTop, int marginBottom) {
+        super(getHeadSize(level));
+        mLevel = level;
         mMarginTop = marginTop;
         mMarginBottom = marginBottom;
     }
-
     @Override
     public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);
@@ -161,10 +171,12 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
 
 
     /* ----------- LineHeightSpan ------------ */
+    @Expose
     private final int mMarginTop;
     public int getMarginTop() {
         return mMarginTop;
     }
+    @Expose
     private final int mMarginBottom;
     public int getMarginBottom() {
         return mMarginBottom;
@@ -186,10 +198,10 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
         @Override
         public HeadSpan createFromParcel(Parcel in) {
             ///注意：必须按照成员变量声明的顺序！
-            @Head final String head = in.readString();
+            int level = in.readInt();
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
-            return new HeadSpan(head, marginTop, marginBottom);
+            return new HeadSpan(level, marginTop, marginBottom);
         }
 
         @Override
@@ -205,7 +217,7 @@ public class HeadSpan extends AbsoluteSizeSpan implements LineHeightSpan {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mHead);
+        dest.writeInt(mLevel);
         dest.writeInt(mMarginTop);
         dest.writeInt(mMarginBottom);
     }

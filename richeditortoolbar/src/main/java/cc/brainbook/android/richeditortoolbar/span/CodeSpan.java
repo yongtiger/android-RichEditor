@@ -12,7 +12,6 @@ import android.text.style.ReplacementSpan;
 public class CodeSpan extends ReplacementSpan implements Parcelable {
 
     private static final int CODE_COLOR = Color.parseColor("#F0F0F0");
-
     private static final float RADIUS = 10;
 
     private Drawable drawable;

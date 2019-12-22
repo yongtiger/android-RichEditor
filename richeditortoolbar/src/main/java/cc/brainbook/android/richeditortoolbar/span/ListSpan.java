@@ -9,6 +9,8 @@ import android.support.annotation.IntRange;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
+import com.google.gson.annotations.Expose;
+
 import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
 
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
@@ -26,25 +28,34 @@ public class ListSpan implements LeadingMarginSpan, Parcelable {
 
 
     ///[ListType]
+    @Expose
     private final int mListType;
 
     ///[IndicatorText]
+    @Expose
     private final String mIndicatorText;
 
     ///[NestingLevel]
+    @Expose
     @IntRange(from = 0) private final int mNestingLevel;
 
     ///[OrderIndex]
+    @Expose
     @IntRange(from = 1) private final int mOrderIndex;
 
     ///[IndentWidth]
+    @Expose
     @IntRange(from = 0) private final int mIndentWidth;
 
     ///[Indicator]
+    @Expose
     @IntRange(from = 0)  private final int mIndicatorWidth;
+    @Expose
     @IntRange(from = 0)  private final int mIndicatorGapWidth;
+    @Expose
     @ColorInt private final int mIndicatorColor;
 
+    @Expose
     private final boolean mWantColor;
 
 

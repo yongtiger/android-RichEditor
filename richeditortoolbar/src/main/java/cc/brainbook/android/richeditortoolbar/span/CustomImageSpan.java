@@ -14,6 +14,8 @@ import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 
+import com.google.gson.annotations.Expose;
+
 import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
@@ -25,7 +27,7 @@ import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable {
     public static final int ALIGN_CENTER = 2;
 
-    private int mVerticalAlignment;
+    @Expose
     private int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
     public int getDrawableWidth() {
         return mDrawableWidth;
@@ -35,22 +37,32 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable 
     }
 
     @Nullable
+    @Expose
     private String mUri;    ///media source
     @Nullable
     public String getUri() {
         return mUri;
     }
 
-    @Nullable
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     private String mSource;
+    public String getSource() {
+        return mSource;
+    }
 
     private WeakReference<Drawable> mDrawableRef;
+
+
+    public CustomImageSpan(@NonNull Drawable drawable, @NonNull String source) {
+        this(drawable, null, source, ALIGN_BOTTOM);
+    }
 
     public CustomImageSpan(@NonNull Drawable drawable, @Nullable String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, source, verticalAlignment);
         mUri = uri;
         mSource = source;
-        mVerticalAlignment = verticalAlignment;
         mDrawableWidth = drawable.getBounds().right;
         mDrawableHeight = drawable.getBounds().bottom;
     }

@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,15 @@ public abstract class RichEditorToolbarHelper {
     public static String toJson(HashMap<View, Class> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
 
-        return new Gson().toJson(textBean);
+        ///[Gson#Exclude父类成员变量的序列化和反序列化]
+        ///一是因为只测试显示使用而不进行真正的反序列化，并不需要父类成员变量序列化
+        ///二是父类可能包含图片等，造成测试时获取的jsonString字符串长度超长！
+        ///https://howtodoinjava.com/gson/gson-exclude-or-ignore-fields/
+        ///https://www.baeldung.com/gson-exclude-fields-serialization
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        return gson.toJson(textBean);
     }
 
     public static ArrayList<Object> fromJson(Editable editable, String src) {

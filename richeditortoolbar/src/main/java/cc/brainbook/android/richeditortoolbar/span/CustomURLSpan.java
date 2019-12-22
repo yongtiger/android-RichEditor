@@ -3,8 +3,14 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.os.Parcel;
 import android.text.style.URLSpan;
 
+import com.google.gson.annotations.Expose;
+
 public class CustomURLSpan extends URLSpan {
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
     private final String mURL;
+
 
     /**
      * Constructs a {@link CustomURLSpan} from a url string.

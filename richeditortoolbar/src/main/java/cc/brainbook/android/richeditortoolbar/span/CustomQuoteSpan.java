@@ -9,6 +9,8 @@ import android.support.annotation.Px;
 import android.text.Layout;
 import android.text.style.QuoteSpan;
 
+import com.google.gson.annotations.Expose;
+
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
 public class CustomQuoteSpan extends QuoteSpan {
@@ -28,10 +30,17 @@ public class CustomQuoteSpan extends QuoteSpan {
      */
     public static final int STANDARD_GAP_WIDTH_PX = 40;
 
+
+    ///[Gson#Exclude父类成员变量的序列化和反序列化]
+    ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
+    @Expose
+    @ColorInt
+    private final int mColor;
+
+    @Expose
     @Px
-    private final int mStripeWidth;
-    @Px
-    private final int mGapWidth;
+    private final int mStripeWidth, mGapWidth;
+
 
     public CustomQuoteSpan() {
         this(STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
@@ -42,6 +51,7 @@ public class CustomQuoteSpan extends QuoteSpan {
     public CustomQuoteSpan(@ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
         super(color);
+        mColor = color;
         mStripeWidth = stripeWidth;
         mGapWidth = gapWidth;
     }
@@ -107,7 +117,7 @@ public class CustomQuoteSpan extends QuoteSpan {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(getColor());
+        dest.writeInt(mColor);
         dest.writeInt(mStripeWidth);
         dest.writeInt(mGapWidth);
     }

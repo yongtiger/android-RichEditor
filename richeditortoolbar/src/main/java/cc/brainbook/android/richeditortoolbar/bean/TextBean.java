@@ -3,10 +3,14 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 
 public class TextBean implements Parcelable {
+    @Expose
     private String text;
+    @Expose
     private ArrayList<SpanBean> spans;
 
     public String getText() {
