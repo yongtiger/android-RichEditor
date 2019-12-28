@@ -11,6 +11,9 @@ import com.google.gson.annotations.Expose;
 
 ///[UPGRADE#LineDividerSpan]
 public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable {
+    public static final int DEFAULT_MARGIN_TOP = 0;
+    public static final int DEFAULT_MARGIN_BOTTOM = 0;
+
     ///[implements LineHeightSpan]
     @Expose
     private final int mMarginTop, mMarginBottom;
@@ -19,6 +22,11 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     private DrawBackgroundCallback mDrawBackgroundCallback;
     public void setDrawBackgroundCallback(DrawBackgroundCallback drawBackgroundCallback) {
         mDrawBackgroundCallback = drawBackgroundCallback;
+    }
+
+
+    public LineDividerSpan() {
+        this(DEFAULT_MARGIN_TOP, DEFAULT_MARGIN_BOTTOM);
     }
 
     public LineDividerSpan(int marginTop, int marginBottom) {

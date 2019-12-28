@@ -224,11 +224,11 @@ public class HtmlTest {
 //    }
 //
 //    @Test
-//    public void testTagTt() {/////////////???????????tt标签需要创建ttSpan!!!!!!!!!!!!!
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
+//    public void testTagTt() {    /////////////////////////////////////OK
+//        check("<tt>a</tt>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><font face=\"monospace\">a</font></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"monospace\">a</font></p>\n");
 //    }
 //
 //    @Test
@@ -273,6 +273,15 @@ public class HtmlTest {
 //
 //
 //    /* ------------- RichEditorToolbar特有的tag和span ------------- */
+//    ///ul/ol/li
+//    @Test
+//    public void testListSpan() {
+//        check("",
+//                "{\"spans\":[],\"text\":\"\"}",
+//                "",
+//                "");
+//    }
+//
 //    @Test
 //    public void testLeadingMarginSpan() {
 //        check("",
@@ -281,37 +290,18 @@ public class HtmlTest {
 //                "");
 //    }
 //
-//    @Test
-//    public void testTagAlignNormalSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
-//    @Test
-//    public void testAlignCenterSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
-//    @Test
-//    public void testTagAlignOppositeSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
-//    @Test
-//    public void testTagHr() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
+    @Test
+    public void testTagHr() {
+        check("<hr /><p>a</p><hr />a",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":17,\"spanStart\":5}],\"text\":\"\\n\\na\\n\\n\\na\"}",
+                "<p dir=\"ltr\">&lt;hr&gt;</p>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "&lt;hr&gt;</p>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "");
+    }
 //
 //    @Test
 //    public void testCodeSpan() {
@@ -331,15 +321,6 @@ public class HtmlTest {
 //
 //    @Test
 //    public void testAudioSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
-//    ///ul/ol/li
-//    @Test
-//    public void testListSpan() {
 //        check("",
 //                "{\"spans\":[],\"text\":\"\"}",
 //                "",

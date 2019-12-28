@@ -38,7 +38,7 @@ public abstract class RichEditorToolbarHelper {
         ///二是父类可能包含图片等，造成测试时获取的jsonString字符串长度超长！
         ///https://howtodoinjava.com/gson/gson-exclude-or-ignore-fields/
         ///https://www.baeldung.com/gson-exclude-fields-serialization
-        Gson gson = new GsonBuilder()
+        final Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
         return gson.toJson(textBean);
