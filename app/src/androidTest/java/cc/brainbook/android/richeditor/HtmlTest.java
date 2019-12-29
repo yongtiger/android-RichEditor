@@ -39,6 +39,11 @@ public class HtmlTest {
         mRichEditorToolbar = mActivityRule.getActivity().findViewById(R.id.rich_editor_tool_bar);
 
         mClassMap = mRichEditorToolbar.getClassMap();
+
+//        ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
+//        ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
+//        Context context = mActivityRule.getActivity();
+//        Html.sDisplayMetricsDensity = context.getResources().getDisplayMetrics().density;
     }
 
     private void check(String srcString, String expectJsonString, String expectConsecutiveString, String expectIndividualString) {
@@ -215,13 +220,70 @@ public class HtmlTest {
 //                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><sub>a</sub></p>\n");
 //    }
 //
-//    @Test
-//    public void testTagFont() {    /////////////////////////////////////OK 需要实现color、size（原生Html没有！）
+    @Test
+    public void testTagFont() {    /////////////////////////////////////OK
+//        ///font#face
+//        check("<font face=\"serif\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><font face=\"serif\">a</font></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\">a</font></p>\n");
+
+//        ///font#face
+//        ///注意：当face="monospace"时转换为tt标签
 //        check("<font face=\"monospace\">a</font>",
 //                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"monospace\">a</font></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"monospace\">a</font></p>\n");
-//    }
+//                "<p dir=\"ltr\"><tt>a</tt></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt>a</tt></p>\n");
+
+//        ///font#color
+//        ///注意：color转换为span标签
+//        check("<font color=\"blue\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"color:#0000FF;\">a</span></p>\n");
+
+//        ///font#size（px）
+//        ///注意：size转换为span标签
+//        check("<font size=\"10px\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><span style=\"font-size:10px\";>a</span></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:10px\";>a</span></p>\n");
+
+//        ///font#size（%）
+//        ///注意：size转换为span标签
+//        check("<font size=\"150%\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><span style=\"font-size:1.50em;\">a</span></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:1.50em;\">a</span></p>\n");
+
+
+//        ///font#face+color
+//        check("<font face=\"serif\" color=\"blue\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n");
+
+//        ///font#face+color
+//        ///注意：当face="monospace"时转换为tt标签
+//        check("<font face=\"monospace\" color=\"blue\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n");
+
+
+//        ///font#face+color+size（px）
+//        check("<font face=\"serif\" color=\"blue\" size=\"10px\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n");
+
+//        ///font#face+color+size（%）
+//        check("<font face=\"serif\" color=\"blue\" size=\"150%\">a</font>",
+//                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n");
+
+    }
 //
 //    @Test
 //    public void testTagTt() {    /////////////////////////////////////OK
@@ -290,18 +352,18 @@ public class HtmlTest {
 //                "");
 //    }
 //
-    @Test
-    public void testTagHr() {
-        check("<hr /><p>a</p><hr />a",
-                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":17,\"spanStart\":5}],\"text\":\"\\n\\na\\n\\n\\na\"}",
-                "<p dir=\"ltr\">&lt;hr&gt;</p>\n" +
-                        "<p dir=\"ltr\"><br>\n" +
-                        "&lt;hr&gt;</p>\n" +
-                        "<p dir=\"ltr\"><br>\n" +
-                        "</p>\n" +
-                        "<p dir=\"ltr\">a</p>\n",
-                "");
-    }
+//    @Test
+//    public void testTagHr() {
+//        check("<hr /><p>a</p><hr />a",
+//                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":17,\"spanStart\":5}],\"text\":\"\\n\\na\\n\\n\\na\"}",
+//                "<p dir=\"ltr\">&lt;hr&gt;</p>\n" +
+//                        "<p dir=\"ltr\"><br>\n" +
+//                        "&lt;hr&gt;</p>\n" +
+//                        "<p dir=\"ltr\"><br>\n" +
+//                        "</p>\n" +
+//                        "<p dir=\"ltr\">a</p>\n",
+//                "");
+//    }
 //
 //    @Test
 //    public void testCodeSpan() {

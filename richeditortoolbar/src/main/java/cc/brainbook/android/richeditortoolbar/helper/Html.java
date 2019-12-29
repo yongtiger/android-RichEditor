@@ -29,13 +29,11 @@ import android.text.TextUtils;
 import android.text.style.AlignmentSpan;
 import android.text.style.BulletSpan;
 import android.text.style.CharacterStyle;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.ParagraphStyle;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.SubscriptSpan;
 import android.text.style.SuperscriptSpan;
-import android.text.style.TypefaceSpan;
 import android.text.style.URLSpan;
 import android.text.style.UnderlineSpan;
 
@@ -74,7 +72,6 @@ import cc.brainbook.android.richeditortoolbar.span.CustomURLSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
-import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 
 ///[UPGRADE#android.text.Html]
 /**
@@ -82,6 +79,11 @@ import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
  * Not all HTML tags are supported.
  */
 public class Html {
+    ///[UPGRADE#android.text.Html]缺省的屏幕密度
+    ///px in CSS is the equivalance of dip in Android
+    ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
+    public static float sDisplayMetricsDensity = 3.0f;
+
     /**
      * Retrieves images for HTML &lt;img&gt; tags.
      */
@@ -544,7 +546,14 @@ public class Html {
                     continue;
                 }
                 if (style[j] instanceof CustomFontFamilySpan) {
-                    out.append("<font face=\"").append(((CustomFontFamilySpan) style[j]).getFamily()).append("\">");
+                    String s = ((CustomFontFamilySpan) style[j]).getFamily();
+
+                    if ("monospace".equals(s)) {
+                        out.append("<tt>");
+                    } else {
+                        out.append("<font face=\"").append(s).append("\">");
+                    }
+
                     continue;
                 }
                 if (style[j] instanceof CustomRelativeSizeSpan) {
@@ -571,13 +580,12 @@ public class Html {
                 }
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof TypefaceSpan) {
-                if (style[j] instanceof CustomFontFamilySpan) {
-                    String s = ((CustomFontFamilySpan) style[j]).getFamily();
-
-                    if ("monospace".equals(s)) {
-                        out.append("<tt>");
-                    }
-                }
+//                    String s = ((TypefaceSpan) style[j]).getFamily();
+//
+//                    if ("monospace".equals(s)) {
+//                        out.append("<tt>");
+//                    }
+//                }
 
                 if (style[j] instanceof SuperscriptSpan) {
                     out.append("<sup>");
@@ -616,10 +624,11 @@ public class Html {
                     CustomAbsoluteSizeSpan s = ((CustomAbsoluteSizeSpan) style[j]);
                     float sizeDip = s.getSize();
                     if (!s.getDip()) {
-                        ///[UPGRADE#android.text.Html]
+                        ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
+                        ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
 //                        Application application = ActivityThread.currentApplication();
 //                        sizeDip /= application.getResources().getDisplayMetrics().density;
-                        sizeDip = 3.0f;//////??????
+                        sizeDip /= sDisplayMetricsDensity;
                     }
 
                     // px in CSS is the equivalance of dip in Android
@@ -652,7 +661,14 @@ public class Html {
                     continue;
                 }
                 if (style[j] instanceof CustomFontFamilySpan) {
-                    out.append("</font>");
+                    String s = ((CustomFontFamilySpan) style[j]).getFamily();
+
+                    if ("monospace".equals(s)) {
+                        out.append("</tt>");
+                    } else {
+                        out.append("</font>");
+                    }
+
                     continue;
                 }
                 if (style[j] instanceof CustomRelativeSizeSpan) {
@@ -702,13 +718,14 @@ public class Html {
                 if (style[j] instanceof SuperscriptSpan) {
                     out.append("</sup>");
                 }
-                if (style[j] instanceof TypefaceSpan) {
-                    String s = ((TypefaceSpan) style[j]).getFamily();
-
-                    if (s.equals("monospace")) {
-                        out.append("</tt>");
-                    }
-                }
+                ///[UPGRADE#android.text.Html]
+//                if (style[j] instanceof TypefaceSpan) {
+//                    String s = ((TypefaceSpan) style[j]).getFamily();
+//
+//                    if (s.equals("monospace")) {
+//                        out.append("</tt>");
+//                    }
+//                }
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
 
@@ -791,6 +808,10 @@ class HtmlToSpannedConverter implements ContentHandler {
         sColorMap.put("grey", 0xFF808080);
         sColorMap.put("lightgrey", 0xFFD3D3D3);
         sColorMap.put("green", 0xFF008000);
+//        //////??????[UPGRADE#增加颜色]参考Color#sColorNameMap
+//        sColorMap.put("red", 0xFFFF0000);
+//        sColorMap.put("yellow", 0xFFFFFF00);
+//        sColorMap.put("blue", 0xFF0000FF);
     }
 
     private static Pattern getTextAlignPattern() {
@@ -1290,6 +1311,23 @@ class HtmlToSpannedConverter implements ContentHandler {
         String color = attributes.getValue("", "color");
         String face = attributes.getValue("", "face");
 
+        ///[UPGRADE#Font增加尺寸size（px、%）]
+        ///https://blog.csdn.net/qq_36009027/article/details/84371825
+        String size = attributes.getValue("", "size");
+        if (!TextUtils.isEmpty(size)) {
+            if (size.contains("px")) {
+                size = size.split("px")[0];
+                ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
+                ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
+                start(text, new AbsoluteSize(Integer.parseInt(size), true));
+            } else if (size.contains("%")) {
+                size = size.split("%")[0];
+                start(text, new RelativeSize(Float.parseFloat(size) / 100));
+            } else {
+                // todo ...
+            }
+        }
+
         if (!TextUtils.isEmpty(color)) {
             int c = getHtmlColor(color);
             if (c != -1) {
@@ -1313,7 +1351,23 @@ class HtmlToSpannedConverter implements ContentHandler {
         Foreground foreground = getLast(text, Foreground.class);
         if (foreground != null) {
             setSpanFromMark(text, foreground,
-                    new ForegroundColorSpan(foreground.mForegroundColor));
+                    new CustomForegroundColorSpan(foreground.mForegroundColor));
+        }
+
+        ///[UPGRADE#Font增加尺寸size（px、%）]
+        ///https://blog.csdn.net/qq_36009027/article/details/84371825
+        AbsoluteSize absoluteSize = getLast(text, AbsoluteSize.class);
+        if (absoluteSize != null) {
+            setSpanFromMark(text, absoluteSize,
+                    new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
+        } else {
+            RelativeSize relativeSize = getLast(text, RelativeSize.class);
+            if (relativeSize != null) {
+                setSpanFromMark(text, relativeSize,
+                        new CustomRelativeSizeSpan(relativeSize.mProportion));
+            } else {
+                // todo ...
+            }
         }
     }
 
@@ -1485,4 +1539,25 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
+    ///[UPGRADE#Font增加尺寸size（px、%）]
+    ///https://blog.csdn.net/qq_36009027/article/details/84371825
+    private static class AbsoluteSize {
+        private int mSize;
+        private boolean mDip;
+
+        public AbsoluteSize(int size) {
+            this(size, false);
+        }
+        public AbsoluteSize(int size, boolean dip) {
+            mSize = size;
+            mDip = dip;
+        }
+    }
+    private static class RelativeSize {
+        private float mProportion;
+
+        public RelativeSize(float proportion) {
+            mProportion = proportion;
+        }
+    }
 }

@@ -967,7 +967,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 if (clazz == HeadSpan.class) {
                     final int level = ((HeadSpan) span).getLevel();
                     view.setTag(level);
-                    final String headText = HeadSpan.getHeadText(level);
+                    final String headText = HeadSpan.HEADING_LABELS[level];
                     if (!headText.equals(((TextView) view).getText().toString())) {
                         ((TextView) view).setText(headText);
                     }
