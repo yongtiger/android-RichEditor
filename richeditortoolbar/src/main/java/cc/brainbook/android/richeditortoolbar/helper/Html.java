@@ -547,7 +547,7 @@ public class Html {
                 }
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
-
+                    ///注意：当face="monospace"时转换为tt标签
                     if ("monospace".equals(s)) {
                         out.append("<tt>");
                     } else {
@@ -662,7 +662,7 @@ public class Html {
                 }
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
-
+                    ///注意：当face="monospace"时转换为tt标签
                     if ("monospace".equals(s)) {
                         out.append("</tt>");
                     } else {

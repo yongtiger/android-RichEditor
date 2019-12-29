@@ -107,6 +107,53 @@ public class HtmlTest {
 //    }
 //
 //    @Test
+//    public void testTagHr() {
+//        check("<hr /><p>a</p><hr />a",
+//                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":17,\"spanStart\":5}],\"text\":\"\\n\\na\\n\\n\\na\"}",
+//                "<p dir=\"ltr\">&lt;hr&gt;</p>\n" +
+//                        "<p dir=\"ltr\"><br>\n" +
+//                        "&lt;hr&gt;</p>\n" +
+//                        "<p dir=\"ltr\"><br>\n" +
+//                        "</p>\n" +
+//                        "<p dir=\"ltr\">a</p>\n",
+//                "");
+//    }
+//
+//
+//    @Test
+//    public void testTagDiv() {    /////////////////////////////////////OK
+//        check("<div>a</div>",
+//                "{\"spans\":[],\"text\":\"a\\n\\n\"}",
+//                "<p dir=\"ltr\">a</p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
+//                        "<br>\n" +
+//                        "<br>\n");
+//    }
+//
+//
+    @Test
+    public void testTagBlockquote() {    /////////////////////////////////////OK
+//        check("<blockquote>a</blockquote>",
+//                "{\"spans\":[{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\\n\"}",
+//                "<blockquote><p dir=\"ltr\">a</p>\n</blockquote>\n",
+//                "<blockquote><p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
+//                        "<br>\n" +
+//                        "<br>\n" +
+//                        "</blockquote>\n");
+
+        check("<blockquote>a<br>a</blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":5,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\na\\n\\n\"}",
+                "<blockquote><p dir=\"ltr\">a<br>\n" +
+                        "a</p>\n" +
+                        "</blockquote>\n",
+                "<blockquote><p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
+                        "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
+                        "<br>\n" +
+                        "<br>\n" +
+                        "</blockquote>\n");
+    }
+//
+//    @Test
 //    public void testTagP() {    /////////////////////////////////////OK
 //        check("<p></p>",
 //                "{\"spans\":[],\"text\":\"\"}", ///???应为'\n'
@@ -129,15 +176,15 @@ public class HtmlTest {
 //                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n<br>\n<br>\n");
 //    }
 //
+//    ///ul/ol/li
 //    @Test
-//    public void testTagDiv() {    /////////////////////////////////////OK
-//        check("<div>a</div>",
-//                "{\"spans\":[],\"text\":\"a\\n\\n\"}",
-//                "<p dir=\"ltr\">a</p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
-//                        "<br>\n" +
-//                        "<br>\n");
+//    public void testListSpan() {
+//        check("",
+//                "{\"spans\":[],\"text\":\"\"}",
+//                "",
+//                "");
 //    }
+//
 //
 //    @Test
 //    public void testTagH() {    /////////////////////////////////////OK
@@ -148,22 +195,6 @@ public class HtmlTest {
 //                        "<p dir=\"ltr\"><br>\n" +
 //                        "</p>\n",
 //                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><h1>a</h1></p>\n" +
-//                        "<br>\n" +
-//                        "<br>\n");
-//    }
-//
-//    @Test
-//    public void testTagBlockquote() {    /////////////////////////////////////OK
-//        check("<blockquote>a</blockquote>",
-//                "{\"spans\":[{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\n\\n\"}",
-//                "<blockquote><p dir=\"ltr\">a<br>\n" +
-//                        "</p>\n" +
-//                        "</blockquote>\n" +
-//                        "<p dir=\"ltr\"><br>\n" +
-//                        "</p>\n",
-//                "<blockquote><p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\">a</p>\n" +
-//                        "<br>\n" +
-//                        "</blockquote>\n" +
 //                        "<br>\n" +
 //                        "<br>\n");
 //    }
@@ -220,70 +251,70 @@ public class HtmlTest {
 //                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><sub>a</sub></p>\n");
 //    }
 //
-    @Test
-    public void testTagFont() {    /////////////////////////////////////OK
-//        ///font#face
-//        check("<font face=\"serif\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"serif\">a</font></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\">a</font></p>\n");
-
-//        ///font#face
-//        ///注意：当face="monospace"时转换为tt标签
-//        check("<font face=\"monospace\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><tt>a</tt></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt>a</tt></p>\n");
-
-//        ///font#color
-//        ///注意：color转换为span标签
-//        check("<font color=\"blue\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"color:#0000FF;\">a</span></p>\n");
-
-//        ///font#size（px）
-//        ///注意：size转换为span标签
-//        check("<font size=\"10px\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"font-size:10px\";>a</span></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:10px\";>a</span></p>\n");
-
-//        ///font#size（%）
-//        ///注意：size转换为span标签
-//        check("<font size=\"150%\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"font-size:1.50em;\">a</span></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:1.50em;\">a</span></p>\n");
-
-
-//        ///font#face+color
-//        check("<font face=\"serif\" color=\"blue\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n");
-
-//        ///font#face+color
-//        ///注意：当face="monospace"时转换为tt标签
-//        check("<font face=\"monospace\" color=\"blue\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n");
-
-
-//        ///font#face+color+size（px）
-//        check("<font face=\"serif\" color=\"blue\" size=\"10px\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n");
-
-//        ///font#face+color+size（%）
-//        check("<font face=\"serif\" color=\"blue\" size=\"150%\">a</font>",
-//                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n");
-
-    }
+//    @Test
+//    public void testTagFont() {    /////////////////////////////////////OK
+////        ///font#face
+////        check("<font face=\"serif\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><font face=\"serif\">a</font></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\">a</font></p>\n");
+//
+////        ///font#face
+////        ///注意：当face="monospace"时转换为tt标签
+////        check("<font face=\"monospace\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><tt>a</tt></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt>a</tt></p>\n");
+//
+////        ///font#color
+////        ///注意：color转换为span标签
+////        check("<font color=\"blue\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"color:#0000FF;\">a</span></p>\n");
+//
+////        ///font#size（px）
+////        ///注意：size转换为span标签
+////        check("<font size=\"10px\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><span style=\"font-size:10px\";>a</span></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:10px\";>a</span></p>\n");
+//
+////        ///font#size（%）
+////        ///注意：size转换为span标签
+////        check("<font size=\"150%\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><span style=\"font-size:1.50em;\">a</span></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"font-size:1.50em;\">a</span></p>\n");
+//
+//
+////        ///font#face+color
+////        check("<font face=\"serif\" color=\"blue\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\">a</span></font></p>\n");
+//
+////        ///font#face+color
+////        ///注意：当face="monospace"时转换为tt标签
+////        check("<font face=\"monospace\" color=\"blue\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><tt><span style=\"color:#0000FF;\">a</span></tt></p>\n");
+//
+//
+////        ///font#face+color+size（px）
+////        check("<font face=\"serif\" color=\"blue\" size=\"10px\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mDip\":true,\"mSize\":10},\"spanClassName\":\"CustomAbsoluteSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:10px\";>a</span></span></font></p>\n");
+//
+////        ///font#face+color+size（%）
+////        check("<font face=\"serif\" color=\"blue\" size=\"150%\">a</font>",
+////                "{\"spans\":[{\"span\":{\"mProportion\":1.5},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mFamily\":\"serif\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+////                "<p dir=\"ltr\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n",
+////                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><font face=\"serif\"><span style=\"color:#0000FF;\"><span style=\"font-size:1.50em;\">a</span></span></font></p>\n");
+//
+//    }
 //
 //    @Test
 //    public void testTagTt() {    /////////////////////////////////////OK
@@ -310,6 +341,14 @@ public class HtmlTest {
 //    }
 //
 //    @Test
+//    public void testTagSpan() {    /////////////////////////////////////OK
+//        check("<span style=\"color:blue\">a</span>",
+//                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n",
+//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"color:#0000FF;\">a</span></p>\n");
+//    }
+//
+//    @Test
 //    public void testTagA() {    /////////////////////////////////////OK
 //        check("<a href=\"http://www.google.com\">a</a>",
 //                "{\"spans\":[{\"span\":{\"mURL\":\"http://www.google.com\"},\"spanClassName\":\"CustomURLSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
@@ -325,43 +364,13 @@ public class HtmlTest {
 //                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><img src=\"http://www.google.com/a.jpg\">a</p>\n");
 //    }
 //
-//    @Test
-//    public void testTagSpan() {    /////////////////////////////////////OK
-//        check("<span style=\"color:blue\">a</span>",
-//                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n",
-//                "<p dir=\"ltr\" style=\"margin-top:0; margin-bottom:0;\"><span style=\"color:#0000FF;\">a</span></p>\n");
-//    }
-//
 //
 //    /* ------------- RichEditorToolbar特有的tag和span ------------- */
-//    ///ul/ol/li
-//    @Test
-//    public void testListSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "",
-//                "");
-//    }
-//
 //    @Test
 //    public void testLeadingMarginSpan() {
 //        check("",
 //                "{\"spans\":[],\"text\":\"\"}",
 //                "",
-//                "");
-//    }
-//
-//    @Test
-//    public void testTagHr() {
-//        check("<hr /><p>a</p><hr />a",
-//                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":17,\"spanStart\":5}],\"text\":\"\\n\\na\\n\\n\\na\"}",
-//                "<p dir=\"ltr\">&lt;hr&gt;</p>\n" +
-//                        "<p dir=\"ltr\"><br>\n" +
-//                        "&lt;hr&gt;</p>\n" +
-//                        "<p dir=\"ltr\"><br>\n" +
-//                        "</p>\n" +
-//                        "<p dir=\"ltr\">a</p>\n",
 //                "");
 //    }
 //

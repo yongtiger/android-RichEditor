@@ -1469,18 +1469,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///段落span（带参数）：Head
             else if (view == mTextViewHead) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.head_items, (String) view.getTag());
+                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ///由用户选择项which获取对应的选择参数
-                                final String head = (String) ArrayUtil.getStringItem(mContext, R.array.head_items, which);
-
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
-                                if (!TextUtils.equals(head, (String) view.getTag())) {
+                                if (view.getTag() == null || which != (int) view.getTag()) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1488,7 +1485,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     }
 
                                     ///保存参数到view tag
-                                    view.setTag(head);
+                                    view.setTag(which);
 
                                     ///改变selection的span
                                     applyParagraphStyleSpansSelection(view, editable);
@@ -1496,7 +1493,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///[Preview]
                                     updatePreview();
 
-                                    ((TextView) view).setText(head);
+                                    ((TextView) view).setText(HeadSpan.HEADING_LABELS[which]);
                                 }
 
                                 dialog.dismiss();
@@ -2405,10 +2402,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             if (count > 0) {
                 for (View view : mClassMap.keySet()) {
-                    if (isCharacterStyle(view)) {
-                        ///清除掉已经被删除的span，否则将会产生多余的无效span！
-                        SpanUtil.removeSpans(mClassMap.get(view), mRichEditText.getText(), start, start + count);
-                    }
+                    ///清除掉已经被删除的span，否则将会产生多余的无效span！
+                    SpanUtil.removeSpans(mClassMap.get(view), mRichEditText.getText(), start, start + count);
                 }
             }
         }
@@ -2434,7 +2429,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 if (isParagraphStyle(view)) {
                     ///[FIX#当光标选择区间的尾部位于文本尾部空行时，段落view被select时，出现首尾相同的新span！且上一行显示view被selected]
                     ///解决：此时补插入一个'\n'
-                    if (count > 0 && view.isSelected() && selectionEnd == editable.length()
+                    if (view.isSelected() && selectionEnd == editable.length()
                             && (editable.length() == 0 || editable.charAt(editable.length() - 1) == '\n')) {
                         ///注意：不能用isSkipUndoRedo！会造成死循环
                         isSkipTextWatcher = true;

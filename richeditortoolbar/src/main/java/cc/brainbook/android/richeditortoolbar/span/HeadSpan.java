@@ -12,10 +12,10 @@ import com.google.gson.annotations.Expose;
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\HeadSpan.java
 public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan {
     ///参考Html.HEADING_SIZES
-    public static final String[] HEADING_LABELS = {"H1", "H2", "H3", "H4", "H5", "H6"};
     private static final float[] HEADING_SIZES = {
             1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f,
     };
+    public static final String[] HEADING_LABELS = {"H1", "H2", "H3", "H4", "H5", "H6"};
 
     private static final int[] DEFAULT_MARGIN_TOP = {60, 50, 40, 30, 20, 10};
     private static final int[] DEFAULT_MARGIN_BOTTOM = {60, 50, 40, 30, 20, 10};
@@ -112,7 +112,7 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan {
         @Override
         public HeadSpan createFromParcel(Parcel in) {
             ///注意：必须按照成员变量声明的顺序！
-            int level = in.readInt();
+            final int level = in.readInt();
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
             return new HeadSpan(level, marginTop, marginBottom);
