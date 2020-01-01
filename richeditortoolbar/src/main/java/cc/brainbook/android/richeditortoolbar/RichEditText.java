@@ -161,6 +161,7 @@ public class RichEditText extends AppCompatEditText {
             for (int i = 0; i < clip.getItemCount(); i++) {
                 final SpannableStringBuilder paste;
                 if (withFormatting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    //////??????[BUG]模拟器中：api 23以下无法获得剪切板内容
                     paste = new SpannableStringBuilder(clip.getItemAt(i).coerceToStyledText(getContext()));
                 } else {
                     // Get an item as text and remove all spans by toString().

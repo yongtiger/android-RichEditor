@@ -20,7 +20,7 @@ public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
      */
-    public static <T> ArrayList<T> getFilteredSpans(final Editable editable, Class<T> clazz, int start, int end) {
+    public static <T> ArrayList<T> getFilteredSpans(Class<T> clazz, final Editable editable, int start, int end) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
 
@@ -62,12 +62,12 @@ public abstract class SpanUtil {
     /**
      * 获取光标选择区间的spans
      */
-    public static <T> ArrayList<T> getSelectedSpans(EditText editText, Class<T> clazz) {
+    public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, EditText editText) {
         ArrayList<T> filteredSpans = new ArrayList<>();
         final int selectionStart = editText.getSelectionStart();
         final int selectionEnd = editText.getSelectionEnd();
         if (selectionStart != -1 && selectionEnd != -1) { ///-1 if there is no selection or cursor
-            filteredSpans = getFilteredSpans(editText.getText(), clazz, selectionStart, selectionEnd);
+            filteredSpans = getFilteredSpans(clazz, editText.getText(), selectionStart, selectionEnd);
         }
 
         return filteredSpans;
@@ -105,39 +105,12 @@ public abstract class SpanUtil {
      * 清除区间[start, end]内的spans
      */
     public static <T> void removeSpans(Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = getFilteredSpans(clazz, editable, start, end);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
             if (start <= spanStart && spanEnd <= end) {
                 editable.removeSpan(span);
-            }
-        }
-    }
-
-    /**
-     * 清除段落区间[start, end]内的spans
-     *
-     * 注意：start, end可以相等
-     */
-    public static <T> void removeParagraphSpans(Class<T> clazz, Editable editable, int start, int end) {
-        int next;
-        for (int i = start; i <= end; i = next) { ///单选（start == end)时也能loop
-            final int currentParagraphStart = SpanUtil.getParagraphStart(editable, i);
-            final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
-            next = currentParagraphEnd;
-
-            final ArrayList<T> spans = getFilteredSpans(editable, clazz, currentParagraphStart, currentParagraphEnd);
-            for (T span : spans) {
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
-                if (spanStart == currentParagraphStart && spanEnd == currentParagraphEnd) {
-                    editable.removeSpan(span);
-                }
-            }
-
-            if (next >= end) {
-                break;
             }
         }
     }
@@ -159,7 +132,7 @@ public abstract class SpanUtil {
      */
     public static <T> void flatSpans(Class<T> clazz, Editable editable, int start, int end) {
         T currentSpan = null;
-        final ArrayList<T> spans = getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = getFilteredSpans(clazz, editable, start, end);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);

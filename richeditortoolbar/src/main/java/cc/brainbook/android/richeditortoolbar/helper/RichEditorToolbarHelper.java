@@ -89,7 +89,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static <T extends Parcelable> void saveSpansToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(editable, clazz, start, end);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end);
         for (T span : spans) {
             ///注意：必须过滤掉没有CREATOR变量的span！
             ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
