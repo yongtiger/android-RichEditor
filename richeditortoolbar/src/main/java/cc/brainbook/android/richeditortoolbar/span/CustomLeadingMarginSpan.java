@@ -6,7 +6,9 @@ import android.text.style.LeadingMarginSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomLeadingMarginSpan extends LeadingMarginSpan.Standard implements Parcelable {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+
+public class CustomLeadingMarginSpan extends LeadingMarginSpan.Standard implements Parcelable, IBlockParagraphStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -26,9 +28,9 @@ public class CustomLeadingMarginSpan extends LeadingMarginSpan.Standard implemen
     public static final Creator<CustomLeadingMarginSpan> CREATOR = new Creator<CustomLeadingMarginSpan>() {
         @Override
         public CustomLeadingMarginSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             final int first = in.readInt();
             final int rest = in.readInt();
+
             return new CustomLeadingMarginSpan(first, rest);
         }
 

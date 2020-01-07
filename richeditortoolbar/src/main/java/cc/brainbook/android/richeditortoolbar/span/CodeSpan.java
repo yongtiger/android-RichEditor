@@ -9,7 +9,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
-public class CodeSpan extends ReplacementSpan implements Parcelable {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CodeSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
 
     private static final int CODE_COLOR = Color.parseColor("#F0F0F0");
     private static final float RADIUS = 10;
@@ -43,7 +45,6 @@ public class CodeSpan extends ReplacementSpan implements Parcelable {
     public static final Creator<CodeSpan> CREATOR = new Creator<CodeSpan>() {
         @Override
         public CodeSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             return new CodeSpan();
         }
 

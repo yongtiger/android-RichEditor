@@ -15,7 +15,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:maxLines="1"
-            android:inputType="text" />
+            android:inputType="text"
+            android:hint="@string/url_span_text" />
 
         <EditText
             android:id="@+id/et_url"
@@ -23,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:maxLines="1"
-            android:inputType="textWebEmailAddress|textUri" />
+            android:inputType="textWebEmailAddress|textUri"
+            android:hint="@string/url_span_url" />
 
     </LinearLayout>
 

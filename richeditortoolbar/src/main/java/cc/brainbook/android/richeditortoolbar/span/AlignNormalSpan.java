@@ -5,7 +5,9 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
-public class AlignNormalSpan implements AlignmentSpan, Parcelable {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+
+public class AlignNormalSpan implements AlignmentSpan, Parcelable, IBlockParagraphStyle {
 
 	@Override
 	public Alignment getAlignment() {

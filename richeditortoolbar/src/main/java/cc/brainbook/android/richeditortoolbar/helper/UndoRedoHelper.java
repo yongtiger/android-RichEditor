@@ -20,14 +20,14 @@ public class UndoRedoHelper {
     public static final int RESTORE_DRAFT_ACTION = 2;
     public static final int CLEAR_SPANS_ACTION = 3;
 
-    public static final int CHANGE_HEAD_SPAN_ACTION = 10;
-    public static final int CHANGE_QUOTE_SPAN_ACTION = 11;
-    public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 12;
-    public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 13;
-    public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 14;
-    public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 15;
-    public static final int CHANGE_BULLET_SPAN_ACTION = 16;
-    public static final int CHANGE_LIST_SPAN_ACTION = 17;
+    public static final int CHANGE_QUOTE_SPAN_ACTION = 10;
+    public static final int CHANGE_LIST_SPAN_ACTION = 11;
+    public static final int CHANGE_HEAD_SPAN_ACTION = 12;
+    public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 13;
+    public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 14;
+    public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 15;
+    public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 16;
+    public static final int CHANGE_BULLET_SPAN_ACTION = 17;
     public static final int CHANGE_LINE_DIVIDER_SPAN_ACTION = 18;
 
     public static final int CHANGE_BOLD_SPAN_ACTION = 20;
@@ -84,10 +84,12 @@ public class UndoRedoHelper {
             case CLEAR_SPANS_ACTION:
                 return "clear spans";
 
-            case CHANGE_HEAD_SPAN_ACTION:
-                return "change head span";
             case CHANGE_QUOTE_SPAN_ACTION:
                 return "change quote span";
+            case CHANGE_LIST_SPAN_ACTION:
+                return "change list span";
+            case CHANGE_HEAD_SPAN_ACTION:
+                return "change head span";
             case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
                 return "change align normal span";
             case CHANGE_ALIGN_CENTER_SPAN_ACTION:
@@ -98,8 +100,6 @@ public class UndoRedoHelper {
                 return "change leading margin span";
             case CHANGE_BULLET_SPAN_ACTION:
                 return "change bullet span";
-            case CHANGE_LIST_SPAN_ACTION:
-                return "change list span";
             case CHANGE_LINE_DIVIDER_SPAN_ACTION:
                 return "change line divider span";
 

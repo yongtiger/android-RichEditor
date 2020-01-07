@@ -75,9 +75,9 @@
         <item>a. Ordered letter</item>
         <item>1. Ordered number</item>
         <item>I. Ordered roman number</item>
-        <item>(a) Ordered letter quote</item>
-        <item>(1) Ordered number quote</item>
-        <item>(I) Ordered roman number quote</item>
+        <item>a) Ordered letter quote</item>
+        <item>1) Ordered number quote</item>
+        <item>I) Ordered roman number quote</item>
     </string-array>
     <integer name="default_list_type_id">1</integer>
 

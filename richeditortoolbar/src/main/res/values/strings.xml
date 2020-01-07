@@ -15,14 +15,18 @@
     <string name="absolute_size">Size(px)</string>
     <string name="relative_size">Size(X)</string>
     <string name="scale_x">ScaleX</string>
+    <string name="url_span_text">Text</string>
+    <string name="url_span_url">Url</string>
     <string name="quote_span_strip_width">Strip width: %1$d</string>
     <string name="quote_span_gap_width">Gap width: %1$d</string>
     <string name="leading_margin_span_indent">Indent: %1$d</string>
     <string name="bullet_span_bullet_radius">Bullet radius: %1$d</string>
     <string name="bullet_span_gap_width">Gap width: %1$d</string>
-    <string name="list_span_indent_width">Indent width: %1$d</string>
+    <string name="list_span_indicator_margin">Indicator margin: %1$d</string>
     <string name="list_span_indicator_width">Indicator width: %1$d</string>
     <string name="list_span_indicator_gap_width">Indicator gap width: %1$d</string>
+    <string name="list_span_start">Start: </string>
+    <string name="list_span_reverse">Reverse: </string>
     <string name="line_divider_span_margin_top">Margin top: %1$d</string>
     <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
 

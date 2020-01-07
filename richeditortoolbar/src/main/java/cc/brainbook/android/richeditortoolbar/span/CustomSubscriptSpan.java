@@ -3,7 +3,9 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.os.Parcel;
 import android.text.style.SubscriptSpan;
 
-public class CustomSubscriptSpan extends SubscriptSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomSubscriptSpan extends SubscriptSpan implements ICharacterStyle {
 
     public static final Creator<CustomSubscriptSpan> CREATOR = new Creator<CustomSubscriptSpan>() {
         @Override

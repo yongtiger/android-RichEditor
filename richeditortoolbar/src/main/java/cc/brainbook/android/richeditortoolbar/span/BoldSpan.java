@@ -5,7 +5,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.StyleSpan;
 
-public class BoldSpan extends StyleSpan implements Parcelable {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class BoldSpan extends StyleSpan implements Parcelable, ICharacterStyle {
     public BoldSpan() {
         super(Typeface.BOLD);
     }

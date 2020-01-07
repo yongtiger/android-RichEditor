@@ -3,7 +3,9 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.os.Parcel;
 import android.text.style.StrikethroughSpan;
 
-public class CustomStrikethroughSpan extends StrikethroughSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomStrikethroughSpan extends StrikethroughSpan implements ICharacterStyle {
 
     public static final Creator<CustomStrikethroughSpan> CREATOR = new Creator<CustomStrikethroughSpan>() {
         @Override

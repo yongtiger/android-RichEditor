@@ -9,8 +9,10 @@ import android.text.style.LineHeightSpan;
 
 import com.google.gson.annotations.Expose;
 
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable {
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable, IBlockParagraphStyle {
     public static final int DEFAULT_MARGIN_TOP = 0;
     public static final int DEFAULT_MARGIN_BOTTOM = 0;
 
@@ -71,9 +73,9 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     public static final Creator<LineDividerSpan> CREATOR = new Creator<LineDividerSpan>() {
         @Override
         public LineDividerSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
+
             return new LineDividerSpan(marginTop, marginBottom);
         }
 

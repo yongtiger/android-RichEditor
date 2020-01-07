@@ -10,13 +10,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Px;
 import android.text.Layout;
-import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.BulletSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomBulletSpan extends BulletSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+
+public class CustomBulletSpan extends BulletSpan implements IBlockParagraphStyle {
     // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
     private static final int STANDARD_BULLET_RADIUS = 20;
     public static final int STANDARD_GAP_WIDTH = 40;
@@ -144,11 +144,11 @@ public class CustomBulletSpan extends BulletSpan {
     public static final Creator<CustomBulletSpan> CREATOR = new Creator<CustomBulletSpan>() {
         @Override
         public CustomBulletSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             final int gapWidth = in.readInt();
             @ColorInt final int color = in.readInt();
             final boolean wantColor = in.readInt() == 1;
             @IntRange(from = 0) final int bulletRadius = in.readInt();
+
             return new CustomBulletSpan(gapWidth, color, wantColor, bulletRadius);
         }
 

@@ -7,7 +7,9 @@ import android.text.style.AbsoluteSizeSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan implements ICharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -56,6 +58,7 @@ public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan {
         public CustomAbsoluteSizeSpan createFromParcel(Parcel in) {
             final int size = in.readInt();
             final boolean dip = in.readInt() == 1;
+
             return new CustomAbsoluteSizeSpan(size, dip);
         }
 

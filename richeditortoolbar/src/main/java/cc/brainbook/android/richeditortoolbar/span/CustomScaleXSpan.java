@@ -7,7 +7,10 @@ import android.text.style.ScaleXSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomScaleXSpan extends ScaleXSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomScaleXSpan extends ScaleXSpan implements ICharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -33,6 +36,7 @@ public class CustomScaleXSpan extends ScaleXSpan {
         @Override
         public CustomScaleXSpan createFromParcel(Parcel in) {
             final float proportion = in.readFloat();
+
             return new CustomScaleXSpan(proportion);
         }
 

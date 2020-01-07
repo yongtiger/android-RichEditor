@@ -5,7 +5,9 @@ import android.text.style.URLSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomURLSpan extends URLSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
+
+public class CustomURLSpan extends URLSpan implements IBlockCharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -27,6 +29,7 @@ public class CustomURLSpan extends URLSpan {
         @Override
         public CustomURLSpan createFromParcel(Parcel in) {
             final String url = in.readString();
+
             return new CustomURLSpan(url);
         }
 

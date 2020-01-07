@@ -9,7 +9,9 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-public class AudioSpan extends CustomImageSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
+
+public class AudioSpan extends CustomImageSpan implements IBlockCharacterStyle {
     public AudioSpan(@NonNull Drawable drawable, @NonNull String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, uri, source, verticalAlignment);
     }

@@ -19,12 +19,13 @@ import com.google.gson.annotations.Expose;
 import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
-public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable {
+public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable, IBlockCharacterStyle {
     public static final int ALIGN_CENTER = 2;
 
     @Expose

@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
@@ -12,176 +11,94 @@ import android.text.style.LeadingMarginSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
-
-public class ListSpan implements LeadingMarginSpan, Parcelable {
-    public static final int DEFAULT_LIST_TYPE = LIST_TYPE_UNORDERED_CIRCLE;
-    public static final String DEFAULT_INDICATOR_TEXT = INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
+public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_NESTING_LEVEL = 0;
-    @IntRange(from = 1) public static final int DEFAULT_ORDER_INDEX = 1;
-    @IntRange(from = 0) public static final int DEFAULT_INDENT_WIDTH = 80;
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;
-    @ColorInt public static final int DEFAULT_INDICATOR_COLOR = 0xdddddd;
+    public static final int DEFAULT_LIST_TYPE = ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
+    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_MARGIN = 160;
 
 
-    ///[ListType]
     @Expose
-    private final int mListType;
-
-    ///[IndicatorText]
+    @IntRange(from = 0) private final int mStart;
     @Expose
-    private final String mIndicatorText;
+    private final boolean isReversed;
 
     ///[NestingLevel]
     @Expose
     @IntRange(from = 0) private final int mNestingLevel;
 
-    ///[OrderIndex]
+    ///[ListType]
     @Expose
-    @IntRange(from = 1) private final int mOrderIndex;
+    private final int mListType;
 
-    ///[IndentWidth]
+    ///[IndicatorMargin]
     @Expose
-    @IntRange(from = 0) private final int mIndentWidth;
-
-    ///[Indicator]
-    @Expose
-    @IntRange(from = 0)  private final int mIndicatorWidth;
-    @Expose
-    @IntRange(from = 0)  private final int mIndicatorGapWidth;
-    @Expose
-    @ColorInt private final int mIndicatorColor;
-
-    @Expose
-    private final boolean mWantColor;
+    @IntRange(from = 0) private final int mIndicatorMargin;
 
 
     public ListSpan() {
-        this(DEFAULT_LIST_TYPE, DEFAULT_INDICATOR_TEXT, DEFAULT_NESTING_LEVEL, DEFAULT_ORDER_INDEX, DEFAULT_INDENT_WIDTH,
-                DEFAULT_INDICATOR_WIDTH, DEFAULT_INDICATOR_GAP_WIDTH, DEFAULT_INDICATOR_COLOR, false);
+        this(1, false, DEFAULT_NESTING_LEVEL, DEFAULT_LIST_TYPE, DEFAULT_INDICATOR_MARGIN);
     }
-    public ListSpan(int listType,
-                    String indicatorText,
-                    @IntRange(from = 0) int nestingLevel,
-                    @IntRange(from = 1) int orderIndex) {
-        this(listType, indicatorText, nestingLevel, orderIndex, DEFAULT_INDENT_WIDTH,
-                DEFAULT_INDICATOR_WIDTH, DEFAULT_INDICATOR_GAP_WIDTH, DEFAULT_INDICATOR_COLOR, false);
+
+    public ListSpan(@IntRange(from = 0) int nestingLevel, int listType) {
+        this(1, false, nestingLevel, listType, DEFAULT_INDICATOR_MARGIN);
     }
-    public ListSpan(@IntRange(from = 0) int indentWidth,
-                    @IntRange(from = 0) int indicatorWidth,
-                    @IntRange(from = 0) int indicatorGapWidth,
-                    @ColorInt int indicatorColor) {
-        this(DEFAULT_LIST_TYPE, DEFAULT_INDICATOR_TEXT, DEFAULT_NESTING_LEVEL, DEFAULT_ORDER_INDEX, indentWidth,
-                indicatorWidth, indicatorGapWidth, indicatorColor, true);
-    }
-    public ListSpan(int listType,
-                     String indicatorText,
+
+    public ListSpan(int start, boolean isReversed,
                      @IntRange(from = 0) int nestingLevel,
-                     @IntRange(from = 1) int orderIndex,
-                     @IntRange(from = 0) int indentWidth,
-                     @IntRange(from = 0) int indicatorWidth,
-                     @IntRange(from = 0) int indicatorGapWidth,
-                     @ColorInt int indicatorColor,
-                     boolean wantColor) {
-        mListType = listType;
-        mIndicatorText = indicatorText;
+                     int listType,
+                     @IntRange(from = 0) int indicatorMargin) {
+        mStart = start;
+        this.isReversed = isReversed;
         mNestingLevel = nestingLevel;
-        mOrderIndex = orderIndex;
-        mIndentWidth = indentWidth;
-        mIndicatorWidth = indicatorWidth;
-        mIndicatorGapWidth = indicatorGapWidth;
-        mIndicatorColor = indicatorColor;
-        mWantColor = wantColor;
+        mListType = listType;
+        mIndicatorMargin = indicatorMargin;
     }
 
-    public int getListType() {
-        return mListType;
+
+    public int getStart() {
+        return mStart;
     }
 
-    public String getIndicatorText() {
-        return mIndicatorText;
+    public boolean isReversed() {
+        return isReversed;
     }
 
     public int getNestingLevel() {
         return mNestingLevel;
     }
 
-    public int getOrderIndex() {
-        return mOrderIndex;
+    public int getListType() {
+        return mListType;
     }
 
-    public int getIndentWidth() {
-        return mIndentWidth;
-    }
-
-    public int getIndicatorColor() {
-        return mIndicatorColor;
-    }
-
-    public int getIndicatorWidth() {
-        return mIndicatorWidth;
-    }
-
-    public int getIndicatorGapWidth() {
-        return mIndicatorGapWidth;
-    }
-
-    public boolean ismWantColor() {
-        return mWantColor;
+    public int getIndicatorMargin() {
+        return mIndicatorMargin;
     }
 
 
     @Override
     public int getLeadingMargin(boolean first) {
-        return mNestingLevel * mIndentWidth + mIndicatorWidth + mIndicatorGapWidth;
-
+        return mIndicatorMargin;
     }
 
     @Override
     public void drawLeadingMargin(Canvas canvas, Paint paint, int x, int dir, int top,
                                   int baseline, int bottom, CharSequence text, int start, int end,
-                                  boolean first, Layout layout) {
-        if (first) {
-            Paint.Style style = paint.getStyle();
-            int oldColor = 0;
-
-            if (mWantColor) {
-                oldColor = paint.getColor();
-                paint.setColor(mIndicatorColor);
-            }
-
-            paint.setStyle(Paint.Style.FILL);
-
-            final String textToDraw = ListSpanHelper.getIndicatorText(mListType, mOrderIndex);
-            final float textStart = x + dir * (mNestingLevel * mIndentWidth);
-            canvas.drawText(textToDraw, textStart, baseline, paint);
-
-            if (mWantColor) {
-                paint.setColor(oldColor);
-            }
-
-            paint.setStyle(style);
-        }
-    }
+                                  boolean first, Layout layout) {}
 
 
     public static final Creator<ListSpan> CREATOR = new Creator<ListSpan>() {
         @Override
         public ListSpan createFromParcel(Parcel in) {
+            final @IntRange(from = 0) int start = in.readInt();
+            final boolean isReversed = in.readInt() == 1;
             final int listType = in.readInt();
-            final String indicatorText = in.readString();
             final @IntRange(from = 0) int nestingLevel = in.readInt();
-            final @IntRange(from = 1) int orderIndex = in.readInt();
-            final @IntRange(from = 0) int indentWidth = in.readInt();
-            final @IntRange(from = 0) int indicatorWidth = in.readInt();
-            final @IntRange(from = 0) int indicatorGapWidth = in.readInt();
-            final @ColorInt int indicatorColor = in.readInt();
-            final boolean wantColor = in.readInt() == 1;
-            return new ListSpan(listType,indicatorText, nestingLevel,orderIndex, indentWidth,
-                    indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
+            final @IntRange(from = 0) int indicatorMargin = in.readInt();
+
+            return new ListSpan(start, isReversed, listType, nestingLevel, indicatorMargin);
         }
 
         @Override
@@ -197,15 +114,11 @@ public class ListSpan implements LeadingMarginSpan, Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mListType);
-        dest.writeString(mIndicatorText);
+        dest.writeInt(mStart);
+        dest.writeInt(isReversed ? 1 : 0);
         dest.writeInt(mNestingLevel);
-        dest.writeInt(mOrderIndex);
-        dest.writeInt(mIndentWidth);
-        dest.writeInt(mIndicatorWidth);
-        dest.writeInt(mIndicatorGapWidth);
-        dest.writeInt(mIndicatorColor);
-        dest.writeInt(mWantColor ? 1 : 0);
+        dest.writeInt(mListType);
+        dest.writeInt(mIndicatorMargin);
     }
 
 }

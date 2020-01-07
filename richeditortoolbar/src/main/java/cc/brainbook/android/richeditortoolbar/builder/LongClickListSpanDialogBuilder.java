@@ -15,15 +15,15 @@ import cc.brainbook.android.colorpicker.ColorPickerView;
 import cc.brainbook.android.richeditortoolbar.R;
 
 public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder {
-	///[IndentWidth]
-	@IntRange(from = 0) private int mIndentWidth;
+	///[IndicatorMargin]
+	@IntRange(from = 0) private int mIndicatorMargin;
 
 	///[Indicator]
 	@IntRange(from = 0)  private int mIndicatorWidth;
 	@IntRange(from = 0)  private int mIndicatorGapWidth;
 
-	private TextView mTextViewIndentWidth;
-	private SeekBar mSeekBarIndentWidth;
+	private TextView mTextViewIndicatorMargin;
+	private SeekBar mSeekBarIndicatorMargin;
 	private TextView mTextViewIndicatorWidth;
 	private SeekBar mSeekBarIndicatorWidth;
 	private TextView mTextViewIndicatorGapWidth;
@@ -31,17 +31,17 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 
 
 	public interface OnClickListener {
-		void onClick(DialogInterface d, @IntRange(from = 0) int indentWidth,
+		void onClick(DialogInterface d, @IntRange(from = 0) int indicatorMargin,
 					 @IntRange(from = 0) int indicatorWidth,
 					 @IntRange(from = 0) int indicatorGapWidth,
 					 @ColorInt int indicatorColor, Integer[] allColors);
 	}
 
-	public LongClickListSpanDialogBuilder initial(@IntRange(from = 0) int indentWidth,
+	public LongClickListSpanDialogBuilder initial(@IntRange(from = 0) int indicatorMargin,
 												  @IntRange(from = 0) int indicatorWidth,
 												  @IntRange(from = 0) int indicatorGapWidth,
 												  @ColorInt int indicatorColor) {
-		mIndentWidth = indentWidth;
+		mIndicatorMargin = indicatorMargin;
 		mIndicatorWidth = indicatorWidth;
 		mIndicatorGapWidth = indicatorGapWidth;
 		this.initialColor[0] = indicatorColor;
@@ -50,18 +50,18 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 	}
 
 	private void initView(View layout) {
-		mTextViewIndentWidth = (TextView) layout.findViewById(R.id.tv_indent_width);
-		mSeekBarIndentWidth = (SeekBar) layout.findViewById(R.id.sb_indent_width);
+		mTextViewIndicatorMargin = (TextView) layout.findViewById(R.id.tv_indicator_margin);
+		mSeekBarIndicatorMargin = (SeekBar) layout.findViewById(R.id.sb_indicator_margin);
 		mTextViewIndicatorWidth = (TextView) layout.findViewById(R.id.tv_indicator_width);
 		mSeekBarIndicatorWidth = (SeekBar) layout.findViewById(R.id.sb_indicator_width);
 		mTextViewIndicatorGapWidth = (TextView) layout.findViewById(R.id.tv_indicator_gap_width);
 		mSeekIndicatorGapWidth = (SeekBar) layout.findViewById(R.id.sb_indicator_gap_width);
 
-		mSeekBarIndentWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+		mSeekBarIndicatorMargin.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				mIndentWidth = progress;
-				mTextViewIndentWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.list_span_indent_width), progress));
+				mIndicatorMargin = progress;
+				mTextViewIndicatorMargin.setText(String.format(seekBar.getContext().getResources().getString(R.string.list_span_indicator_margin), progress));
 			}
 
 			@Override
@@ -99,11 +99,11 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 	}
 
 	private void setupView(Context context) {
-		mTextViewIndentWidth.setText(String.format(context.getResources().getString(R.string.bullet_span_bullet_radius), mIndentWidth));
-		mSeekBarIndentWidth.setProgress(mIndentWidth);
-		mTextViewIndicatorWidth.setText(String.format(context.getResources().getString(R.string.bullet_span_bullet_radius), mIndicatorWidth));
+		mTextViewIndicatorMargin.setText(String.format(context.getResources().getString(R.string.list_span_indicator_margin), mIndicatorMargin));
+		mSeekBarIndicatorMargin.setProgress(mIndicatorMargin);
+		mTextViewIndicatorWidth.setText(String.format(context.getResources().getString(R.string.list_span_indicator_width), mIndicatorWidth));
 		mSeekBarIndicatorWidth.setProgress(mIndicatorWidth);
-		mTextViewIndicatorGapWidth.setText(String.format(context.getResources().getString(R.string.bullet_span_gap_width), mIndicatorGapWidth));
+		mTextViewIndicatorGapWidth.setText(String.format(context.getResources().getString(R.string.list_span_indicator_gap_width), mIndicatorGapWidth));
 		mSeekIndicatorGapWidth.setProgress(mIndicatorGapWidth);
 	}
 
@@ -152,7 +152,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 			public void onClick(DialogInterface dialog, int which) {
 				int selectedColor = colorPickerView.getSelectedColor();
 				Integer[] allColors = colorPickerView.getAllColors();
-				onClickListener.onClick(dialog, mIndentWidth, mIndicatorWidth, mIndicatorGapWidth, selectedColor, allColors);
+				onClickListener.onClick(dialog, mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, selectedColor, allColors);
 			}
 		});
 		return this;
@@ -164,7 +164,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 			public void onClick(DialogInterface dialog, int which) {
 				int selectedColor = colorPickerView.getSelectedColor();
 				Integer[] allColors = colorPickerView.getAllColors();
-				onClickListener.onClick(dialog, mIndentWidth, mIndicatorWidth, mIndicatorGapWidth, selectedColor, allColors);
+				onClickListener.onClick(dialog, mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, selectedColor, allColors);
 			}
 		});
 		return this;

@@ -12,4 +12,8 @@
     <item name="image_height" type="id" />
     <item name="image_align" type="id" />
 
+    <item name="list_start" type="id" />
+    <item name="list_is_reversed" type="id" />
+    <item name="list_list_type" type="id" />
+
 </resources>

@@ -3,10 +3,12 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.os.Parcel;
 import android.text.style.UnderlineSpan;
 
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
 ///消除EditText输入时自动产生UnderlineSpan
 ///https://stackoverflow.com/questions/35323111/android-edittext-is-underlined-when-typing
 ///https://stackoverflow.com/questions/46822580/edittext-remove-black-underline-while-typing/47704299#47704299
-public class CustomUnderlineSpan extends UnderlineSpan {
+public class CustomUnderlineSpan extends UnderlineSpan implements ICharacterStyle {
 
     public static final Creator<CustomUnderlineSpan> CREATOR = new Creator<CustomUnderlineSpan>() {
         @Override

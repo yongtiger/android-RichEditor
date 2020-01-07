@@ -8,7 +8,9 @@ import android.text.style.RelativeSizeSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomRelativeSizeSpan extends RelativeSizeSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomRelativeSizeSpan extends RelativeSizeSpan implements ICharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -34,6 +36,7 @@ public class CustomRelativeSizeSpan extends RelativeSizeSpan {
         @Override
         public CustomRelativeSizeSpan createFromParcel(Parcel in) {
             final float proportion = in.readFloat();
+
             return new CustomRelativeSizeSpan(proportion);
         }
 

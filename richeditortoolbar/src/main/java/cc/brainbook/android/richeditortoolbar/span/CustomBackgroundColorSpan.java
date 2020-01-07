@@ -6,7 +6,9 @@ import android.text.style.BackgroundColorSpan;
 
 import com.google.gson.annotations.Expose;
 
-public class CustomBackgroundColorSpan extends BackgroundColorSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomBackgroundColorSpan extends BackgroundColorSpan implements ICharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -21,7 +23,6 @@ public class CustomBackgroundColorSpan extends BackgroundColorSpan {
     public static final Creator<CustomBackgroundColorSpan> CREATOR = new Creator<CustomBackgroundColorSpan>() {
         @Override
         public CustomBackgroundColorSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             @ColorInt final int color = in.readInt();
             return new CustomBackgroundColorSpan(color);
         }

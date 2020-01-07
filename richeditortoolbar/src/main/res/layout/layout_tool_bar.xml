@@ -24,13 +24,6 @@
         style="@style/TextView"/>
 
     <ImageView
-        android:id="@+id/iv_quote"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_quote"
-        style="@style/ImageView" />
-
-    <ImageView
         android:id="@+id/iv_align_normal"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_align_left_black_24dp"
@@ -63,17 +56,24 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_list"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_list_numbered_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
         android:id="@+id/iv_line_divider"
         android:longClickable="true"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_remove_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_quote"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_quote"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_list"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_format_list_numbered_black_24dp"
         style="@style/ImageView" />
 
     <ImageView

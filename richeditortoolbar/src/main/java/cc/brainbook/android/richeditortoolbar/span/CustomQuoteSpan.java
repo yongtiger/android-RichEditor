@@ -11,9 +11,11 @@ import android.text.style.QuoteSpan;
 
 import com.google.gson.annotations.Expose;
 
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
-public class CustomQuoteSpan extends QuoteSpan {
+public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
     /**
      * Default color for the quote stripe.
      */
@@ -97,10 +99,10 @@ public class CustomQuoteSpan extends QuoteSpan {
     public static final Creator<CustomQuoteSpan> CREATOR = new Creator<CustomQuoteSpan>() {
         @Override
         public CustomQuoteSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             @ColorInt int color = in.readInt();
             @Px final int stripeWidth = in.readInt();
             @Px final int gapWidth = in.readInt();
+
             return new CustomQuoteSpan(color, stripeWidth, gapWidth);
         }
 

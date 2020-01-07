@@ -46,13 +46,6 @@ public abstract class Util {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
             Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
-
-            ///段落span（带初始化参数）：List
-            if (span.getClass() == ListSpan.class) {
-                Log.d("TAG", ((ListSpan) span).getListType() + ", "
-                        + ((ListSpan) span).getNestingLevel() + ", "
-                        + ((ListSpan) span).getOrderIndex());
-            }
         }
     }
 

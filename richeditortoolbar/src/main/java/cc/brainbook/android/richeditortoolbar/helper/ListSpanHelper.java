@@ -1,5 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
+import android.text.Editable;
+
+import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
 ///Unicode在线转换工具：http://tool.chinaz.com/tools/unicode.aspx, http://www.jsons.cn/unicode/
 public class ListSpanHelper {
@@ -24,7 +29,7 @@ public class ListSpanHelper {
 
 
     public static boolean isListTypeOrdered(int listType) {
-        return listType < 0;
+        return listType < 0 && listType != Integer.MIN_VALUE;
     }
 
     public static String getIndicatorText(int listType, int orderIndex) {
@@ -45,11 +50,11 @@ public class ListSpanHelper {
             case LIST_TYPE_ORDERED_ROMAN_NUMBER:
                 return getRomanLetterIndicatorTextByIndex(orderIndex) + ".";
             case LIST_TYPE_ORDERED_LETTER_QUOTE:
-                return "(" + getLetterIndicatorTextByIndex(orderIndex) + ")";
+                return getLetterIndicatorTextByIndex(orderIndex) + ")";
             case LIST_TYPE_ORDERED_NUMBER_QUOTE:
-                return "(" + orderIndex + ")";
+                return orderIndex + ")";
             case LIST_TYPE_ORDERED_ROMAN_NUMBER_QUOTE:
-                return "(" + getRomanLetterIndicatorTextByIndex(orderIndex) + ")";
+                return getRomanLetterIndicatorTextByIndex(orderIndex) + ")";
             default:
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_EMPTY;
         }
@@ -221,6 +226,40 @@ public class ListSpanHelper {
             result.append(singleRoman[i]);
         }
         return result.toString();
+    }
+
+
+    public static int getListItemSpanIndex(ListSpan parentListSpan, Editable editable, int where) {
+        int result = parentListSpan.getStart();
+        final int parentListSpanStart = editable.getSpanStart(parentListSpan);
+        if (parentListSpanStart == where) {
+            return result;
+        }
+
+        final ListItemSpan[] listItemSpans = editable.getSpans(parentListSpanStart, where, ListItemSpan.class);
+        for (ListItemSpan listItemSpan : listItemSpans) {
+            if (listItemSpan.getNestingLevel() == parentListSpan.getNestingLevel()) {
+                if (parentListSpan.isReversed()) {
+                    result--;
+                } else {
+                    result++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void removeListItemSpans(ListSpan parentListSpan, Editable editable) {
+        final int parentListSpanStart = editable.getSpanStart(parentListSpan);
+        final int parentListSpanEnd = editable.getSpanEnd(parentListSpan);
+
+        final ListItemSpan[] listItemSpans = editable.getSpans(parentListSpanStart, parentListSpanEnd, ListItemSpan.class);
+        for (ListItemSpan listItemSpan : listItemSpans) {
+            if (listItemSpan.getNestingLevel() == parentListSpan.getNestingLevel()) {
+                editable.removeSpan(listItemSpan);
+            }
+        }
     }
 
 }

@@ -3,7 +3,9 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.os.Parcel;
 import android.text.style.SuperscriptSpan;
 
-public class CustomSuperscriptSpan extends SuperscriptSpan {
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+
+public class CustomSuperscriptSpan extends SuperscriptSpan implements ICharacterStyle {
 
     public static final Creator<CustomSuperscriptSpan> CREATOR = new Creator<CustomSuperscriptSpan>() {
         @Override

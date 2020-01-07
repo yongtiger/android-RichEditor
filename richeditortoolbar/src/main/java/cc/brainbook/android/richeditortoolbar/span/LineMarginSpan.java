@@ -33,9 +33,9 @@ public class LineMarginSpan implements LineHeightSpan, Parcelable {
     public static final Creator<LineMarginSpan> CREATOR = new Creator<LineMarginSpan>() {
         @Override
         public LineMarginSpan createFromParcel(Parcel in) {
-            ///注意：必须按照成员变量声明的顺序！
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
+
             return new LineMarginSpan(marginTop, marginBottom);
         }
 
