@@ -17,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
@@ -91,14 +90,14 @@ import cc.brainbook.android.richeditortoolbar.util.Util;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.removeListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.findAndJoinLeftSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.findAndJoinRightSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getLeftSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getParentSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getRightSpan;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isBlockCharacterStyle;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isBlockParagraphStyle;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isNestParagraphStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isCharacterStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isParagraphStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isSameWithViewParameter;
@@ -323,9 +322,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
 
                     if (pasteEditable == null) {
-                        mRichEditText.getText().setSpan(imagePlaceholderSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        mRichEditText.getText().setSpan(imagePlaceholderSpan, start, end, getSpanFlag(clazz));
                     } else {
-                        pasteEditable.setSpan(imagePlaceholderSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        pasteEditable.setSpan(imagePlaceholderSpan, start, end, getSpanFlag(clazz));
                     }
                 }
             }
@@ -340,14 +339,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                     : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                     : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign),
-                            pasteEditable == null ? start : start + pasteOffset, pasteEditable == null ? end : end + pasteOffset, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            pasteEditable == null ? start : start + pasteOffset, pasteEditable == null ? end : end + pasteOffset, getSpanFlag(clazz));
                 } else {
                     pasteEditable.removeSpan(imagePlaceholderSpan);
                     pasteEditable.setSpan(
                             clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                     : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                     : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign),
-                                    start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    start, end, getSpanFlag(clazz));
                 }
             }
         });
@@ -422,14 +421,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
         final int firstParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
-//        final int lastParagraphStart = SpanUtil.getParagraphStart(editable, end);
-//        final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
 
         for (Class clazz : mClassMap.keySet()) {
             if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
                 mClassMap.get(clazz).setSelected(false);
-                if (isBlockParagraphStyle(clazz)) {
-                    adjustBlockParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
+                if (isNestParagraphStyle(clazz)) {
+                    adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
                 } else {
                     adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
                 }
@@ -446,7 +443,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 if (isBlockCharacterStyle(clazz)) {
                     adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
                 } else {
-                    adjustSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
+                    adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
                 }
                 updateCharacterStyleView(mContext, mClassMap.get(clazz), clazz, editable, start, end);
             }
@@ -1159,7 +1156,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                                 final ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
-                                if (colorDrawable.getColor() != selectedColor) {
+                                if (colorDrawable == null || colorDrawable.getColor() != selectedColor) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1405,9 +1402,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///由用户选择项which获取对应的选择参数
-                                final CharSequence scaleX = ArrayUtil.getStringItem(mContext, R.array.scale_x_items, which);
+                                final String scaleX = ArrayUtil.getStringItem(mContext, R.array.scale_x_items, which);
 
-                                if (!TextUtils.equals(scaleX, (CharSequence) view.getTag())) {
+                                if (!TextUtils.equals(scaleX, (String) view.getTag())) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1731,23 +1728,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///调整将要保存的历史记录的beforeChange/afterChange
             beforeChange = "";
             afterChange = "\n";
-
-            ///[FIX#补插'\n'后造成所有span自动延展，所以需要调整右缩span，不覆盖[start, end]区间的span]
-            for (Class clazz : mClassMap.keySet()) {
-                if (mClassMap.get(clazz) == view) {
-                    continue;
-                }
-                if (isBlockParagraphStyle(clazz)) {
-                    adjustBlockParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
-                } else if (isParagraphStyle(clazz)) {
-                    adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
-                }
-            }
         }
 
         final Class clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
-        if (isBlockParagraphStyle(clazz)) {
-            adjustBlockParagraphStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
+        if (isNestParagraphStyle(clazz)) {
+            adjustNestParagraphStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         } else {
             adjustParagraphStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         }
@@ -1758,19 +1743,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
         }
     }
+
     private void applyCharacterStyleSpans(View view, Editable editable) {
         final int selectionStart = Selection.getSelectionStart(editable);
         final int selectionEnd = Selection.getSelectionEnd(editable);
         ///当selectionStart != selectionEnd时改变selection的span
         final Class clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
-        if (selectionStart == -1 || selectionEnd == -1 || selectionStart == selectionEnd && !isBlockCharacterStyle(clazz)) {
+        if (selectionStart == -1 || selectionEnd == -1) {
             return;
         }
 
         if (isBlockCharacterStyle(clazz)) {
             adjustBlockCharacterStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         } else {
-            adjustSpans(view, clazz, editable, selectionStart, selectionEnd, true);
+            adjustCharacterStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         }
 
         ///[Undo/Redo]
@@ -1869,7 +1855,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int selectionStart = start;
             int selectionEnd = start + count;
 
-            //////////
             if (count > 0) {
                 final int next = editable.nextSpanTransition(selectionStart - 1, selectionEnd, ListSpan.class);
                 if (next < selectionEnd) {
@@ -1887,7 +1872,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             isSkipTextWatcher = false;
 
                             ///调整使其不包含"\n"
-                            editable.setSpan(listItemSpan, listItemSpanStart, listItemSpanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                            editable.setSpan(listItemSpan, listItemSpanStart, listItemSpanEnd, getSpanFlag(ListSpan.class));
 
                             ///调整将要保存的历史记录的beforeChange/afterChange
                             ///[Undo/Redo]
@@ -1900,7 +1885,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                     final ListItemSpan[] selectionEndListItemSpans = editable.getSpans(selectionEnd, selectionEnd, ListItemSpan.class);
                     for (ListItemSpan listItemSpan : selectionEndListItemSpans) {
-                        final int listItemSpanStart = editable.getSpanStart(listItemSpan);
+//                        final int listItemSpanStart = editable.getSpanStart(listItemSpan);
                         final int listItemSpanEnd = editable.getSpanEnd(listItemSpan);
                         if (selectionEnd == listItemSpanEnd && editable.charAt(selectionEnd - 1) != '\n') {
                             ///注意：不能用isSkipUndoRedo！会造成死循环
@@ -1923,12 +1908,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             }
 
-
             for (Class clazz : mClassMap.keySet()) {
-                if (isParagraphStyle(clazz)) {
+                if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
                     ///[FIX#当光标选择区间的尾部位于文本尾部空行时，段落view被select时，出现首尾相同的新span！且上一行显示view被selected]
                     ///解决：此时补插入一个'\n'
-                    if (mClassMap.get(clazz) != null && mClassMap.get(clazz).isSelected() && selectionEnd == editable.length()
+                    if (mClassMap.get(clazz).isSelected() && selectionEnd == editable.length()
                             && (editable.length() == 0 || editable.charAt(editable.length() - 1) == '\n')) {
                         ///注意：不能用isSkipUndoRedo！会造成死循环
                         isSkipTextWatcher = true;
@@ -1949,30 +1933,27 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             }
+
             for (Class clazz : mClassMap.keySet()) {
-                if (isParagraphStyle(clazz)) {
-                    if (count > 0) {
-                        if (isBlockParagraphStyle(clazz)) {
-                            adjustBlockParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
-                        } else {
-                            adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
-                        }
-                    } else if (before > 0) {
-                        if (!isBlockParagraphStyle(clazz) && editable.length() > 0) {//////?????[BUG]模拟器中：当文本长度为0，调用joinSpanByPosition()死机！要保证editable.length() > 0
-                            joinSpanByPosition(mClassMap.get(clazz), clazz, editable, selectionStart);
-                        }
+                if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
+
+                    ///[FIX#当两行span不同时（如h1和h6），选择第二行行首后回退删除'\n'，此时View仍然在第二行，应该更新为第一行！]
+                    ///[FIX#在行首回车时，上面产生的空行应该不被选中！]
+                    final int currentParagraphStart = SpanUtil.getParagraphStart(editable, start);
+                    final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
+                    updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, currentParagraphStart, currentParagraphEnd);
+
+                    ///注意：因为可能'\n'被删除了，所以删除时也要adjust！
+                    if (isNestParagraphStyle(clazz)) {
+                        adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
+                    } else {
+                        adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
                     }
-                } else if (isCharacterStyle(clazz)) {
-                    if (count > 0) {
-                        if (isBlockCharacterStyle(clazz)) {
-                            adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
-                        } else {
-                            adjustSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
-                        }
-                    } else if (before > 0) {
-                        if (!isBlockCharacterStyle(clazz) && editable.length() > 0) {//////?????[BUG]模拟器中：当文本长度为0，调用joinSpanByPosition()死机！要保证editable.length() > 0
-                            joinSpanByPosition(mClassMap.get(clazz), clazz, editable, selectionStart);
-                        }
+                } else if (isCharacterStyle(clazz) && mClassMap.get(clazz)!= null) {
+                    if (isBlockCharacterStyle(clazz)) {
+                        adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
+                    } else {
+                        adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, false);
                     }
                 }
             }
@@ -2014,17 +1995,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
     /* ------------------------------------------------------------------------------------------ */
-    private <T> void adjustBlockParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
-//        ///段落span（带初始化参数）：List
-//        ///粘贴含有ListSpan的文本需要先获得选择区间前面ListSpan的位置，以便以后更新ListSpan
-//        int previousWhere = 0;
-//        if (clazz == ListSpan.class) {
-//            final int currentParagraphStart = SpanUtil.getParagraphStart(editable, start);
-////            final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
-//            previousWhere = currentParagraphStart -1 > 0
-//                    ? SpanUtil.getParagraphStart(editable, currentParagraphStart -1) : currentParagraphStart;
+    private <T> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
+//        final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
+//        final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
+//        ///注意：当选中文尾的空行时会出现firstParagraphStart == lastParagraphEnd的情况，此时只切换view的selected状态、不调整spans！
+//        if (firstParagraphStart < lastParagraphEnd) {
+//            adjustSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isRemove);
+//
+//            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {
+//                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isRemove);
+//            }
 //        }
+    }
 
+    private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
         ///注意：必须多循环一次！比如选中区间尾部在下一行的开始位置，也要包括下一行到选择区间来
         if (end < editable.length()) {
             end++;
@@ -2036,88 +2020,57 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
             next = currentParagraphEnd;
 
-            adjustCurrentBlockParagraphSpans(view, clazz, editable, currentParagraphStart, currentParagraphEnd, isRemove);
+            adjustCurrentParagraphSpans(view, clazz, editable, currentParagraphStart, currentParagraphEnd, isRemove);
 
             if (next >= end) {
-//                ///段落span（带初始化参数）：List
-//                ///粘贴含有ListSpan的文本后，更新选择区间内和后续的ListSpan
-//                if (clazz == ListSpan.class) {
-//                    final int previousParagraphStart = SpanUtil.getParagraphStart(editable, previousWhere);
-//                    final int previousParagraphEnd = SpanUtil.getParagraphEnd(editable, previousWhere);
-//                    updateAllRightListSpans(editable, previousParagraphStart, previousParagraphEnd);    ///更新选择区间内ListSpan
-//                    updateAllRightListSpans(editable, currentParagraphStart, currentParagraphEnd);  ///更新后续的ListSpan
-//                }
-
                 break;
             }
         }
     }
 
-    private <T> void adjustCurrentBlockParagraphSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
-        boolean isNewSpanNeeded = true;  ///changed内容是否需要新添加span
-        boolean hasSpan = false;  ///为true时，后续的span将被删除
-        boolean isSameWithViewParameter = true;
-
+    private <T> void adjustCurrentParagraphSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
-        for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+        if (spans.size() == 0) {
+            if (view != null && view.isSelected()) {
+                createNewSpan(view, clazz, editable, start, end, null);
+            }
 
-            if (hasSpan && view != null && view.isSelected() && isSameWithViewParameter) {
+            return;
+        }
+
+        boolean hasSpan = false;    ///为true时，后续的span将被删除
+        for (T span : spans) {
+            ///isSelected为true时（外延），当区间[start, end]中有多个span，首次处理span后，其余的span都应删除
+            ///注意：区间[start, end]结尾处可能会有部分在区间[start, end]中的span，因为首次处理中包含了join，所以已经被删除了
+            if (hasSpan && view != null && view.isSelected()) {
                 editable.removeSpan(span);
+
                 continue;
             }
 
-            isSameWithViewParameter = isSameWithViewParameter(view, clazz, span);
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
 
-            ///如果span与当前行首尾相同
-            if (spanStart == start && spanEnd == end) {
-                isNewSpanNeeded = false;
-                hasSpan = true;
+            ///先调整span的起止位置
+            if (spanStart != start || spanEnd != end) {
+                editable.setSpan(span, start, end, getSpanFlag(clazz));
+            }
 
-                if (view != null && view.isSelected()) {
-                    if (!isSameWithViewParameter) {
-                        isNewSpanNeeded = true;
-                        editable.removeSpan(span);
-                    }
-                } else {
-                    if (isRemove) {
-                        editable.removeSpan(span);
-                    }
+            if (view != null && view.isSelected()) {
+                if (!isSameWithViewParameter(view, clazz, span)) {
+                    editable.removeSpan(span);
+                    createNewSpan(view, clazz, editable, start, end, null);
                 }
-
-            } else if (spanStart < start) {
-                ///补插'\n'后造成span自动延展，所以需要调整右缩span，不覆盖[start, end]区间的span
-                editable.setSpan(span, spanStart, start, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             } else {
-                isNewSpanNeeded = false;
-                hasSpan = true;
-
-                editable.setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                if (isRemove) {
+                    editable.removeSpan(span);
+                }
             }
-        }
 
-        ///如果changed内容需要新加span，且工具条选中，则添加新span
-        if (view != null && view.isSelected() && isNewSpanNeeded) {
-            final Object newSpan = createNewSpan(view, clazz, editable, start, end, null);
-            if (newSpan != null) {
-                editable.setSpan(newSpan, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            }
+            hasSpan = true;
         }
     }
 
-    private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
-        final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
-        final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
-        ///注意：当选中文尾的空行时会出现firstParagraphStart == lastParagraphEnd的情况，此时只切换view的selected状态、不调整spans！
-        if (firstParagraphStart < lastParagraphEnd) {
-            adjustSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isRemove);
-
-            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {
-                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isRemove);
-            }
-        }
-    }
     private <T> void adjustBlockCharacterStyleSpans(View view, Class<T> clazz, final Editable editable, final int start, final int end, boolean isRemove) {
         ///[isUpdateNeeded]
         ///注意：EditText的文本被replace后，selection区间变为不存在
@@ -2168,7 +2121,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         if (!TextUtils.isEmpty(viewTagUrl) && !viewTagUrl.equals(spanUrl)) {
                             editable.removeSpan(span);
                             span = (T) new CustomURLSpan(viewTagUrl);
-                            editable.setSpan(span, spanStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            editable.setSpan(span, spanStart, spanEnd, getSpanFlag(clazz));
                         }
                     }
                 }
@@ -2239,7 +2192,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     isSkipUndoRedo = false;
                 } else {
                     if (!TextUtils.isEmpty(viewTagUrl)) {
-                        editable.setSpan(new CustomURLSpan(viewTagUrl), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        editable.setSpan(new CustomURLSpan(viewTagUrl), start, end, getSpanFlag(clazz));
                     }
                 }
             }
@@ -2285,13 +2238,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    private <T> void adjustSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
+    private <T> void adjustCharacterStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isRemove) {
         ///[FIX#选中行尾字符时应该把随后的'\n'也选中进来！]
-        if (!isParagraphStyle(clazz) && start < end && end < editable.length() && editable.charAt(end) == '\n') {
+        if (start < end && end < editable.length() && editable.charAt(end) == '\n') {
             end++;
         }
 
-        boolean isNewSpanNeeded = true;  ///changed内容是否需要新添加span
         boolean hasSpan = false;    ///为true时，后续的span将被删除
         boolean isSameWithViewParameter = true;
 
@@ -2299,150 +2251,122 @@ public class RichEditorToolbar extends FlexboxLayout implements
         for (T span : spans) {
             ///isSelected为true时（外延），当区间[start, end]中有多个span，首次处理span后，其余的span都应删除
             ///注意：区间[start, end]结尾处可能会有部分在区间[start, end]中的span，因为首次处理中包含了join，所以已经被删除了
-            if (hasSpan && view != null && view.isSelected() && isSameWithViewParameter) {
+            if (hasSpan && view.isSelected()) {
                 editable.removeSpan(span);
                 continue;
             }
 
-            isSameWithViewParameter = isSameWithViewParameter(view, clazz, span);
-            isNewSpanNeeded = !isSameWithViewParameter;
-
             int spanStart = editable.getSpanStart(span);
             int spanEnd = editable.getSpanEnd(span);
 
-            ///调整ParagraphStyle粘贴文本中的ParagraphStyle首尾span为段落起止位置
-            if (isParagraphStyle(clazz)) {
-                int newSpanStart = spanStart, newSpanEnd = spanEnd;
-                if (spanStart > 0 && editable.charAt(spanStart - 1) != '\n') {
-                    newSpanStart = SpanUtil.getParagraphStart(editable, spanStart);
-                }
-                if (spanEnd < editable.length() && editable.charAt(spanEnd - 1) != '\n') {
-                    newSpanEnd = SpanUtil.getParagraphEnd(editable, spanEnd);
-                }
-                if (newSpanStart != spanStart || newSpanEnd != spanEnd) {
-                    //////??????[BUG]模拟器中：api 23以上复制粘贴带段落span产生异常！
-                    editable.setSpan(span, newSpanStart, newSpanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    spanStart = newSpanStart;
-                    spanEnd = newSpanEnd;
-                }
-            }
+            isSameWithViewParameter = isSameWithViewParameter(view, clazz, span);
 
-            if (view != null && view.isSelected() && isSameWithViewParameter) {
-                final int st = Math.min(start, spanStart);
-                final int en = Math.max(spanEnd, end);
-                if (st != spanStart || en != spanEnd) {
-                    editable.setSpan(span, st, en, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    if (st != spanStart) {  ///左join
-                        findAndJoinLeftSpan(view, clazz, editable, span);
+            ///删除文本或单选点击时start == end
+            if (start == end) {
+                if (isRemove) { ///单选点击
+                    if (start != spanStart && end != spanEnd) { ///不在span首尾处
+                        if (view.isSelected()) {
+                            if (!isSameWithViewParameter) {
+                                editable.removeSpan(span);
+                                createNewSpan(view, clazz, editable, start, end, span);
+                            }
+                        } else {
+                            editable.removeSpan(span);
+                        }
                     }
-                    if (en != spanEnd) {  ///右join
-                        findAndJoinRightSpan(view, clazz, editable, span);
+                } else {    ///删除文本
+                    if (editable.length() > 0) {//////?????[BUG]模拟器中：当文本长度为0，调用joinSpanByPosition()死机！要保证editable.length() > 0
+                        joinSpanByPosition(mClassMap.get(clazz), clazz, editable, start);
                     }
                 }
             } else {
-                int st = spanStart, en = spanEnd;
-                if (spanStart < start && end < spanEnd) { ///右缩+new
-                    en = start;
-                } else if (spanStart < end && end < spanEnd) { ///左缩
-
-//                    ///段落span（带初始化参数）：List//////////////////
-//                    if (clazz == ListSpan.class) {
-////                        removeListItemSpans((ListSpan) span, editable);
-//                    }
-
-                    st = end;
-                } else if (spanStart < start && start < spanEnd) { ///右缩
-                    en = start;
-                }
-                if (st != spanStart || en != spanEnd) {
-                    editable.setSpan(span, st, en, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    if (spanStart < start && end < spanEnd) { ///右缩+new
-                        ///new end, spanEnd
-                        final Object newSpan = createNewSpan(view, clazz, editable, end, spanEnd, span);
-                        if (newSpan != null) {
-                            editable.setSpan(newSpan, end, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                if (view.isSelected() && isSameWithViewParameter) {
+                    final int st = Math.min(start, spanStart);
+                    final int en = Math.max(spanEnd, end);
+                    if (st != spanStart || en != spanEnd) {
+                        editable.setSpan(span, st, en, getSpanFlag(clazz));
+                        if (st != spanStart) {  ///左join
+                            findAndJoinLeftSpan(view, clazz, editable, span);
+                        }
+                        if (en != spanEnd) {  ///右join
+                            findAndJoinRightSpan(view, clazz, editable, span);
                         }
                     }
-                } else if (isRemove) {
-
-//                    ///段落span（带初始化参数）：List
-//                    if (clazz == ListSpan.class) {
-////                        if (view.isSelected()) {//////////////////
-////                            updateListItemSpans((ListSpan) span, editable);
-////                        } else {
-//                            removeListItemSpans((ListSpan) span, editable);
-////                        }
-//                    }
-
-                    editable.removeSpan(span);
-
                 } else {
-                    ///段落span（带初始化参数）：List
-                    ///ListSpan不要join
-                    if (start == spanStart && clazz != ListSpan.class) {  ///左join
-                        findAndJoinLeftSpan(view, clazz, editable, span);
+                    int st = spanStart, en = spanEnd;
+                    if (spanStart < start && end < spanEnd) { ///右缩+new
+                        en = start;
+                    } else if (spanStart < end && end < spanEnd) { ///左缩
+                        st = end;
+                    } else if (spanStart < start && start < spanEnd) { ///右缩
+                        en = start;
                     }
-                    if (end == spanEnd && clazz != ListSpan.class) {  ///右join
-                        findAndJoinRightSpan(view, clazz, editable, span);
+                    if (st != spanStart || en != spanEnd) {
+                        editable.setSpan(span, st, en, getSpanFlag(clazz));
+                        if (spanStart < start && end < spanEnd) { ///右缩+new
+                            ///new(end, spanEnd)
+                            createNewSpan(view, clazz, editable, end, spanEnd, span);
+                        }
+                    } else if (isRemove) {
+                        editable.removeSpan(span);
+                    } else {
+                        if (start == spanStart) {  ///左join
+                            findAndJoinLeftSpan(view, clazz, editable, span);
+                        }
+                        if (end == spanEnd) {  ///右join
+                            findAndJoinRightSpan(view, clazz, editable, span);
+                        }
                     }
                 }
-            }
 
-            hasSpan = true;
+                hasSpan = true;
+            }
         }
 
         ///extendOrNew+join
-        if (view != null && view.isSelected() && isNewSpanNeeded) {
-            ///段落span（带初始化参数）：List
-            ///ListSpan不要join
-            if (clazz != ListSpan.class) {
-                ///如果左右有span且参数相等，则延长，否则添加
-                final T leftSpan = getLeftSpan(view, clazz, editable, start, end, null);
-                if (leftSpan != null) {
-                    final int leftSpanStart = editable.getSpanStart(leftSpan);
-                    editable.setSpan(leftSpan, leftSpanStart, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-                    findAndJoinRightSpan(view, clazz, editable, leftSpan);
-                    return;
-                }
-                final T rightSpan = getRightSpan(view, clazz, editable, start, end, null);
-                if (rightSpan != null) {
-                    final int rightSpanEnd = editable.getSpanEnd(rightSpan);
-                    editable.setSpan(rightSpan, start, rightSpanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        if (view.isSelected() && (!hasSpan || !isSameWithViewParameter)) {
+            ///如果左右有span且参数相等，则延长，否则创建新Span
+            final T leftSpan = getLeftSpan(view, clazz, editable, start, end, null);
+            if (leftSpan != null) {
+                final int leftSpanStart = editable.getSpanStart(leftSpan);
+                editable.setSpan(leftSpan, leftSpanStart, end, getSpanFlag(clazz));
+                findAndJoinRightSpan(view, clazz, editable, leftSpan);
+                return;
+            }
+            final T rightSpan = getRightSpan(view, clazz, editable, start, end, null);
+            if (rightSpan != null) {
+                final int rightSpanEnd = editable.getSpanEnd(rightSpan);
+                editable.setSpan(rightSpan, start, rightSpanEnd, getSpanFlag(clazz));
 //            findAndJoinLeftSpan(view, clazz, editable, start, rightSpanEnd, rightSpan);   ///无用！
-                    return;
-                }
+                return;
             }
 
-            final Object newSpan = createNewSpan(view, clazz, editable, start, end, null);
-            if (newSpan != null) {
-                editable.setSpan(newSpan, start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            }
-
-            ///段落span（带初始化参数）：List
-            ///如果ListSpan为刚刚新建，则同时也新建一个ListItemSpan
-            if (clazz == ListSpan.class) {
-                final int nestingLevel = ((ListSpan) newSpan).getNestingLevel();
-                final int listType = ((ListSpan) newSpan).getListType();
-                editable.setSpan(new ListItemSpan(nestingLevel, listType, mIndicatorMargin, mIndicatorWidth,
-                        mIndicatorGapWidth, mIndicatorColor, true), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            }
+            ///创建新Span
+            createNewSpan(view, clazz, editable, start, end, null);
         }
     }
 
+    ///注意：当右缩+new时需要compareSpan
     private <T> Object createNewSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
         ///添加新span
         Object newSpan = null;
 
         ///段落span（带初始化参数）：Quote
         if (clazz == CustomQuoteSpan.class) {
-//            createNewSpan = new QuoteSpan(Color.GREEN);
-//            createNewSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
+//            newSpan = new QuoteSpan(Color.GREEN);
+//            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
             newSpan = new CustomQuoteSpan(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth);
         }
 
         ///段落span（带初始化参数）：List
         else if (clazz == ListSpan.class) {
-            if (view.getTag(R.id.list_start) != null
+            if (compareSpan != null) {
+                final int listStart = ((ListSpan) compareSpan).getStart();
+                final boolean isReversed = ((ListSpan) compareSpan).isReversed();
+                int nestingLevel = ((ListSpan) compareSpan).getNestingLevel();
+                final int listType = ((ListSpan) compareSpan).getListType();
+                newSpan = new ListSpan(listStart, isReversed, nestingLevel, listType, mIndicatorMargin);
+            } else if (view != null && view.getTag(R.id.list_start) != null
                     && view.getTag(R.id.list_is_reversed) != null
                     && view.getTag(R.id.list_list_type) != null) {
                 final int listStart = (int) view.getTag(R.id.list_start);
@@ -2457,7 +2381,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
         }
         else if (clazz == ListItemSpan.class) {
-            if (view.getTag(R.id.list_start) != null
+            if (compareSpan != null) {
+                int nestingLevel = ((ListItemSpan) compareSpan).getNestingLevel();
+                final int listType = ((ListItemSpan) compareSpan).getListType();
+                newSpan = new ListItemSpan(nestingLevel, listType, mIndicatorMargin,
+                        mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+            } else if (view != null && view.getTag(R.id.list_start) != null
                     && view.getTag(R.id.list_is_reversed) != null
                     && view.getTag(R.id.list_list_type) != null) {
                 final ListSpan parentListSpan = getParentSpan(view, ListSpan.class, editable, start, end, null);
@@ -2470,22 +2399,25 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///段落span（带参数）：Head
         else if (clazz == HeadSpan.class) {
-            if (view.getTag() != null) {
-                final int viewTagLevel = (int) view.getTag();
-                newSpan = new HeadSpan(viewTagLevel);
+            if (compareSpan != null) {
+                int level = ((HeadSpan) compareSpan).getLevel();
+                newSpan = new HeadSpan(level);
+            } else if (view != null && view.getTag() != null) {
+                int level = (int) view.getTag();
+                newSpan = new HeadSpan(level);
             }
         }
 
         ///段落span（带初始化参数）：LeadingMargin
         else if (clazz == CustomLeadingMarginSpan.class) {
             newSpan = new CustomLeadingMarginSpan(mLeadingMarginSpanIndent);
-//            createNewSpan = new LeadingMarginSpan.LeadingMarginSpan2.Standard(first, rest); //////??????
+//            newSpan = new LeadingMarginSpan.LeadingMarginSpan2.Standard(first, rest); //////??????
         }
 
         ///段落span（带初始化参数）：Bullet
         else if (clazz == CustomBulletSpan.class) {
-//            createNewSpan = new BulletSpan(Color.GREEN);
-//            createNewSpan = new BulletSpan(40, Color.GREEN, 20); ///Call requires API level 28 (current min is 15)
+//            newSpan = new BulletSpan(Color.GREEN);
+//            newSpan = new BulletSpan(40, Color.GREEN, 20); ///Call requires API level 28 (current min is 15)
             newSpan = new CustomBulletSpan(mBulletSpanGapWidth, mBulletColor, mBulletSpanRadius);
         }
 
@@ -2501,67 +2433,67 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///字符span（带参数）：ForegroundColor、BackgroundColor
         else if (clazz == CustomForegroundColorSpan.class) {
-            @ColorInt final int foregroundColor;
-            if (compareSpan == null) {
+            if (compareSpan != null) {
+                @ColorInt final int foregroundColor = ((CustomForegroundColorSpan) compareSpan).getForegroundColor();
+                newSpan = new CustomForegroundColorSpan(foregroundColor);
+            } else if (view != null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
-                foregroundColor = colorDrawable.getColor();
-            } else {
-                foregroundColor = ((CustomForegroundColorSpan) compareSpan).getForegroundColor();
+                @ColorInt final int foregroundColor = colorDrawable.getColor();
+                newSpan = new CustomForegroundColorSpan(foregroundColor);
             }
-            newSpan = new CustomForegroundColorSpan(foregroundColor);
         } else if (clazz == CustomBackgroundColorSpan.class) {
-            @ColorInt final int backgroundColor;
-            if (compareSpan == null) {
+            if (compareSpan != null) {
+                @ColorInt final int backgroundColor = ((CustomBackgroundColorSpan) compareSpan).getBackgroundColor();
+                newSpan = new CustomBackgroundColorSpan(backgroundColor);
+            } else if (view != null) {
                 final ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
-                backgroundColor = colorDrawable.getColor();
-            } else {
-                backgroundColor = ((CustomBackgroundColorSpan) compareSpan).getBackgroundColor();
+                @ColorInt final int backgroundColor = colorDrawable.getColor();
+                newSpan = new CustomBackgroundColorSpan(backgroundColor);
             }
-            newSpan = new CustomBackgroundColorSpan(backgroundColor);
         }
 
         ///字符span（带参数）：FontFamily
         else if (clazz == CustomFontFamilySpan.class) {
-            String family;
-            if (compareSpan == null) {
-                family = (String) view.getTag();
-            } else {
-                family = ((CustomFontFamilySpan) compareSpan).getFamily();
+            if (compareSpan != null) {
+                String family = ((CustomFontFamilySpan) compareSpan).getFamily();
+                newSpan = new CustomFontFamilySpan(family);
+            } else if (view != null && view.getTag() != null) {
+                String family = (String) view.getTag();
+                newSpan = new CustomFontFamilySpan(family);
             }
-            newSpan = new CustomFontFamilySpan(family);
         }
 
         ///字符span（带参数）：AbsoluteSize
         else if (clazz == CustomAbsoluteSizeSpan.class) {
-            int size;
-            if (compareSpan == null) {
-                size = (int) view.getTag();
-            } else {
-                size = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
+            if (compareSpan != null) {
+                int size = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
+                newSpan = new CustomAbsoluteSizeSpan(size);
+            } else if (view != null && view.getTag() != null) {
+                int size = (int) view.getTag();
+                newSpan = new CustomAbsoluteSizeSpan(size);
             }
-            newSpan = new CustomAbsoluteSizeSpan(size);
         }
 
         ///字符span（带参数）：RelativeSize
         else if (clazz == CustomRelativeSizeSpan.class) {
-            float sizeChange;
-            if (compareSpan == null) {
-                sizeChange = (float) view.getTag();
-            } else {
-                sizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
+            if (compareSpan != null) {
+                float sizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
+                newSpan = new CustomRelativeSizeSpan(sizeChange);
+            } else if (view != null && view.getTag() != null) {
+                float sizeChange = (float) view.getTag();
+                newSpan = new CustomRelativeSizeSpan(sizeChange);
             }
-            newSpan = new CustomRelativeSizeSpan(sizeChange);
         }
 
         ///字符span（带参数）：ScaleX
         else if (clazz == CustomScaleXSpan.class) {
-            float scaleX;
-            if (compareSpan == null) {
-                scaleX = (float) view.getTag();
-            } else {
-                scaleX = ((CustomScaleXSpan) compareSpan).getScaleX();
+            if (compareSpan != null) {
+                float scaleX = ((CustomScaleXSpan) compareSpan).getScaleX();
+                newSpan = new CustomScaleXSpan(scaleX);
+            } else if (view != null && view.getTag() != null) {
+                float scaleX = (float) view.getTag();
+                newSpan = new CustomScaleXSpan(scaleX);
             }
-            newSpan = new CustomScaleXSpan(scaleX);
 
         } else {
             try {
@@ -2571,6 +2503,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
             } catch (InstantiationException e) {
                 e.printStackTrace();
             }
+        }
+
+        if (newSpan != null) {
+            editable.setSpan(newSpan, start, end, getSpanFlag(clazz));
         }
 
         return newSpan;

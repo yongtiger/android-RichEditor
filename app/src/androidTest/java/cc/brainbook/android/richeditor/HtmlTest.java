@@ -28,7 +28,7 @@ public class HtmlTest {
     private Editable editable;
 
     private RichEditorToolbar mRichEditorToolbar;
-    private HashMap<View, Class> mClassMap;
+    private HashMap<Class, View> mClassMap;
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(

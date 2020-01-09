@@ -182,15 +182,9 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == ListSpan.class
                 || clazz == ListItemSpan.class;
     }
-    public static boolean isBlockParagraphStyle(Class clazz) {
-        return clazz == ListItemSpan.class
-                || clazz == HeadSpan.class
-                || clazz == AlignNormalSpan.class
-                || clazz == AlignCenterSpan.class
-                || clazz == AlignOppositeSpan.class
-                || clazz == CustomLeadingMarginSpan.class
-                || clazz == CustomBulletSpan.class
-                || clazz == LineDividerSpan.class;
+    public static boolean isNestParagraphStyle(Class clazz) {
+        return clazz == CustomQuoteSpan.class
+                || clazz == ListSpan.class;
     }
     public static boolean isCharacterStyle(Class clazz) {
         return clazz == BoldSpan.class
@@ -218,12 +212,19 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AudioSpan.class;
     }
 
+    public static int getSpanFlag(Class clazz) {
+        if (isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)) {
+            return Spanned.SPAN_INCLUSIVE_INCLUSIVE;
+        } else {
+            return Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+        }
+    }
 
     /* ------------------------------------------------------------------------------------------------------------ */
     public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
         ///当文尾是空行时start == end，此时应该view.setSelected(false)
         if (start < end) {
-            final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+            final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///降序
             for (T span : spans) {
                 final int spanStart = editable.getSpanStart(span);
                 final int spanEnd = editable.getSpanEnd(span);
@@ -626,7 +627,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            editable.setSpan(span, resultStart, spanEnd, getSpanFlag(clazz));
             editable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -645,7 +646,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            editable.setSpan(span, spanStart, resultEnd, getSpanFlag(clazz));
             editable.removeSpan(rightSpan);
         }
         return resultEnd;

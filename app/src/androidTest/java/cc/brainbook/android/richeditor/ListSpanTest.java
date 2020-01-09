@@ -17,6 +17,7 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class ListSpanTest {
     private RichEditorToolbar mRichEditorToolbar;
     private RichEditText mRichEditText;
-    private HashMap<View, Class> mClassMap = new HashMap<>();
+    private HashMap<Class, View> mClassMap = new HashMap<>();
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
@@ -60,7 +61,7 @@ public class ListSpanTest {
 
         /* --------------- 初始化 --------------- */
         SpannableStringBuilder initText = new SpannableStringBuilder("a");
-        initText.setSpan(new ListSpan(), 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        initText.setSpan(new ListSpan(), 0, 1, getSpanFlag(ListSpan.class));
         // todo ...
 
         mRichEditText.setText(initText);
@@ -68,7 +69,7 @@ public class ListSpanTest {
 
         /* --------------- 操作 --------------- */
         SpannableStringBuilder actionText = new SpannableStringBuilder("b");
-        actionText.setSpan(new ListSpan(), 0, 1, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        actionText.setSpan(new ListSpan(), 0, 1, getSpanFlag(ListSpan.class));
         // todo ...
 
         mRichEditText.getText().replace(1, 1, actionText);

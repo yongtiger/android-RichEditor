@@ -14,6 +14,8 @@ import java.util.HashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
+
 public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
@@ -166,9 +168,9 @@ public abstract class SpanUtil {
                 continue;
             }
             if (currentSpanStart <= spanStart && currentSpanEnd <= spanEnd) {
-                editable.setSpan(currentSpan, currentSpanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                editable.setSpan(currentSpan, currentSpanStart, spanEnd, getSpanFlag(clazz));
             } else if (currentSpanStart >= spanStart) {
-                editable.setSpan(currentSpan, spanStart, currentSpanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+                editable.setSpan(currentSpan, spanStart, currentSpanEnd, getSpanFlag(clazz));
             }
             editable.removeSpan(span);
         }
