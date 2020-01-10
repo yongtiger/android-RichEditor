@@ -220,44 +220,44 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
+
     /* ------------------------------------------------------------------------------------------------------------ */
     public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
-        ///当文尾是空行时start == end，此时应该view.setSelected(false)
-        if (start < end) {
-            final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///降序
-            for (T span : spans) {
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
+        ///注意：因为可能要用到spans.size()，所以不应使用getParentSpan()
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///按照spanEnd升序
+        for (T span : spans) {
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
 
-                ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
-                if (spanStart <= start && end <= spanEnd) {
-                    if (!view.isSelected()) {
-                        view.setSelected(true);
-                    }
-
-                    ///段落span（带参数）：Head
-                    if (clazz == HeadSpan.class) {
-                        final int level = ((HeadSpan) span).getLevel();
-                        view.setTag(level);
-                        final String headText = HeadSpan.HEADING_LABELS[level];
-                        if (!headText.equals(((TextView) view).getText().toString())) {
-                            ((TextView) view).setText(headText);
-                        }
-                    }
-
-                    ///段落span（带初始化参数）：List
-                    else if (clazz == ListSpan.class) {
-                        final int listStart = ((ListSpan) span).getStart();
-                        final boolean isReversed = ((ListSpan) span).isReversed();
-                        final int listType = ((ListSpan) span).getListType();
-                        view.setTag(R.id.list_start, listStart);
-                        view.setTag(R.id.list_is_reversed, isReversed);
-                        view.setTag(R.id.list_list_type, listType);
-                    }
-
-                    ///注意：找到第一个就退出，不必继续找了。因为getFilteredSpans()返回的是按照span起始位置从小到大排序后的spans
-                    return;
+            ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
+            ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
+            if (start < end || spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
+                if (!view.isSelected()) {
+                    view.setSelected(true);
                 }
+
+                ///段落span（带参数）：Head
+                if (clazz == HeadSpan.class) {
+                    final int level = ((HeadSpan) span).getLevel();
+                    view.setTag(level);
+                    final String headText = HeadSpan.HEADING_LABELS[level];
+                    if (!headText.equals(((TextView) view).getText().toString())) {
+                        ((TextView) view).setText(headText);
+                    }
+                }
+
+                ///段落span（带初始化参数）：List
+                else if (clazz == ListSpan.class) {
+                    final int listStart = ((ListSpan) span).getStart();
+                    final boolean isReversed = ((ListSpan) span).isReversed();
+                    final int listType = ((ListSpan) span).getListType();
+                    view.setTag(R.id.list_start, listStart);
+                    view.setTag(R.id.list_is_reversed, isReversed);
+                    view.setTag(R.id.list_list_type, listType);
+                }
+
+                ///注意：找到第一个就退出，不必继续找了。因为getFilteredSpans()返回的是按照spanEnd升序排序后的spans
+                return;
             }
         }
 
@@ -283,14 +283,15 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static <T> void updateCharacterStyleView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+        ///注意：因为CustomURLSpan、CustomImageSpan等要用到spans.size()，所以不应使用getParentSpan()
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///按照spanEnd升序
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
             ///如果不是单光标、或者span在光标区间外
-            ///如果isBlockCharacterStyle为false，加上光标尾等于span尾
-            if (start != end || spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
+            ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
+            if (start < end || spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
                 if (!view.isSelected()) {
                     view.setSelected(true);
                 }
@@ -378,7 +379,7 @@ public abstract class RichEditorToolbarHelper {
                     ((TextView) view).setText(String.valueOf(scaleX));
                 }
 
-                ///注意：找到第一个就退出，不必继续找了。因为getFilteredSpans()返回的是按照span起始位置从小到大排序后的spans
+                ///注意：找到第一个就退出，不必继续找了。因为getFilteredSpans()返回的是按照spanEnd升序排序后的spans
                 return;
             }
         }
@@ -661,7 +662,7 @@ public abstract class RichEditorToolbarHelper {
         if (start == 0) {
             return null;
         }
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, start, true);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, start, false);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -702,9 +703,21 @@ public abstract class RichEditorToolbarHelper {
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
-            if (spanStart <= start && end <= spanEnd) {
-                return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
+
+            if (isParagraphStyle(clazz)) {
+                ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
+                ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
+                if (start < end || spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
+                    return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
+                }
+            } else if (isCharacterStyle(clazz)) {
+                ///如果不是单光标选择、或者span在光标区间外
+                ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
+                if (start < end || spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
+                    return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
+                }
             }
+
         }
         return null;
     }

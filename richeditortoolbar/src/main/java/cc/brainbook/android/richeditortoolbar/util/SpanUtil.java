@@ -2,7 +2,6 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -20,32 +19,27 @@ public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
      */
-    public static <T> ArrayList<T> getFilteredSpans(Class<T> clazz, final Editable editable, int start, int end, final boolean isSortDesc) {
+    public static <T> ArrayList<T> getFilteredSpans(Class<T> clazz, final Editable editable, int start, int end, boolean isSort) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
 
-        ///在Android6.0 以下这个方法返回的数组是有顺序的，但是7.0以上系统这个方法返回的数组顺序有错乱，所以我们需要自己排序
-        ///https://stackoverflow.com/questions/41052172/spannablestringbuilder-getspans-sort-order-is-wrong-on-nougat-7-0-7-1
-        ///https://www.jianshu.com/p/57783747e530
-        ///根据isSortDescspan决定升序或降序排序
-        Arrays.sort(spans, new Comparator<T>() {
-            @Override
-            public int compare(T o1, T o2) {
-                if (isSortDesc) {
-                    int result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
+        if (isSort) {
+            ///在Android6.0 以下这个方法返回的数组是有顺序的，但是7.0以上系统这个方法返回的数组顺序有错乱，所以我们需要自己排序
+            ///https://stackoverflow.com/questions/41052172/spannablestringbuilder-getspans-sort-order-is-wrong-on-nougat-7-0-7-1
+            ///https://www.jianshu.com/p/57783747e530
+            ///注意：按照spanEnd升序！考虑了span相互交叉（spanStart于spanEnd顺序相同）、嵌套（spanStart于spanEnd顺序相反）等各种关系
+            ///嵌套时最里面的span顺序优先；如果spanEnd相同则按照spanStart倒序
+            Arrays.sort(spans, new Comparator<T>() {
+                @Override
+                public int compare(T o1, T o2) {
+                    int result = editable.getSpanEnd(o1) - editable.getSpanEnd(o2);
                     if (result == 0) {
-                        result = editable.getSpanEnd(o2) - editable.getSpanEnd(o1);
-                    }
-                    return result;
-                } else {
-                    int result = editable.getSpanStart(o1) - editable.getSpanStart(o2);
-                    if (result == 0) {
-                        result = editable.getSpanEnd(o1) - editable.getSpanEnd(o2);
+                        result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
                     }
                     return result;
                 }
-            }
-        });
+            });
+        }
 
         for (T span : spans) {
             ///忽略不是clazz本身（比如为clazz的子类）的span
@@ -59,7 +53,7 @@ public abstract class SpanUtil {
 
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
-            ///删除多余的span
+            ///删除spanStart == spanEnd的span
             if (spanStart == spanEnd) {
                 editable.removeSpan(span);
                 continue;
