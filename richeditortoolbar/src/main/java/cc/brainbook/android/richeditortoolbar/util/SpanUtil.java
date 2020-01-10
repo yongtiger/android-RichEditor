@@ -138,7 +138,7 @@ public abstract class SpanUtil {
      */
     public static <T> void flatSpans(Class<T> clazz, Editable editable, int start, int end) {
         T currentSpan = null;
-        final ArrayList<T> spans = getFilteredSpans(clazz, editable, start, end, false);
+        final ArrayList<T> spans = getFilteredSpans(clazz, editable, start, end, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);

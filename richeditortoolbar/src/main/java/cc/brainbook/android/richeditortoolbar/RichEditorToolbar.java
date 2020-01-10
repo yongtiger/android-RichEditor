@@ -413,40 +413,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ---------------- ///[清除样式] ---------------- */
     private ImageView mImageViewClearSpans;
 
-    /**
-     * 清除区间内的spans
-     */
-    private void clearParagraphSpans(int start, int end) {
-        final Editable editable = mRichEditText.getText();
-
-        for (Class clazz : mClassMap.keySet()) {
-            if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
-                mClassMap.get(clazz).setSelected(false);
-                if (isNestParagraphStyle(clazz)) {
-                    adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
-                } else {
-                    adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
-                }
-                updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, start, end);
-            }
-        }
-    }
-    private void clearCharacterSpans(int start, int end) {
-        final Editable editable = mRichEditText.getText();
-
-        for (Class clazz : mClassMap.keySet()) {
-            if (isCharacterStyle(clazz) && mClassMap.get(clazz)!= null) {
-                mClassMap.get(clazz).setSelected(false);
-                if (isBlockCharacterStyle(clazz)) {
-                    adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
-                } else {
-                    adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, start, end, true);
-                }
-                updateCharacterStyleView(mContext, mClassMap.get(clazz), clazz, editable, start, end);
-            }
-        }
-    }
-
     /* ---------------- ///[草稿Draft] ---------------- */
     private ImageView mImageViewSaveDraft;
     private ImageView mImageViewRestoreDraft;
@@ -730,8 +696,28 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     return;
                 }
 
-                clearParagraphSpans(selectionStart, selectionEnd);
-                clearCharacterSpans(selectionStart, selectionEnd);
+                for (Class clazz : mClassMap.keySet()) {
+                    if (mClassMap.get(clazz) == null) {
+                        continue;
+                    }
+                    if (isParagraphStyle(clazz)) {
+                        mClassMap.get(clazz).setSelected(false);
+                        if (isNestParagraphStyle(clazz)) {
+                            adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                        } else {
+                            adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                        }
+                        updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
+                    } else if (isCharacterStyle(clazz)) {
+                        mClassMap.get(clazz).setSelected(false);
+                        if (isBlockCharacterStyle(clazz)) {
+                            adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                        } else {
+                            adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                        }
+                        updateCharacterStyleView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
+                    }
+                }
 
                 ///[Preview]
                 updatePreview();
@@ -1784,9 +1770,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         final Editable editable = mRichEditText.getText();
-//
-//        final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
-//        final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, selectionStart);
 
         for (Class clazz : mClassMap.keySet()) {
             if (mClassMap.get(clazz) != null) {
@@ -1831,6 +1814,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 for (Class clazz : mClassMap.keySet()) {
                     ///清除掉已经被删除的span，否则将会产生多余的无效span！
                     SpanUtil.removeSpans(clazz, mRichEditText.getText(), start, start + count);
+
+                    ///[FIX#当两行span不同时（如h1和h6），选择第二行行首后回退删除'\n'，此时View仍然在第二行，应该更新为第一行！]
+                    final Editable editable = mRichEditText.getText();
+                    if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null
+                            && editable.subSequence(start, start + count).toString().contains("\n")) { ///如果含回车
+                        updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, start, start);
+                    }
                 }
             }
         }
@@ -1934,11 +1924,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             for (Class clazz : mClassMap.keySet()) {
                 if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
 
-                    ///[FIX#当两行span不同时（如h1和h6），选择第二行行首后回退删除'\n'，此时View仍然在第二行，应该更新为第一行！]
+                    final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
                     ///[FIX#在行首回车时，上面产生的空行应该不被选中！]
-                    final int currentParagraphStart = SpanUtil.getParagraphStart(editable, start);
-                    final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, start);
-                    updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, currentParagraphStart, currentParagraphEnd);
+                    if (count > 0 && start == currentParagraphStart && editable.subSequence(selectionStart, selectionEnd).toString().contains("\n")) {  ///并且含回车
+                        mClassMap.get(clazz).setSelected(false);
+                    }
 
                     ///注意：因为可能'\n'被删除了，所以删除时也要adjust！
                     if (isNestParagraphStyle(clazz)) {
@@ -1997,7 +1987,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
         ///注意：当选中文尾的空行时会出现firstParagraphStart == lastParagraphEnd的情况，此时只切换view的selected状态、不调整spans！
         if (firstParagraphStart < lastParagraphEnd) {
-            adjustNestParagraphSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isApply);
+            innerAdjustNestParagraphStyleSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isApply);
 
 //            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {///////////////
 //                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isApply);
@@ -2005,7 +1995,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    private <T> void adjustNestParagraphSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
+    private <T> void innerAdjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);/////////////sort?
         if (spans.size() == 0) {    ///[isApply]
             if (view != null && view.isSelected()) {
@@ -2061,7 +2051,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
             next = currentParagraphEnd;
 
-            adjustCurrentParagraphSpans(view, clazz, editable, currentParagraphStart, currentParagraphEnd, isApply);
+            innerAdjustParagraphStyleSpans(view, clazz, editable, currentParagraphStart, currentParagraphEnd, isApply);
 
             if (next >= end) {
                 break;
@@ -2069,8 +2059,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    private <T> void adjustCurrentParagraphSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+    private <T> void innerAdjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         if (spans.size() == 0) {
             if (view != null && view.isSelected()) {
                 createNewSpan(view, clazz, editable, start, end, null);
@@ -2128,7 +2118,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         boolean isNewSpanNeeded = true;
 
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -2288,7 +2278,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         boolean hasSpan = false;    ///为true时，后续的span将被删除
         boolean isSameWithViewParameter = true;
 
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         for (T span : spans) {
             ///isSelected为true时（外延），当区间[start, end]中有多个span，首次处理span后，其余的span都应删除
             ///注意：区间[start, end]结尾处可能会有部分在区间[start, end]中的span，因为首次处理中包含了join，所以已经被删除了

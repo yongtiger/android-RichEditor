@@ -606,7 +606,7 @@ public abstract class RichEditorToolbarHelper {
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     public static <T> void joinSpanByPosition(View view, Class<T> clazz, Editable editable, int position) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, position, position, false);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, position, position, true);
         for (T span : spans) {
             final T leftSpan = getLeftSpan(view, clazz, editable, position, position, span);
             if (leftSpan != null) {
@@ -662,7 +662,7 @@ public abstract class RichEditorToolbarHelper {
         if (start == 0) {
             return null;
         }
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, start, false);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, start, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
@@ -682,7 +682,7 @@ public abstract class RichEditorToolbarHelper {
         if (end == editable.length()) {
             return null;
         }
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, end, end, false);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, end, end, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
