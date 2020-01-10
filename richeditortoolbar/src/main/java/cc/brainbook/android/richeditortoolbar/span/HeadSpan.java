@@ -9,10 +9,10 @@ import android.text.style.RelativeSizeSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\HeadSpan.java
-public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IBlockParagraphStyle {
+public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParagraphStyle {
     ///参考Html.HEADING_SIZES
     private static final float[] HEADING_SIZES = {
             1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f,

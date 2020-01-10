@@ -14,9 +14,9 @@ import android.text.style.BulletSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
-public class CustomBulletSpan extends BulletSpan implements IBlockParagraphStyle {
+public class CustomBulletSpan extends BulletSpan implements IParagraphStyle {
     // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
     private static final int STANDARD_BULLET_RADIUS = 20;
     public static final int STANDARD_GAP_WIDTH = 40;

@@ -9,10 +9,10 @@ import android.text.style.LineHeightSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable, IBlockParagraphStyle {
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable, IParagraphStyle {
     public static final int DEFAULT_MARGIN_TOP = 0;
     public static final int DEFAULT_MARGIN_BOTTOM = 0;
 

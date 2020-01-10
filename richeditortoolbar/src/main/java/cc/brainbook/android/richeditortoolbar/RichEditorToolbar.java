@@ -1983,6 +1983,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ------------------------------------------------------------------------------------------ */
     private <T> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
+        if (isApply) {
+
+        } else {
+
+        }
         final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
         final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
         ///注意：当选中文尾的空行时会出现firstParagraphStart == lastParagraphEnd的情况，此时只切换view的selected状态、不调整spans！
@@ -2387,9 +2392,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///段落span（带初始化参数）：Quote
         if (clazz == CustomQuoteSpan.class) {
+            int nestingLevel = 1;
+            final CustomQuoteSpan parentCustomQuoteSpan = getParentSpan(view, CustomQuoteSpan.class, editable, start, end, null);
+            if (parentCustomQuoteSpan != null) {
+                nestingLevel = parentCustomQuoteSpan.getNestingLevel();
+            }
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
-            newSpan = new CustomQuoteSpan(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth);
+            newSpan = new CustomQuoteSpan(nestingLevel, mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth);
         }
 
         ///段落span（带初始化参数）：List
@@ -2399,7 +2409,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final boolean isReversed = ((ListSpan) compareSpan).isReversed();
                 int nestingLevel = ((ListSpan) compareSpan).getNestingLevel();
                 final int listType = ((ListSpan) compareSpan).getListType();
-                newSpan = new ListSpan(listStart, isReversed, nestingLevel, listType, mIndicatorMargin);
+                newSpan = new ListSpan(nestingLevel, listStart, isReversed, listType, mIndicatorMargin);
             } else if (view != null && view.getTag(R.id.list_start) != null
                     && view.getTag(R.id.list_is_reversed) != null
                     && view.getTag(R.id.list_list_type) != null) {
@@ -2411,7 +2421,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     nestingLevel = parentListSpan.getNestingLevel();
                 }
                 final int listType = (int) view.getTag(R.id.list_list_type);
-                newSpan = new ListSpan(listStart, isReversed, nestingLevel, listType, mIndicatorMargin);
+                newSpan = new ListSpan(nestingLevel, listStart, isReversed, listType, mIndicatorMargin);
             }
         }
         else if (clazz == ListItemSpan.class) {

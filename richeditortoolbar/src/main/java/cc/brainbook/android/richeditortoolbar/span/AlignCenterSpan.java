@@ -5,9 +5,9 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IBlockParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
-public class AlignCenterSpan implements AlignmentSpan, Parcelable, IBlockParagraphStyle {
+public class AlignCenterSpan implements AlignmentSpan, Parcelable, IParagraphStyle {
 
 	@Override
 	public Alignment getAlignment() {

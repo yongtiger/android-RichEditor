@@ -11,11 +11,11 @@ import android.text.style.QuoteSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
-public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
+public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
     /**
      * Default color for the quote stripe.
      */
@@ -33,6 +33,10 @@ public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
     public static final int STANDARD_GAP_WIDTH_PX = 40;
 
 
+    ///[NestingLevel]
+    @Expose
+    private int mNestingLevel;
+
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
@@ -45,17 +49,26 @@ public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
 
 
     public CustomQuoteSpan() {
-        this(STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
+        this(1, STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
     }
     public CustomQuoteSpan(@ColorInt int color) {
-        this(color, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
+        this(1, color, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
     }
-    public CustomQuoteSpan(@ColorInt int color, @IntRange(from = 0) int stripeWidth,
+    public CustomQuoteSpan(int nestingLevel, @ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
-        super(color);
+        mNestingLevel = nestingLevel;
         mColor = color;
         mStripeWidth = stripeWidth;
         mGapWidth = gapWidth;
+    }
+
+
+    public int getNestingLevel() {
+        return mNestingLevel;
+    }
+
+    public void setNestingLevel(int nestingLevel) {
+        mNestingLevel = nestingLevel;
     }
 
     /**
@@ -99,11 +112,12 @@ public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
     public static final Creator<CustomQuoteSpan> CREATOR = new Creator<CustomQuoteSpan>() {
         @Override
         public CustomQuoteSpan createFromParcel(Parcel in) {
+            final int nestingLevel = in.readInt();
             @ColorInt int color = in.readInt();
             @Px final int stripeWidth = in.readInt();
             @Px final int gapWidth = in.readInt();
 
-            return new CustomQuoteSpan(color, stripeWidth, gapWidth);
+            return new CustomQuoteSpan(nestingLevel, color, stripeWidth, gapWidth);
         }
 
         @Override
@@ -119,6 +133,7 @@ public class CustomQuoteSpan extends QuoteSpan implements IParagraphStyle {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mNestingLevel);
         dest.writeInt(mColor);
         dest.writeInt(mStripeWidth);
         dest.writeInt(mGapWidth);

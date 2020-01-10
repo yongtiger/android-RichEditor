@@ -11,9 +11,9 @@ import android.text.style.LeadingMarginSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
-import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
+public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_NESTING_LEVEL = 0;
     public static final int DEFAULT_LIST_TYPE = ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_MARGIN = 160;
@@ -24,10 +24,6 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle 
     @Expose
     private final boolean isReversed;
 
-    ///[NestingLevel]
-    @Expose
-    @IntRange(from = 0) private final int mNestingLevel;
-
     ///[ListType]
     @Expose
     private final int mListType;
@@ -37,21 +33,14 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle 
     @IntRange(from = 0) private final int mIndicatorMargin;
 
 
-    public ListSpan() {
-        this(1, false, DEFAULT_NESTING_LEVEL, DEFAULT_LIST_TYPE, DEFAULT_INDICATOR_MARGIN);
-    }
-
-    public ListSpan(@IntRange(from = 0) int nestingLevel, int listType) {
-        this(1, false, nestingLevel, listType, DEFAULT_INDICATOR_MARGIN);
-    }
-
-    public ListSpan(int start, boolean isReversed,
-                     @IntRange(from = 0) int nestingLevel,
-                     int listType,
-                     @IntRange(from = 0) int indicatorMargin) {
+    public ListSpan(int nestingLevel,
+                    @IntRange(from = 0)int start,
+                    boolean isReversed,
+                    int listType,
+                    @IntRange(from = 0) int indicatorMargin) {
+        super(nestingLevel);
         mStart = start;
         this.isReversed = isReversed;
-        mNestingLevel = nestingLevel;
         mListType = listType;
         mIndicatorMargin = indicatorMargin;
     }
@@ -63,10 +52,6 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle 
 
     public boolean isReversed() {
         return isReversed;
-    }
-
-    public int getNestingLevel() {
-        return mNestingLevel;
     }
 
     public int getListType() {
@@ -92,13 +77,12 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle 
     public static final Creator<ListSpan> CREATOR = new Creator<ListSpan>() {
         @Override
         public ListSpan createFromParcel(Parcel in) {
+            final int nestingLevel = in.readInt();
             final @IntRange(from = 0) int start = in.readInt();
             final boolean isReversed = in.readInt() == 1;
             final int listType = in.readInt();
-            final @IntRange(from = 0) int nestingLevel = in.readInt();
             final @IntRange(from = 0) int indicatorMargin = in.readInt();
-
-            return new ListSpan(start, isReversed, listType, nestingLevel, indicatorMargin);
+            return new ListSpan(nestingLevel, start, isReversed, listType, indicatorMargin);
         }
 
         @Override
@@ -114,9 +98,9 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle 
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(getNestingLevel());
         dest.writeInt(mStart);
         dest.writeInt(isReversed ? 1 : 0);
-        dest.writeInt(mNestingLevel);
         dest.writeInt(mListType);
         dest.writeInt(mIndicatorMargin);
     }
