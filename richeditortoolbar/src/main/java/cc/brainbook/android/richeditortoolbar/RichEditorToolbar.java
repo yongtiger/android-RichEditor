@@ -2072,8 +2072,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         boolean hasSpan = false;    ///为true时，后续的span将被删除
         for (T span : spans) {
             ///isSelected为true时（外延），当区间[start, end]中有多个span，首次处理span后，其余的span都应删除
-            ///注意：区间[start, end]结尾处可能会有部分在区间[start, end]中的span，因为首次处理中包含了join，所以已经被删除了
-            if (hasSpan && view != null && view.isSelected()) {
+            if (hasSpan) {
                 editable.removeSpan(span);
 
                 continue;
@@ -2284,6 +2283,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///注意：区间[start, end]结尾处可能会有部分在区间[start, end]中的span，因为首次处理中包含了join，所以已经被删除了
             if (hasSpan && view.isSelected()) {
                 editable.removeSpan(span);
+
                 continue;
             }
 
