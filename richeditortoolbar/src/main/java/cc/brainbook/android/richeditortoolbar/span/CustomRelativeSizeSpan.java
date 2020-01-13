@@ -16,10 +16,12 @@ public class CustomRelativeSizeSpan extends RelativeSizeSpan implements ICharact
     @Expose
     private final float mProportion;
 
+
     public CustomRelativeSizeSpan(@FloatRange(from = 0) float proportion) {
         super(proportion);
         mProportion = proportion;
     }
+
 
     @Override
     public void updateDrawState(@NonNull TextPaint ds) {

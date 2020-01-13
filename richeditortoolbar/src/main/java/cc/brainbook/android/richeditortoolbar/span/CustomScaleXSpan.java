@@ -16,10 +16,12 @@ public class CustomScaleXSpan extends ScaleXSpan implements ICharacterStyle {
     @Expose
     private final float mProportion;
 
+
     public CustomScaleXSpan(@FloatRange(from = 0) float proportion) {
         super(proportion);
         mProportion = proportion;
     }
+
 
     @Override
     public void updateDrawState(TextPaint ds) {

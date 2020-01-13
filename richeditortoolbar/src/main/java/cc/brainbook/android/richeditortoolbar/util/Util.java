@@ -7,7 +7,9 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 
+import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 public abstract class Util {
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
@@ -45,7 +47,13 @@ public abstract class Util {
 
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
-            Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
+
+            if (clazz == CustomQuoteSpan.class || clazz == ListSpan.class) {
+                Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd
+                        + "  nest = " + ((NestSpan) span).getNestingLevel());
+            } else {
+                Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
+            }
         }
     }
 

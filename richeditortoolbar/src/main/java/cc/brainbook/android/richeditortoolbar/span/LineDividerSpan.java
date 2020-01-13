@@ -16,6 +16,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     public static final int DEFAULT_MARGIN_TOP = 0;
     public static final int DEFAULT_MARGIN_BOTTOM = 0;
 
+
     ///[implements LineHeightSpan]
     @Expose
     private final int mMarginTop, mMarginBottom;
@@ -41,6 +42,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
 
         mDrawBackgroundCallback = drawBackgroundCallback;
     }
+
 
     @Override
     public void chooseHeight(CharSequence text, int start, int end,

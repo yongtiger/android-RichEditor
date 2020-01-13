@@ -3,11 +3,12 @@ package cc.brainbook.android.richeditortoolbar.span;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.Px;
 import android.text.Layout;
-import android.text.style.QuoteSpan;
+import android.text.style.LeadingMarginSpan;
 
 import com.google.gson.annotations.Expose;
 
@@ -15,7 +16,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
-public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
+public class CustomQuoteSpan extends NestSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
     /**
      * Default color for the quote stripe.
      */
@@ -32,10 +33,6 @@ public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
      */
     public static final int STANDARD_GAP_WIDTH_PX = 40;
 
-
-    ///[NestingLevel]
-    @Expose
-    private int mNestingLevel;
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
@@ -56,20 +53,12 @@ public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
     }
     public CustomQuoteSpan(int nestingLevel, @ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
-        mNestingLevel = nestingLevel;
+        super(nestingLevel);
         mColor = color;
         mStripeWidth = stripeWidth;
         mGapWidth = gapWidth;
     }
 
-
-    public int getNestingLevel() {
-        return mNestingLevel;
-    }
-
-    public void setNestingLevel(int nestingLevel) {
-        mNestingLevel = nestingLevel;
-    }
 
     /**
      * Get the width of the quote stripe.
@@ -100,7 +89,7 @@ public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
         int color = p.getColor();
 
         p.setStyle(Paint.Style.FILL);
-        p.setColor(getColor());
+        p.setColor(mColor);
 
         c.drawRect(x, top, x + dir * mStripeWidth, bottom, p);
 
@@ -133,7 +122,7 @@ public class CustomQuoteSpan extends QuoteSpan implements INestParagraphStyle {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mNestingLevel);
+        dest.writeInt(getNestingLevel());
         dest.writeInt(mColor);
         dest.writeInt(mStripeWidth);
         dest.writeInt(mGapWidth);

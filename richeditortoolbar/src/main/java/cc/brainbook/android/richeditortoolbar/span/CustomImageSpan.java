@@ -28,6 +28,7 @@ import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable, IBlockCharacterStyle {
     public static final int ALIGN_CENTER = 2;
 
+
     @Expose
     private int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
     public int getDrawableWidth() {

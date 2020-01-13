@@ -24,10 +24,11 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
 
 
     @Expose
-    private int mLevel;
+    private final int mLevel;
     public int getLevel() {
         return mLevel;
     }
+
 
     public HeadSpan(int level) {
         this(level, DEFAULT_MARGIN_TOP[level], DEFAULT_MARGIN_BOTTOM[level]);
@@ -39,6 +40,8 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
         mMarginTop = marginTop;
         mMarginBottom = marginBottom;
     }
+
+
     @Override
     public void updateDrawState(TextPaint ds) {
         super.updateDrawState(ds);

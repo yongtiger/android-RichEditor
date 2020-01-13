@@ -18,6 +18,7 @@ public class LineMarginSpan implements LineHeightSpan, Parcelable {
         this.mMarginBottom = mMarginBottom;
     }
 
+
     @Override
     public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int lineHeight, Paint.FontMetricsInt fm) {
         if (lineHeight == 0) {  ///避免多行文本时重复叠加计算

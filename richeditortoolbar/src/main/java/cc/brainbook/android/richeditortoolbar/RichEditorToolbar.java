@@ -80,6 +80,7 @@ import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ArrayUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
@@ -136,18 +137,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///段落span（带初始化参数）：LeadingMargin ---------------- */
     private ImageView mImageViewLeadingMargin;
-    private int mLeadingMarginSpanIndent = 40;
+    private int mLeadingMarginSpanIndent = CustomLeadingMarginSpan.DEFAULT_INTENT;
 
     /* ---------------- ///段落span（带初始化参数）：Bullet ---------------- */
     private ImageView mImageViewBullet;
-    private @ColorInt int mBulletColor = Color.parseColor("#DDDDDD");
-    private int mBulletSpanRadius = 16;
-    private int mBulletSpanGapWidth = 40;
+    private @ColorInt int mBulletColor = CustomBulletSpan.STANDARD_COLOR;
+    private int mBulletSpanRadius = CustomBulletSpan.STANDARD_BULLET_RADIUS;
+    private int mBulletSpanGapWidth = CustomBulletSpan.STANDARD_GAP_WIDTH;
 
     /* ---------------- ///段落span：LineDivider ---------------- */
     private ImageView mImageViewLineDivider;
-    private int mLineDividerSpanMarginTop = 50;
-    private int mLineDividerSpanMarginBottom = 50;
+    private int mLineDividerSpanMarginTop = LineDividerSpan.DEFAULT_MARGIN_TOP;
+    private int mLineDividerSpanMarginBottom = LineDividerSpan.DEFAULT_MARGIN_BOTTOM;
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
         c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
@@ -155,9 +156,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
     private ImageView mImageViewQuote;
-    private @ColorInt int mQuoteSpanColor = Color.parseColor("#DDDDDD");
-    private int mQuoteSpanStripWidth = 16;
-    private int mQuoteSpanGapWidth = 40;
+    private @ColorInt int mQuoteSpanColor = CustomQuoteSpan.STANDARD_COLOR;
+    private int mQuoteSpanStripWidth = CustomQuoteSpan.STANDARD_STRIPE_WIDTH_PX;
+    private int mQuoteSpanGapWidth = CustomQuoteSpan.STANDARD_GAP_WIDTH_PX;
 
     /* ---------------- ///段落span（带初始化参数）：List ---------------- */
     private ImageView mImageViewList;
@@ -165,32 +166,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private int mIndicatorWidth = ListItemSpan.DEFAULT_INDICATOR_WIDTH;
     private int mIndicatorGapWidth = ListItemSpan.DEFAULT_INDICATOR_GAP_WIDTH;
     private @ColorInt int mIndicatorColor = ListItemSpan.DEFAULT_INDICATOR_COLOR;
-
-//    private void updateAllRightListSpans(Editable editable, int start, int end) {///////////////////////////////
-//        int currentStart = start;
-//        int currentEnd = end;
-//        ListSpan rightSpan;
-//
-//        while (true) {
-//            rightSpan = getRightSpan(null, ListSpan.class, editable, currentStart, currentEnd, null);
-//            if (rightSpan == null) {
-//                break;
-//            }
-//
-//            final int listType = rightSpan.getListType();
-//            currentStart = editable.getSpanStart(rightSpan);
-//            currentEnd = editable.getSpanEnd(rightSpan);
-//            final int[] nestingLevelAndOrderIndex = getNestingLevelAndOrderIndex(listType,  editable, currentStart, currentEnd);
-//            if (nestingLevelAndOrderIndex[0] != rightSpan.getNestingLevel() || nestingLevelAndOrderIndex[1] != rightSpan.getOrderIndex()) {
-//                editable.removeSpan(rightSpan);
-//
-//                final String indicatorText = ListSpanHelper.getIndicatorText(listType, nestingLevelAndOrderIndex[1]);
-//                final ListSpan listSpan = new ListSpan(listType, indicatorText, nestingLevelAndOrderIndex[0], nestingLevelAndOrderIndex[1],
-//                        mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
-//                editable.setSpan(listSpan, currentStart, currentEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-//            }
-//        }
-//    }
 
     /* ---------------- ///字符span：Bold、Italic ---------------- */
     private ImageView mImageViewBold;
@@ -998,8 +973,55 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             }
 
+            ///段落span（带初始化参数）：Quote
+            else if (view == mImageViewQuote) {
+                new AlertDialog.Builder(mContext)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///如果view未选中则选中view
+                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
+                                if (!view.isSelected()) {
+                                    view.setSelected(true);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        })
+                        ///清除样式
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///如果view选中则未选中view
+                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
+                                if (view.isSelected()) {
+                                    view.setSelected(false);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///清空view tag
+                                view.setTag(null);
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        })
+                        ///插入新建span
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+
+                return;
+            }
+
             ///段落span（带初始化参数）：List
             else if (view == mImageViewList) {
+                final boolean isInsertNewSpan = view.isSelected() && selectionStart < selectionEnd;
                 final int listType = view.getTag(R.id.list_list_type) == null ? Integer.MIN_VALUE :  (int) view.getTag(R.id.list_list_type);
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
                 final int checkedItem = view.getTag(R.id.list_list_type) == null ? -1 :
@@ -1040,7 +1062,31 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 updatePreview();
                             }
                         })
-                        .setNegativeButton(android.R.string.cancel, null)
+                        ///插入新建span
+                        .setNegativeButton(R.string.insert, isInsertNewSpan ? new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///获取listTypeIndex并由此得到对应的listType
+                                final int listTypeIndex = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                                final int listType = ArrayUtil.getIntItem(mContext, R.array.list_type_ids, listTypeIndex);
+
+                                final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
+                                final int start = Integer.parseInt(editTextStart.getText().toString());
+                                final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
+                                final boolean isReversed = switchIsReversed.isChecked();
+
+                                ///保存参数到view tag
+                                view.setTag(R.id.list_start, start);
+                                view.setTag(R.id.list_is_reversed, isReversed);
+                                view.setTag(R.id.list_list_type, listType);
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        } : null)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -1982,64 +2028,98 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
     /* ------------------------------------------------------------------------------------------ */
-    private <T> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
-        if (isApply) {
-
-        } else {
-
-        }
+    private <T extends NestSpan> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
         final int firstParagraphStart = SpanUtil.getParagraphStart(editable, start);
         final int lastParagraphEnd = SpanUtil.getParagraphEnd(editable, end);
+
         ///注意：当选中文尾的空行时会出现firstParagraphStart == lastParagraphEnd的情况，此时只切换view的selected状态、不调整spans！
-        if (firstParagraphStart < lastParagraphEnd) {
-            innerAdjustNestParagraphStyleSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isApply);
-
-//            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {///////////////
-//                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isApply);
-//            }
+        if (firstParagraphStart == lastParagraphEnd) {
+            return;
         }
-    }
 
-    private <T> void innerAdjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);/////////////sort?
-        if (spans.size() == 0) {    ///[isApply]
-            if (view != null && view.isSelected()) {
-                createNewSpan(view, clazz, editable, start, end, null);
+        if (isApply && start == end) {
+            final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
+            if (parentSpan == null) {
+                if (view != null && view.isSelected()) {
+                    createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
+                }
+            } else {
+                if (view != null && view.isSelected()) {
+                    // todo ... 更新
+                } else {
+                    editable.removeSpan(parentSpan);
+                }
             }
 
             return;
         }
 
-        for (T span : spans) {
-            int spanStart = editable.getSpanStart(span);
-            int spanEnd = editable.getSpanEnd(span);
+        innerAdjustNestParagraphStyleSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isApply);
 
-            final boolean isSameWithViewParameter = isSameWithViewParameter(view, clazz, span);
+//            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {///////////////？？？？？？？？？？
+//                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isApply);
+//            }
+    }
 
-            if (view.isSelected() && isSameWithViewParameter) {
-                final int st = Math.min(start, spanStart);
-                final int en = Math.max(spanEnd, end);
-                if (st != spanStart || en != spanEnd) {
-                    editable.setSpan(span, st, en, getSpanFlag(clazz));
-                }
-            } else {
-                int st = spanStart, en = spanEnd;
-                if (spanStart < start && end < spanEnd) { ///右缩+new
-                    en = start;
-                } else if (spanStart < end && end < spanEnd) { ///左缩
-                    st = end;
-                } else if (spanStart < start && start < spanEnd) { ///右缩
-                    en = start;
-                }
-                if (st != spanStart || en != spanEnd) {
-                    editable.setSpan(span, st, en, getSpanFlag(clazz));
-                    if (spanStart < start && end < spanEnd) { ///右缩+new
-                        ///new(end, spanEnd)
-                        createNewSpan(view, clazz, editable, end, spanEnd, span);
+    private <T extends NestSpan> void innerAdjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+
+        if (view != null && view.isSelected()) {
+            int newSpanStart = start;
+            int newSpanEnd = end;
+            T parentSpan = null;
+
+            ///山顶开始位置
+            int topSpanStart = -1;
+
+            for (T span : spans) {
+                int spanStart = editable.getSpanStart(span);
+                int spanEnd = editable.getSpanEnd(span);
+
+                if (start < spanStart && spanEnd < end) {    ///选中区间包含span
+                    if (topSpanStart < spanStart) {
+                        topSpanStart = spanStart;
                     }
-                } else if (isApply) {   ///[isApply]
-                    editable.removeSpan(span);
+
+                    ///更新span的NestingLevel（增加一级）
+                    span.setNestingLevel(span.getNestingLevel() + 1);
+                } else if (start < spanStart || spanEnd < end) { ///交叉
+                    if (spanStart > topSpanStart) {
+                        if (start < spanStart) {    ///交叉上山
+                            newSpanEnd = spanStart;
+                        } else {    ///交叉下山
+                            newSpanStart = spanEnd;
+                        }
+
+                        // todo ... 更新span
+
+                    } else {
+                        if (start < spanStart) {    ///交叉上山
+                            newSpanEnd = spanEnd;
+                        } else {    ///交叉下山
+                            newSpanStart = spanStart;
+                        }
+
+                        ///更新span的NestingLevel（增加一级）
+                        span.setNestingLevel(span.getNestingLevel() + 1);
+                    }
+                } else {    ///span包含选中区间 spanStart <= start && end <= spanEnd
+                    ///注意：这里使用otherSpan传递NestingLevel！
+                    parentSpan = span;
+
+                    break;
                 }
+            }
+
+            if (newSpanStart < newSpanEnd) {
+                createNewSpan(view, clazz, editable, newSpanStart, newSpanEnd, null, parentSpan);
+            }
+        } else {
+            for (T span : spans) {
+                int spanStart = editable.getSpanStart(span);
+                int spanEnd = editable.getSpanEnd(span);
+
+                editable.removeSpan(span);
             }
         }
     }
@@ -2068,7 +2148,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         if (spans.size() == 0) {
             if (view != null && view.isSelected()) {
-                createNewSpan(view, clazz, editable, start, end, null);
+                createNewSpan(view, clazz, editable, start, end, null, null);
             }
 
             return;
@@ -2094,7 +2174,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             if (view != null && view.isSelected()) {
                 if (!isSameWithViewParameter(view, clazz, span)) {
                     editable.removeSpan(span);
-                    createNewSpan(view, clazz, editable, start, end, null);
+                    createNewSpan(view, clazz, editable, start, end, null, null);
                 }
             } else {
                 if (isApply) {
@@ -2344,7 +2424,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         editable.setSpan(span, st, en, getSpanFlag(clazz));
                         if (spanStart < start && end < spanEnd) { ///右缩+new
                             ///new(end, spanEnd)
-                            createNewSpan(view, clazz, editable, end, spanEnd, span);
+                            createNewSpan(view, clazz, editable, end, spanEnd, span, null);
                         }
                     } else if (isApply) {
                         editable.removeSpan(span);
@@ -2381,21 +2461,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///创建新Span
-            createNewSpan(view, clazz, editable, start, end, null);
+            createNewSpan(view, clazz, editable, start, end, null, null);
         }
     }
 
     ///注意：当右缩+new时需要compareSpan
-    private <T> Object createNewSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
+    private <T> Object createNewSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan, T otherSpan) {
         ///添加新span
         Object newSpan = null;
 
         ///段落span（带初始化参数）：Quote
         if (clazz == CustomQuoteSpan.class) {
             int nestingLevel = 1;
-            final CustomQuoteSpan parentCustomQuoteSpan = getParentSpan(view, CustomQuoteSpan.class, editable, start, end, null);
-            if (parentCustomQuoteSpan != null) {
-                nestingLevel = parentCustomQuoteSpan.getNestingLevel();
+            if (otherSpan != null) {   ///注意：这里使用otherSpan传递NestingLevel！
+                nestingLevel = ((NestSpan) otherSpan).getNestingLevel() + 1;
             }
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
@@ -2416,9 +2495,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int listStart = (int) view.getTag(R.id.list_start);
                 final boolean isReversed = (boolean) view.getTag(R.id.list_is_reversed);
                 int nestingLevel = 1;
-                final ListSpan parentListSpan = getParentSpan(view, ListSpan.class, editable, start, end, null);
-                if (parentListSpan != null) {
-                    nestingLevel = parentListSpan.getNestingLevel();
+                if (otherSpan != null) {   ///注意：这里使用otherSpan传递NestingLevel！
+                    nestingLevel = ((NestSpan) otherSpan).getNestingLevel();
                 }
                 final int listType = (int) view.getTag(R.id.list_list_type);
                 newSpan = new ListSpan(nestingLevel, listStart, isReversed, listType, mIndicatorMargin);
@@ -2434,7 +2512,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     && view.getTag(R.id.list_is_reversed) != null
                     && view.getTag(R.id.list_list_type) != null) {
                 final ListSpan parentListSpan = getParentSpan(view, ListSpan.class, editable, start, end, null);
-                final int nestingLevel = parentListSpan.getNestingLevel();////////////////null object reference
+                final int nestingLevel = parentListSpan.getNestingLevel();////////////////？？？？？？null object reference
                 final int listType = (int) view.getTag(R.id.list_list_type);
                 newSpan = new ListItemSpan(nestingLevel, listType, mIndicatorMargin,
                         mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);

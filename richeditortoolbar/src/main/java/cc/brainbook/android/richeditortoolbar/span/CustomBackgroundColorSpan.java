@@ -13,7 +13,7 @@ public class CustomBackgroundColorSpan extends BackgroundColorSpan implements IC
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
     @ColorInt
-    private int mColor;
+    private final int mColor;
 
     public CustomBackgroundColorSpan(int color) {
         super(color);

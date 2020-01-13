@@ -12,11 +12,11 @@ import android.text.style.ReplacementSpan;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 public class CodeSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
-
     private static final int CODE_COLOR = Color.parseColor("#F0F0F0");
     private static final float RADIUS = 10;
 
-    private Drawable drawable;
+
+    private final Drawable drawable;
     private float padding;
     private int width;
 

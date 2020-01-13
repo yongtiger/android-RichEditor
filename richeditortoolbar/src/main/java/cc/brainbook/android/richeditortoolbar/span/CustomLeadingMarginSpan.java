@@ -9,10 +9,14 @@ import com.google.gson.annotations.Expose;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 public class CustomLeadingMarginSpan extends LeadingMarginSpan.Standard implements Parcelable, IParagraphStyle {
+    public static final int DEFAULT_INTENT = 40;
+
+
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
     private final int mFirst, mRest;
+
 
     public CustomLeadingMarginSpan(int first, int rest) {
         super(first, rest);

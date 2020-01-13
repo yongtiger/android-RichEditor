@@ -18,10 +18,10 @@ import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 public class CustomBulletSpan extends BulletSpan implements IParagraphStyle {
     // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
-    private static final int STANDARD_BULLET_RADIUS = 20;
+    public static final int STANDARD_BULLET_RADIUS = 20;
     public static final int STANDARD_GAP_WIDTH = 40;
     @ColorInt
-    private static final int STANDARD_COLOR = 0xffdddddd;
+    public static final int STANDARD_COLOR = 0xffdddddd;
 
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
