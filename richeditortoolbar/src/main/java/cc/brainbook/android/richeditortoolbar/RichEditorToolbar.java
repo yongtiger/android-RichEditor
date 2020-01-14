@@ -104,6 +104,7 @@ import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHel
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isSameWithViewParameter;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.joinSpanByPosition;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.updateCharacterStyleView;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.updateChildrenNestingLevel;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.updateParagraphView;
 
 public class RichEditorToolbar extends FlexboxLayout implements
@@ -1863,8 +1864,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                     ///[FIX#当两行span不同时（如h1和h6），选择第二行行首后回退删除'\n'，此时View仍然在第二行，应该更新为第一行！]
                     final Editable editable = mRichEditText.getText();
-                    if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null
-                            && editable.subSequence(start, start + count).toString().contains("\n")) { ///如果含回车
+                    if (count == 1 && isParagraphStyle(clazz) && mClassMap.get(clazz)!= null
+                            && editable.charAt(start) == '\n') { ///如果含回车
                         updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, start, start);
                     }
                 }
@@ -1969,10 +1970,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             for (Class clazz : mClassMap.keySet()) {
                 if (isParagraphStyle(clazz) && mClassMap.get(clazz)!= null) {
-
                     final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
                     ///[FIX#在行首回车时，上面产生的空行应该不被选中！]
-                    if (count > 0 && start == currentParagraphStart && editable.subSequence(selectionStart, selectionEnd).toString().contains("\n")) {  ///并且含回车
+                    if (count > 0 && start == currentParagraphStart && editable.charAt(start) != '\n'
+                            && editable.subSequence(selectionStart, selectionEnd).toString().contains("\n")) {  ///并且含回车
                         mClassMap.get(clazz).setSelected(false);
                     }
 
@@ -2037,89 +2038,126 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
-        if (isApply && start == end) {
-            final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
-            if (parentSpan == null) {
+        innerAdjustNestParagraphStyleSpans(view, clazz, editable, start, end, firstParagraphStart, lastParagraphEnd, isApply);
+    }
+
+    private <T extends NestSpan> void innerAdjustNestParagraphStyleSpans(
+            View view, Class<T> clazz, Editable editable,
+            int start, int end, int firstParagraphStart, int lastParagraphEnd, boolean isApply) {
+        if (isApply) {
+            if (start == end) {
+                final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
+                if (parentSpan == null) {
+                    if (view != null && view.isSelected()) {
+                        createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
+                    }
+                } else {
+                    if (view != null && view.isSelected()) {
+                        // todo ... 更新
+                    } else {
+                        ///更新区间内所有NestSpan的nesting level，偏移量为
+                        final int parentStart = editable.getSpanStart(parentSpan);
+                        final int parentEnd = editable.getSpanEnd(parentSpan);
+                        updateChildrenNestingLevel(clazz, editable, parentStart, parentEnd, -1);
+
+                        editable.removeSpan(parentSpan);
+                    }
+                }
+            } else {
+                final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, firstParagraphStart, lastParagraphEnd, true);
+                if (view != null && view.isSelected()) {
+                    int newSpanStart = firstParagraphStart;
+                    int newSpanEnd = lastParagraphEnd;
+                    T parentSpan = null;
+
+                    ///山顶开始位置
+                    int topSpanStart = -1;
+
+                    for (T span : spans) {
+                        int spanStart = editable.getSpanStart(span);
+                        int spanEnd = editable.getSpanEnd(span);
+
+                        if (firstParagraphStart < spanStart && spanEnd < lastParagraphEnd) {    ///选中区间包含span
+                            if (topSpanStart < spanStart) {
+                                topSpanStart = spanStart;
+                            }
+
+                            ///更新span的NestingLevel（增加一级）
+                            span.setNestingLevel(span.getNestingLevel() + 1);
+                        } else if (firstParagraphStart < spanStart || spanEnd < end) { ///交叉
+                            if (spanStart > topSpanStart) {
+                                if (firstParagraphStart < spanStart) {    ///交叉上山
+                                    newSpanEnd = spanStart;
+                                } else {    ///交叉下山
+                                    newSpanStart = spanEnd;
+                                }
+
+                                // todo ... 更新span
+
+                            } else {
+                                if (firstParagraphStart < spanStart) {    ///交叉上山
+                                    newSpanEnd = spanEnd;
+                                } else {    ///交叉下山
+                                    newSpanStart = spanStart;
+                                }
+
+                                ///更新span的NestingLevel（增加一级）
+                                span.setNestingLevel(span.getNestingLevel() + 1);
+                            }
+                        } else {    ///span包含选中区间 spanStart <= firstParagraphStart && end <= lastParagraphEnd
+                            ///注意：这里使用otherSpan传递NestingLevel！
+                            parentSpan = span;
+
+                            break;
+                        }
+                    }
+
+                    if (newSpanStart < newSpanEnd) {
+                        createNewSpan(view, clazz, editable, newSpanStart, newSpanEnd, null, parentSpan);
+                    }
+                } else {
+                    for (T span : spans) {
+                        int spanStart = editable.getSpanStart(span);
+                        int spanEnd = editable.getSpanEnd(span);
+
+                        //////??????目前只处理包含关系，将来增加处理交叉关系（需要遍历更新上面所有span的nestLevel！）
+                        if (firstParagraphStart <= spanStart && spanEnd <= lastParagraphEnd) {
+                            editable.removeSpan(span);
+                        }
+                    }
+                }
+            }
+        } else {
+            final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+            if (spans.size() == 0) {
                 if (view != null && view.isSelected()) {
                     createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
                 }
-            } else {
-                if (view != null && view.isSelected()) {
-                    // todo ... 更新
-                } else {
-                    editable.removeSpan(parentSpan);
-                }
+
+                return;
             }
 
-            return;
-        }
-
-        innerAdjustNestParagraphStyleSpans(view, clazz, editable, firstParagraphStart, lastParagraphEnd, isApply);
-
-//            if (clazz == ListSpan.class && start + 1 == end && editable.charAt(start) == '\n') {///////////////？？？？？？？？？？
-//                adjustBlockParagraphStyleSpans(view, ListItemSpan.class, editable, firstParagraphStart, lastParagraphEnd, isApply);
-//            }
-    }
-
-    private <T extends NestSpan> void innerAdjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
-
-        if (view != null && view.isSelected()) {
-            int newSpanStart = start;
-            int newSpanEnd = end;
-            T parentSpan = null;
-
-            ///山顶开始位置
-            int topSpanStart = -1;
-
+            final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
             for (T span : spans) {
                 int spanStart = editable.getSpanStart(span);
                 int spanEnd = editable.getSpanEnd(span);
 
-                if (start < spanStart && spanEnd < end) {    ///选中区间包含span
-                    if (topSpanStart < spanStart) {
-                        topSpanStart = spanStart;
+                if (start <= spanStart && spanEnd <= end) {
+                    ///如果parentSpan不为null，则更新span把nesting level增加parentSpan.getNestingLevel()
+                    if (parentSpan != null) {
+                        final int parentNestingLevel = parentSpan.getNestingLevel();
+                        span.setNestingLevel(span.getNestingLevel() + parentNestingLevel);
                     }
 
-                    ///更新span的NestingLevel（增加一级）
-                    span.setNestingLevel(span.getNestingLevel() + 1);
-                } else if (start < spanStart || spanEnd < end) { ///交叉
-                    if (spanStart > topSpanStart) {
-                        if (start < spanStart) {    ///交叉上山
-                            newSpanEnd = spanStart;
-                        } else {    ///交叉下山
-                            newSpanStart = spanEnd;
-                        }
-
-                        // todo ... 更新span
-
-                    } else {
-                        if (start < spanStart) {    ///交叉上山
-                            newSpanEnd = spanEnd;
-                        } else {    ///交叉下山
-                            newSpanStart = spanStart;
-                        }
-
-                        ///更新span的NestingLevel（增加一级）
-                        span.setNestingLevel(span.getNestingLevel() + 1);
+                    ///先调整span的起止位置
+                    final int currentParagraphStart = SpanUtil.getParagraphStart(editable, spanStart);
+                    final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, spanEnd);
+                    if (spanStart != currentParagraphStart || spanEnd != currentParagraphEnd) {
+                        spanStart = currentParagraphStart;
+                        spanEnd = currentParagraphEnd;
+                        editable.setSpan(span, spanStart, spanEnd, getSpanFlag(clazz));
                     }
-                } else {    ///span包含选中区间 spanStart <= start && end <= spanEnd
-                    ///注意：这里使用otherSpan传递NestingLevel！
-                    parentSpan = span;
-
-                    break;
                 }
-            }
-
-            if (newSpanStart < newSpanEnd) {
-                createNewSpan(view, clazz, editable, newSpanStart, newSpanEnd, null, parentSpan);
-            }
-        } else {
-            for (T span : spans) {
-                int spanStart = editable.getSpanStart(span);
-                int spanEnd = editable.getSpanEnd(span);
-
-                editable.removeSpan(span);
             }
         }
     }

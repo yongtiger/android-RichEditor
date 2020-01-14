@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
 
@@ -35,6 +36,11 @@ public abstract class SpanUtil {
                     int result = editable.getSpanEnd(o1) - editable.getSpanEnd(o2);
                     if (result == 0) {
                         result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
+                    }
+                    if (result == 0) {
+                        if (o1 instanceof NestSpan && o2 instanceof NestSpan) {
+                            result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
+                        }
                     }
                     return result;
                 }
