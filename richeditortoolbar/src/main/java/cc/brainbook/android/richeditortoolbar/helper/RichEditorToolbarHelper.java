@@ -54,6 +54,8 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateChildrenListItemSpansNestingLevel;
+
 public abstract class RichEditorToolbarHelper {
     public static Class getClassMapKey(HashMap<Class, View> classMap, View view) {
         for (Class clazz : classMap.keySet()) {
@@ -737,7 +739,7 @@ public abstract class RichEditorToolbarHelper {
     /**
      * 更新区间内所有NestSpan的nesting level，偏移量为offset
      */
-    public static <T extends NestSpan> void updateChildrenNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
+    public static <T extends NestSpan> void updateDescendantsNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
@@ -746,6 +748,13 @@ public abstract class RichEditorToolbarHelper {
             if (start < spanStart && spanEnd < end
                     || start < spanStart && spanEnd == end
                     || start == spanStart && spanEnd < end) {
+
+                ///段落span（带初始化参数）：List
+                if (clazz == ListSpan.class) {
+                    ///更新ListSpan包含的儿子一级ListItemSpans的nesting level（注意：只children！）
+                    updateChildrenListItemSpansNestingLevel(editable, (ListSpan) span, spanStart, spanEnd, offset);
+                }
+
                 span.setNestingLevel(span.getNestingLevel() + offset);
             }
         }

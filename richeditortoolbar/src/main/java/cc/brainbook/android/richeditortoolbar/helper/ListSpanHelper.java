@@ -1,9 +1,16 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
+import android.support.annotation.ColorInt;
+import android.support.annotation.IntRange;
 import android.text.Editable;
 
+import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
+
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
 
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
 ///Unicode在线转换工具：http://tool.chinaz.com/tools/unicode.aspx, http://www.jsons.cn/unicode/
@@ -229,34 +236,93 @@ public class ListSpanHelper {
     }
 
 
-    public static int getListItemSpanIndex(ListSpan parentListSpan, Editable editable, int where) {
-        int result = parentListSpan.getStart();
-        final int parentListSpanStart = editable.getSpanStart(parentListSpan);
-        if (parentListSpanStart == where) {
-            return result;
-        }
-
-        final ListItemSpan[] listItemSpans = editable.getSpans(parentListSpanStart, where, ListItemSpan.class);
-        for (ListItemSpan listItemSpan : listItemSpans) {
-            if (listItemSpan.getNestingLevel() == parentListSpan.getNestingLevel()) {
-                if (parentListSpan.isReversed()) {
-                    result--;
-                } else {
-                    result++;
+    /**
+     * 更新ListSpan包含的儿子一级ListItemSpans的nesting level
+     *
+     * 注意：只children！
+     */
+    public static void updateChildrenListItemSpansNestingLevel(Editable editable, ListSpan listSpan, int start, int end, int offset) {
+        if (offset != 0) {
+            final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
+            for (ListItemSpan listItemSpan : listItemSpans) {
+                if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
+                    listItemSpan.setNestingLevel(listItemSpan.getNestingLevel() + offset);
                 }
             }
         }
-
-        return result;
     }
 
-    public static void removeListItemSpans(ListSpan parentListSpan, Editable editable) {
-        final int parentListSpanStart = editable.getSpanStart(parentListSpan);
-        final int parentListSpanEnd = editable.getSpanEnd(parentListSpan);
+    /**
+     * 创建ListSpan包含的儿子一级ListItemSpans
+     *
+     * 注意：只children！
+     */
+    public static void createChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end,
+                                                   int indicatorMargin,
+                                                   int indicatorWidth,
+                                                   int indicatorGapWidth,
+                                                   int indicatorColor,
+                                                   boolean wantColor) {
+        int index = listSpan.getStart();
 
-        final ListItemSpan[] listItemSpans = editable.getSpans(parentListSpanStart, parentListSpanEnd, ListItemSpan.class);
+        int next;
+        for (int i = start; i < end; i = next) {
+            final int currentParagraphStart = SpanUtil.getParagraphStart(editable, i);
+            final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
+            next = currentParagraphEnd;
+
+            final int nestingLevel = listSpan.getNestingLevel();
+            final int listType = listSpan.getListType();
+            final ListItemSpan newListItemSpan = new ListItemSpan(nestingLevel, index, listType, indicatorMargin,
+                    indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
+
+            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, getSpanFlag(ListItemSpan.class));
+
+            if (listSpan.isReversed()) {
+                index--;
+            } else {
+                index++;
+            }
+        }
+    }
+
+    /**
+     * 更新ListSpan包含的儿子一级ListItemSpans
+     *
+     * 注意：只children！
+     */
+    public static void updateChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
+        int index = listSpan.getStart();
+
+        final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
         for (ListItemSpan listItemSpan : listItemSpans) {
-            if (listItemSpan.getNestingLevel() == parentListSpan.getNestingLevel()) {
+            if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
+                listItemSpan.setIndex(index);
+                listItemSpan.setListType(listSpan.getListType());
+
+                ///注意：必须重新setSpan，否则不会自动更新绘制！
+                final int spanStart = editable.getSpanStart(listItemSpan);
+                final int spanEnd = editable.getSpanEnd(listItemSpan);
+                editable.setSpan(listItemSpan, spanStart, spanEnd, getSpanFlag(ListItemSpan.class));
+
+                if (listSpan.isReversed()) {
+                    index--;
+                } else {
+                    index++;
+                }
+            }
+        }
+    }
+
+    /**
+     * 移除ListSpan包含的儿子一级ListItemSpans
+     *
+     * 注意：只children！
+     */
+    public static void removeChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
+        final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
+        for (ListItemSpan listItemSpan : listItemSpans) {
+            if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
                 editable.removeSpan(listItemSpan);
             }
         }

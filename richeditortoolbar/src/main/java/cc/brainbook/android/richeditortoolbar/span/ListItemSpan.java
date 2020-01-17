@@ -7,34 +7,32 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
-import android.text.Editable;
 import android.text.Layout;
+import android.text.Spanned;
 import android.text.style.LeadingMarginSpan;
-import android.util.Log;
 
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIndicatorText;
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getListItemSpanIndex;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getParentSpan;
 
-public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
+public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;
-    @ColorInt
-    public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");
+    @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");
 
 
+    ///[NestingLevel]
     @Expose
-    private boolean isIndexDirty;
+    private int mNestingLevel;
+
     @Expose
     @IntRange(from = 0) private int mIndex;
 
     @Expose
-    private final int mListType;
+    private int mListType;
 
     ///[IndicatorMargin]
     @Expose
@@ -53,17 +51,6 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
 
 
     public ListItemSpan(int nestingLevel,
-                        int listType,
-                        @IntRange(from = 0) int indicatorMargin,
-                        @IntRange(from = 0) int indicatorWidth,
-                        @IntRange(from = 0) int indicatorGapWidth,
-                        @ColorInt int indicatorColor,
-                        boolean wantColor) {
-        this(nestingLevel, true, 0, listType, indicatorMargin, indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
-    }
-
-    public ListItemSpan(int nestingLevel,
-                        boolean isIndexDirty,
                         @IntRange(from = 0) int index,
                         int listType,
                         @IntRange(from = 0) int indicatorMargin,
@@ -71,8 +58,7 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
                         @IntRange(from = 0) int indicatorGapWidth,
                         @ColorInt int indicatorColor,
                         boolean wantColor) {
-        super(nestingLevel);
-        this.isIndexDirty = isIndexDirty;
+        mNestingLevel = nestingLevel;
         mIndex = index;
         mListType = listType;
         mIndicatorMargin = indicatorMargin;
@@ -83,16 +69,28 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
     }
 
 
-    public void isIndexDirty(boolean isIndexDirty) {
-        this.isIndexDirty = isIndexDirty;
+    public int getNestingLevel() {
+        return mNestingLevel;
+    }
+
+    public void setNestingLevel(int nestingLevel) {
+        mNestingLevel = nestingLevel;
     }
 
     public int getIndex() {
         return mIndex;
     }
 
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
     public int getListType() {
         return mListType;
+    }
+
+    public void setListType(int listType) {
+        mListType = listType;
     }
 
     public int getIndicatorMargin() {
@@ -111,7 +109,7 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
         return mIndicatorGapWidth;
     }
 
-    public boolean ismWantColor() {
+    public boolean isWantColor() {
         return mWantColor;
     }
 
@@ -127,6 +125,11 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
                                   boolean first, Layout layout) {
         if (!first) return;
 
+        ///如果ListItemSpan包含多行，则只绘制行首等于spanStart的
+        final int spanStart = ((Spanned) text).getSpanStart(this);
+//        final int spanEnd = ((Spanned) text).getSpanEnd(this);
+        if (start != spanStart) return;
+
         Paint.Style style = paint.getStyle();
         int oldColor = 0;
 
@@ -136,14 +139,6 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
         }
 
         paint.setStyle(Paint.Style.FILL);
-
-        ////////////////
-        if (isIndexDirty) {
-            Log.d("TAG", "drawLeadingMargin: ---------------------------------");
-            final ListSpan parentListSpan = getParentSpan(null, ListSpan.class, (Editable) text, start, end, null);
-            mIndex = getListItemSpanIndex(parentListSpan, (Editable) text, start);
-            isIndexDirty = false;
-        }
 
         final String textToDraw = getIndicatorText(mListType, mIndex);
         final float textWidth = isListTypeOrdered(mListType) ? paint.measureText(textToDraw) : mIndicatorWidth;
@@ -178,7 +173,6 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
         @Override
         public ListItemSpan createFromParcel(Parcel in) {
             final int nestingLevel = in.readInt();
-            final boolean isIndexDirty = in.readInt() == 1;
             final @IntRange(from = 0) int index = in.readInt();
             final int listType = in.readInt();
             final @IntRange(from = 0) int indicatorMargin = in.readInt();
@@ -187,7 +181,7 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
             final @ColorInt int indicatorColor = in.readInt();
             final boolean wantColor = in.readInt() == 1;
 
-            return new ListItemSpan(nestingLevel, isIndexDirty, index, listType, indicatorMargin,
+            return new ListItemSpan(nestingLevel, index, listType, indicatorMargin,
                     indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
         }
 
@@ -205,7 +199,6 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
-        dest.writeInt(isIndexDirty ? 1 : 0);
         dest.writeInt(mIndex);
         dest.writeInt(mListType);
         dest.writeInt(mIndicatorMargin);

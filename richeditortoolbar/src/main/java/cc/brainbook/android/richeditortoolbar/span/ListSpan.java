@@ -20,13 +20,13 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
 
 
     @Expose
-    @IntRange(from = 0) private final int mStart;
+    @IntRange(from = 0) private int mStart;
     @Expose
-    private final boolean isReversed;
+    private boolean isReversed;
 
     ///[ListType]
     @Expose
-    private final int mListType;
+    private int mListType;
 
     ///[IndicatorMargin]
     @Expose
@@ -50,12 +50,24 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
         return mStart;
     }
 
+    public void setStart(int start) {
+        mStart = start;
+    }
+
     public boolean isReversed() {
         return isReversed;
     }
 
+    public void isReversed(boolean isReversed) {
+        this.isReversed = isReversed;
+    }
+
     public int getListType() {
         return mListType;
+    }
+
+    public void setListType(int listType) {
+        mListType = listType;
     }
 
     public int getIndicatorMargin() {

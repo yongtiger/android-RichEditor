@@ -14,8 +14,6 @@ import java.util.HashMap;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
-
 public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
@@ -29,7 +27,7 @@ public abstract class SpanUtil {
             ///https://stackoverflow.com/questions/41052172/spannablestringbuilder-getspans-sort-order-is-wrong-on-nougat-7-0-7-1
             ///https://www.jianshu.com/p/57783747e530
             ///注意：按照spanEnd升序！考虑了span相互交叉（spanStart于spanEnd顺序相同）、嵌套（spanStart于spanEnd顺序相反）等各种关系
-            ///嵌套时最里面的span顺序优先；如果spanEnd相同则按照spanStart倒序
+            ///嵌套时最里面的span顺序优先；如果spanEnd相同则按照spanStart倒序；如果仍然相同且为NestSpan，则按照其nesting level倒序
             Arrays.sort(spans, new Comparator<T>() {
                 @Override
                 public int compare(T o1, T o2) {
@@ -133,46 +131,6 @@ public abstract class SpanUtil {
     public static void clearAllSpans(HashMap<Class, View> classHashMap, Editable editable) {
         for (Class clazz : classHashMap.keySet()) {
             removeSpans(clazz, editable, 0, editable.length());
-        }
-    }
-
-    /**
-     * 平摊并合并交叉重叠的同类spans
-     *
-     * 本编辑器内部添加逻辑不会产生交叉重叠，以防从编辑器外部或HTML转换后可能会产生的交叉重叠
-     * 注意：暂时没有考虑ForegroundColor、BackgroundColor等带参数的span！即参数不同的同类span都视为相等而合并
-     */
-    public static <T> void flatSpans(Class<T> clazz, Editable editable, int start, int end) {
-        T currentSpan = null;
-        final ArrayList<T> spans = getFilteredSpans(clazz, editable, start, end, true);
-        for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
-
-            if (currentSpan == null) {
-                currentSpan = span;
-                continue;
-            }
-            if (currentSpan == span) {
-                continue;
-            }
-            final int currentSpanStart = editable.getSpanStart(currentSpan);
-            final int currentSpanEnd = editable.getSpanEnd(currentSpan);
-            if (currentSpanEnd < spanStart) {
-                currentSpan = span;
-                continue;
-            }
-            if (currentSpanStart >= spanStart && currentSpanEnd <= spanEnd) {
-                editable.removeSpan(currentSpan);
-                currentSpan = span;
-                continue;
-            }
-            if (currentSpanStart <= spanStart && currentSpanEnd <= spanEnd) {
-                editable.setSpan(currentSpan, currentSpanStart, spanEnd, getSpanFlag(clazz));
-            } else if (currentSpanStart >= spanStart) {
-                editable.setSpan(currentSpan, spanStart, currentSpanEnd, getSpanFlag(clazz));
-            }
-            editable.removeSpan(span);
         }
     }
 

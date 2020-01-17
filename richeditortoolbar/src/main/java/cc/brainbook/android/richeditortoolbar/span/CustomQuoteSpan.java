@@ -91,7 +91,10 @@ public class CustomQuoteSpan extends NestSpan implements LeadingMarginSpan, Parc
         p.setStyle(Paint.Style.FILL);
         p.setColor(mColor);
 
-        c.drawRect(x, top, x + dir * mStripeWidth, bottom, p);
+        ///由于无法确定CustomQuoteSpan是否先执行，所以无法保证返回正确的x，所以不用x！
+//        c.drawRect(x, top, x + dir * mStripeWidth, bottom, p);
+        final float transX = (mStripeWidth + mGapWidth) * (getNestingLevel() - 1);
+        c.drawRect(transX, top, transX + dir * mStripeWidth, bottom, p);
 
         p.setStyle(style);
         p.setColor(color);
