@@ -169,8 +169,8 @@ public abstract class RichEditorToolbarHelper {
 
                 ///[FIX#由于ListItemSpan类含有ListSpan成员，反序列化后生成的ListSpan成员必须更改为实际保存的ListSpan！]
                 if (span instanceof ListItemSpan) {
-                    final ListSpan parentListSpan = getParentNestSpan(ListSpan.class, editable, spanStart, spanEnd,
-                            ((ListItemSpan) span).getNestingLevel());
+                    final ListSpan parentListSpan =
+                            getParentNestSpan(ListSpan.class, editable, spanStart, spanEnd, ((ListItemSpan) span).getNestingLevel());
 
                     ((ListItemSpan) span).setListSpan(parentListSpan);
                 }

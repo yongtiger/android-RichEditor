@@ -565,7 +565,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewList.setOnClickListener(this);
         mImageViewList.setOnLongClickListener(this);
         mClassMap.put(ListSpan.class, mImageViewList);
-        mClassMap.put(ListItemSpan.class, null);    ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
+        ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
+        ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
+        mClassMap.put(ListItemSpan.class, null);
 
         /* -------------- ///字符span：Bold、Italic --------------- */
         mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
