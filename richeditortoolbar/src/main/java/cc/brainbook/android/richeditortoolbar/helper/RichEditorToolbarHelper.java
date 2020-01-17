@@ -54,8 +54,6 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateChildrenListItemSpansNestingLevel;
-
 public abstract class RichEditorToolbarHelper {
     public static Class getClassMapKey(HashMap<Class, View> classMap, View view) {
         for (Class clazz : classMap.keySet()) {
@@ -168,6 +166,14 @@ public abstract class RichEditorToolbarHelper {
                 final Object span = spanBean.getSpan();
                 editable.setSpan(span, spanStart, spanEnd, spanFlags);
                 resultSpanList.add(span);
+
+                ///[FIX#由于ListItemSpan类含有ListSpan成员，反序列化后生成的ListSpan成员必须更改为实际保存的ListSpan！]
+                if (span instanceof ListItemSpan) {
+                    final ListSpan parentListSpan = getParentNestSpan(ListSpan.class, editable, spanStart, spanEnd,
+                            ((ListItemSpan) span).getNestingLevel());
+
+                    ((ListItemSpan) span).setListSpan(parentListSpan);
+                }
             }
         }
 
@@ -705,11 +711,9 @@ public abstract class RichEditorToolbarHelper {
     }
 
     /**
-     * 获得嵌套span的上一级父span
-     *
-     * 比如：ListItemSpan和ListSpan的父span是ListSpan
+     * 获得span的上一级父span
      */
-    public static <T> T getParentSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
+    public static <T> T getParentSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan, boolean isIncludeSameRange) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
@@ -718,19 +722,53 @@ public abstract class RichEditorToolbarHelper {
             if (isParagraphStyle(clazz)) {
                 ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
                 ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
-                if (start < end && spanStart <= start && end <= spanEnd && (spanStart != start || end != spanEnd)
+                if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                         || start == end && spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
                 }
             } else if (isCharacterStyle(clazz)) {
                 ///如果不是单光标选择、或者span在光标区间外
                 ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
-                if (start < end && spanStart <= start && end <= spanEnd && (spanStart != start || end != spanEnd)
+                if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                         || start == end && spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
                 }
             }
+        }
 
+        return null;
+    }
+
+    /**
+     * 获得嵌套span的上一级父span
+     *
+     * 比如：ListItemSpan和ListSpan的父span是ListSpan
+     */
+    public static <T extends NestSpan> T getParentNestSpan(Class<T> clazz, Editable editable, int start, int end, int nestingLevel) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+        for (T span : spans) {
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
+
+            if (isParagraphStyle(clazz)) {
+                ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
+                ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
+                if (start < end && spanStart <= start && end <= spanEnd
+                        || start == end && spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
+                    if (span.getNestingLevel() == nestingLevel) {
+                        return span;
+                    }
+                }
+            } else if (isCharacterStyle(clazz)) {
+                ///如果不是单光标选择、或者span在光标区间外
+                ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
+                if (start < end && spanStart <= start && end <= spanEnd
+                        || start == end && spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
+                    if (span.getNestingLevel() == nestingLevel) {
+                        return span;
+                    }
+                }
+            }
         }
 
         return null;
@@ -748,13 +786,6 @@ public abstract class RichEditorToolbarHelper {
             if (start < spanStart && spanEnd < end
                     || start < spanStart && spanEnd == end
                     || start == spanStart && spanEnd < end) {
-
-                ///段落span（带初始化参数）：List
-                if (clazz == ListSpan.class) {
-                    ///更新ListSpan包含的儿子一级ListItemSpans的nesting level（注意：只children！）
-                    updateChildrenListItemSpansNestingLevel(editable, (ListSpan) span, spanStart, spanEnd, offset);
-                }
-
                 span.setNestingLevel(span.getNestingLevel() + offset);
             }
         }

@@ -1,13 +1,9 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.IntRange;
 import android.text.Editable;
 
-import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
-import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlag;
@@ -237,28 +233,11 @@ public class ListSpanHelper {
 
 
     /**
-     * 更新ListSpan包含的儿子一级ListItemSpans的nesting level
-     *
-     * 注意：只children！
-     */
-    public static void updateChildrenListItemSpansNestingLevel(Editable editable, ListSpan listSpan, int start, int end, int offset) {
-        if (offset != 0) {
-            final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
-            for (ListItemSpan listItemSpan : listItemSpans) {
-                if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
-                    listItemSpan.setNestingLevel(listItemSpan.getNestingLevel() + offset);
-                }
-            }
-        }
-    }
-
-    /**
      * 创建ListSpan包含的儿子一级ListItemSpans
      *
      * 注意：只children！
      */
     public static void createChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end,
-                                                   int indicatorMargin,
                                                    int indicatorWidth,
                                                    int indicatorGapWidth,
                                                    int indicatorColor,
@@ -271,9 +250,7 @@ public class ListSpanHelper {
             final int currentParagraphEnd = SpanUtil.getParagraphEnd(editable, i);
             next = currentParagraphEnd;
 
-            final int nestingLevel = listSpan.getNestingLevel();
-            final int listType = listSpan.getListType();
-            final ListItemSpan newListItemSpan = new ListItemSpan(nestingLevel, index, listType, indicatorMargin,
+            final ListItemSpan newListItemSpan = new ListItemSpan(listSpan, index,
                     indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
 
             editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, getSpanFlag(ListItemSpan.class));
@@ -296,9 +273,7 @@ public class ListSpanHelper {
 
         final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
         for (ListItemSpan listItemSpan : listItemSpans) {
-            if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
-                listItemSpan.setIndex(index);
-                listItemSpan.setListType(listSpan.getListType());
+            if (listItemSpan.getListSpan() == listSpan) {
 
                 ///注意：必须重新setSpan，否则不会自动更新绘制！
                 final int spanStart = editable.getSpanStart(listItemSpan);
@@ -322,7 +297,7 @@ public class ListSpanHelper {
     public static void removeChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
         final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
         for (ListItemSpan listItemSpan : listItemSpans) {
-            if (listItemSpan.getNestingLevel() == listSpan.getNestingLevel()) {
+            if (listItemSpan.getListSpan() == listSpan) {
                 editable.removeSpan(listItemSpan);
             }
         }

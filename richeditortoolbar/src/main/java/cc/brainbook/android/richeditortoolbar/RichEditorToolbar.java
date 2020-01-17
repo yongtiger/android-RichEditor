@@ -94,7 +94,6 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.creat
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.removeChildrenListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateChildrenListItemSpans;
-import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateChildrenListItemSpansNestingLevel;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.findAndJoinLeftSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.findAndJoinRightSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getLeftSpan;
@@ -2050,7 +2049,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             int start, int end, int firstParagraphStart, int lastParagraphEnd, boolean isApply) {
         if (isApply) {
             if (start == end) {
-                final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
+                final T parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
                 if (parentSpan == null) {
                     if (view != null && view.isSelected()) {
                         final Object newSpan = createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
@@ -2058,7 +2057,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         ///段落span（带初始化参数）：List
                         if (clazz == ListSpan.class) {
                             createChildrenListItemSpans(editable, (ListSpan) newSpan, firstParagraphStart, lastParagraphEnd,
-                                    mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+                                    mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
                         }
 
                     }
@@ -2117,12 +2116,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 topSpanStart = spanStart;
                             }
 
-                            ///段落span（带初始化参数）：List
-                            if (clazz == ListSpan.class) {
-                                ///更新ListSpan包含的儿子一级ListItemSpans的nesting level（注意：只children！）
-                                updateChildrenListItemSpansNestingLevel(editable, (ListSpan) span, spanStart, spanEnd, 1);
-                            }
-
                             ///更新span的NestingLevel（增加一级）
                             span.setNestingLevel(span.getNestingLevel() + 1);
                         } else if (firstParagraphStart < spanStart || spanEnd < lastParagraphEnd) { ///交叉
@@ -2157,12 +2150,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     newSpanStart = spanStart;
                                 }
 
-                                ///段落span（带初始化参数）：List
-                                if (clazz == ListSpan.class) {
-                                    ///更新ListSpan包含的儿子一级ListItemSpans的nesting level（注意：只children！）
-                                    updateChildrenListItemSpansNestingLevel(editable, (ListSpan) span, spanStart, spanEnd, 1);
-                                }
-
                                 ///更新span的NestingLevel（增加一级）
                                 span.setNestingLevel(span.getNestingLevel() + 1);
                             }
@@ -2180,7 +2167,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         ///段落span（带初始化参数）：List
                         if (clazz == ListSpan.class) {
                             createChildrenListItemSpans(editable, (ListSpan) newSpan, newSpanStart, newSpanEnd,
-                                    mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+                                    mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
                         }
 
                     }
@@ -2211,7 +2198,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     ///段落span（带初始化参数）：List
                     if (clazz == ListSpan.class) {
                         createChildrenListItemSpans(editable, (ListSpan) newSpan, firstParagraphStart, lastParagraphEnd,
-                                mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+                                mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
                     }
 
                 }
@@ -2219,7 +2206,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 return;
             }
 
-            final T parentSpan = getParentSpan(view, clazz, editable, start, end, null);
+            final T parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
             for (T span : spans) {
                 int spanStart = editable.getSpanStart(span);
                 int spanEnd = editable.getSpanEnd(span);
@@ -2228,13 +2215,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     ///如果parentSpan不为null，则更新span把nesting level增加parentSpan.getNestingLevel()
                     if (parentSpan != null) {
                         final int parentNestingLevel = parentSpan.getNestingLevel();
-
-                        ///段落span（带初始化参数）：List
-                        if (clazz == ListSpan.class) {
-                            ///更新ListSpan包含的儿子一级ListItemSpans的nesting level（注意：只children！）
-                            updateChildrenListItemSpansNestingLevel(editable, (ListSpan) span, spanStart, spanEnd, parentNestingLevel);
-                        }
-
                         span.setNestingLevel(span.getNestingLevel() + parentNestingLevel);
                     }
 

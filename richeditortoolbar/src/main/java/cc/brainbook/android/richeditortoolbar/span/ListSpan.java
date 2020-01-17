@@ -10,12 +10,9 @@ import android.text.style.LeadingMarginSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
-    @IntRange(from = 0) public static final int DEFAULT_NESTING_LEVEL = 0;
-    public static final int DEFAULT_LIST_TYPE = ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_MARGIN = 160;
 
 
