@@ -1026,7 +1026,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 updatePreview();
                             }
                         })
-                        ///插入新建span
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
@@ -1035,7 +1034,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             ///段落span（带初始化参数）：List
             else if (view == mImageViewList) {
-                final boolean isInsertNewSpan = view.isSelected() && selectionStart < selectionEnd;
                 final int listType = view.getTag(R.id.list_list_type) == null ? Integer.MIN_VALUE :  (int) view.getTag(R.id.list_list_type);
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
                 final int checkedItem = view.getTag(R.id.list_list_type) == null ? -1 :
@@ -1077,31 +1075,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 updatePreview();
                             }
                         })
-                        ///插入新建span
-                        .setNegativeButton(isInsertNewSpan ? R.string.insert : android.R.string.cancel, isInsertNewSpan ? new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///获取listTypeIndex并由此得到对应的listType
-                                final int listTypeIndex = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                                final int listType = ArrayUtil.getIntItem(mContext, R.array.list_type_ids, listTypeIndex);
-
-                                final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
-                                final int start = Integer.parseInt(editTextStart.getText().toString());
-                                final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
-                                final boolean isReversed = switchIsReversed.isChecked();
-
-                                ///保存参数到view tag
-                                view.setTag(R.id.list_start, start);
-                                view.setTag(R.id.list_is_reversed, isReversed);
-                                view.setTag(R.id.list_list_type, listType);
-
-                                ///改变selection的span
-                                applyParagraphStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
-                            }
-                        } : null)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -1114,28 +1087,25 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
                                 final boolean isReversed = switchIsReversed.isChecked();
 
-                                if (view.getTag(R.id.list_start) == null || start != (int) view.getTag(R.id.list_start)
-                                        || view.getTag(R.id.list_is_reversed) == null || isReversed != (boolean) view.getTag(R.id.list_is_reversed)
-                                        || view.getTag(R.id.list_list_type) == null || listType != (int) view.getTag(R.id.list_list_type)) {
-                                    ///如果view未选中则选中view
-                                    ///注意：如果view已经选中了则不再进行view选中操作！提高效率
-                                    if (!view.isSelected()) {
-                                        view.setSelected(true);
-                                    }
-
-                                    ///保存参数到view tag
-                                    view.setTag(R.id.list_start, start);
-                                    view.setTag(R.id.list_is_reversed, isReversed);
-                                    view.setTag(R.id.list_list_type, listType);
-
-                                    ///改变selection的span
-                                    applyParagraphStyleSpans(view, editable);
-
-                                    ///[Preview]
-                                    updatePreview();
+                                ///如果view未选中则选中view
+                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
+                                if (!view.isSelected()) {
+                                    view.setSelected(true);
                                 }
+
+                                ///保存参数到view tag
+                                view.setTag(R.id.list_start, start);
+                                view.setTag(R.id.list_is_reversed, isReversed);
+                                view.setTag(R.id.list_list_type, listType);
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///[Preview]
+                                updatePreview();
                             }
                         })
+                        .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
                 ///[FIX#自定义单选或多选AlertDialog中含有其它控件时，ListView太长导致无法滚动显示完整]
@@ -2156,6 +2126,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
         } else {
             boolean isSplitListItemSpan = true;
 
+            boolean hasDoneGetParentSpan = false;
+            T parentSpan = null;
+
             final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, firstParagraphStart, lastParagraphEnd, true);
             for (T span : spans) {
                 int spanStart = editable.getSpanStart(span);
@@ -2184,11 +2157,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 ///更新粘贴文本中的span的nesting level
                 if (clazz != ListItemSpan.class && start <= spanStart && spanEnd <= end) {
+                    ///当粘贴文本包含多级NestSpan时，保存首次获取的ParentSpan
+                    if (!hasDoneGetParentSpan) {
+                        hasDoneGetParentSpan = true;
+                        parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
+                    }
                     ///如果parentSpan不为null，则更新span把nesting level增加parentSpan.getNestingLevel()
-                    final T parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
                     if (parentSpan != null) {
-                        final int parentNestingLevel = parentSpan.getNestingLevel();
-                        span.setNestingLevel(span.getNestingLevel() + parentNestingLevel);
+                        span.setNestingLevel(span.getNestingLevel() + parentSpan.getNestingLevel());
                     }
                 }
 
