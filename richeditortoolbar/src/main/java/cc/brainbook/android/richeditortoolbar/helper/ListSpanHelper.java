@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.text.Editable;
 
+import java.util.ArrayList;
+
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
@@ -17,17 +19,17 @@ public class ListSpanHelper {
     public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE = "\u25cf";
     public static final int LIST_TYPE_UNORDERED_SQUARE = 2;
     public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE = "\u25a0";
-    public static final int LIST_TYPE_UNORDERED_CIRCLE_HOLLOW = 11;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE_HOLLOW = "\u25cb";
-    public static final int LIST_TYPE_UNORDERED_SQUARE_HOLLOW = 12;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE_HOLLOW = "\u25a1";
+    public static final int LIST_TYPE_UNORDERED_HOLLOW_CIRCLE = 11;
+    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_CIRCLE = "\u25cb";
+    public static final int LIST_TYPE_UNORDERED_HOLLOW_SQUARE = 12;
+    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_SQUARE = "\u25a1";
     /// others ...
     public static final int LIST_TYPE_ORDERED_LETTER = -1;  ///最大26
     public static final int LIST_TYPE_ORDERED_NUMBER = -2;  ///无限
     public static final int LIST_TYPE_ORDERED_ROMAN_NUMBER = -3;    ///最大3999
-    public static final int LIST_TYPE_ORDERED_LETTER_QUOTE = -11;
-    public static final int LIST_TYPE_ORDERED_NUMBER_QUOTE = -12;
-    public static final int LIST_TYPE_ORDERED_ROMAN_NUMBER_QUOTE = -13;
+    public static final int LIST_TYPE_ORDERED_QUOTED_LETTER = -11;
+    public static final int LIST_TYPE_ORDERED_QUOTED_NUMBER = -12;
+    public static final int LIST_TYPE_ORDERED_QUOTED_ROMAN_NUMBER = -13;
     /// others ...
 
 
@@ -41,10 +43,10 @@ public class ListSpanHelper {
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
             case LIST_TYPE_UNORDERED_SQUARE:
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE;
-            case LIST_TYPE_UNORDERED_CIRCLE_HOLLOW:
-                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE_HOLLOW;
-            case LIST_TYPE_UNORDERED_SQUARE_HOLLOW:
-                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE_HOLLOW;
+            case LIST_TYPE_UNORDERED_HOLLOW_CIRCLE:
+                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_CIRCLE;
+            case LIST_TYPE_UNORDERED_HOLLOW_SQUARE:
+                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_SQUARE;
 
             case LIST_TYPE_ORDERED_LETTER:
                 return getLetterIndicatorTextByIndex(orderIndex) + ".";
@@ -52,11 +54,11 @@ public class ListSpanHelper {
                 return orderIndex + ".";
             case LIST_TYPE_ORDERED_ROMAN_NUMBER:
                 return getRomanLetterIndicatorTextByIndex(orderIndex) + ".";
-            case LIST_TYPE_ORDERED_LETTER_QUOTE:
+            case LIST_TYPE_ORDERED_QUOTED_LETTER:
                 return getLetterIndicatorTextByIndex(orderIndex) + ")";
-            case LIST_TYPE_ORDERED_NUMBER_QUOTE:
+            case LIST_TYPE_ORDERED_QUOTED_NUMBER:
                 return orderIndex + ")";
-            case LIST_TYPE_ORDERED_ROMAN_NUMBER_QUOTE:
+            case LIST_TYPE_ORDERED_QUOTED_ROMAN_NUMBER:
                 return getRomanLetterIndicatorTextByIndex(orderIndex) + ")";
             default:
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_EMPTY;
@@ -264,6 +266,21 @@ public class ListSpanHelper {
     }
 
     /**
+     * 更新ListSpan
+     */
+    public static void updateListSpans(Editable editable, ArrayList<ListSpan> listSpans) {
+        for (ListSpan listSpan : listSpans) {
+            if (listSpan != null) {
+                ///更新ListSpan包含的儿子一级ListItemSpans（注意：只children！）
+                final int listSpanStart = editable.getSpanStart(listSpan);
+                final int listSpanEnd = editable.getSpanEnd(listSpan);
+
+                updateChildrenListItemSpans(editable, listSpan, listSpanStart, listSpanEnd);
+            }
+        }
+    }
+
+    /**
      * 更新ListSpan包含的儿子一级ListItemSpans
      *
      * 注意：只children！
@@ -271,14 +288,32 @@ public class ListSpanHelper {
     public static void updateChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
         int index = listSpan.getStart();
 
-        final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
-        for (ListItemSpan listItemSpan : listItemSpans) {
-            if (listItemSpan.getListSpan() == listSpan) {
+        final ArrayList<ListItemSpan> spans = SpanUtil.getFilteredSpans(ListItemSpan.class, editable, start, end, true);
+        for (ListItemSpan span : spans) {
+            if (span.getListSpan() == listSpan) {
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+
+                ///调整span的起止位置（删除含有'\n'的文本时会造成一行中存在多个不完整的段落span！需要调整）
+                int st = spanStart, en = spanEnd;
+                if (spanStart < 0 && editable.charAt(spanStart - 1) != '\n') {
+                    ///如果span的起始位置不正确，则左缩（即设置spanStart为其所在行的行尾）
+                    st = SpanUtil.getParagraphEnd(editable, spanStart);
+                }
+                if (spanEnd < editable.length() && editable.charAt(spanEnd - 1) != '\n') {
+                    en = start == end ? SpanUtil.getParagraphEnd(editable, spanEnd) : SpanUtil.getParagraphEnd(editable, spanEnd - 1);
+                }
+                if (st == en) {
+                    editable.removeSpan(span);
+
+                    continue;
+                }
+
+                ///设置index
+                span.setIndex(index);
 
                 ///注意：必须重新setSpan，否则不会自动更新绘制！
-                final int spanStart = editable.getSpanStart(listItemSpan);
-                final int spanEnd = editable.getSpanEnd(listItemSpan);
-                editable.setSpan(listItemSpan, spanStart, spanEnd, getSpanFlag(ListItemSpan.class));
+                editable.setSpan(span, st, en, getSpanFlag(ListItemSpan.class));
 
                 if (listSpan.isReversed()) {
                     index--;

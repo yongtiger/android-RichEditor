@@ -18,7 +18,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIndicatorText;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
-public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
+public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;
     @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");
@@ -48,6 +48,7 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphSt
                         @IntRange(from = 0) int indicatorGapWidth,
                         @ColorInt int indicatorColor,
                         boolean wantColor) {
+        super(listSpan.getNestingLevel());
         mListSpan = listSpan;
         mIndex = index;
         mIndicatorWidth = indicatorWidth;
@@ -56,16 +57,21 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphSt
         mWantColor = wantColor;
     }
 
+
     public ListSpan getListSpan() {
         return mListSpan;
     }
 
     public void setListSpan(ListSpan listSpan) {
-        this.mListSpan = listSpan;
+        mListSpan = listSpan;
     }
 
     public int getNestingLevel() {
         return mListSpan.getNestingLevel();
+    }
+
+    public void setNestingLevel(int nestingLevel) {
+//        throw new Exception("ListItemSpan cannot setNestingLevel()! Use setListSpan() instead");
     }
 
     public int getIndex() {
@@ -80,8 +86,8 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphSt
         return mListSpan.getListType();
     }
 
-    public int getIndicatorMargin() {
-        return mListSpan.getIndicatorMargin();
+    public int getIntent() {
+        return mListSpan.getIntent();
     }
 
     public int getIndicatorColor() {
@@ -131,7 +137,7 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, IParagraphSt
         final float textWidth = isListTypeOrdered(getListType()) ? paint.measureText(textToDraw) : mIndicatorWidth;
         ///由于无法确定ListSpan是否先执行，所以无法保证返回正确的x，所以不用x！
 //            final float textStart = x + dir * (0 - mIndicatorGapWidth - textWidth);
-        final float textStart = getIndicatorMargin() * getNestingLevel() - dir * (mIndicatorGapWidth + textWidth);
+        final float textStart = getIntent() * getNestingLevel() - dir * (mIndicatorGapWidth + textWidth);
 
         if (isListTypeOrdered(getListType())) {
             canvas.drawText(textToDraw, textStart, baseline, paint);

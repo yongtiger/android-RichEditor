@@ -8,6 +8,7 @@ import android.support.annotation.ColorInt;
 import android.text.Editable;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,7 +16,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.R;
@@ -55,7 +56,7 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public abstract class RichEditorToolbarHelper {
-    public static Class getClassMapKey(HashMap<Class, View> classMap, View view) {
+    public static Class getClassMapKey(LinkedHashMap<Class, View> classMap, View view) {
         for (Class clazz : classMap.keySet()) {
             if (classMap.get(clazz) == view) {
                 return clazz;
@@ -65,7 +66,7 @@ public abstract class RichEditorToolbarHelper {
         return null;
     }
 
-    public static byte[] toByteArray(HashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+    public static byte[] toByteArray(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
 
         return ParcelUtil.marshall(textBean);
@@ -77,7 +78,7 @@ public abstract class RichEditorToolbarHelper {
         return loadSpans(editable, textBean);
     }
 
-    public static String toJson(HashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+    public static String toJson(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
 
         ///[Gson#Exclude父类成员变量的序列化和反序列化]
@@ -99,7 +100,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
 
-    public static TextBean saveSpans(HashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+    public static TextBean saveSpans(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = new TextBean();
         if (isSetText) {
             final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
@@ -172,6 +173,10 @@ public abstract class RichEditorToolbarHelper {
                     final ListSpan parentListSpan =
                             getParentNestSpan(ListSpan.class, editable, spanStart, spanEnd, ((ListItemSpan) span).getNestingLevel());
 
+                    if (parentListSpan == null) {
+                        Log.e("TAG", "loadSpansFromSpanBeans()# parentListSpan cannot be null !!!");
+                    }
+
                     ((ListItemSpan) span).setListSpan(parentListSpan);
                 }
             }
@@ -196,7 +201,8 @@ public abstract class RichEditorToolbarHelper {
     }
     public static boolean isNestParagraphStyle(Class clazz) {
         return clazz == CustomQuoteSpan.class
-                || clazz == ListSpan.class;
+                || clazz == ListSpan.class
+                || clazz == ListItemSpan.class;
     }
     public static boolean isCharacterStyle(Class clazz) {
         return clazz == BoldSpan.class
@@ -230,6 +236,7 @@ public abstract class RichEditorToolbarHelper {
         } else if (isCharacterStyle(clazz)) {
             return Spanned.SPAN_INCLUSIVE_INCLUSIVE;
         } else {
+            ///注意：段落span只在开始位置才延申！结束位置不延申
             return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
         }
     }
@@ -744,7 +751,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 比如：ListItemSpan和ListSpan的父span是ListSpan
      */
-    public static <T extends NestSpan> T getParentNestSpan(Class<T> clazz, Editable editable, int start, int end, int nestingLevel) {
+    public static <T> T getParentNestSpan(Class<T> clazz, Editable editable, int start, int end, int nestingLevel) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
@@ -755,7 +762,7 @@ public abstract class RichEditorToolbarHelper {
                 ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
                 if (start < end && spanStart <= start && end <= spanEnd
                         || start == end && spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
-                    if (span.getNestingLevel() == nestingLevel) {
+                    if (((NestSpan) span).getNestingLevel() == nestingLevel) {
                         return span;
                     }
                 }
@@ -764,7 +771,7 @@ public abstract class RichEditorToolbarHelper {
                 ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
                 if (start < end && spanStart <= start && end <= spanEnd
                         || start == end && spanStart < start && (end < spanEnd || !isBlockCharacterStyle(clazz) && end == spanEnd)) {
-                    if (span.getNestingLevel() == nestingLevel) {
+                    if (((NestSpan) span).getNestingLevel() == nestingLevel) {
                         return span;
                     }
                 }
@@ -777,7 +784,7 @@ public abstract class RichEditorToolbarHelper {
     /**
      * 更新区间内所有NestSpan的nesting level，偏移量为offset
      */
-    public static <T extends NestSpan> void updateDescendantsNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
+    public static <T extends NestSpan> void updateDescendantNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);

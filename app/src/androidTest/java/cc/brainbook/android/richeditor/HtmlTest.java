@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
@@ -28,7 +28,7 @@ public class HtmlTest {
     private Editable editable;
 
     private RichEditorToolbar mRichEditorToolbar;
-    private HashMap<Class, View> mClassMap;
+    private LinkedHashMap<Class, View> mClassMap;
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(

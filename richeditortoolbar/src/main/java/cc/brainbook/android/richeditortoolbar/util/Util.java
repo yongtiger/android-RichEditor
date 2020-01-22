@@ -7,9 +7,6 @@ import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 
-import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 public abstract class Util {
@@ -52,10 +49,7 @@ public abstract class Util {
             if (span instanceof NestSpan) {
                 Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd
                         + "  nest = " + ((NestSpan) span).getNestingLevel());
-            } else if (span instanceof ListItemSpan) {
-                Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd
-                        + "  nest = " + ((ListItemSpan) span).getNestingLevel());
-            } else {
+            } else  {
                 Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
             }
         }

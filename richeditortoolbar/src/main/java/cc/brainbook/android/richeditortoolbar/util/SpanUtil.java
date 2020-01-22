@@ -9,7 +9,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
@@ -32,6 +32,7 @@ public abstract class SpanUtil {
                 @Override
                 public int compare(T o1, T o2) {
                     int result = editable.getSpanEnd(o1) - editable.getSpanEnd(o2);
+
                     if (result == 0) {
                         result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
                     }
@@ -40,6 +41,7 @@ public abstract class SpanUtil {
                             result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
                         }
                     }
+
                     return result;
                 }
             });
@@ -128,7 +130,7 @@ public abstract class SpanUtil {
     /**
      * 清除所有spans
      */
-    public static void clearAllSpans(HashMap<Class, View> classHashMap, Editable editable) {
+    public static void clearAllSpans(LinkedHashMap<Class, View> classHashMap, Editable editable) {
         for (Class clazz : classHashMap.keySet()) {
             removeSpans(clazz, editable, 0, editable.length());
         }

@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class ListSpanTest {
     private RichEditorToolbar mRichEditorToolbar;
     private RichEditText mRichEditText;
-    private HashMap<Class, View> mClassMap = new HashMap<>();
+    private LinkedHashMap<Class, View> mClassMap = new LinkedHashMap<>();
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
