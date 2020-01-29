@@ -48,6 +48,7 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -72,8 +73,11 @@ import cc.brainbook.android.richeditortoolbar.span.CustomURLSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
+import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
-///[UPGRADE#android.text.Html]
 /**
  * This class processes HTML strings into displayable styled text.
  * Not all HTML tags are supported.
@@ -284,7 +288,10 @@ public class Html {
      */
     public static String toHtml(Spanned text, int option) {
         StringBuilder out = new StringBuilder();
-        withinHtml(out, text, option);
+
+        ///[UPGRADE#android.text.Html]
+//        withinHtml(out, text, option);
+        handleHtml(out, text, null);
 
         return out.toString();
     }
@@ -297,6 +304,101 @@ public class Html {
         withinStyle(out, text, 0, text.length());
         return out.toString();
     }
+
+
+    /* ------------------- ///[UPGRADE#android.text.Html] ------------------- */
+    private static void handleHtml(StringBuilder out, Spanned text, ParagraphStyle compareSpan) {
+        int start, end;
+        if (compareSpan == null) {
+            start = 0;
+            end = text.length();
+        } else {
+            start = text.getSpanStart(compareSpan);
+            end = text.getSpanEnd(compareSpan);
+        }
+
+        ParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, start, compareSpan);
+
+        int next;
+        for (int i = start; i < end; i = next) {
+            if (nextParagraphStyleSpan == null) {
+                next = text.nextSpanTransition(i, end, ParagraphStyle.class);
+
+                handleParagraph(out, text, i, next, compareSpan == null || compareSpan instanceof NestSpan);
+            } else {
+                if (nextParagraphStyleSpan instanceof CustomQuoteSpan) {
+                    out.append("<blockquote>\n");
+                } else
+                if (nextParagraphStyleSpan instanceof HeadSpan) {
+                    out.append("<h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">");
+                } else
+                if (nextParagraphStyleSpan instanceof LineDividerSpan) {
+                    out.append("<hr>");
+                }
+
+                handleHtml(out, text, nextParagraphStyleSpan);
+
+                if (nextParagraphStyleSpan instanceof CustomQuoteSpan) {
+                    out.append("</blockquote>\n");
+                } else
+                if (nextParagraphStyleSpan instanceof HeadSpan) {
+                    out.append("</h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">\n");
+//                } else
+//                if (nextParagraphStyleSpan instanceof LineDividerSpan) {
+//                    out.append("</hr>");  ///忽略输出"</hr>"
+                }
+
+                next = text.getSpanEnd(nextParagraphStyleSpan);
+            }
+
+            nextParagraphStyleSpan = getNextParagraphStyleSpan(text, next, compareSpan);
+        }
+    }
+
+    private static ParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, ParagraphStyle compareSpan) {
+        ParagraphStyle resultSpan = null;
+
+        final ArrayList<ParagraphStyle> paragraphStyleSpans = SpanUtil.getFilteredSpans(ParagraphStyle.class, (Editable) text, where, where, true);
+        for (ParagraphStyle paragraphStyleSpan : paragraphStyleSpans) {
+            if (paragraphStyleSpan == compareSpan) {
+                break;
+            }
+
+            final int paragraphStyleSpanStart = text.getSpanStart(paragraphStyleSpan);
+            final int paragraphStyleSpanEnd = text.getSpanEnd(paragraphStyleSpan);
+            final int resultSpanEnd = text.getSpanEnd(resultSpan);
+            if (paragraphStyleSpanStart == where && (resultSpan == null || resultSpanEnd <= paragraphStyleSpanEnd)) {
+                resultSpan = paragraphStyleSpan;
+            }
+        }
+
+        return resultSpan;
+    }
+
+    private static void handleParagraph(StringBuilder out, Spanned text, int start, int end, boolean isOutParagraph) {
+        if (isOutParagraph) {
+            out.append("<p").append(getTextDirection(text, start, end)).append(">");
+        }
+
+        int next;
+        for (int i = start; i < end; i = next) {
+            next = TextUtils.indexOf(text, '\n', i, end);
+            if (next < 0) {
+                next = end;
+            }
+
+            withinParagraph(out, text, i, next);
+
+            if (++next < end) {
+                out.append("<br>\n");
+            }
+        }
+
+        if (isOutParagraph) {
+            out.append("</p>\n");
+        }
+    }
+
 
     private static void withinHtml(StringBuilder out, Spanned text, int option) {
         if ((option & TO_HTML_PARAGRAPH_FLAG) == TO_HTML_PARAGRAPH_LINES_CONSECUTIVE) {
@@ -319,6 +421,7 @@ public class Html {
 
             for(int j = 0; j < style.length; j++) {
                 if (style[j] instanceof AlignmentSpan) {
+                    ///Error: The align attribute on the div element is obsolete. Use CSS instead./////////////////////?????????????????style="text-align:center"
                     ///[UPGRADE#android.text.Html]
 //                    Layout.Alignment align =
 //                            ((AlignmentSpan) style[j]).getAlignment();
@@ -452,9 +555,11 @@ public class Html {
                 boolean isListItem = false;
                 ParagraphStyle[] paragraphStyles = text.getSpans(i, next, ParagraphStyle.class);
                 for (ParagraphStyle paragraphStyle : paragraphStyles) {
-                    final int spanFlags = text.getSpanFlags(paragraphStyle);
-                    if ((spanFlags & Spanned.SPAN_PARAGRAPH) == Spanned.SPAN_PARAGRAPH
-                            && paragraphStyle instanceof BulletSpan) {/////////////？？？？？？？？？
+                    ///////////////////
+//                    final int spanFlags = text.getSpanFlags(paragraphStyle);
+//                    if ((spanFlags & Spanned.SPAN_PARAGRAPH) == Spanned.SPAN_PARAGRAPH
+//                            && paragraphStyle instanceof BulletSpan) {
+                    if (paragraphStyle instanceof ListSpan) {
                         isListItem = true;
                         break;
                     }
@@ -541,10 +646,6 @@ public class Html {
 
             for (int j = 0; j < style.length; j++) {
                 ///[UPGRADE#android.text.Html]
-                if (style[j] instanceof HeadSpan) {
-                    out.append("<h").append(((HeadSpan) style[j]).getLevel() + 1).append(">");
-                    continue;
-                }
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
                     ///注意：当face="monospace"时转换为tt标签
@@ -656,10 +757,6 @@ public class Html {
 
             for (int j = style.length - 1; j >= 0; j--) {
                 ///[UPGRADE#android.text.Html]
-                if (style[j] instanceof HeadSpan) {
-                    out.append("</h").append(((HeadSpan) style[j]).getLevel() + 1).append(">");
-                    continue;
-                }
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
                     ///注意：当face="monospace"时转换为tt标签
@@ -1209,7 +1306,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         if (where != len) {
             for (Object span : spans) {
                 ///[UPGRADE#android.text.Html]
-                ///注意：RichEditorToolbar要求除BlockCharacterStyle为SPAN_EXCLUSIVE_EXCLUSIVE以外，都为SPAN_INCLUSIVE_INCLUSIVE
+                ///注意：RichEditorToolbar要求除BlockCharacterStyle为SPAN_EXCLUSIVE_EXCLUSIVE以外，都为SPAN_INCLUSIVE_INCLUSIVE?????????????
 //                text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 text.setSpan(span, where, len, Spanned.SPAN_INCLUSIVE_INCLUSIVE);/////////??????????BUG#后续文字被自动延展！！！
             }

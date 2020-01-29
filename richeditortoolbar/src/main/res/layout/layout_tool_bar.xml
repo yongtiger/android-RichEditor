@@ -176,18 +176,14 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_preview"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_local_parking_black_24dp"
-        style="@style/ImageView" />
-
-    <ImageView
         android:id="@+id/iv_clear_spans"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_remove_circle_black_24dp"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_save_draft"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_save_draft_black_24dp"
         style="@style/ImageView" />
 
@@ -199,6 +195,7 @@
 
     <ImageView
         android:id="@+id/iv_clear_draft"
+        app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_clear_draft_black_24dp"
         style="@style/ImageView" />
 
@@ -218,6 +215,18 @@
         android:id="@+id/iv_save"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_save_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_preview"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_local_parking_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_html"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_http_black_24dp"
         style="@style/ImageView" />
 
 </merge>

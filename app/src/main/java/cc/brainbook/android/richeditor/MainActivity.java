@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
@@ -21,7 +22,8 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 public class MainActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
-    private TextView mTextViewPreviewText;
+    private TextView mTextViewPreview;
+    private EditText mEditTextHtml;
 
     // 要申请的权限
     private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -46,12 +48,15 @@ public class MainActivity extends AppCompatActivity {
         mRichEditText = (RichEditText) findViewById(R.id.et_rich_edit_text);
 
         ///[Preview]
-        mTextViewPreviewText = (TextView) findViewById(R.id.tv_preview_text);
+        mTextViewPreview = (TextView) findViewById(R.id.tv_preview);
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
         ///设置TextView可点击，比如响应URLSpan点击事件。LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
-//        mTextViewPreviewText.setMovementMethod(LinkMovementMethod.getInstance());
-        mTextViewPreviewText.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
-//        mTextViewPreviewText.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+//        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
+        mTextViewPreview.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
+//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+
+        ///[Html]
+        mEditTextHtml = (EditText) findViewById(R.id.et_html);
 
 
         /* -------------- ///设置 -------------- */
@@ -64,7 +69,10 @@ public class MainActivity extends AppCompatActivity {
         mRichEditorToolbar.setupEditText(mRichEditText);
 
         ///（必选）RichEditorToolbar设置Preview
-        mRichEditorToolbar.setPreviewText(mTextViewPreviewText);
+        mRichEditorToolbar.setPreview(mTextViewPreview);
+
+        ///（必选）RichEditorToolbar设置Html
+        mRichEditorToolbar.setHtml(mEditTextHtml);
 
         ///（必选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));

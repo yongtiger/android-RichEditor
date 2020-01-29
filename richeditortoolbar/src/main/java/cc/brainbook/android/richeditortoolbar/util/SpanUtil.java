@@ -3,6 +3,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.style.ParagraphStyle;
 import android.view.View;
 import android.widget.EditText;
 
@@ -12,13 +13,15 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
+import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
      */
-    public static <T> ArrayList<T> getFilteredSpans(Class<T> clazz, final Editable editable, int start, int end, boolean isSort) {
+    public static <T> ArrayList<T> getFilteredSpans(final Class<T> clazz, final Editable editable, int start, int end, boolean isSort) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = editable.getSpans(start, end, clazz);
 
@@ -36,9 +39,15 @@ public abstract class SpanUtil {
                     if (result == 0) {
                         result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
                     }
-                    if (result == 0) {
+                    if (result == 0 && clazz == ParagraphStyle.class) {
                         if (o1 instanceof NestSpan && o2 instanceof NestSpan) {
                             result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
+                        } else {
+                            if (o1 instanceof NestSpan) {
+                                result = 1;
+                            } else if (o2 instanceof NestSpan) {
+                                result = -1;
+                            }
                         }
                     }
 
@@ -48,11 +57,11 @@ public abstract class SpanUtil {
         }
 
         for (T span : spans) {
-            ///忽略不是clazz本身（比如为clazz的子类）的span
+            ///如果clazz不是ParagraphStyle，则忽略不是clazz本身（比如为clazz的子类）的span
             ///getSpans()获取clazz类及其子类
             ///比如：HeadSpan extends AbsoluteSizeSpan：
             ///editable.getSpans(start, end, AbsoluteSizeSpan)也能获取到AbsoluteSizeSpan的子类HeadSpan
-            if (span.getClass() != clazz) {
+            if (clazz != ParagraphStyle.class && span.getClass() != clazz) {
 //                editable.removeSpan(span);///注意：千万不要remove！因为有可能是子类！
                 continue;
             }

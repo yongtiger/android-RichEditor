@@ -30,13 +30,21 @@
         <!--android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
 
     <TextView
-        android:id="@+id/tv_preview_text"
+        android:id="@+id/tv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="start"
         android:scrollbars="vertical"
         android:lineSpacingExtra="8dp"
         android:textSize="24sp"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/et_html"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:scrollbars="vertical"
         android:visibility="gone" />
 
 </LinearLayout>

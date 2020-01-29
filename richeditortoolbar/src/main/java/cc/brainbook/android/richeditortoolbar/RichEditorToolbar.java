@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
@@ -53,6 +54,7 @@ import cc.brainbook.android.richeditortoolbar.builder.LongClickLineDividerDialog
 import cc.brainbook.android.richeditortoolbar.builder.LongClickListSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickQuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.ClickURLSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
@@ -251,9 +253,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 //                editable.removeSpan(imageSpan);
                 editable.setSpan(imageSpan, spanStart, spanEnd, spanFlags);
 
-                if (!TextUtils.isEmpty(mTextViewPreviewText.getText())) {
-//                    mTextViewPreviewText.invalidateDrawable(drawable);//////??????无效！
-                    mTextViewPreviewText.invalidate();
+                if (!TextUtils.isEmpty(mTextViewPreview.getText())) {
+//                    mTextViewPreview.invalidateDrawable(drawable);//////??????无效！
+                    mTextViewPreview.invalidate();
                 }
             }
         } else {
@@ -372,25 +374,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    /* ---------------- ///[Preview] ---------------- */
-    private ImageView mImageViewPreview;
-
-    private TextView mTextViewPreviewText;
-    public void setPreviewText(TextView textView) {
-        mTextViewPreviewText = textView;
-    }
-
-    private boolean enableSelectionChange = true;
-    private void updatePreview() {
-        if (mTextViewPreviewText.getVisibility() == VISIBLE) {
-            ///[enableSelectionChange]禁止onSelectionChanged()
-            ///注意：mTextViewPreviewText.setText()会引起mRichEditText#onSelectionChanged()，从而造成无selection单光标时切换toolbar按钮失效！
-            enableSelectionChange = false;
-            mTextViewPreviewText.setText(mRichEditText.getText());
-            enableSelectionChange = true;
-        }
-    }
-
     /* ---------------- ///[清除样式] ---------------- */
     private ImageView mImageViewClearSpans;
 
@@ -488,6 +471,50 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///执行setSpanFromSpanBeans及后处理
             postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()));
         }
+    }
+
+    /* ---------------- ///[Preview] ---------------- */
+    private ImageView mImageViewPreview;
+
+    private TextView mTextViewPreview;
+    public void setPreview(TextView textViewPreview) {
+        mTextViewPreview = textViewPreview;
+    }
+
+    private boolean enableSelectionChange = true;
+    private void updatePreview() {
+        if (mTextViewPreview.getVisibility() == VISIBLE) {
+            ///[enableSelectionChange]禁止onSelectionChanged()
+            ///注意：mTextViewPreview.setText()会引起mRichEditText#onSelectionChanged()，从而造成无selection单光标时切换toolbar按钮失效！
+            enableSelectionChange = false;
+            mTextViewPreview.setText(mRichEditText.getText());
+            enableSelectionChange = true;
+        }
+    }
+
+    /* ---------------- ///[Html] ---------------- */
+    private ImageView mImageViewHtml;
+
+    private EditText mEditTextHtml;
+    public void setHtml(EditText editTextHtml) {
+        mEditTextHtml = editTextHtml;
+    }
+
+    private void setAllViewsEnabled(boolean enabled) {
+        for (View view : mClassMap.values()) {
+            if (view != null && view != mImageViewHtml) {
+                view.setEnabled(enabled);
+            }
+        }
+
+        mImageViewClearSpans.setEnabled(enabled);
+        mImageViewSaveDraft.setEnabled(enabled);
+        mImageViewRestoreDraft.setEnabled(enabled);
+        mImageViewClearDraft.setEnabled(enabled);
+        mImageViewUndo.setEnabled(enabled);
+        mImageViewRedo.setEnabled(enabled);
+        mImageViewSave.setEnabled(enabled);
+        mImageViewPreview.setEnabled(enabled);
     }
 
 
@@ -646,25 +673,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mClassMap.put(VideoSpan.class, mImageViewVideo);
         mClassMap.put(AudioSpan.class, mImageViewAudio);
         mClassMap.put(CustomImageSpan.class, mImageViewImage);
-
-        /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
-        mImageViewPreview.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setSelected(!view.isSelected());
-
-                if (view.isSelected()) {
-                    mRichEditText.setVisibility(GONE);
-                    mTextViewPreviewText.setVisibility(VISIBLE);
-                    updatePreview();
-                } else {
-                    mRichEditText.setVisibility(VISIBLE);
-                    mTextViewPreviewText.setVisibility(GONE);
-                    mTextViewPreviewText.setText(null);
-                }
-            }
-        });
 
         /* -------------- ///[清除样式] --------------- */
         mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
@@ -828,6 +836,54 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.resetSavedPosition();
                 mImageViewSave.setSelected(false);
                 mImageViewSave.setEnabled(false);
+            }
+        });
+
+        /* -------------- ///[Preview] --------------- */
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+        mImageViewPreview.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setSelected(!view.isSelected());
+
+                if (view.isSelected()) {
+                    mRichEditText.setVisibility(GONE);
+                    mTextViewPreview.setVisibility(VISIBLE);
+                    updatePreview();
+                } else {
+                    mRichEditText.setVisibility(VISIBLE);
+                    mTextViewPreview.setVisibility(GONE);
+                    mTextViewPreview.setText(null);
+                }
+            }
+        });
+
+        /* -------------- ///[Html] --------------- */
+        mImageViewHtml = (ImageView) findViewById(R.id.iv_html);
+        mImageViewHtml.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setSelected(!view.isSelected());
+
+                if (view.isSelected()) {
+                    setAllViewsEnabled(false);
+
+                    final String htmlString = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
+                    mEditTextHtml.setText(htmlString);
+
+                    mRichEditText.setVisibility(GONE);
+                    mTextViewPreview.setVisibility(GONE);
+                    mEditTextHtml.setVisibility(VISIBLE);
+                } else {
+                    setAllViewsEnabled(true);
+
+                    final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
+                    mRichEditText.setText(htmlSpanned);
+
+                    mRichEditText.setVisibility(VISIBLE);
+                    mTextViewPreview.setVisibility(GONE);
+                    mEditTextHtml.setVisibility(GONE);
+                }
             }
         });
     }
@@ -2251,7 +2307,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             ///先调整span的起止位置
             if (spanStart != start || spanEnd != end) {
-                editable.setSpan(span, start, end, getSpanFlag(clazz));
+                ///[FIX#当LineDivider起止位置不正确时，应删除！]
+                if (clazz == LineDividerSpan.class) {
+                    editable.removeSpan(span);
+                } else {
+                    editable.setSpan(span, start, end, getSpanFlag(clazz));
+                }
             }
 
             if (view != null && view.isSelected()) {
