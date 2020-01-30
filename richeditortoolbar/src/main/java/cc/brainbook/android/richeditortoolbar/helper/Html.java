@@ -326,8 +326,19 @@ public class Html {
 
                 handleParagraph(out, text, i, next, compareSpan == null || compareSpan instanceof NestSpan);
             } else {
+                next = text.getSpanEnd(nextParagraphStyleSpan);
+
                 if (nextParagraphStyleSpan instanceof CustomQuoteSpan) {
                     out.append("<blockquote>\n");
+                } else
+                if (nextParagraphStyleSpan instanceof AlignNormalSpan) {
+                    out.append("<div style=\"text-align:start;\">\n");
+                } else
+                if (nextParagraphStyleSpan instanceof AlignCenterSpan) {
+                    out.append("<div style=\"text-align:center;\">\n");
+                } else
+                if (nextParagraphStyleSpan instanceof AlignOppositeSpan) {
+                    out.append("<div style=\"text-align:end;\">\n");
                 } else
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("<h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">");
@@ -341,14 +352,17 @@ public class Html {
                 if (nextParagraphStyleSpan instanceof CustomQuoteSpan) {
                     out.append("</blockquote>\n");
                 } else
+                if (nextParagraphStyleSpan instanceof AlignNormalSpan
+                        || nextParagraphStyleSpan instanceof AlignCenterSpan
+                        || nextParagraphStyleSpan instanceof AlignOppositeSpan) {
+                    out.append("</div>");
+                } else
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("</h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">\n");
 //                } else
 //                if (nextParagraphStyleSpan instanceof LineDividerSpan) {
 //                    out.append("</hr>");  ///忽略输出"</hr>"
                 }
-
-                next = text.getSpanEnd(nextParagraphStyleSpan);
             }
 
             nextParagraphStyleSpan = getNextParagraphStyleSpan(text, next, compareSpan);

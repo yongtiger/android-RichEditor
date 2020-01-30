@@ -199,6 +199,9 @@ public abstract class RichEditorToolbarHelper {
     }
     public static boolean isNestParagraphStyle(Class clazz) {
         return clazz == CustomQuoteSpan.class
+                || clazz == AlignNormalSpan.class
+                || clazz == AlignCenterSpan.class
+                || clazz == AlignOppositeSpan.class
                 || clazz == ListSpan.class
                 || clazz == ListItemSpan.class;
     }

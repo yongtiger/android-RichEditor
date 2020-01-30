@@ -2115,10 +2115,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                         ///段落span（带初始化参数）：List
                         if (clazz == ListSpan.class) {
-                            ///[FIX#在已有ListSpan上多选时，需要按照ListItemSpan分割来创建new span]
+                            ///[FIX#在已有ListSpan上多选时，需要按照ListItemSpan等NestSpan分割来创建new span]
                             int next;
                             for (int i = newSpanStart; i < newSpanEnd; i = next) {
-                                next = editable.nextSpanTransition(i, newSpanEnd, ListItemSpan.class);
+                                next = editable.nextSpanTransition(i, newSpanEnd, NestSpan.class);
                                 createNewSpan(view, clazz, editable, i, next, null, parentSpan);
                             }
                         } else {
