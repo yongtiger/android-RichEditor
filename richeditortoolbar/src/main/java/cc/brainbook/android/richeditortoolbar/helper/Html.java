@@ -1229,11 +1229,11 @@ class HtmlToSpannedConverter implements ContentHandler {
             ///[UPGRADE#android.text.Html]
 //            setSpanFromMark(text, a, new AlignmentSpan.Standard(a.mAlignment));
             if (a.mAlignment == Layout.Alignment.ALIGN_NORMAL) {
-                setSpanFromMark(text, a, new AlignNormalSpan());
+                setSpanFromMark(text, a, new AlignNormalSpan(0));///////////？？？？？？？？
             } else if (a.mAlignment == Layout.Alignment.ALIGN_CENTER) {
-                setSpanFromMark(text, a, new AlignCenterSpan());
+                setSpanFromMark(text, a, new AlignCenterSpan(0));///////////？？？？？？？？
             } else if (a.mAlignment == Layout.Alignment.ALIGN_OPPOSITE) {
-                setSpanFromMark(text, a, new AlignOppositeSpan());
+                setSpanFromMark(text, a, new AlignOppositeSpan(0));///////////？？？？？？？？
             }
         }
     }

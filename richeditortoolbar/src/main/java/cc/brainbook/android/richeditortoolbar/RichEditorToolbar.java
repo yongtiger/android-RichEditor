@@ -20,6 +20,7 @@ import android.text.Selection;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ParagraphStyle;
 import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.util.Base64;
@@ -48,7 +49,6 @@ import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.builder.LongClickBulletSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickLeadingMarginSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickLineDividerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickListSpanDialogBuilder;
@@ -65,7 +65,6 @@ import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomBulletSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomForegroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomLeadingMarginSpan;
@@ -135,23 +134,30 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
 
-    /* ---------------- ///段落span（带参数）：Head ---------------- */
-    private TextView mTextViewHead;
+    /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
+    private ImageView mImageViewQuote;
+    private @ColorInt int mQuoteSpanColor = CustomQuoteSpan.STANDARD_COLOR;
+    private int mQuoteSpanStripWidth = CustomQuoteSpan.STANDARD_STRIPE_WIDTH_PX;
+    private int mQuoteSpanGapWidth = CustomQuoteSpan.STANDARD_GAP_WIDTH_PX;
 
     /* ---------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan ---------------- */
     private ImageView mImageViewAlignNormal;
     private ImageView mImageViewAlignCenter;
     private ImageView mImageViewAlignOpposite;
 
+    /* ---------------- ///段落span（带初始化参数）：List ---------------- */
+    private ImageView mImageViewList;
+    private int mIndicatorMargin = ListSpan.DEFAULT_INTENT;
+    private int mIndicatorWidth = ListItemSpan.DEFAULT_INDICATOR_WIDTH;
+    private int mIndicatorGapWidth = ListItemSpan.DEFAULT_INDICATOR_GAP_WIDTH;
+    private @ColorInt int mIndicatorColor = ListItemSpan.DEFAULT_INDICATOR_COLOR;
+
+    /* ---------------- ///段落span（带参数）：Head ---------------- */
+    private TextView mTextViewHead;
+
     /* ---------------- ///段落span（带初始化参数）：LeadingMargin ---------------- */
     private ImageView mImageViewLeadingMargin;
     private int mLeadingMarginSpanIndent = CustomLeadingMarginSpan.DEFAULT_INTENT;
-
-    /* ---------------- ///段落span（带初始化参数）：Bullet ---------------- */
-    private ImageView mImageViewBullet;
-    private @ColorInt int mBulletColor = CustomBulletSpan.STANDARD_COLOR;
-    private int mBulletSpanRadius = CustomBulletSpan.STANDARD_BULLET_RADIUS;
-    private int mBulletSpanGapWidth = CustomBulletSpan.STANDARD_GAP_WIDTH;
 
     /* ---------------- ///段落span：LineDivider ---------------- */
     private ImageView mImageViewLineDivider;
@@ -161,19 +167,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
         c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
     }
-
-    /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
-    private ImageView mImageViewQuote;
-    private @ColorInt int mQuoteSpanColor = CustomQuoteSpan.STANDARD_COLOR;
-    private int mQuoteSpanStripWidth = CustomQuoteSpan.STANDARD_STRIPE_WIDTH_PX;
-    private int mQuoteSpanGapWidth = CustomQuoteSpan.STANDARD_GAP_WIDTH_PX;
-
-    /* ---------------- ///段落span（带初始化参数）：List ---------------- */
-    private ImageView mImageViewList;
-    private int mIndicatorMargin = ListSpan.DEFAULT_INTENT;
-    private int mIndicatorWidth = ListItemSpan.DEFAULT_INDICATOR_WIDTH;
-    private int mIndicatorGapWidth = ListItemSpan.DEFAULT_INDICATOR_GAP_WIDTH;
-    private @ColorInt int mIndicatorColor = ListItemSpan.DEFAULT_INDICATOR_COLOR;
 
     /* ---------------- ///字符span：Bold、Italic ---------------- */
     private ImageView mImageViewBold;
@@ -547,10 +540,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
         LayoutInflater.from(mContext).inflate(R.layout.layout_tool_bar, this, true);
 
 
-        /* -------------- ///段落span（带参数）：Head --------------- */
-        mTextViewHead = (TextView) findViewById(R.id.tv_head);
-        mTextViewHead.setOnClickListener(this);
-        mClassMap.put(HeadSpan.class, mTextViewHead);
+        /* -------------- ///段落span（带初始化参数）：Quote --------------- */
+        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
+        mImageViewQuote.setOnClickListener(this);
+        mImageViewQuote.setOnLongClickListener(this);
+        mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
 
         /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
         mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
@@ -565,30 +559,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewAlignOpposite.setOnClickListener(this);
         mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
 
-        /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
-        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
-        mImageViewLeadingMargin.setOnClickListener(this);
-        mImageViewLeadingMargin.setOnLongClickListener(this);
-        mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
-
-        /* -------------- ///段落span（带初始化参数）：Bullet --------------- */
-        mImageViewBullet = (ImageView) findViewById(R.id.iv_bullet);
-        mImageViewBullet.setOnClickListener(this);
-        mImageViewBullet.setOnLongClickListener(this);
-        mClassMap.put(CustomBulletSpan.class, mImageViewBullet);
-
-        /* -------------- ///段落span：LineDivider --------------- */
-        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
-        mImageViewLineDivider.setOnClickListener(this);
-        mImageViewLineDivider.setOnLongClickListener(this);
-        mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
-
-        /* -------------- ///段落span（带初始化参数）：Quote --------------- */
-        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
-        mImageViewQuote.setOnClickListener(this);
-        mImageViewQuote.setOnLongClickListener(this);
-        mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
-
         /* -------------- ///段落span（带初始化参数）：List --------------- */
         mImageViewList = (ImageView) findViewById(R.id.iv_list);
         mImageViewList.setOnClickListener(this);
@@ -597,6 +567,23 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
         ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
         mClassMap.put(ListItemSpan.class, null);
+
+        /* -------------- ///段落span（带参数）：Head --------------- */
+        mTextViewHead = (TextView) findViewById(R.id.tv_head);
+        mTextViewHead.setOnClickListener(this);
+        mClassMap.put(HeadSpan.class, mTextViewHead);
+
+        /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
+        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
+        mImageViewLeadingMargin.setOnClickListener(this);
+        mImageViewLeadingMargin.setOnLongClickListener(this);
+        mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
+
+        /* -------------- ///段落span：LineDivider --------------- */
+        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
+        mImageViewLineDivider.setOnClickListener(this);
+        mImageViewLineDivider.setOnLongClickListener(this);
+        mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
 
         /* -------------- ///字符span：Bold、Italic --------------- */
         mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
@@ -900,24 +887,22 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     private int getActionId(View view) {
-        if (view == mTextViewHead) {
-            return UndoRedoHelper.CHANGE_HEAD_SPAN_ACTION;
+        if (view == mImageViewQuote) {
+            return UndoRedoHelper.CHANGE_QUOTE_SPAN_ACTION;
         } else if (view == mImageViewAlignNormal) {
             return UndoRedoHelper.CHANGE_ALIGN_NORMAL_SPAN_ACTION;
         } else if (view == mImageViewAlignCenter) {
             return UndoRedoHelper.CHANGE_ALIGN_CENTER_SPAN_ACTION;
         } else if (view == mImageViewAlignOpposite) {
             return UndoRedoHelper.CHANGE_ALIGN_OPPOSITE_SPAN_ACTION;
-        } else if (view == mImageViewLeadingMargin) {
-            return UndoRedoHelper.CHANGE_LEADING_MARGIN_SPAN_ACTION;
-        } else if (view == mImageViewBullet) {
-            return UndoRedoHelper.CHANGE_BULLET_SPAN_ACTION;
-        } else if (view == mImageViewLineDivider) {
-            return UndoRedoHelper.CHANGE_LINE_DIVIDER_SPAN_ACTION;
-        } else if (view == mImageViewQuote) {
-            return UndoRedoHelper.CHANGE_QUOTE_SPAN_ACTION;
         } else if (view == mImageViewList) {
             return UndoRedoHelper.CHANGE_LIST_SPAN_ACTION;
+        } else if (view == mTextViewHead) {
+            return UndoRedoHelper.CHANGE_HEAD_SPAN_ACTION;
+        } else if (view == mImageViewLeadingMargin) {
+            return UndoRedoHelper.CHANGE_LEADING_MARGIN_SPAN_ACTION;
+        } else if (view == mImageViewLineDivider) {
+            return UndoRedoHelper.CHANGE_LINE_DIVIDER_SPAN_ACTION;
         }
 
         else if (view == mImageViewBold) {
@@ -970,81 +955,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int selectionStart = Selection.getSelectionStart(editable);
             final int selectionEnd = Selection.getSelectionEnd(editable);
 
-            ///段落span（带参数）：Head
-            if (view == mTextViewHead) {
-                ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
-
-                new AlertDialog.Builder(mContext)
-                        .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///当view text不为用户选择参数时更新view text
-                                ///注意：如果相同则不更新！提高效率
-                                if (view.getTag() == null || which != (int) view.getTag()) {
-                                    ///如果view未选中则选中view
-                                    ///注意：如果view已经选中了则不再进行view选中操作！提高效率
-                                    if (!view.isSelected()) {
-                                        view.setSelected(true);
-                                    }
-
-                                    ///保存参数到view tag
-                                    view.setTag(which);
-
-                                    ///改变selection的span
-                                    applyParagraphStyleSpans(view, editable);
-
-                                    ///[Preview]
-                                    updatePreview();
-
-                                    ((TextView) view).setText(HeadSpan.HEADING_LABELS[which]);
-                                }
-
-                                dialog.dismiss();
-                            }
-                        })
-                        ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///如果view选中则未选中view
-                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
-                                if (view.isSelected()) {
-                                    view.setSelected(false);
-                                }
-
-                                ///改变selection的span
-                                applyParagraphStyleSpans(view, editable);
-
-                                ///清空view tag
-                                view.setTag(null);
-
-                                ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.head));
-
-                                ///[Preview]
-                                updatePreview();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-
-                return;
-            }
-
-            ///段落span：LineDivider
-            else if (view == mImageViewLineDivider) {
-                ///当下列情况，不能点击LineDivider：
-                ///不是单光标；或光标处于文本尾部；或光标处字符不为'\n'；或光标前一个字符不为'\n'
-                if (selectionStart != selectionEnd || selectionStart == editable.length()
-                        || editable.charAt(selectionStart) != '\n'
-                        || selectionStart != 0 && editable.charAt(selectionStart - 1) != '\n') {
-                    return;
-                }
-            }
-
             ///段落span（带初始化参数）：Quote
-            else if (view == mImageViewQuote) {
+            if (view == mImageViewQuote) {
                 new AlertDialog.Builder(mContext)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
@@ -1182,6 +1094,79 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 switchIsReversed.setChecked(isReversed);
 
                 return;
+            }
+
+            ///段落span（带参数）：Head
+            else if (view == mTextViewHead) {
+                ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
+                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
+
+                new AlertDialog.Builder(mContext)
+                        .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///当view text不为用户选择参数时更新view text
+                                ///注意：如果相同则不更新！提高效率
+                                if (view.getTag() == null || which != (int) view.getTag()) {
+                                    ///如果view未选中则选中view
+                                    ///注意：如果view已经选中了则不再进行view选中操作！提高效率
+                                    if (!view.isSelected()) {
+                                        view.setSelected(true);
+                                    }
+
+                                    ///保存参数到view tag
+                                    view.setTag(which);
+
+                                    ///改变selection的span
+                                    applyParagraphStyleSpans(view, editable);
+
+                                    ///[Preview]
+                                    updatePreview();
+
+                                    ((TextView) view).setText(HeadSpan.HEADING_LABELS[which]);
+                                }
+
+                                dialog.dismiss();
+                            }
+                        })
+                        ///清除样式
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///如果view选中则未选中view
+                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
+                                if (view.isSelected()) {
+                                    view.setSelected(false);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///清空view tag
+                                view.setTag(null);
+
+                                ///更新view text
+                                ((TextView) view).setText(mContext.getString(R.string.head));
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+
+                return;
+            }
+
+            ///段落span：LineDivider
+            else if (view == mImageViewLineDivider) {
+                ///当下列情况，不能点击LineDivider：
+                ///不是单光标；或光标处于文本尾部；或光标处字符不为'\n'；或光标前一个字符不为'\n'
+                if (selectionStart != selectionEnd || selectionStart == editable.length()
+                        || editable.charAt(selectionStart) != '\n'
+                        || selectionStart != 0 && editable.charAt(selectionStart - 1) != '\n') {
+                    return;
+                }
             }
 
             view.setSelected(!view.isSelected());
@@ -1687,62 +1672,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     @Override
     public boolean onLongClick(final View view) {
-        ///段落span（带初始化参数）：LeadingMargin
-        if (view == mImageViewLeadingMargin) {
-            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int indent) {
-                            mLeadingMarginSpanIndent = indent;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mLeadingMarginSpanIndent)
-                    .build().show();
-
-            return true;
-        }
-
-        ///段落span（带初始化参数）：Bullet
-        else if (view == mImageViewBullet) {
-            ((LongClickBulletSpanDialogBuilder) LongClickBulletSpanDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickBulletSpanDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
-                            mBulletColor = selectedColor;
-                            mBulletSpanRadius = stripWidth;
-                            mBulletSpanGapWidth = gapWidth;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mBulletColor, mBulletSpanRadius, mBulletSpanGapWidth)
-                    .build().show();
-
-            return true;
-        }
-
-        ///段落span（带初始化参数）：LineDivider
-        else if (view == mImageViewLineDivider) {
-            ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int marginTop, int marginBottom) {
-                            mLineDividerSpanMarginTop = marginTop;
-                            mLineDividerSpanMarginBottom = marginBottom;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
-                    .build().show();
-
-            return true;
-        }
 
         ///段落span（带初始化参数）：Quote
-        else if (view == mImageViewQuote) {
+        if (view == mImageViewQuote) {
             ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
@@ -1775,6 +1707,41 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor)
+                    .build().show();
+
+            return true;
+        }
+
+        ///段落span（带初始化参数）：LeadingMargin
+        else if (view == mImageViewLeadingMargin) {
+            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
+                    .with(mContext)
+                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int indent) {
+                            mLeadingMarginSpanIndent = indent;
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null))
+                    .initial(mLeadingMarginSpanIndent)
+                    .build().show();
+
+            return true;
+        }
+
+        ///段落span（带初始化参数）：LineDivider
+        else if (view == mImageViewLineDivider) {
+            ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
+                    .with(mContext)
+                    .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int marginTop, int marginBottom) {
+                            mLineDividerSpanMarginTop = marginTop;
+                            mLineDividerSpanMarginBottom = marginBottom;
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null))
+                    .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
                     .build().show();
 
             return true;
@@ -2031,17 +1998,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
             int start, int end, int firstParagraphStart, int lastParagraphEnd, boolean isApply, ArrayList<ListSpan> updateListSpans) {
         if (isApply) {
             if (start == end) {
-                final T parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
+                final T parentSpan = getParentSpan(view, clazz, editable, start, end, null, false, 0);
                 if (parentSpan == null) {
                     if (view != null && view.isSelected()) {
-                        final Object newSpan = createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
-
-                        ///段落span（带初始化参数）：List
-                        if (clazz == ListSpan.class) {
-                            createChildrenListItemSpans(editable, (ListSpan) newSpan, firstParagraphStart, lastParagraphEnd,
-                                    mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
-                        }
-
+                        createNewSpan(view, clazz, editable, firstParagraphStart, lastParagraphEnd, null, null);
                     }
                 } else {
                     if (view != null && view.isSelected()) {
@@ -2152,12 +2112,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
 
                     if (newSpanStart < newSpanEnd) {
-                        final Object newSpan = createNewSpan(view, clazz, editable, newSpanStart, newSpanEnd, null, parentSpan);
 
                         ///段落span（带初始化参数）：List
                         if (clazz == ListSpan.class) {
-                            createChildrenListItemSpans(editable, (ListSpan) newSpan, newSpanStart, newSpanEnd,
-                                    mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+                            ///[FIX#在已有ListSpan上多选时，需要按照ListItemSpan分割来创建new span]
+                            int next;
+                            for (int i = newSpanStart; i < newSpanEnd; i = next) {
+                                next = editable.nextSpanTransition(i, newSpanEnd, ListItemSpan.class);
+                                createNewSpan(view, clazz, editable, i, next, null, parentSpan);
+                            }
+                        } else {
+                            createNewSpan(view, clazz, editable, newSpanStart, newSpanEnd, null, parentSpan);
                         }
 
                     }
@@ -2216,7 +2181,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     ///当粘贴文本包含多级NestSpan时，保存首次获取的ParentSpan
                     if (!hasDoneGetParentSpan) {
                         hasDoneGetParentSpan = true;
-                        parentSpan = getParentSpan(view, clazz, editable, start, end, null, false);
+                        parentSpan = getParentSpan(view, clazz, editable, start, end, null, false, 0);
                     }
                     ///如果parentSpan不为null，则更新span把nesting level增加parentSpan.getNestingLevel()
                     if (parentSpan != null) {
@@ -2625,6 +2590,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
             newSpan = new CustomQuoteSpan(nestingLevel, mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth);
         }
 
+        ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
+        else if (clazz == AlignNormalSpan.class || clazz == AlignCenterSpan.class || clazz == AlignOppositeSpan.class) {
+            int nestingLevel = 1;
+            if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
+                nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+            }
+            if (clazz == AlignNormalSpan.class) {
+                newSpan = new AlignNormalSpan(nestingLevel);
+            } else if (clazz == AlignCenterSpan.class) {
+                newSpan = new AlignCenterSpan(nestingLevel);
+            } else {
+                newSpan = new AlignOppositeSpan(nestingLevel);
+            }
+        }
+
         ///段落span（带初始化参数）：List
         else if (clazz == ListSpan.class) {
             if (compareSpan != null) {
@@ -2662,13 +2642,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         else if (clazz == CustomLeadingMarginSpan.class) {
             newSpan = new CustomLeadingMarginSpan(mLeadingMarginSpanIndent);
 //            newSpan = new LeadingMarginSpan.LeadingMarginSpan2.Standard(first, rest); //////??????
-        }
-
-        ///段落span（带初始化参数）：Bullet
-        else if (clazz == CustomBulletSpan.class) {
-//            newSpan = new BulletSpan(Color.GREEN);
-//            newSpan = new BulletSpan(40, Color.GREEN, 20); ///Call requires API level 28 (current min is 15)
-            newSpan = new CustomBulletSpan(mBulletSpanGapWidth, mBulletColor, mBulletSpanRadius);
         }
 
         ///段落span：LineDivider
@@ -2757,6 +2730,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         if (newSpan != null) {
             editable.setSpan(newSpan, start, end, getSpanFlag(clazz));
+
+            ///段落span（带初始化参数）：List
+            if (clazz == ListSpan.class) {
+                createChildrenListItemSpans(editable, (ListSpan) newSpan, start, end,
+                        mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
+            }
+
         }
 
         return newSpan;

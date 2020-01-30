@@ -5,9 +5,13 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class AlignNormalSpan implements AlignmentSpan, Parcelable, IParagraphStyle {
+public class AlignNormalSpan extends NestSpan implements AlignmentSpan, Parcelable, INestParagraphStyle {
+	public AlignNormalSpan(int nestingLevel) {
+		super(nestingLevel);
+	}
+
 
 	@Override
 	public Alignment getAlignment() {
@@ -17,7 +21,9 @@ public class AlignNormalSpan implements AlignmentSpan, Parcelable, IParagraphSty
 	public static final Creator<AlignNormalSpan> CREATOR = new Creator<AlignNormalSpan>() {
 		@Override
 		public AlignNormalSpan createFromParcel(Parcel in) {
-			return new AlignNormalSpan();
+			final int nestingLevel = in.readInt();
+
+			return new AlignNormalSpan(nestingLevel);
 		}
 
 		@Override
@@ -32,6 +38,8 @@ public class AlignNormalSpan implements AlignmentSpan, Parcelable, IParagraphSty
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {}
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(getNestingLevel());
+	}
 
 }

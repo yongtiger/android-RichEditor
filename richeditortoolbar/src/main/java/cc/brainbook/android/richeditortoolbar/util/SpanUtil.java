@@ -13,8 +13,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
-import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 public abstract class SpanUtil {
@@ -31,6 +29,7 @@ public abstract class SpanUtil {
             ///https://www.jianshu.com/p/57783747e530
             ///注意：按照spanEnd升序！考虑了span相互交叉（spanStart于spanEnd顺序相同）、嵌套（spanStart于spanEnd顺序相反）等各种关系
             ///嵌套时最里面的span顺序优先；如果spanEnd相同则按照spanStart倒序；如果仍然相同且为NestSpan，则按照其nesting level倒序
+            ///[UPGRADE#android.text.Html#ParagraphStyle]
             Arrays.sort(spans, new Comparator<T>() {
                 @Override
                 public int compare(T o1, T o2) {
@@ -39,10 +38,10 @@ public abstract class SpanUtil {
                     if (result == 0) {
                         result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
                     }
-                    if (result == 0 && clazz == ParagraphStyle.class) {
+                    if (result == 0) {
                         if (o1 instanceof NestSpan && o2 instanceof NestSpan) {
                             result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
-                        } else {
+                        } else if (clazz == ParagraphStyle.class) {
                             if (o1 instanceof NestSpan) {
                                 result = 1;
                             } else if (o2 instanceof NestSpan) {
@@ -57,7 +56,7 @@ public abstract class SpanUtil {
         }
 
         for (T span : spans) {
-            ///如果clazz不是ParagraphStyle，则忽略不是clazz本身（比如为clazz的子类）的span
+            ///[UPGRADE#android.text.Html#ParagraphStyle]如果clazz不是ParagraphStyle，则忽略不是clazz本身（比如为clazz的子类）的span
             ///getSpans()获取clazz类及其子类
             ///比如：HeadSpan extends AbsoluteSizeSpan：
             ///editable.getSpans(start, end, AbsoluteSizeSpan)也能获取到AbsoluteSizeSpan的子类HeadSpan

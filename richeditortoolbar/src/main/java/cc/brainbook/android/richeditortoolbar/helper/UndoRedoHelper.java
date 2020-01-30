@@ -27,7 +27,6 @@ public class UndoRedoHelper {
     public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 14;
     public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 15;
     public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 16;
-    public static final int CHANGE_BULLET_SPAN_ACTION = 17;
     public static final int CHANGE_LINE_DIVIDER_SPAN_ACTION = 18;
 
     public static final int CHANGE_BOLD_SPAN_ACTION = 20;
@@ -98,8 +97,6 @@ public class UndoRedoHelper {
                 return "change align opposite span";
             case CHANGE_LEADING_MARGIN_SPAN_ACTION:
                 return "change leading margin span";
-            case CHANGE_BULLET_SPAN_ACTION:
-                return "change bullet span";
             case CHANGE_LINE_DIVIDER_SPAN_ACTION:
                 return "change line divider span";
 

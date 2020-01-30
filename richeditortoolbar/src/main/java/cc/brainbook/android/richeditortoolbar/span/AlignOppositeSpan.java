@@ -5,9 +5,13 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class AlignOppositeSpan implements AlignmentSpan, Parcelable, IParagraphStyle {
+public class AlignOppositeSpan extends NestSpan implements AlignmentSpan, Parcelable, INestParagraphStyle {
+	public AlignOppositeSpan(int nestingLevel) {
+		super(nestingLevel);
+	}
+
 
 	@Override
 	public Alignment getAlignment() {
@@ -17,7 +21,9 @@ public class AlignOppositeSpan implements AlignmentSpan, Parcelable, IParagraphS
 	public static final Creator<AlignOppositeSpan> CREATOR = new Creator<AlignOppositeSpan>() {
 		@Override
 		public AlignOppositeSpan createFromParcel(Parcel in) {
-			return new AlignOppositeSpan();
+			final int nestingLevel = in.readInt();
+
+			return new AlignOppositeSpan(nestingLevel);
 		}
 
 		@Override
@@ -32,6 +38,8 @@ public class AlignOppositeSpan implements AlignmentSpan, Parcelable, IParagraphS
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {}
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(getNestingLevel());
+	}
 
 }
