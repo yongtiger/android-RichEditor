@@ -58,6 +58,7 @@ import java.util.regex.Pattern;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
+import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
@@ -78,6 +79,7 @@ import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_DECIMAL;
@@ -740,7 +742,7 @@ public class Html {
                     }
 
                     continue;
-                }
+                } else
                 if (style[j] instanceof CustomRelativeSizeSpan) {
                     float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
                     if (sizeEm == 1.25f) {
@@ -751,7 +753,7 @@ public class Html {
                         out.append(String.format("<span style=\"font-size:%.2fem;\">", sizeEm));
                     }
                     continue;
-                }
+                } else
 
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
@@ -762,7 +764,7 @@ public class Html {
                     if ((s & Typeface.ITALIC) != 0) {
                         out.append("<i>");
                     }
-                }
+                } else
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof TypefaceSpan) {
 //                    String s = ((TypefaceSpan) style[j]).getFamily();
@@ -774,35 +776,46 @@ public class Html {
 
                 if (style[j] instanceof SuperscriptSpan) {
                     out.append("<sup>");
-                }
+                } else
                 if (style[j] instanceof SubscriptSpan) {
                     out.append("<sub>");
-                }
+                } else
                 if (style[j] instanceof UnderlineSpan) {
                     out.append("<u>");
-                }
+                } else
 
                 if (style[j] instanceof StrikethroughSpan) {
                     ///[UPGRADE#android.text.Html]
 //                    out.append("<span style=\"text-decoration:line-through;\">");
                     out.append("<strike>");
-                }
+                } else
 
                 if (style[j] instanceof URLSpan) {
                     out.append("<a href=\"");
                     out.append(((URLSpan) style[j]).getURL());
                     out.append("\">");
-                }
+                } else
+                
                 ///[UPGRADE#android.text.Html]
-//                if (style[j] instanceof ImageSpan) {
                 if (style[j] instanceof CustomImageSpan) {
-                    out.append("<img src=\"");
-                    out.append(((CustomImageSpan) style[j]).getSource());
-                    out.append("\">");
+                    if (style[j] instanceof VideoSpan) {
+                        out.append("<video src=\"").append(((VideoSpan) style[j]).getUri()).append("\"");
+                        out.append(" img=\"").append(((VideoSpan) style[j]).getSource()).append("\"");
+                    } else if (style[j] instanceof AudioSpan) {
+                        out.append("<audio src=\"").append(((AudioSpan) style[j]).getUri()).append("\"");
+                        out.append(" img=\"").append(((AudioSpan) style[j]).getSource()).append("\"");
+                    } else {
+                        out.append("<img src=\"").append(((CustomImageSpan) style[j]).getSource()).append("\"");
+                    }
+                    out.append(" width=\"").append(((CustomImageSpan) style[j]).getDrawableWidth()).append("\"");
+                    out.append(" height=\"").append(((CustomImageSpan) style[j]).getDrawableHeight()).append("\"");
+                    out.append(" align=\"").append(((CustomImageSpan) style[j]).getVerticalAlignment()).append("\"");
+                    out.append(">");
 
                     // Don't output the dummy character underlying the image.
                     i = next;
-                }
+                } else
+
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof AbsoluteSizeSpan) {
                 if (style[j] instanceof CustomAbsoluteSizeSpan) {
@@ -818,7 +831,7 @@ public class Html {
 
                     // px in CSS is the equivalance of dip in Android
                     out.append(String.format("<span style=\"font-size:%.0fpx\";>", sizeDip));
-                }
+                } else
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof RelativeSizeSpan) {
 //                    float sizeEm = ((RelativeSizeSpan) style[j]).getSizeChange();
@@ -828,7 +841,7 @@ public class Html {
                 if (style[j] instanceof CustomForegroundColorSpan) {
                     int color = ((CustomForegroundColorSpan) style[j]).getForegroundColor();
                     out.append(String.format("<span style=\"color:#%06X;\">", 0xFFFFFF & color));
-                }
+                } else
 //                if (style[j] instanceof BackgroundColorSpan) {
                 if (style[j] instanceof CustomBackgroundColorSpan) {
                     int color = ((CustomBackgroundColorSpan) style[j]).getBackgroundColor();
@@ -851,7 +864,7 @@ public class Html {
                     }
 
                     continue;
-                }
+                } else
                 if (style[j] instanceof CustomRelativeSizeSpan) {
                     float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
                     if (sizeEm == 1.25f) {
@@ -861,17 +874,17 @@ public class Html {
                     } else {
                         out.append("</span>");
                     }
-                }
+                } else
 
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof BackgroundColorSpan) {
                 if (style[j] instanceof CustomBackgroundColorSpan) {
                     out.append("</span>");
-                }
+                } else
 //                if (style[j] instanceof ForegroundColorSpan) {
                 if (style[j] instanceof CustomForegroundColorSpan) {
                     out.append("</span>");
-                }
+                } else
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof RelativeSizeSpan) {
 //                    out.append("</span>");
@@ -880,25 +893,25 @@ public class Html {
 //                if (style[j] instanceof AbsoluteSizeSpan) {
                 if (style[j] instanceof CustomAbsoluteSizeSpan) {
                     out.append("</span>");
-                }
+                } else
                 if (style[j] instanceof URLSpan) {
                     out.append("</a>");
-                }
+                } else
                 ///[UPGRADE#android.text.Html]
                 if (style[j] instanceof StrikethroughSpan) {
 //                    out.append("</span>");
                     out.append("</strike>");
-                }
+                } else
                 if (style[j] instanceof UnderlineSpan) {
                     out.append("</u>");
-                }
+                } else
                 if (style[j] instanceof SubscriptSpan) {
                     out.append("</sub>");
-                }
+                } else
 
                 if (style[j] instanceof SuperscriptSpan) {
                     out.append("</sup>");
-                }
+                } else
                 ///[UPGRADE#android.text.Html]
 //                if (style[j] instanceof TypefaceSpan) {
 //                    String s = ((TypefaceSpan) style[j]).getFamily();
