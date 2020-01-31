@@ -55,29 +55,27 @@
 
     <integer-array name="list_type_ids">
         <item name="unordered_empty">0</item>
+        <item name="unordered_disc">1</item>
         <item name="unordered_circle">1</item>
-        <item name="unordered_square">2</item>
-        <item name="unordered_hollow_circle">11</item>
-        <item name="unordered_hollow_square">12</item>
-        <item name="ordered_letter">-1</item>
-        <item name="ordered_number">-2</item>
-        <item name="ordered_roman_number">-3</item>
-        <item name="ordered_quoted_letter">-11</item>
-        <item name="ordered_quoted_number">-12</item>
-        <item name="ordered_quoted_roman_number">-13</item>
+        <item name="unordered_square">3</item>
+
+        <item name="ordered_decimal">-1</item>
+        <item name="ordered_lower latin">-2</item>
+        <item name="ordered_upper latin">-3</item>
+        <item name="ordered_lower roman">-4</item>
+        <item name="ordered_upper roman">-5</item>
     </integer-array>
     <string-array name="list_type_labels">
-        <item>Unordered empty</item>
-        <item>● Unordered circle</item>
+        <item>Unordered none</item>
+        <item>● Unordered disc</item>
+        <item>○ Unordered circle</item>
         <item>■ Unordered square</item>
-        <item>○ Unordered hollow circle</item>
-        <item>□ Unordered hollow square</item>
-        <item>a. Ordered letter</item>
-        <item>1. Ordered number</item>
-        <item>I. Ordered roman number</item>
-        <item>a) Ordered quoted letter</item>
-        <item>1) Ordered quoted number</item>
-        <item>I) Ordered quoted roman number</item>
+
+        <item>1. Ordered decimal</item>
+        <item>a. Ordered lower latin</item>
+        <item>A. Ordered upper latin</item>
+        <item>i. Ordered lower roman</item>
+        <item>I. Ordered upper roman</item>
     </string-array>
     <integer name="default_list_type_id">1</integer>
 

@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 
 public abstract class SpanUtil {
@@ -41,6 +43,14 @@ public abstract class SpanUtil {
                     if (result == 0) {
                         if (o1 instanceof NestSpan && o2 instanceof NestSpan) {
                             result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
+
+                            if (result == 0) {
+                                if (o1 instanceof ListSpan && o2 instanceof ListItemSpan) {
+                                    result = 1;
+                                } else if (o1 instanceof ListItemSpan && o2 instanceof ListSpan) {
+                                    result = -1;
+                                }
+                            }
                         } else if (clazz == ParagraphStyle.class) {
                             if (o1 instanceof NestSpan) {
                                 result = 1;

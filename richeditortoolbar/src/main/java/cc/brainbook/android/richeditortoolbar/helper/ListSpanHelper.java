@@ -12,24 +12,22 @@ import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHel
 
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
 ///Unicode在线转换工具：http://tool.chinaz.com/tools/unicode.aspx, http://www.jsons.cn/unicode/
+///https://html.spec.whatwg.org/multipage/grouping-content.html#attr-ol-type
 public class ListSpanHelper {
-    public static final int LIST_TYPE_UNORDERED_EMPTY = 0;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_EMPTY = "";
-    public static final int LIST_TYPE_UNORDERED_CIRCLE = 1;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE = "\u25cf";
-    public static final int LIST_TYPE_UNORDERED_SQUARE = 2;
+    public static final int LIST_TYPE_UNORDERED_NONE = 0;
+    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_NONE = "";
+    public static final int LIST_TYPE_UNORDERED_DISC = 1;
+    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_DISC = "\u25cf";
+    public static final int LIST_TYPE_UNORDERED_CIRCLE = 2;
+    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE = "\u25cb";
+    public static final int LIST_TYPE_UNORDERED_SQUARE = 3;
     public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE = "\u25a0";
-    public static final int LIST_TYPE_UNORDERED_HOLLOW_CIRCLE = 11;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_CIRCLE = "\u25cb";
-    public static final int LIST_TYPE_UNORDERED_HOLLOW_SQUARE = 12;
-    public static final String INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_SQUARE = "\u25a1";
     /// others ...
-    public static final int LIST_TYPE_ORDERED_LETTER = -1;  ///最大26
-    public static final int LIST_TYPE_ORDERED_NUMBER = -2;  ///无限
-    public static final int LIST_TYPE_ORDERED_ROMAN_NUMBER = -3;    ///最大3999
-    public static final int LIST_TYPE_ORDERED_QUOTED_LETTER = -11;
-    public static final int LIST_TYPE_ORDERED_QUOTED_NUMBER = -12;
-    public static final int LIST_TYPE_ORDERED_QUOTED_ROMAN_NUMBER = -13;
+    public static final int LIST_TYPE_ORDERED_DECIMAL = -1;  ///无限
+    public static final int LIST_TYPE_ORDERED_LOWER_LATIN = -2;  ///最大26
+    public static final int LIST_TYPE_ORDERED_UPPER_LATIN = -3;  ///最大26
+    public static final int LIST_TYPE_ORDERED_LOWER_ROMAN = -4;    ///最大3999
+    public static final int LIST_TYPE_ORDERED_UPPER_ROMAN = -5;    ///最大3999
     /// others ...
 
 
@@ -39,29 +37,26 @@ public class ListSpanHelper {
 
     public static String getIndicatorText(int listType, int orderIndex) {
         switch (listType) {
+            case LIST_TYPE_UNORDERED_DISC:
+                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_DISC;
             case LIST_TYPE_UNORDERED_CIRCLE:
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_CIRCLE;
             case LIST_TYPE_UNORDERED_SQUARE:
                 return INDICATOR_TEXT_LIST_TYPE_UNORDERED_SQUARE;
-            case LIST_TYPE_UNORDERED_HOLLOW_CIRCLE:
-                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_CIRCLE;
-            case LIST_TYPE_UNORDERED_HOLLOW_SQUARE:
-                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_HOLLOW_SQUARE;
 
-            case LIST_TYPE_ORDERED_LETTER:
-                return getLetterIndicatorTextByIndex(orderIndex) + ".";
-            case LIST_TYPE_ORDERED_NUMBER:
+            case LIST_TYPE_ORDERED_DECIMAL:
                 return orderIndex + ".";
-            case LIST_TYPE_ORDERED_ROMAN_NUMBER:
+            case LIST_TYPE_ORDERED_LOWER_LATIN:
+                return getLetterIndicatorTextByIndex(orderIndex) + ".";
+            case LIST_TYPE_ORDERED_UPPER_LATIN:
+                return getLetterIndicatorTextByIndex(orderIndex).toUpperCase() + ".";
+            case LIST_TYPE_ORDERED_LOWER_ROMAN:
+                return getRomanLetterIndicatorTextByIndex(orderIndex).toLowerCase() + ".";
+            case LIST_TYPE_ORDERED_UPPER_ROMAN:
                 return getRomanLetterIndicatorTextByIndex(orderIndex) + ".";
-            case LIST_TYPE_ORDERED_QUOTED_LETTER:
-                return getLetterIndicatorTextByIndex(orderIndex) + ")";
-            case LIST_TYPE_ORDERED_QUOTED_NUMBER:
-                return orderIndex + ")";
-            case LIST_TYPE_ORDERED_QUOTED_ROMAN_NUMBER:
-                return getRomanLetterIndicatorTextByIndex(orderIndex) + ")";
+
             default:
-                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_EMPTY;
+                return INDICATOR_TEXT_LIST_TYPE_UNORDERED_NONE;
         }
     }
 

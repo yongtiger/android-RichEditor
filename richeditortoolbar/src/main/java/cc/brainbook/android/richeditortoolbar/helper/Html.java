@@ -64,6 +64,7 @@ import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomForegroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.CustomLeadingMarginSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomRelativeSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomStrikethroughSpan;
@@ -74,9 +75,17 @@ import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
+
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_LATIN;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_ROMAN;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_DISC;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
 /**
  * This class processes HTML strings into displayable styled text.
@@ -317,14 +326,15 @@ public class Html {
             end = text.getSpanEnd(compareSpan);
         }
 
-        ParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, start, compareSpan);
-
         int next;
         for (int i = start; i < end; i = next) {
+            final ParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, i, compareSpan);
+
             if (nextParagraphStyleSpan == null) {
                 next = text.nextSpanTransition(i, end, ParagraphStyle.class);
 
-                handleParagraph(out, text, i, next, compareSpan == null || compareSpan instanceof NestSpan);
+                handleParagraph(out, text, i, next, compareSpan == null
+                        || compareSpan instanceof NestSpan && !(compareSpan instanceof ListItemSpan));
             } else {
                 next = text.getSpanEnd(nextParagraphStyleSpan);
 
@@ -340,11 +350,56 @@ public class Html {
                 if (nextParagraphStyleSpan instanceof AlignOppositeSpan) {
                     out.append("<div style=\"text-align:end;\">\n");
                 } else
+                if (nextParagraphStyleSpan instanceof ListSpan) {
+                    final int listStart = ((ListSpan) nextParagraphStyleSpan).getStart();
+                    final boolean isReversed = ((ListSpan) nextParagraphStyleSpan).isReversed();
+                    final int listType = ((ListSpan) nextParagraphStyleSpan).getListType();
+
+                    if (isListTypeOrdered(listType)) {
+                        out.append("<ol start=\"").append(listStart).append("\"");
+
+                        if (isReversed) {
+                            out.append(" reversed");
+                        }
+
+                        if (listType == LIST_TYPE_ORDERED_LOWER_LATIN) {
+                            out.append(" type=\"a\"");
+                        } else if (listType == LIST_TYPE_ORDERED_LOWER_ROMAN) {
+                            out.append(" type=\"i\"");
+                        } else if (listType == LIST_TYPE_ORDERED_LOWER_LATIN) {
+                            out.append(" type=\"A\"");
+                        } else if (listType == LIST_TYPE_ORDERED_LOWER_ROMAN) {
+                            out.append(" type=\"I\"");
+                        }
+
+                        out.append(">\n");
+                    } else {
+                        out.append("<ul");
+
+                        if (listType == LIST_TYPE_UNORDERED_DISC) {
+                            out.append(" style=\"list-style-type:disc\"");
+                        } else if (listType == LIST_TYPE_UNORDERED_CIRCLE) {
+                            out.append(" style=\"list-style-type:circle\"");
+                        } else if (listType == LIST_TYPE_UNORDERED_SQUARE) {
+                            out.append(" style=\"list-style-type:square\"");
+                        }
+
+                        out.append(">\n");
+                    }
+                } else
+                if (nextParagraphStyleSpan instanceof ListItemSpan) {
+                    out.append("<li>\n");
+                } else
+
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("<h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">");
                 } else
+                if (nextParagraphStyleSpan instanceof CustomLeadingMarginSpan) {
+                    final int leadingMarginSpanIndent = ((CustomLeadingMarginSpan) nextParagraphStyleSpan).getLeadingMargin(true);
+                    out.append("<div style=\"text-indent:").append(leadingMarginSpanIndent).append("px;\">\n");
+                } else
                 if (nextParagraphStyleSpan instanceof LineDividerSpan) {
-                    out.append("<hr>");
+                    out.append("<hr>\n");
                 }
 
                 handleHtml(out, text, nextParagraphStyleSpan);
@@ -355,17 +410,25 @@ public class Html {
                 if (nextParagraphStyleSpan instanceof AlignNormalSpan
                         || nextParagraphStyleSpan instanceof AlignCenterSpan
                         || nextParagraphStyleSpan instanceof AlignOppositeSpan) {
-                    out.append("</div>");
+                    out.append("</div>\n");
                 } else
+                if (nextParagraphStyleSpan instanceof ListSpan) {
+                    final int listType = ((ListSpan) nextParagraphStyleSpan).getListType();
+                    final String listTag = isListTypeOrdered(listType) ? "ol" : "ul";
+
+                    out.append("</").append(listTag).append(">\n");
+                } else
+                if (nextParagraphStyleSpan instanceof ListItemSpan) {
+                    out.append("</li>\n");
+                } else
+
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("</h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">\n");
-//                } else
-//                if (nextParagraphStyleSpan instanceof LineDividerSpan) {
-//                    out.append("</hr>");  ///忽略输出"</hr>"
+                } else
+                if (nextParagraphStyleSpan instanceof CustomLeadingMarginSpan) {
+                    out.append("</div>\n");
                 }
             }
-
-            nextParagraphStyleSpan = getNextParagraphStyleSpan(text, next, compareSpan);
         }
     }
 
@@ -410,6 +473,8 @@ public class Html {
 
         if (isOutParagraph) {
             out.append("</p>\n");
+        } else {
+            out.append("\n");
         }
     }
 

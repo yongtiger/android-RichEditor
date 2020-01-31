@@ -730,9 +730,9 @@ public abstract class RichEditorToolbarHelper {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
-            ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
+            ///如果isParagraphStyle，且span包含了选中区间开始位置所在行的首尾[start, end]，则select
             ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
-            ///如果不是单光标选择、或者span在光标区间外
+            ///如果isCharacterStyle，且不是单光标选择、或者span在光标区间外
             ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
             if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                     || start == end && spanStart <= start && (end < spanEnd || end == spanEnd
