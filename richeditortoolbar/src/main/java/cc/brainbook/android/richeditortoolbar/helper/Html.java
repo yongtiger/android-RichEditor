@@ -80,8 +80,11 @@ import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_DECIMAL;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_LATIN;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_ROMAN;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_UPPER_LATIN;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_UPPER_ROMAN;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_DISC;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
@@ -362,14 +365,16 @@ public class Html {
                             out.append(" reversed");
                         }
 
-                        if (listType == LIST_TYPE_ORDERED_LOWER_LATIN) {
-                            out.append(" type=\"a\"");
-                        } else if (listType == LIST_TYPE_ORDERED_LOWER_ROMAN) {
-                            out.append(" type=\"i\"");
+                        if (listType == LIST_TYPE_ORDERED_DECIMAL) {
+                            out.append(" style=\"list-style-type:decimal\"");
                         } else if (listType == LIST_TYPE_ORDERED_LOWER_LATIN) {
-                            out.append(" type=\"A\"");
+                            out.append(" style=\"list-style-type:lower-alpha\"");
+                        } else if (listType == LIST_TYPE_ORDERED_UPPER_LATIN) {
+                            out.append(" style=\"list-style-type:upper-alpha\"");
                         } else if (listType == LIST_TYPE_ORDERED_LOWER_ROMAN) {
-                            out.append(" type=\"I\"");
+                            out.append(" style=\"list-style-type:lower-roman\"");
+                        } else if (listType == LIST_TYPE_ORDERED_UPPER_ROMAN) {
+                            out.append(" style=\"list-style-type:upper-roman\"");
                         }
 
                         out.append(">\n");
