@@ -43,6 +43,7 @@ import cc.brainbook.android.richeditortoolbar.span.CustomSubscriptSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomSuperscriptSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomURLSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
+import cc.brainbook.android.richeditortoolbar.span.DivSpan;
 import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
 import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
 import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
@@ -187,23 +188,26 @@ public abstract class RichEditorToolbarHelper {
 
     /* ------------------------------------------------------------------------------------------------------------ */
     public static boolean isParagraphStyle(Class clazz) {
-        return clazz == CustomQuoteSpan.class
+        return clazz == DivSpan.class
+                || clazz == CustomLeadingMarginSpan.class
                 || clazz == AlignNormalSpan.class
                 || clazz == AlignCenterSpan.class
                 || clazz == AlignOppositeSpan.class
                 || clazz == ListSpan.class
                 || clazz == ListItemSpan.class
+                || clazz == CustomQuoteSpan.class
                 || clazz == HeadSpan.class
-                || clazz == CustomLeadingMarginSpan.class
                 || clazz == LineDividerSpan.class;
     }
     public static boolean isNestParagraphStyle(Class clazz) {
-        return clazz == CustomQuoteSpan.class
+        return clazz == DivSpan.class
+                || clazz == CustomLeadingMarginSpan.class
                 || clazz == AlignNormalSpan.class
                 || clazz == AlignCenterSpan.class
                 || clazz == AlignOppositeSpan.class
                 || clazz == ListSpan.class
-                || clazz == ListItemSpan.class;
+                || clazz == ListItemSpan.class
+                || clazz == CustomQuoteSpan.class;
     }
     public static boolean isCharacterStyle(Class clazz) {
         return clazz == BoldSpan.class
@@ -231,7 +235,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AudioSpan.class;
     }
 
-    public static int getSpanFlag(Class clazz) {
+    public static int getSpanFlags(Class clazz) {
         if (isBlockCharacterStyle(clazz)) {
             return Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
         } else if (isCharacterStyle(clazz)) {
@@ -650,7 +654,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, getSpanFlag(clazz));
+            editable.setSpan(span, resultStart, spanEnd, getSpanFlags(clazz));
             editable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -669,7 +673,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, getSpanFlag(clazz));
+            editable.setSpan(span, spanStart, resultEnd, getSpanFlags(clazz));
             editable.removeSpan(rightSpan);
         }
 

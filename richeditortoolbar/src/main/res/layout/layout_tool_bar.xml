@@ -19,10 +19,10 @@
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
     <ImageView
-        android:id="@+id/iv_quote"
+        android:id="@+id/iv_leading_margin"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_quote"
+        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
         style="@style/ImageView" />
 
     <ImageView
@@ -50,17 +50,17 @@
         app:srcCompat="@drawable/ic_format_list_numbered_black_24dp"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_quote"
+        android:longClickable="true"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_quote"
+        style="@style/ImageView" />
+
     <TextView
         android:id="@+id/tv_head"
         android:text="@string/head"
         style="@style/TextView"/>
-
-    <ImageView
-        android:id="@+id/iv_leading_margin"
-        android:longClickable="true"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
-        style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_line_divider"

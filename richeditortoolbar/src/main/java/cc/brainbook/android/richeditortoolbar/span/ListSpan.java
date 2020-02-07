@@ -13,7 +13,7 @@ import com.google.gson.annotations.Expose;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
-    @IntRange(from = 0) public static final int DEFAULT_INTENT = 160;
+    @IntRange(from = 0) public static final int DEFAULT_INDENT = 160;
 
 
     @Expose

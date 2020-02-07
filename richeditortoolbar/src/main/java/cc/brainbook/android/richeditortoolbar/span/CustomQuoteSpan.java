@@ -48,8 +48,8 @@ public class CustomQuoteSpan extends NestSpan implements LeadingMarginSpan, Parc
     public CustomQuoteSpan() {
         this(1, STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
     }
-    public CustomQuoteSpan(@ColorInt int color) {
-        this(1, color, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
+    public CustomQuoteSpan(int nestingLevel) {
+        this(nestingLevel, STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
     }
     public CustomQuoteSpan(int nestingLevel, @ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {
