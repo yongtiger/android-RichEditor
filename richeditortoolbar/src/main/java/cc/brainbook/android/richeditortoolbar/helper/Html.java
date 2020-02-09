@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -77,6 +78,7 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_CIRCLE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
+import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
 
 /**
@@ -939,6 +941,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     private Html.TagHandler mTagHandler;
     private int mFlags;
 
+    private static Pattern sListType;
     private static Pattern sLeadingMargin;
     private static Pattern sTextAlignPattern;
     private static Pattern sForegroundColorPattern;
@@ -963,6 +966,13 @@ class HtmlToSpannedConverter implements ContentHandler {
 //        sColorMap.put("red", 0xFFFF0000);
 //        sColorMap.put("yellow", 0xFFFFFF00);
 //        sColorMap.put("blue", 0xFF0000FF);
+    }
+
+    private static Pattern getListTypePattern() {
+        if (sListType == null) {
+            sListType = Pattern.compile("(?:\\s+|\\A)list-style-type\\s*:\\s*(\\S*)\\b");
+        }
+        return sListType;
     }
 
     private static Pattern getLeadingMarginPattern() {
@@ -1003,6 +1013,14 @@ class HtmlToSpannedConverter implements ContentHandler {
         return sTextDecorationPattern;
     }
 
+    private static boolean isInteger(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
+    }
+
     private int getHtmlColor(String color) {
         if ((mFlags & Html.FROM_HTML_OPTION_USE_CSS_COLORS)
                 == Html.FROM_HTML_OPTION_USE_CSS_COLORS) {
@@ -1016,6 +1034,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         return Color.parseColor(color);
     }
 
+
     public HtmlToSpannedConverter(String source, Html.ImageGetter imageGetter,
                                   Html.TagHandler tagHandler, Parser parser, int flags) {
         mSource = source;
@@ -1025,6 +1044,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         mReader = parser;
         mFlags = flags;
     }
+
 
     public void setDocumentLocator(Locator locator) {}
 
@@ -1057,6 +1077,9 @@ class HtmlToSpannedConverter implements ContentHandler {
 
 
     /* ---------------------------------------------------------------------------------- */
+    ///[更新ListSpan]
+    private ArrayList<ListSpan> updateListSpans = new ArrayList<>();
+
     public Spanned convert() {
         mReader.setContentHandler(this);
         try {
@@ -1069,85 +1092,34 @@ class HtmlToSpannedConverter implements ContentHandler {
             throw new RuntimeException(e);
         }
 
-        ///////////////？？？？？？？？？？？？？？？？？
-//        // Fix flags and range for paragraph-type markup.
-//        Object[] obj = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), ParagraphStyle.class);
-//        for (int i = 0; i < obj.length; i++) {
-//            int start = mSpannableStringBuilder.getSpanStart(obj[i]);
-//            int end = mSpannableStringBuilder.getSpanEnd(obj[i]);
-//
-//            // If the last line of the range is blank, back off by one.
-//            if (end - 2 >= 0) {
-//                if (mSpannableStringBuilder.charAt(end - 1) == '\n' &&
-//                        mSpannableStringBuilder.charAt(end - 2) == '\n') {
-//                    end--;
-//                }
-//            }
-//
-//            if (end == start) {
-//                mSpannableStringBuilder.removeSpan(obj[i]);
-//            } else {
-//                mSpannableStringBuilder.setSpan(obj[i], start, end, Spannable.SPAN_PARAGRAPH);
-//            }
-//        }
+        ///[更新ListSpan]
+        updateListSpans(mSpannableStringBuilder, updateListSpans);
 
         return mSpannableStringBuilder;
     }
 
     private void handleStartTag(String tag, Attributes attributes) {
+        mLinkedList.add(new LL(mSpannableStringBuilder.length()));
+
         if (tag.equalsIgnoreCase("br")) {
             // We don't need to handle this. TagSoup will ensure that there's a </br> for each <br>
             // so we can safely emit the linebreaks when we handle the close tag.
 
         } else if (tag.equalsIgnoreCase("p")) {
-            startBlockElement(mSpannableStringBuilder, attributes);
-            startCssStyle(mSpannableStringBuilder, attributes);
+            startP(mSpannableStringBuilder, attributes);
 
         } else if (tag.equalsIgnoreCase("div")) {
-            final String styles = attributes.getValue("", "style");
-            if (styles != null) {
-                for (String style : styles.split(";")) {
-                    Matcher m = getLeadingMarginPattern().matcher(style);
-                    if (m.find()) {
-                        int indent = 0;
-                        String indentString = m.group(1).toLowerCase();
-                        if (indentString.endsWith("px")) {
-                            String i = indentString.substring(0, indentString.length() - 2);
-                            if (isInteger(i)) {
-                                indent = Integer.parseInt(i);
-                            }
-                        } else {
-                            // todo ...
-                        }
-                        start(mSpannableStringBuilder, new LeadingMarginDiv(indent));
-                    } else {
-                        m = getTextAlignPattern().matcher(style);
-                        if (m.find()) {
-                            String alignment = m.group(1);
-                            if (alignment.equalsIgnoreCase("center")) {
-                                start(mSpannableStringBuilder, new AlignmentDiv(Layout.Alignment.ALIGN_CENTER));
-                            } else if (alignment.equalsIgnoreCase("end")) {
-                                start(mSpannableStringBuilder, new AlignmentDiv(Layout.Alignment.ALIGN_OPPOSITE));
-                            } else {
-                                start(mSpannableStringBuilder, new AlignmentDiv(Layout.Alignment.ALIGN_NORMAL));
-                            }
-                        } else {
-                            start(mSpannableStringBuilder, new Div());
-                        }
-                    }
-                }
-            } else {
-                start(mSpannableStringBuilder, new Div());
-            }
+            startDiv(mSpannableStringBuilder, attributes);
 
         } else if (tag.equalsIgnoreCase("ul")) {
-            startBlockElement(mSpannableStringBuilder, attributes);
+            startUl(mSpannableStringBuilder, attributes);
+        } else if (tag.equalsIgnoreCase("ol")) {
+            startOl(mSpannableStringBuilder, attributes);
         } else if (tag.equalsIgnoreCase("li")) {
             startLi(mSpannableStringBuilder, attributes);
 
         } else if (tag.equalsIgnoreCase("blockquote")) {
             startBlockquote(mSpannableStringBuilder, attributes);
-
 
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
@@ -1250,40 +1222,20 @@ class HtmlToSpannedConverter implements ContentHandler {
             handleBr(mSpannableStringBuilder);
 
         } else if (tag.equalsIgnoreCase("p")) {
-            endCssStyle(mSpannableStringBuilder);
-            endBlockElement(mSpannableStringBuilder, null);
+            endP(mSpannableStringBuilder);
 
         } else if (tag.equalsIgnoreCase("div")) {
-            ///[UPGRADE#android.text.Html#Div#LeadingMarginDiv/AlignmentDiv都继承Div]
-            final Div d = getLast(mSpannableStringBuilder, Div.class);
-            if (d instanceof LeadingMarginDiv) {
-                endBlockElement(mSpannableStringBuilder, LeadingMarginDiv.class);
-                final int nestingLevel = getNestingLevel(mSpannableStringBuilder, LeadingMarginDiv.class);
-                end(mSpannableStringBuilder, LeadingMarginDiv.class, new CustomLeadingMarginSpan(nestingLevel, ((LeadingMarginDiv) d).mIndent));
-            } else if (d instanceof AlignmentDiv) {
-                endBlockElement(mSpannableStringBuilder, AlignmentDiv.class);
-                final int nestingLevel = getNestingLevel(mSpannableStringBuilder, AlignmentDiv.class);
-                if (((AlignmentDiv) d).mAlignment == Layout.Alignment.ALIGN_CENTER) {
-                    end(mSpannableStringBuilder, AlignmentDiv.class, new AlignCenterSpan(nestingLevel));
-                } else if (((AlignmentDiv) d).mAlignment == Layout.Alignment.ALIGN_OPPOSITE) {
-                    end(mSpannableStringBuilder, AlignmentDiv.class, new AlignOppositeSpan(nestingLevel));
-                } else {
-                    end(mSpannableStringBuilder, AlignmentDiv.class, new AlignNormalSpan(nestingLevel));
-                }
-            } else {
-                endBlockElement(mSpannableStringBuilder, Div.class);
-                final int nestingLevel = getNestingLevel(mSpannableStringBuilder, Div.class);
-                end(mSpannableStringBuilder, Div.class, new DivSpan(nestingLevel));
-            }
+            endDiv(mSpannableStringBuilder);
 
         } else if (tag.equalsIgnoreCase("ul")) {
-            endBlockElement(mSpannableStringBuilder, null);
+            endUl(mSpannableStringBuilder);
+        } else if (tag.equalsIgnoreCase("ol")) {
+            endOl(mSpannableStringBuilder);
         } else if (tag.equalsIgnoreCase("li")) {
             endLi(mSpannableStringBuilder);
 
         } else if (tag.equalsIgnoreCase("blockquote")) {
             endBlockquote(mSpannableStringBuilder);
-
 
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
@@ -1344,57 +1296,208 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (mTagHandler != null) {
             mTagHandler.handleTag(false, tag, mSpannableStringBuilder, mReader);
         }
+
+        mLinkedList.removeLast();
     }
 
 
     /* ----------------------------------------------------------------------------------------- */
-    private static void handleBr(Editable text) {
+    private void handleBr(Editable text) {
         text.append('\n');
     }
 
-    private void startLi(Editable text, Attributes attributes) {
+    private void startP(Editable text, Attributes attributes) {
+        startBlockCssStyle(text, attributes);
         startBlockElement(text, attributes);
-        start(text, new Bullet());
         startCssStyle(text, attributes);
     }
 
-    private static void endLi(Editable text) {
+    private void endP(Editable text) {
         endCssStyle(text);
         endBlockElement(text, null);
-        end(text, Bullet.class, new BulletSpan());
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
+    }
+
+    private void startDiv(Editable text, Attributes attributes) {
+        if (startBlockCssStyle(text, attributes).styles.isEmpty()) {
+            start(text, new Div());
+        }
+
+        startBlockElement(text, attributes);
+        startCssStyle(text, attributes);
+    }
+
+    private void endDiv(Editable text) {
+        endCssStyle(text);
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        if (blockCssStyle == null || blockCssStyle.styles.isEmpty()) {
+            endBlockElement(text, Div.class);
+
+            final int nestingLevel = getNestingLevel(text, Div.class);
+            end(text, Div.class, new DivSpan(nestingLevel));
+        } else {
+            for (Object obj : blockCssStyle.styles) {
+                if (obj instanceof Alignment) {
+                    endBlockElement(text, Alignment.class);
+                } else if (obj instanceof LeadingMargin) {
+                    endBlockElement(text, LeadingMargin.class);
+                }
+            }
+        }
+
+        endBlockCssStyle(text, blockCssStyle);
+    }
+
+    private void startUl(Editable text, Attributes attributes) {
+        int listType = LIST_TYPE_UNORDERED_DISC;
+        final String styles = attributes.getValue("", "style");
+        if (styles != null) {
+            for (String style : styles.split(";")) {
+                final Matcher m = getListTypePattern().matcher(style);
+                if (m.find()) {
+                    String listTypeString = m.group(1).toLowerCase();
+                    if ("circle".equals(listTypeString)) {
+                        listType = LIST_TYPE_UNORDERED_CIRCLE;
+                    } else if ("square".equals(listTypeString)) {
+                        listType = LIST_TYPE_UNORDERED_SQUARE;
+                    }
+                }
+            }
+        }
+
+        startBlockCssStyle(text, attributes);
+        start(text, new UnOrderList(listType));
+        startBlockElement(text, attributes);
+        startCssStyle(text, attributes);
+    }
+
+    private void endUl(Editable text) {
+        endCssStyle(text);
+        endBlockElement(text, UnOrderList.class);
+
+        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
+        final UnOrderList unOrderList = (UnOrderList) getLast(text, UnOrderList.class);
+        final ListSpan listSpan = new ListSpan(nestingLevel, unOrderList.getListType());
+        end(text, UnOrderList.class, listSpan);
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
+
+        ///[更新ListSpan]
+        updateListSpans.add(listSpan);
+    }
+
+    private void startOl(Editable text, Attributes attributes) {
+        int listType = LIST_TYPE_ORDERED_DECIMAL;
+        final String styles = attributes.getValue("", "style");
+        if (styles != null) {
+            for (String style : styles.split(";")) {
+                final Matcher m = getListTypePattern().matcher(style);
+                if (m.find()) {
+                    String listTypeString = m.group(1).toLowerCase();
+                    if ("lower-alpha".equals(listTypeString)) {
+                        listType = LIST_TYPE_ORDERED_LOWER_LATIN;
+                    } else if ("upper-alpha".equals(listTypeString)) {
+                        listType = LIST_TYPE_ORDERED_UPPER_LATIN;
+                    } else if ("lower-roman".equals(listTypeString)) {
+                        listType = LIST_TYPE_ORDERED_LOWER_ROMAN;
+                    } else if ("upper-roman".equals(listTypeString)) {
+                        listType = LIST_TYPE_ORDERED_UPPER_ROMAN;
+                    }
+                }
+            }
+        }
+
+        int start = 1;
+        final String startString = attributes.getValue("", "start");
+        if (isInteger(startString)) {
+            start = Integer.parseInt(startString);
+        }
+
+        final boolean isReversed = !TextUtils.isEmpty(attributes.getValue("", "reversed"));
+
+        startBlockCssStyle(text, attributes);
+        start(text, new OrderList(listType, start, isReversed));
+        startBlockElement(text, attributes);
+        startCssStyle(text, attributes);
+    }
+
+    private void endOl(Editable text) {
+        endCssStyle(text);
+        endBlockElement(text, OrderList.class);
+
+        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
+        final OrderList orderList = (OrderList) getLast(text, OrderList.class);
+        final ListSpan listSpan = new ListSpan(nestingLevel, orderList.getListType(), orderList.mStart, orderList.isReversed);
+        end(text, OrderList.class, listSpan);
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
+
+        ///[更新ListSpan]
+        updateListSpans.add(listSpan);
+    }
+
+    private void startLi(Editable text, Attributes attributes) {
+        startBlockCssStyle(text, attributes);
+        start(text, new ListItem());
+        startBlockElement(text, attributes);
+        startCssStyle(text, attributes);
+    }
+
+    private void endLi(Editable text) {
+        endCssStyle(text);
+        endBlockElement(text, ListItem.class);
+
+        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
+        final ListItemSpan listItemSpan = new ListItemSpan(null, 0);   ///注意：需要最后更新！
+        listItemSpan.setNestingLevel(nestingLevel);
+        end(text, ListItem.class, listItemSpan);
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
     }
 
     private void startBlockquote(Editable text, Attributes attributes) {
-        startBlockElement(text, attributes);
+        startBlockCssStyle(text, attributes);
         start(text, new Blockquote());
+        startBlockElement(text, attributes);
+        startCssStyle(text, attributes);
     }
 
-    private static void endBlockquote(Editable text) {
-        ///[UPGRADE#android.text.Html]
-//        endBlockElement(text);
-//        end(text, Blockquote.class, new QuoteSpan());
+    private void endBlockquote(Editable text) {
+        endCssStyle(text);
         endBlockElement(text, Blockquote.class);
+
         final int nestingLevel = getNestingLevel(text, Blockquote.class);
         end(text, Blockquote.class, new CustomQuoteSpan(nestingLevel));
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
     }
 
     private void startHeading(Editable text, Attributes attributes, int level) {
         startBlockElement(text, attributes);
         start(text, new Heading(level));
+        startBlockCssStyle(text, attributes);
+        startCssStyle(text, attributes);
     }
 
-    private static void endHeading(Editable text) {
-        // RelativeSizeSpan and StyleSpan are CharacterStyles
-        // Their ranges should not include the newlines at the end
-        Heading h = getLast(text, Heading.class);
-        if (h != null) {
-            ///[UPGRADE#android.text.Html]
-//            setSpanFromMark(text, h, new RelativeSizeSpan(HEADING_SIZES[h.mLevel]),
-//                    new StyleSpan(Typeface.BOLD));
-            setSpanFromMark(text, h, new HeadSpan(h.mLevel));
-        }
-
-        endBlockElement(text, null);
+    private void endHeading(Editable text) {//////////////////??????????????????????
+//        // RelativeSizeSpan and StyleSpan are CharacterStyles
+//        // Their ranges should not include the newlines at the end
+//        Heading h = getLast(text, Heading.class);
+//        if (h != null) {
+//            ///[UPGRADE#android.text.Html]
+////            setSpanFromMark(text, h, new RelativeSizeSpan(HEADING_SIZES[h.mLevel]),
+////                    new StyleSpan(Typeface.BOLD));
+//            setSpanFromMark(text, h, new HeadSpan(h.mLevel));
+//        }
+//
+//        endBlockElement(text, null);
     }
 
 
@@ -1431,54 +1534,54 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private static void endFont(Editable text) {
-        Font font = getLast(text, Font.class);
-        if (font != null) {
-            ///[UPGRADE#android.text.Html]
-//            setSpanFromMark(text, font, new TypefaceSpan(font.mFace));
-            setSpanFromMark(text, font, new CustomFontFamilySpan(font.mFace));
-        }
-
-        Foreground foreground = getLast(text, Foreground.class);
-        if (foreground != null) {
-            setSpanFromMark(text, foreground,
-                    new CustomForegroundColorSpan(foreground.mForegroundColor));
-        }
-
-        ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
-        ///https://blog.csdn.net/qq_36009027/article/details/84371825
-        AbsoluteSize absoluteSize = getLast(text, AbsoluteSize.class);
-        if (absoluteSize != null) {
-            setSpanFromMark(text, absoluteSize,
-                    new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
-        } else {
-            RelativeSize relativeSize = getLast(text, RelativeSize.class);
-            if (relativeSize != null) {
-                setSpanFromMark(text, relativeSize,
-                        new CustomRelativeSizeSpan(relativeSize.mProportion));
-            } else {
-                // todo ...
-            }
-        }
+    private void endFont(Editable text) {//////////////////??????????????????????
+//        Font font = getLast(text, Font.class);
+//        if (font != null) {
+//            ///[UPGRADE#android.text.Html]
+////            setSpanFromMark(text, font, new TypefaceSpan(font.mFace));
+//            setSpanFromMark(text, font, new CustomFontFamilySpan(font.mFace));
+//        }
+//
+//        Foreground foreground = getLast(text, Foreground.class);
+//        if (foreground != null) {
+//            setSpanFromMark(text, foreground,
+//                    new CustomForegroundColorSpan(foreground.mForegroundColor));
+//        }
+//
+//        ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
+//        ///https://blog.csdn.net/qq_36009027/article/details/84371825
+//        AbsoluteSize absoluteSize = getLast(text, AbsoluteSize.class);
+//        if (absoluteSize != null) {
+//            setSpanFromMark(text, absoluteSize,
+//                    new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
+//        } else {
+//            RelativeSize relativeSize = getLast(text, RelativeSize.class);
+//            if (relativeSize != null) {
+//                setSpanFromMark(text, relativeSize,
+//                        new CustomRelativeSizeSpan(relativeSize.mProportion));
+//            } else {
+//                // todo ...
+//            }
+//        }
     }
 
-    private static void startA(Editable text, Attributes attributes) {
+    private void startA(Editable text, Attributes attributes) {
         String href = attributes.getValue("", "href");
         start(text, new Href(href));
     }
 
-    private static void endA(Editable text) {
-        Href h = getLast(text, Href.class);
-        if (h != null) {
-            if (h.mHref != null) {
-                ///[UPGRADE#android.text.Html]
-//                setSpanFromMark(text, h, new URLSpan((h.mHref)));
-                setSpanFromMark(text, h, new CustomURLSpan(h.mHref));
-            }
-        }
+    private void endA(Editable text) {//////////////////??????????????????????
+//        Href h = getLast(text, Href.class);
+//        if (h != null) {
+//            if (h.mHref != null) {
+//                ///[UPGRADE#android.text.Html]
+////                setSpanFromMark(text, h, new URLSpan((h.mHref)));
+//                setSpanFromMark(text, h, new CustomURLSpan(h.mHref));
+//            }
+//        }
     }
 
-    private static void startImg(Editable text, Attributes attributes, Html.ImageGetter img) {
+    private void startImg(Editable text, Attributes attributes, Html.ImageGetter img) {
         String src = attributes.getValue("", "src");
         Drawable d = null;
 
@@ -1506,146 +1609,177 @@ class HtmlToSpannedConverter implements ContentHandler {
 
 
     /* ---------------------------------------------------------------------------------- */
-    private static void startBlockElement(Editable text, Attributes attributes) {
-        final String styles = attributes.getValue("", "style");
-        if (styles != null) {
-            for (String style : styles.split(";")) {
-                if (style != null) {
-                    Matcher m = getLeadingMarginPattern().matcher(style);
-                    if (m.find()) {
-                        int indent = 0;
-                        String indentString = m.group(1).toLowerCase();
-                        if (indentString.endsWith("px")) {
-                            String i = indentString.substring(0, indentString.length() - 2);
-                            if (isInteger(i)) {
-                                indent = Integer.parseInt(i);
-                            }
-                        } else {
-                            // todo ...
-                        }
-                        start(text, new LeadingMargin(indent));
-                    }
+    private void startBlockElement(Editable text, Attributes attributes) {
 
-                    m = getTextAlignPattern().matcher(style);
-                    if (m.find()) {
-                        String alignment = m.group(1);
-                        if (alignment.equalsIgnoreCase("center")) {
-                            start(text, new Alignment(Layout.Alignment.ALIGN_CENTER));
-                        } else if (alignment.equalsIgnoreCase("end")) {
-                            start(text, new Alignment(Layout.Alignment.ALIGN_OPPOSITE));
-                        } else {
-                            start(text, new Alignment(Layout.Alignment.ALIGN_NORMAL));
-                        }
-                    }
-                }
-            }
-        }
     }
 
-    private static void endBlockElement(Editable text, Class kind) {
+    private void endBlockElement(Editable text, Class kind) {
         int len = text.length();
         if (kind == null || len == 0 || text.charAt(len - 1) != '\n') {
             text.append('\n');
         } else {
             ///注意：当kind不为null、且是嵌套而不是并列时（即其start大于等于text.length()），忽略添加'\n'
             Object obj = getLast(text, kind);
-            if (obj == null || text.getSpanStart(obj) >= len) {
+//            if (obj == null || text.getSpanStart(obj) >= len) {
+            if (obj == null || mLinkedList.getLast().where >= len) {
                 text.append('\n');
             }
         }
+    }
 
-        //////？？？？？？？？？？
-//        if (kind != null && kind != Div.class && kind != LeadingMarginDiv.class && kind != AlignmentDiv.class) {
-        if (kind != null) {
-            Alignment a = getLast(text, Alignment.class);
-            if (a != null) {
-                final int nestingLevel = getNestingLevel(text, Alignment.class);
-                if (a.mAlignment == Layout.Alignment.ALIGN_CENTER) {
-                    setSpanFromMark(text, a, new AlignCenterSpan(nestingLevel));
-                } else if (a.mAlignment == Layout.Alignment.ALIGN_OPPOSITE) {
-                    setSpanFromMark(text, a, new AlignOppositeSpan(nestingLevel));
-                } else {
-                    setSpanFromMark(text, a, new AlignNormalSpan(nestingLevel));
+    private BlockCssStyle startBlockCssStyle(Editable text, Attributes attributes) {
+        final BlockCssStyle blockCssStyle = new BlockCssStyle();
+        final String styles = attributes.getValue("", "style");
+        if (styles != null) {
+            start(text, blockCssStyle);
+            for (String style : styles.split(";")) {
+                Matcher m = getLeadingMarginPattern().matcher(style);
+                if (m.find()) {
+                    int indent = 0;
+                    String indentString = m.group(1).toLowerCase();
+                    if (indentString.endsWith("px")) {
+                        String i = indentString.substring(0, indentString.length() - 2);
+                        if (isInteger(i)) {
+                            indent = Integer.parseInt(i);
+                        }
+                    } else {
+                        // todo ...
+                    }
+                    blockCssStyle.styles.add(new LeadingMargin(indent));
+
+                    continue;
+                }
+
+                m = getTextAlignPattern().matcher(style);
+                if (m.find()) {
+                    String alignment = m.group(1);
+                    if (alignment.equalsIgnoreCase("center")) {
+                        blockCssStyle.styles.add(new Alignment(Layout.Alignment.ALIGN_CENTER));
+                    } else if (alignment.equalsIgnoreCase("end")) {
+                        blockCssStyle.styles.add(new Alignment(Layout.Alignment.ALIGN_OPPOSITE));
+                    } else {
+                        blockCssStyle.styles.add(new Alignment(Layout.Alignment.ALIGN_NORMAL));
+                    }
+
+                    continue;
                 }
             }
+        }
+        return blockCssStyle;
+    }
 
-            LeadingMargin l = getLast(text, LeadingMargin.class);
-            if (l != null) {
-                final int nestingLevel = getNestingLevel(text, LeadingMargin.class);
-                setSpanFromMark(text, l, new CustomLeadingMarginSpan(nestingLevel, l.mIndent));
+    private void endBlockCssStyle(Editable text, BlockCssStyle blockCssStyle) {
+        if (blockCssStyle != null) {
+//            final int where = text.getSpanStart(blockCssStyle);
+            final int where = mLinkedList.getLast().where;
+//            text.removeSpan(blockCssStyle);
+            for (Object obj : blockCssStyle.styles) {
+                if (obj instanceof Alignment) {
+                    final int nestingLevel = getNestingLevel(text, Alignment.class);
+                    if (((Alignment) obj).mAlignment == Layout.Alignment.ALIGN_CENTER) {
+                        setSpanFromMark(text, where, new AlignCenterSpan(nestingLevel));
+                    } else if (((Alignment) obj).mAlignment == Layout.Alignment.ALIGN_OPPOSITE) {
+                        setSpanFromMark(text, where, new AlignOppositeSpan(nestingLevel));
+                    } else {
+                        setSpanFromMark(text, where, new AlignNormalSpan(nestingLevel));
+                    }
+                } else if (obj instanceof LeadingMargin) {
+                    final int nestingLevel = getNestingLevel(text, LeadingMargin.class);
+                    setSpanFromMark(text, where, new CustomLeadingMarginSpan(nestingLevel, ((LeadingMargin) obj).mIndent));
+                }
             }
         }
     }
 
-    private void startCssStyle(Editable text, Attributes attributes) {
-        String style = attributes.getValue("", "style");
-        if (style != null) {
-            Matcher m = getForegroundColorPattern().matcher(style);
-            if (m.find()) {
-                int c = getHtmlColor(m.group(1));
-                if (c != -1) {
-                    start(text, new Foreground(c | 0xFF000000));
-                }
-            }
+    private CssStyle startCssStyle(Editable text, Attributes attributes) {
+        final CssStyle cssStyle = new CssStyle();
+        final String styles = attributes.getValue("", "style");
+        if (styles != null) {
+            start(text, cssStyle);
+            for (String style : styles.split(";")) {
+                Matcher m = getForegroundColorPattern().matcher(style);
+                if (m.find()) {
+                    int c = getHtmlColor(m.group(1));
+                    if (c != -1) {
+                        cssStyle.styles.add(new Foreground(c | 0xFF000000));
+                    }
 
-            m = getBackgroundColorPattern().matcher(style);
-            if (m.find()) {
-                int c = getHtmlColor(m.group(1));
-                if (c != -1) {
-                    start(text, new Background(c | 0xFF000000));
+                    continue;
                 }
-            }
 
-            m = getTextDecorationPattern().matcher(style);
-            if (m.find()) {
-                String textDecoration = m.group(1);
-                if (textDecoration.equalsIgnoreCase("line-through")) {
-                    start(text, new Strikethrough());
+                m = getBackgroundColorPattern().matcher(style);
+                if (m.find()) {
+                    int c = getHtmlColor(m.group(1));
+                    if (c != -1) {
+                        cssStyle.styles.add(new Background(c | 0xFF000000));
+                    }
+
+                    continue;
+                }
+
+                m = getTextDecorationPattern().matcher(style);
+                if (m.find()) {
+                    String textDecoration = m.group(1);
+                    if (textDecoration.equalsIgnoreCase("line-through")) {
+                        cssStyle.styles.add(new Strikethrough());
+                    }
+
+                    continue;
                 }
             }
         }
+        return cssStyle;
     }
 
-    private static void endCssStyle(Editable text) {
-        Strikethrough s = getLast(text, Strikethrough.class);
-        if (s != null) {
-            ///[UPGRADE#android.text.Html]
-//            setSpanFromMark(text, s, new StrikethroughSpan());
-            setSpanFromMark(text, s, new CustomStrikethroughSpan());
+    private CssStyle endCssStyle(Editable text) {
+        final CssStyle cssStyle = (CssStyle) getLast(text, CssStyle.class);
+        if (cssStyle != null) {
+//            final int where = text.getSpanStart(cssStyle);
+            final int where = mLinkedList.getLast().where;
+//            text.removeSpan(cssStyle);
+            for (Object obj : cssStyle.styles) {
+                if (obj instanceof Foreground) {
+                    setSpanFromMark(text, where, new CustomForegroundColorSpan(((Foreground) obj).mForegroundColor));
+                } else if (obj instanceof Background) {
+                    setSpanFromMark(text, where, new CustomBackgroundColorSpan(((Background) obj).mBackgroundColor));
+                } else if (obj instanceof Strikethrough) {
+                    setSpanFromMark(text, where, new CustomStrikethroughSpan());
+                }
+            }
         }
-
-        Background b = getLast(text, Background.class);
-        if (b != null) {
-            ///[UPGRADE#android.text.Html]
-//            setSpanFromMark(text, b, new BackgroundColorSpan(b.mBackgroundColor));
-            setSpanFromMark(text, b, new CustomBackgroundColorSpan(b.mBackgroundColor));
-        }
-
-        Foreground f = getLast(text, Foreground.class);
-        if (f != null) {
-            ///[UPGRADE#android.text.Html]
-//            setSpanFromMark(text, f, new ForegroundColorSpan(f.mForegroundColor));
-            setSpanFromMark(text, f, new CustomForegroundColorSpan(f.mForegroundColor));
-        }
+        return cssStyle;
     }
 
 
     /* ---------------------------------------------------------------------------------- */
-    private static void start(Editable text, Object mark) {
-        int len = text.length();
-        text.setSpan(mark, len, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-    }
+    private LinkedList<LL> mLinkedList = new LinkedList<>();
+    class LL {
+        int where;
+        ArrayList<Object> objList = new ArrayList<>();
 
-    private static void end(Editable text, Class kind, Object repl) {
-        Object obj = getLast(text, kind);
-        if (obj != null) {
-            setSpanFromMark(text, obj, repl);
+        public LL(int where) {
+            this.where = where;
         }
     }
 
-    private static void setSpanFromMark(Spannable text, Object mark, Object... spans) {
-        int where = text.getSpanStart(mark);
-        text.removeSpan(mark);
+    private void start(Editable text, Object mark) {
+//        int len = text.length();
+//        text.setSpan(mark, len, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        mLinkedList.getLast().objList.add(mark);
+    }
+
+    private void end(Editable text, Class kind, Object repl) {
+        Object obj = getLast(text, kind);
+        if (obj != null) {
+//            final int where = text.getSpanStart(obj);
+            final int where = mLinkedList.getLast().where;
+//            text.removeSpan(obj);
+            mLinkedList.getLast().objList.remove(obj);
+            setSpanFromMark(text, where, repl);
+        }
+    }
+
+    private void setSpanFromMark(Spannable text, int where, Object... spans) {
         int len = text.length();
         if (where != len) {
             for (Object span : spans) {
@@ -1658,66 +1792,140 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private static <T> T getLast(Spanned text, Class<T> kind) {
-        /*
-         * This knows that the last returned object from getSpans()
-         * will be the most recently added.
-         */
-        T[] objs = text.getSpans(0, text.length(), kind);
-
-        if (objs.length == 0) {
-            return null;
-        } else {
-            return objs[objs.length - 1];
+    private Object getLast(Spanned text, Class kind) {
+        for (Object obj : mLinkedList.getLast().objList) {
+            if (kind == OrderUnOrderList.class) {
+                if (obj.getClass() == UnOrderList.class || obj.getClass() == OrderList.class) {
+                    return obj;
+                }
+            } else if (kind == BlockCssStyle.class || kind == CssStyle.class) {
+                if (kind == obj.getClass()) {
+                    return obj;
+                }
+            } else if (obj instanceof BlockCssStyle) {
+                for (Object styleObject : ((BlockCssStyle) obj).styles) {
+                    if (kind == styleObject.getClass()) {
+                        return obj;
+                    }
+                }
+            } else if (obj instanceof CssStyle) {
+                for (Object styleObject : ((CssStyle) obj).styles) {
+                    if (kind == styleObject.getClass()) {
+                        return obj;
+                    }
+                }
+            } else if (kind == obj.getClass()) {
+                return obj;
+            }
         }
+        return null;
     }
 
-    private static int getNestingLevel(Spanned text, Class kind) {
-        return text.getSpans(0, text.length(), kind).length;
-    }
-
-    private static boolean isInteger(String str) {
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
+    private int getNestingLevel(Spanned text, Class kind) {
+        int result = 0;
+        for (LL ll : mLinkedList) {
+            for (Object obj : ll.objList) {
+                if (kind == OrderUnOrderList.class) {
+                    if (obj.getClass() == UnOrderList.class || obj.getClass() == OrderList.class) {
+                        result++;
+                    }
+                } else if (kind == BlockCssStyle.class || kind == CssStyle.class) {
+                    if (kind == obj.getClass()) {
+                        result++;
+                    }
+                } else if (obj instanceof BlockCssStyle) {
+                    for (Object styleObject : ((BlockCssStyle) obj).styles) {
+                        if (kind == styleObject.getClass()) {
+                            result++;
+                        }
+                    }
+                } else if (obj instanceof CssStyle) {
+                    for (Object styleObject : ((CssStyle) obj).styles) {
+                        if (kind == styleObject.getClass()) {
+                            result++;
+                        }
+                    }
+                } else if (kind == obj.getClass()) {
+                    result++;
+                }
+            }
+        }
+        return result;
     }
 
     /* ---------------------------------------------------------------------------------- */
-    ///[UPGRADE#android.text.Html#Div#LeadingMarginDiv/AlignmentDiv都继承Div]
-    private static class Div { }
-    private static class LeadingMarginDiv extends Div {
-        public int mIndent;
-
-        public LeadingMarginDiv(int indent) {
-            mIndent = indent;
-        }
+    ///[UPGRADE#android.text.Html#CssStyle]
+    private class BlockCssStyle {
+        ArrayList<Object> styles = new ArrayList<>();
     }
-    private static class AlignmentDiv extends Div {
-        private Layout.Alignment mAlignment;
-
-        public AlignmentDiv(Layout.Alignment alignment) {
-            mAlignment = alignment;
-        }
+    private class CssStyle {
+        ArrayList<Object> styles = new ArrayList<>();
     }
-    private static class LeadingMargin extends Div {
+
+    private class LeadingMargin {
         public int mIndent;
 
         public LeadingMargin(int indent) {
             mIndent = indent;
         }
     }
-
-    private static class Alignment extends Div {
+    private class Alignment {
         private Layout.Alignment mAlignment;
 
         public Alignment(Layout.Alignment alignment) {
             mAlignment = alignment;
         }
     }
+    private class Foreground {
+        private int mForegroundColor;
 
-    private static class Blockquote { }
-    private static class Bullet { }
+        public Foreground(int foregroundColor) {
+            mForegroundColor = foregroundColor;
+        }
+    }
+    private class Background {
+        private int mBackgroundColor;
 
-    private static class Heading {
+        public Background(int backgroundColor) {
+            mBackgroundColor = backgroundColor;
+        }
+    }
+
+    private class Div { }
+    private class OrderUnOrderList {
+        private int mListType;
+
+        public int getListType() {
+            return mListType;
+        }
+
+        public void setListType(int listType) {
+            mListType = listType;
+        }
+
+        public OrderUnOrderList(int listType) {
+            mListType = listType;
+        }
+    }
+    private class UnOrderList extends OrderUnOrderList {
+        public UnOrderList(int listType) {
+            super(listType);
+        }
+    }
+    private class OrderList extends OrderUnOrderList {
+        private int mStart;
+        private boolean isReversed;
+
+        public OrderList(int listType, int start, boolean isReversed) {
+            super(listType);
+            this.mStart = start;
+            this.isReversed = isReversed;
+        }
+    }
+    private class ListItem { }
+    private class Blockquote { }
+
+    private class Heading {
         private int mLevel;
 
         public Heading(int level) {
@@ -1725,46 +1933,32 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private static class Bold { }
-    private static class Italic { }
-    private static class Underline { }
-    private static class Strikethrough { }
-    private static class Super { }
-    private static class Sub { }
-    private static class Href {
+    private class Bold { }
+    private class Italic { }
+    private class Underline { }
+    private class Strikethrough { }
+    private class Super { }
+    private class Sub { }
+    private class Href {
         public String mHref;
 
         public Href(String href) {
             mHref = href;
         }
     }
-    private static class Foreground {
-        private int mForegroundColor;
-
-        public Foreground(int foregroundColor) {
-            mForegroundColor = foregroundColor;
-        }
-    }
-    private static class Background {
-        private int mBackgroundColor;
-
-        public Background(int backgroundColor) {
-            mBackgroundColor = backgroundColor;
-        }
-    }
-    private static class Font {
+    private class Font {
         public String mFace;
 
         public Font(String face) {
             mFace = face;
         }
     }
-    private static class Monospace { }
-    private static class Big { }
-    private static class Small { }
+    private class Monospace { }
+    private class Big { }
+    private class Small { }
     ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
     ///https://blog.csdn.net/qq_36009027/article/details/84371825
-    private static class AbsoluteSize {
+    private class AbsoluteSize {
         private int mSize;
         private boolean mDip;
 
@@ -1776,7 +1970,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             mDip = dip;
         }
     }
-    private static class RelativeSize {
+    private class RelativeSize {
         private float mProportion;
 
         public RelativeSize(float proportion) {

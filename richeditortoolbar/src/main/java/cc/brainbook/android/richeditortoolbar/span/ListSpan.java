@@ -16,14 +16,14 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
     @IntRange(from = 0) public static final int DEFAULT_INDENT = 160;
 
 
+    ///[ListType]
+    @Expose
+    private int mListType;
+
     @Expose
     @IntRange(from = 0) private int mStart;
     @Expose
     private boolean isReversed;
-
-    ///[ListType]
-    @Expose
-    private int mListType;
 
     ///[Intent]
     @Expose
@@ -31,17 +31,35 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
 
 
     public ListSpan(int nestingLevel,
+                    int listType) {
+        this(nestingLevel, listType, 0, false, DEFAULT_INDENT);
+    }
+    public ListSpan(int nestingLevel,
+                    int listType,
+                    @IntRange(from = 0)int start,
+                    boolean isReversed) {
+        this(nestingLevel, listType, start, isReversed, DEFAULT_INDENT);
+    }
+    public ListSpan(int nestingLevel,
+                    int listType,
                     @IntRange(from = 0)int start,
                     boolean isReversed,
-                    int listType,
                     @IntRange(from = 0) int intent) {
         super(nestingLevel);
+        mListType = listType;
         mStart = start;
         this.isReversed = isReversed;
-        mListType = listType;
         mIntent = intent;
     }
 
+
+    public int getListType() {
+        return mListType;
+    }
+
+    public void setListType(int listType) {
+        mListType = listType;
+    }
 
     public int getStart() {
         return mStart;
@@ -57,14 +75,6 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
 
     public void isReversed(boolean isReversed) {
         this.isReversed = isReversed;
-    }
-
-    public int getListType() {
-        return mListType;
-    }
-
-    public void setListType(int listType) {
-        mListType = listType;
     }
 
     public int getIntent() {
@@ -87,11 +97,11 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
         @Override
         public ListSpan createFromParcel(Parcel in) {
             final int nestingLevel = in.readInt();
+            final int listType = in.readInt();
             final @IntRange(from = 0) int start = in.readInt();
             final boolean isReversed = in.readInt() == 1;
-            final int listType = in.readInt();
             final @IntRange(from = 0) int intent = in.readInt();
-            return new ListSpan(nestingLevel, start, isReversed, listType, intent);
+            return new ListSpan(nestingLevel, listType, start, isReversed, intent);
         }
 
         @Override
@@ -108,9 +118,9 @@ public class ListSpan extends NestSpan implements LeadingMarginSpan, Parcelable,
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
+        dest.writeInt(mListType);
         dest.writeInt(mStart);
         dest.writeInt(isReversed ? 1 : 0);
-        dest.writeInt(mListType);
         dest.writeInt(mIntent);
     }
 

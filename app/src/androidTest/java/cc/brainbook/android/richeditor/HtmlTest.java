@@ -216,8 +216,8 @@ public class HtmlTest {
 //                        "<p dir=\"ltr\"> </p>\n" +
 //                        "<p dir=\"ltr\"> a</p>\n");
 //    }
-//
-//
+
+
 //    @Test
 //    public void testTagP() {
 //        check("<p></p>",
@@ -310,11 +310,20 @@ public class HtmlTest {
 //                "<p dir=\"ltr\">a</p>\n" +
 //                        "<p dir=\"ltr\">a</p>\n");
 //
+//
+//        check("<p style=\"color:darkgray;text-decoration:line-through;\"></p>",
+//                "{\"spans\":[],\"text\":\"\\n\"}",
+//                "<p dir=\"ltr\"></p>\n");
+//
+//        check("<p style=\"color:darkgray;text-decoration:line-through;\">a</p>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-12303292},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "<p dir=\"ltr\"><span style=\"color:#444444;\"><span style=\"text-decoration:line-through;\">a</span></span></p>\n");
+//
 //    }
 //
 //
-    @Test
-    public void testTagDiv() {
+//    @Test
+//    public void testTagDiv() {
 //        check("<div></div>",
 //                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div>\n" +
@@ -416,41 +425,98 @@ public class HtmlTest {
 //                        "</blockquote>\n" +
 //                        "<p dir=\"ltr\">a</p>\n" +
 //                        "</div>\n");
-//
 
-        check("<div style=\"text-align:center;text-indent:20px;\"></div>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
-                "<div style=\"text-indent:20px;\">\n" +
-                        "<blockquote>\n" +
-                        "<div style=\"text-indent:20px;\">\n" +
-                        "<div style=\"text-align:center;\">\n" +
-                        "<p dir=\"ltr\"></p>\n" +
-                        "</div>\n" +
-                        "</div>\n" +
-                        "</blockquote>\n" +
-                        "</div>\n");
 
-//        check("<div style=\"text-align:center;text-indent:20px;\"><blockquote style=\"text-indent:20px;text-align:center;\"></blockquote></div>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//        check("<div style=\"text-align:center;text-indent:20px;\"></div>",
+//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
-//                        "<blockquote>\n" +
-//                        "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
+//                        "<p dir=\"ltr\"></p>\n" +
+//                        "</div>\n" +
+//                        "</div>\n");
+//
+//
+//        check("<div style=\"text-align:center;text-indent:20px;\"><blockquote style=\"text-indent:20px;text-align:center;\"></blockquote></div>",
+//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":2},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<div style=\"text-indent:20px;\">\n" +
+//                        "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
+//                        "<div style=\"text-align:center;\">\n" +
+//                        "<div style=\"text-indent:20px;\">\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
 //                        "</div>\n" +
 //                        "</div>\n" +
 //                        "</blockquote>\n" +
+//                        "</div>\n" +
 //                        "</div>\n");
+//
+//    }
+
+
+    @Test
+    public void testListSpan() {
+        check("<ul></ul>", //////??????解析出问题！<ul>或<ol>必须插入<li>后再嵌套<ul>或<ol>
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</ul>\n");
+
+        check("<ol></ol>", //////??????解析出问题！<ul>或<ol>必须插入<li>后再嵌套<ul>或<ol>
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</ol>\n");
+
+
+//        check("<ul><li></li></ul>",
+//                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":1},\"mWantColor\":true,\"mNestingLevel\":1},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<ul style=\"list-style-type:disc\">\n" +
+//                        "<li>\n" +
+//                        "\n" +
+//                        "</li>\n" +
+//                        "</ul>\n");
+//
+//        check("<ol><li></li></ol>",
+//                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"mWantColor\":true,\"mNestingLevel\":1},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+//                        "<li>\n" +
+//                        "\n" +
+//                        "</li>\n" +
+//                        "</ol>\n");
+
+
+//        check("<ol><ul></ul></ol>", //////??????解析出问题！<ul>或<ol>必须插入<li>后再嵌套<ul>或<ol>
+//                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+//                "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+//                        "<p dir=\"ltr\"></p>\n" +
+//                        "</ol>\n" +
+//                        "<ul style=\"list-style-type:disc\">\n" +
+//                        "<p dir=\"ltr\"></p>\n" +
+//                        "</ul>\n");
+
+//        check("<ol><li><ul></ul></li></ol>",    //////??????解析出问题！<ul>或<ol>必须插入<li>后再嵌套<ul>或<ol>
+//                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":2},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"mWantColor\":true,\"mNestingLevel\":1},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+//                        "<li>\n" +
+//                        "<ul style=\"list-style-type:disc\">\n" +
+//                        "<p dir=\"ltr\"></p>\n" +
+//                        "</ul>\n" +
+//                        "</li>\n" +
+//                        "</ol>\n");
+
+//        check("<ol><li><ul><li></li></ul></li></ol>",
+//                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":2},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mStart\":0,\"mNestingLevel\":2},\"mWantColor\":true,\"mNestingLevel\":2},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mStart\":1,\"mNestingLevel\":1},\"mWantColor\":true,\"mNestingLevel\":1},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+//                        "<li>\n" +
+//                        "<ul style=\"list-style-type:disc\">\n" +
+//                        "<li>\n" +
+//                        "\n" +
+//                        "</li>\n" +
+//                        "</ul>\n" +
+//                        "</li>\n" +
+//                        "</ol>\n");
 
     }
-//
-
-//    @Test
-//    public void testListSpan() {
-//        check("",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "");
-//    }
 //
 //
 //    @Test
@@ -529,50 +595,68 @@ public class HtmlTest {
 //
 //        check("<blockquote style=\"text-align:center;\"></blockquote>",
 //                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
-//                "<blockquote>\n" +
-//                        "<div style=\"text-align:center;\">\n" +
+//                "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
-//                        "</div>\n" +
-//                        "</blockquote>\n");
+//                        "</blockquote>\n" +
+//                        "</div>\n");
 //
 //        check("<blockquote style=\"text-align:center;\">a</blockquote>",
 //                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
-//                "<blockquote>\n" +
-//                        "<div style=\"text-align:center;\">\n" +
+//                "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\">a</p>\n" +
-//                        "</div>\n" +
-//                        "</blockquote>\n");
+//                        "</blockquote>\n" +
+//                        "</div>\n");
 //
 //
 //        check("<blockquote style=\"text-align:center;text-indent:20px;\"></blockquote>",
 //                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
-//                "<blockquote>\n" +
-//                        "<div style=\"text-indent:20px;\">\n" +
+//                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
+//                        "</blockquote>\n" +
 //                        "</div>\n" +
-//                        "</div>\n" +
-//                        "</blockquote>\n");
-
+//                        "</div>\n");
+//
 //        check("<blockquote style=\"text-indent:20px;text-align:center;\"></blockquote>",
 //                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
-//                "<blockquote>\n" +
+//                "<div style=\"text-align:center;\">\n" +
 //                        "<div style=\"text-indent:20px;\">\n" +
-//                        "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
+//                        "</blockquote>\n" +
 //                        "</div>\n" +
-//                        "</div>\n" +
-//                        "</blockquote>\n");
+//                        "</div>\n");
 //
 //        check("<blockquote style=\"text-indent:20px;text-align:center;\">a</blockquote>",
 //                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
-//                "<blockquote>\n" +
+//                "<div style=\"text-align:center;\">\n" +
 //                        "<div style=\"text-indent:20px;\">\n" +
-//                        "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\">a</p>\n" +
+//                        "</blockquote>\n" +
 //                        "</div>\n" +
-//                        "</div>\n" +
-//                        "</blockquote>\n");
+//                        "</div>\n");
+//
+//
+//        ///段落/块元素含多个不同的style样式（即段落/块样式、内联样式）
+//        check("<blockquote style=\"color:#0000FF;text-align:center;\"></blockquote>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
+//                        "<p dir=\"ltr\"></p>\n" +
+//                        "</blockquote>\n" +
+//                        "</div>\n");
+//
+//        check("<blockquote style=\"color:#0000FF;text-align:center;\">a</blockquote>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "<div style=\"text-align:center;\">\n" +
+//                        "<blockquote>\n" +
+//                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
+//                        "</blockquote>\n" +
+//                        "</div>\n");
 //
 //    }
 

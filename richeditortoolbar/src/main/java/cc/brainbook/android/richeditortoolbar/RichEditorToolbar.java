@@ -2613,7 +2613,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final boolean isReversed = ((ListSpan) compareSpan).isReversed();
                 final int nestingLevel = ((ListSpan) compareSpan).getNestingLevel();
                 final int listType = ((ListSpan) compareSpan).getListType();
-                newSpan = new ListSpan(nestingLevel, listStart, isReversed, listType, mIndicatorMargin);
+                newSpan = new ListSpan(nestingLevel, listType, listStart, isReversed, mIndicatorMargin);
             } else if (view != null && view.getTag(R.id.list_start) != null
                     && view.getTag(R.id.list_is_reversed) != null
                     && view.getTag(R.id.list_list_type) != null) {
@@ -2624,7 +2624,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
                 }
                 final int listType = (int) view.getTag(R.id.list_list_type);
-                newSpan = new ListSpan(nestingLevel, listStart, isReversed, listType, mIndicatorMargin);
+                newSpan = new ListSpan(nestingLevel, listType, listStart, isReversed, mIndicatorMargin);
             }
         }
 

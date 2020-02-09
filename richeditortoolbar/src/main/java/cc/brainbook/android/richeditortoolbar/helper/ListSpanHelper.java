@@ -315,6 +315,17 @@ public class ListSpanHelper {
                 } else {
                     index++;
                 }
+            } else if(span.getNestingLevel() == listSpan.getNestingLevel()) {
+                span.setListSpan(listSpan);
+
+                ///设置index
+                span.setIndex(index);
+
+                if (listSpan.isReversed()) {
+                    index--;
+                } else {
+                    index++;
+                }
             }
         }
     }

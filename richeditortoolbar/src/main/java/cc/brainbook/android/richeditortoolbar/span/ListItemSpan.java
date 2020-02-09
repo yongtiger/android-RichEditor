@@ -43,12 +43,16 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
 
 
     public ListItemSpan(ListSpan listSpan,
+                        @IntRange(from = 0) int index) {
+        this(listSpan, index, DEFAULT_INDICATOR_WIDTH, DEFAULT_INDICATOR_GAP_WIDTH, DEFAULT_INDICATOR_COLOR, true);
+    }
+    public ListItemSpan(ListSpan listSpan,
                         @IntRange(from = 0) int index,
                         @IntRange(from = 0) int indicatorWidth,
                         @IntRange(from = 0) int indicatorGapWidth,
                         @ColorInt int indicatorColor,
                         boolean wantColor) {
-        super(listSpan.getNestingLevel());
+        super(listSpan == null ? 0 : listSpan.getNestingLevel());
         mListSpan = listSpan;
         mIndex = index;
         mIndicatorWidth = indicatorWidth;
@@ -64,14 +68,16 @@ public class ListItemSpan extends NestSpan implements LeadingMarginSpan, Parcela
 
     public void setListSpan(ListSpan listSpan) {
         mListSpan = listSpan;
+        setNestingLevel(listSpan.getNestingLevel());
     }
 
     public int getNestingLevel() {
-        return mListSpan.getNestingLevel();
+        return mListSpan == null ? super.getNestingLevel() : mListSpan.getNestingLevel();
     }
 
     public void setNestingLevel(int nestingLevel) {
 //        throw new Exception("ListItemSpan cannot setNestingLevel()! Use setListSpan() instead");
+        super.setNestingLevel(nestingLevel);
     }
 
     public int getIndex() {
