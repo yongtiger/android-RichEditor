@@ -28,7 +28,7 @@ import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
-import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
+import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
@@ -216,7 +216,6 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomStrikethroughSpan.class
                 || clazz == CustomSuperscriptSpan.class
                 || clazz == CustomSubscriptSpan.class
-                || clazz == CodeSpan.class
                 || clazz == CustomForegroundColorSpan.class
                 || clazz == CustomBackgroundColorSpan.class
                 || clazz == CustomFontFamilySpan.class
@@ -224,6 +223,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomRelativeSizeSpan.class
                 || clazz == CustomScaleXSpan.class
                 || clazz == CustomURLSpan.class
+                || clazz == BlockSpan.class
                 || clazz == CustomImageSpan.class
                 || clazz == VideoSpan.class
                 || clazz == AudioSpan.class;
@@ -353,7 +353,7 @@ public abstract class RichEditorToolbarHelper {
                         final int align = strAlign == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : Integer.parseInt(strAlign);
 
                         view.setTag(R.id.image_text, text);
-                        view.setTag(R.id.image_src, uri);
+                        view.setTag(R.id.image_uri, uri);
                         view.setTag(R.id.image_src, src);
                         view.setTag(R.id.image_width, width);
                         view.setTag(R.id.image_height, height);

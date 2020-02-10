@@ -12,6 +12,11 @@ import android.view.View;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 
 public class VideoSpan extends CustomImageSpan implements IBlockCharacterStyle {
+
+    public VideoSpan(@NonNull Drawable drawable, @NonNull String uri, @NonNull String source) {
+        super(drawable, uri, source, ALIGN_BOTTOM);
+    }
+
     public VideoSpan(@NonNull Drawable drawable, @NonNull String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, uri, source, verticalAlignment);
     }

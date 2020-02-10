@@ -61,7 +61,7 @@ import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
-import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
+import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomForegroundColorSpan;
@@ -178,9 +178,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewSubscript;
     private ImageView mImageViewSuperscript;
 
-    /* ---------------- ///字符span（带参数）：Code ---------------- */
-    private ImageView mImageViewCode;
-
     /* ---------------- ///字符span（带参数）：ForegroundColor、BackgroundColor ---------------- */
     private ImageView mImageViewForegroundColor;
     private ImageView mImageViewBackgroundColor;
@@ -199,6 +196,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///字符span（带参数）：URL ---------------- */
     private ImageView mImageViewURL;
+
+    /* ---------------- ///字符span（带参数）：Block ---------------- */
+    private ImageView mImageViewBlock;
 
     /* ---------------- ///字符span（带参数）：Image ---------------- */
     private ImageView mImageViewVideo;
@@ -333,12 +333,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     ///执行setSpanFromSpanBeans后处理
     ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
-    private void postSetSpanFromSpanBeans(Editable pasteEditable, int pasteOffset, ArrayList<Object> spanList) {
-        if (spanList == null) {
+    private void postSetSpanFromSpanBeans(Editable pasteEditable, int pasteOffset, ArrayList<Object> spans) {
+        if (spans == null) {
             return;
         }
 
-        for (Object span : spanList) {
+        for (Object span : spans) {
             if (span instanceof LineDividerSpan) {
                 ((LineDividerSpan) span).setDrawBackgroundCallback(this);
             } else if (span instanceof CustomImageSpan) {
@@ -614,11 +614,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewSubscript.setOnClickListener(this);
         mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
 
-        /* -------------- ///字符span（带参数）：Code --------------- */
-        mImageViewCode = (ImageView) findViewById(R.id.iv_code);
-        mImageViewCode.setOnClickListener(this);
-        mClassMap.put(CodeSpan.class, mImageViewCode);
-
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
         mImageViewForegroundColor.setOnClickListener(this);
@@ -652,6 +647,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewURL = (ImageView) findViewById(R.id.iv_url);
         mImageViewURL.setOnClickListener(this);
         mClassMap.put(CustomURLSpan.class, mImageViewURL);
+
+        /* -------------- ///字符span（带参数）：Block --------------- */
+        mImageViewBlock = (ImageView) findViewById(R.id.iv_block);
+        mImageViewBlock.setOnClickListener(this);
+        mClassMap.put(BlockSpan.class, mImageViewBlock);
 
         /* -------------- ///字符span（带参数）：Image --------------- */
         mImageViewVideo = (ImageView) findViewById(R.id.iv_video);
@@ -870,6 +870,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
                     mRichEditText.setText(htmlSpanned);
 
+                    ///执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！
+                    final Editable editable = mRichEditText.getText();
+                    final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
+                    final List<SpanBean> spanBeans = textBean.getSpans();
+                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
+
                     mRichEditText.setVisibility(VISIBLE);
                     mTextViewPreview.setVisibility(GONE);
                     mEditTextHtml.setVisibility(GONE);
@@ -920,8 +926,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return UndoRedoHelper.CHANGE_SUBSCRIPT_SPAN_ACTION;
         } else if (view == mImageViewSuperscript) {
             return UndoRedoHelper.CHANGE_SUPERSCRIPT_SPAN_ACTION;
-        } else if (view == mImageViewCode) {
-            return UndoRedoHelper.CHANGE_CODE_SPAN_ACTION;
         } else if (view == mImageViewForegroundColor) {
             return UndoRedoHelper.CHANGE_FOREGROUND_COLOR_SPAN_ACTION;
         } else if (view == mImageViewBackgroundColor) {
@@ -936,6 +940,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return UndoRedoHelper.CHANGE_SCALE_X_SPAN_ACTION;
         } else if (view == mImageViewURL) {
             return UndoRedoHelper.CHANGE_URL_SPAN_ACTION;
+        } else if (view == mImageViewBlock) {
+            return UndoRedoHelper.CHANGE_BLOCK_SPAN_ACTION;
         } else if (view == mImageViewImage) {
             return UndoRedoHelper.CHANGE_IMAGE_SPAN_ACTION;
         } else if (view == mImageViewVideo) {

@@ -6,12 +6,9 @@ import java.util.LinkedList;
 import android.content.Context;
 import android.text.Editable;
 import android.text.Selection;
-import android.util.Log;
 import android.widget.Toast;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-
-import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
@@ -35,14 +32,14 @@ public class UndoRedoHelper {
     public static final int CHANGE_STRIKE_THROUGH_SPAN_ACTION = 23;
     public static final int CHANGE_SUBSCRIPT_SPAN_ACTION = 24;
     public static final int CHANGE_SUPERSCRIPT_SPAN_ACTION = 25;
-    public static final int CHANGE_CODE_SPAN_ACTION = 26;
-    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 27;
-    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 28;
-    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 29;
-    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 30;
-    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 31;
-    public static final int CHANGE_SCALE_X_SPAN_ACTION = 32;
-    public static final int CHANGE_URL_SPAN_ACTION = 33;
+    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 26;
+    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 27;
+    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 28;
+    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 29;
+    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 30;
+    public static final int CHANGE_SCALE_X_SPAN_ACTION = 31;
+    public static final int CHANGE_URL_SPAN_ACTION = 32;
+    public static final int CHANGE_BLOCK_SPAN_ACTION = 33;
     public static final int CHANGE_IMAGE_SPAN_ACTION = 34;
     public static final int CHANGE_VIDEO_SPAN_ACTION = 35;
     public static final int CHANGE_AUDIO_SPAN_ACTION = 36;
@@ -112,8 +109,6 @@ public class UndoRedoHelper {
                 return "change subscript span";
             case CHANGE_SUPERSCRIPT_SPAN_ACTION:
                 return "change superscript span";
-            case CHANGE_CODE_SPAN_ACTION:
-                return "change code span";
             case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
                 return "change foreground color span";
             case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:
@@ -128,6 +123,8 @@ public class UndoRedoHelper {
                 return "change scale x span";
             case CHANGE_URL_SPAN_ACTION:
                 return "change url span";
+            case CHANGE_BLOCK_SPAN_ACTION:
+                return "change block span";
             case CHANGE_IMAGE_SPAN_ACTION:
                 return "change image span";
             case CHANGE_VIDEO_SPAN_ACTION:

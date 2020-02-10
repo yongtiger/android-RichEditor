@@ -3,6 +3,7 @@ package cc.brainbook.android.richeditortoolbar.helper;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.text.Editable;
@@ -11,7 +12,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.AlignmentSpan;
 import android.text.style.BulletSpan;
 import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
@@ -24,6 +24,7 @@ import android.text.style.UnderlineSpan;
 
 import org.ccil.cowan.tagsoup.HTMLSchema;
 import org.ccil.cowan.tagsoup.Parser;
+import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
@@ -480,75 +482,6 @@ public class Html {
         }
     }
 
-//
-//    private static void withinHtml(StringBuilder out, Spanned text, int option) {
-//        if ((option & TO_HTML_PARAGRAPH_FLAG) == TO_HTML_PARAGRAPH_LINES_CONSECUTIVE) {
-//            encodeTextAlignmentByDiv(out, text, option);
-//            return;
-//        }
-//
-//        withinDiv(out, text, 0, text.length(), option);
-//    }
-//
-//    private static void encodeTextAlignmentByDiv(StringBuilder out, Spanned text, int option) {
-//        int len = text.length();
-//
-//        int next;
-//        for (int i = 0; i < len; i = next) {
-//            next = text.nextSpanTransition(i, len, ParagraphStyle.class);
-//            ParagraphStyle[] style = text.getSpans(i, next, ParagraphStyle.class);
-//            String elements = " ";
-//            boolean needDiv = false;
-//
-//            for(int j = 0; j < style.length; j++) {
-//                if (style[j] instanceof AlignmentSpan) {
-//                    ///Error: The align attribute on the div element is obsolete. Use CSS instead./////////////////////?????????????????style="text-align:center"
-//                    ///[UPGRADE#android.text.Html]
-////                    Layout.Alignment align =
-////                            ((AlignmentSpan) style[j]).getAlignment();
-//                    needDiv = true;
-////                    if (align == Layout.Alignment.ALIGN_CENTER) { ///[UPGRADE#android.text.Html]
-//                    if (style[j] instanceof AlignCenterSpan) {
-//                        elements = "align=\"center\" " + elements;
-////                    } else if (align == Layout.Alignment.ALIGN_OPPOSITE) {    ///[UPGRADE#android.text.Html]
-//                    } else if (style[j] instanceof AlignOppositeSpan) {
-//                        elements = "align=\"right\" " + elements;
-//                    } else {
-//                        elements = "align=\"left\" " + elements;
-//                    }
-//                }
-//            }
-//            if (needDiv) {
-//                out.append("<div ").append(elements).append(">");
-//            }
-//
-//            withinDiv(out, text, i, next, option);
-//
-//            if (needDiv) {
-//                out.append("</div>");
-//            }
-//        }
-//    }
-//
-//    private static void withinDiv(StringBuilder out, Spanned text, int start, int end,
-//                                  int option) {
-//        int next;
-//        for (int i = start; i < end; i = next) {
-//            next = text.nextSpanTransition(i, end, CustomQuoteSpan.class);  ///[UPGRADE#android.text.Html]CustomQuoteSpan
-//            CustomQuoteSpan[] quotes = text.getSpans(i, next, CustomQuoteSpan.class);   ///[UPGRADE#android.text.Html]CustomQuoteSpan
-//
-//            for (CustomQuoteSpan quote : quotes) {  ///[UPGRADE#android.text.Html]CustomQuoteSpan
-//                out.append("<blockquote>");
-//            }
-//
-//            withinBlockquote(out, text, i, next, option);
-//
-//            for (CustomQuoteSpan quote : quotes) {  ///[UPGRADE#android.text.Html]CustomQuoteSpan
-//                out.append("</blockquote>\n");
-//            }
-//        }
-//    }
-
     private static String getTextDirection(Spanned text, int start, int end) {
         ///[UPGRADE#android.text.Html]
 //        if (TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, start, end - start)) {
@@ -558,166 +491,6 @@ public class Html {
             return " dir=\"ltr\"";
         }
     }
-
-//    private static String getTextStyles(Spanned text, int start, int end,
-//                                        boolean forceNoVerticalMargin, boolean includeTextAlign) {
-//        String margin = null;
-//        String textAlign = null;
-//
-//        if (forceNoVerticalMargin) {
-//            margin = "margin-top:0; margin-bottom:0;";
-//        }
-//        if (includeTextAlign) {
-//            final AlignmentSpan[] alignmentSpans = text.getSpans(start, end, AlignmentSpan.class);
-//
-//            // Only use the last AlignmentSpan with flag SPAN_PARAGRAPH
-//            for (int i = alignmentSpans.length - 1; i >= 0; i--) {
-//                AlignmentSpan s = alignmentSpans[i];
-//                if ((text.getSpanFlags(s) & Spanned.SPAN_PARAGRAPH) == Spanned.SPAN_PARAGRAPH) {
-//                    final Layout.Alignment alignment = s.getAlignment();
-////                    if (alignment == Layout.Alignment.ALIGN_NORMAL) { ///[UPGRADE#android.text.Html]
-//                    if (s instanceof AlignNormalSpan) {
-//                        textAlign = "text-align:start;";
-////                    } else if (alignment == Layout.Alignment.ALIGN_CENTER) {  ///[UPGRADE#android.text.Html]
-//                    } else if (s instanceof AlignCenterSpan) {
-//                        textAlign = "text-align:center;";
-////                    } else if (alignment == Layout.Alignment.ALIGN_OPPOSITE) {    ///[UPGRADE#android.text.Html]
-//                    } else if (s instanceof AlignOppositeSpan) {
-//                        textAlign = "text-align:end;";
-//                    }
-//                    break;
-//                }
-//            }
-//        }
-//
-//        if (margin == null && textAlign == null) {
-//            return "";
-//        }
-//
-//        final StringBuilder style = new StringBuilder(" style=\"");
-//        if (margin != null && textAlign != null) {
-//            style.append(margin).append(" ").append(textAlign);
-//        } else if (margin != null) {
-//            style.append(margin);
-//        } else if (textAlign != null) {
-//            style.append(textAlign);
-//        }
-//
-//        return style.append("\"").toString();
-//    }
-
-//    private static void withinBlockquote(StringBuilder out, Spanned text, int start, int end,
-//                                         int option) {
-//        if ((option & TO_HTML_PARAGRAPH_FLAG) == TO_HTML_PARAGRAPH_LINES_CONSECUTIVE) {
-//            withinBlockquoteConsecutive(out, text, start, end);
-//        } else {
-//            withinBlockquoteIndividual(out, text, start, end);
-//        }
-//    }
-//
-//    private static void withinBlockquoteIndividual(StringBuilder out, Spanned text, int start,
-//                                                   int end) {
-//        boolean isInList = false;
-//        int next;
-//        for (int i = start; i <= end; i = next) {
-//            next = TextUtils.indexOf(text, '\n', i, end);
-//            if (next < 0) {
-//                next = end;
-//            }
-//
-//            if (next == i) {
-//                if (isInList) {
-//                    // Current paragraph is no longer a list item; close the previously opened list
-//                    isInList = false;
-//                    out.append("</ul>\n");
-//                }
-//                out.append("<br>\n");
-//            } else {
-//                boolean isListItem = false;
-//                ParagraphStyle[] paragraphStyles = text.getSpans(i, next, ParagraphStyle.class);
-//                for (ParagraphStyle paragraphStyle : paragraphStyles) {
-//                    ///////////////////
-////                    final int spanFlags = text.getSpanFlags(paragraphStyle);
-////                    if ((spanFlags & Spanned.SPAN_PARAGRAPH) == Spanned.SPAN_PARAGRAPH
-////                            && paragraphStyle instanceof BulletSpan) {
-//                    if (paragraphStyle instanceof ListSpan) {
-//                        isListItem = true;
-//                        break;
-//                    }
-//                }
-//
-//                if (isListItem && !isInList) {
-//                    // Current paragraph is the first item in a list
-//                    isInList = true;
-//                    out.append("<ul")
-//                            .append(getTextStyles(text, i, next, true, false))
-//                            .append(">\n");
-//                }
-//
-//                if (isInList && !isListItem) {
-//                    // Current paragraph is no longer a list item; close the previously opened list
-//                    isInList = false;
-//                    out.append("</ul>\n");
-//                }
-//
-//                String tagType = isListItem ? "li" : "p";
-//                out.append("<").append(tagType)
-//                        .append(getTextDirection(text, i, next))
-//                        .append(getTextStyles(text, i, next, !isListItem, true))
-//                        .append(">");
-//
-//                withinParagraph(out, text, i, next);
-//
-//                out.append("</");
-//                out.append(tagType);
-//                out.append(">\n");
-//
-//                if (next == end && isInList) {
-//                    isInList = false;
-//                    out.append("</ul>\n");
-//                }
-//            }
-//
-//            next++;
-//        }
-//    }
-//
-//    private static void withinBlockquoteConsecutive(StringBuilder out, Spanned text, int start,
-//                                                    int end) {
-//        out.append("<p").append(getTextDirection(text, start, end)).append(">");
-//
-//        int next;
-//        for (int i = start; i < end; i = next) {
-//            next = TextUtils.indexOf(text, '\n', i, end);
-//            if (next < 0) {
-//                next = end;
-//            }
-//
-//            int nl = 0;
-//
-//            while (next < end && text.charAt(next) == '\n') {
-//                nl++;
-//                next++;
-//            }
-//
-//            withinParagraph(out, text, i, next - nl);
-//
-//            if (nl == 1) {
-//                out.append("<br>\n");
-//            } else {
-//                for (int j = 2; j < nl; j++) {
-//                    out.append("<br>");
-//                }
-//                if (next != end) {
-//                    /* Paragraph should be closed and reopened */
-//                    out.append("</p>\n");
-//                    out.append("<p").append(getTextDirection(text, start, end)).append(">");
-//                }
-//            }
-//        }
-//
-//        out.append("</p>\n");
-//    }
 
     private static void withinParagraph(StringBuilder out, Spanned text, int start, int end) {
         int next;
@@ -818,7 +591,7 @@ public class Html {
                     out.append(" width=\"").append(((CustomImageSpan) style[j]).getDrawableWidth()).append("\"");
                     out.append(" height=\"").append(((CustomImageSpan) style[j]).getDrawableHeight()).append("\"");
                     out.append(" align=\"").append(((CustomImageSpan) style[j]).getVerticalAlignment()).append("\"");
-                    out.append(">");
+                    out.append(" />");
 
                     // Don't output the dummy character underlying the image.
                     i = next;
@@ -947,6 +720,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     private static Pattern sForegroundColorPattern;
     private static Pattern sBackgroundColorPattern;
     private static Pattern sTextDecorationPattern;
+    private static Pattern sFontSizePattern;
 
     /**
      * Name-value mapping of HTML/CSS colors which have different values in {@link Color}.
@@ -1011,6 +785,14 @@ class HtmlToSpannedConverter implements ContentHandler {
                     "(?:\\s+|\\A)text-decoration\\s*:\\s*(\\S*)\\b");
         }
         return sTextDecorationPattern;
+    }
+
+    private static Pattern getFontSizePattern() {
+        if (sFontSizePattern == null) {
+            sFontSizePattern = Pattern.compile(
+                    "(?:\\s+|\\A)font-size\\s*:\\s*(\\S*)\\b");
+        }
+        return sFontSizePattern;
     }
 
     private static boolean isInteger(String str) {
@@ -1126,6 +908,8 @@ class HtmlToSpannedConverter implements ContentHandler {
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
             startHeading(mSpannableStringBuilder, attributes, tag.charAt(1) - '1');
 
+        } else if (tag.equalsIgnoreCase("hr")) {
+            // We don't need to handle this.
 
         } else if (tag.equalsIgnoreCase("span")) {
             startCssStyle(mSpannableStringBuilder, attributes);
@@ -1163,7 +947,13 @@ class HtmlToSpannedConverter implements ContentHandler {
             startA(mSpannableStringBuilder, attributes);
 
         } else if (tag.equalsIgnoreCase("img")) {
-            startImg(mSpannableStringBuilder, attributes, mImageGetter);
+            startMedia(mSpannableStringBuilder, attributes, mImageGetter, "img");
+
+        } else if (tag.equalsIgnoreCase("video")) {
+            startMedia(mSpannableStringBuilder, attributes, mImageGetter, "video");
+
+        } else if (tag.equalsIgnoreCase("audio")) {
+            startMedia(mSpannableStringBuilder, attributes, mImageGetter, "audio");
 
         } else if (mTagHandler != null) {
             mTagHandler.handleTag(true, tag, mSpannableStringBuilder, mReader);
@@ -1242,6 +1032,8 @@ class HtmlToSpannedConverter implements ContentHandler {
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
             endHeading(mSpannableStringBuilder);
 
+        } else if (tag.equalsIgnoreCase("hr")) {
+            handleHr(mSpannableStringBuilder);
 
         } else if (tag.equalsIgnoreCase("span")) {
             endCssStyle(mSpannableStringBuilder);
@@ -1486,18 +1278,23 @@ class HtmlToSpannedConverter implements ContentHandler {
         startCssStyle(text, attributes);
     }
 
-    private void endHeading(Editable text) {//////////////////??????????????????????
-//        // RelativeSizeSpan and StyleSpan are CharacterStyles
-//        // Their ranges should not include the newlines at the end
-//        Heading h = getLast(text, Heading.class);
-//        if (h != null) {
-//            ///[UPGRADE#android.text.Html]
-////            setSpanFromMark(text, h, new RelativeSizeSpan(HEADING_SIZES[h.mLevel]),
-////                    new StyleSpan(Typeface.BOLD));
-//            setSpanFromMark(text, h, new HeadSpan(h.mLevel));
-//        }
-//
-//        endBlockElement(text, null);
+    private void endHeading(Editable text) {
+        endCssStyle(text);
+        endBlockElement(text, null);
+
+        final Heading h = (Heading) getLast(text, Heading.class);
+        if (h != null) {
+            end(text, Heading.class, new HeadSpan(h.mLevel));
+        }
+
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        endBlockCssStyle(text, blockCssStyle);
+    }
+
+    private void handleHr(Editable text) {
+        final int where = text.length();
+        text.append('\n');
+        setSpanFromMark(text, where, new LineDividerSpan());
     }
 
 
@@ -1509,14 +1306,17 @@ class HtmlToSpannedConverter implements ContentHandler {
         ///https://blog.csdn.net/qq_36009027/article/details/84371825
         String size = attributes.getValue("", "size");
         if (!TextUtils.isEmpty(size)) {
-            if (size.contains("px")) {
+            if (size.endsWith("px")) {
                 size = size.split("px")[0];
                 ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
                 ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
                 start(text, new AbsoluteSize(Integer.parseInt(size), true));
-            } else if (size.contains("%")) {
+            } else if (size.endsWith("%")) {
                 size = size.split("%")[0];
                 start(text, new RelativeSize(Float.parseFloat(size) / 100));
+            } else if (size.endsWith("em")) {
+                size = size.split("em")[0];
+                start(text, new RelativeSize(Float.parseFloat(size)));
             } else {
                 // todo ...
             }
@@ -1534,35 +1334,33 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private void endFont(Editable text) {//////////////////??????????????????????
-//        Font font = getLast(text, Font.class);
-//        if (font != null) {
-//            ///[UPGRADE#android.text.Html]
-////            setSpanFromMark(text, font, new TypefaceSpan(font.mFace));
-//            setSpanFromMark(text, font, new CustomFontFamilySpan(font.mFace));
-//        }
-//
-//        Foreground foreground = getLast(text, Foreground.class);
-//        if (foreground != null) {
-//            setSpanFromMark(text, foreground,
-//                    new CustomForegroundColorSpan(foreground.mForegroundColor));
-//        }
-//
-//        ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
-//        ///https://blog.csdn.net/qq_36009027/article/details/84371825
-//        AbsoluteSize absoluteSize = getLast(text, AbsoluteSize.class);
-//        if (absoluteSize != null) {
-//            setSpanFromMark(text, absoluteSize,
-//                    new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
-//        } else {
-//            RelativeSize relativeSize = getLast(text, RelativeSize.class);
-//            if (relativeSize != null) {
-//                setSpanFromMark(text, relativeSize,
-//                        new CustomRelativeSizeSpan(relativeSize.mProportion));
-//            } else {
-//                // todo ...
-//            }
-//        }
+    private void endFont(Editable text) {
+        final Font font = (Font) getLast(text, Font.class);
+        if (font != null) {
+            end(text, Font.class, new CustomFontFamilySpan(font.mFace));
+        }
+
+        final Foreground foreground = (Foreground) getLast(text, Foreground.class);
+        if (foreground != null) {
+            end(text, Foreground.class,
+                    new CustomForegroundColorSpan(foreground.mForegroundColor));
+        }
+
+        ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
+        ///https://blog.csdn.net/qq_36009027/article/details/84371825
+        final AbsoluteSize absoluteSize = (AbsoluteSize) getLast(text, AbsoluteSize.class);
+        if (absoluteSize != null) {
+            end(text, AbsoluteSize.class,
+                    new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
+        } else {
+            final RelativeSize relativeSize = (RelativeSize) getLast(text, RelativeSize.class);
+            if (relativeSize != null) {
+                end(text, RelativeSize.class,
+                        new CustomRelativeSizeSpan(relativeSize.mProportion));
+            } else {
+                // todo ...
+            }
+        }
     }
 
     private void startA(Editable text, Attributes attributes) {
@@ -1570,23 +1368,28 @@ class HtmlToSpannedConverter implements ContentHandler {
         start(text, new Href(href));
     }
 
-    private void endA(Editable text) {//////////////////??????????????????????
-//        Href h = getLast(text, Href.class);
-//        if (h != null) {
-//            if (h.mHref != null) {
-//                ///[UPGRADE#android.text.Html]
-////                setSpanFromMark(text, h, new URLSpan((h.mHref)));
-//                setSpanFromMark(text, h, new CustomURLSpan(h.mHref));
-//            }
-//        }
+    private void endA(Editable text) {
+        Href h = (Href) getLast(text, Href.class);
+        if (h != null) {
+            if (h.mHref != null) {
+                final int where = mLinkedList.getLast().where;
+                setSpanFromMark(text, where, new CustomURLSpan(h.mHref));
+            }
+        }
     }
 
-    private void startImg(Editable text, Attributes attributes, Html.ImageGetter img) {
-        String src = attributes.getValue("", "src");
+    private void startMedia(Editable text, Attributes attributes, Html.ImageGetter imageGetter, String type) {
+        String source = attributes.getValue("", "img".equals(type) ? "src" : "img");
+        if (TextUtils.isEmpty(source)) {
+            source = "";
+        }
+
+        String uri = "img".equals(type) ? "" : attributes.getValue("",  "src");
+
         Drawable d = null;
 
-        if (img != null) {
-            d = img.getDrawable(src);
+        if (imageGetter != null) {
+            d = imageGetter.getDrawable(source);
         }
 
         if (d == null) {
@@ -1594,17 +1397,50 @@ class HtmlToSpannedConverter implements ContentHandler {
                     ///[UPGRADE#android.text.Html]Resources.getSystem() can only support system resources!
 //                    getDrawable(com.android.internal.R.drawable.unknown_image);
 //                    getDrawable(android.R.drawable.gallery_thumb);
-        getDrawable(android.R.drawable.picture_frame);
-            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                    getDrawable(android.R.drawable.picture_frame);
+
+            int width;
+            String widthString = attributes.getValue("", "width");
+            if (isInteger(widthString)) {
+                width = Integer.parseInt(widthString);
+            } else {
+                width = d.getIntrinsicWidth();
+            }
+
+            int height;
+            String heightString = attributes.getValue("", "height");
+            if (isInteger(heightString)) {
+                height = Integer.parseInt(heightString);
+            } else {
+                height = d.getIntrinsicHeight();
+            }
+
+//            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+            d.setBounds(0, 0, width, height);
         }
 
         int len = text.length();
-        text.append("\uFFFC");/////////??????????要按照RichEditorToolbar的要求添加[img uri= src= ]
+        CustomImageSpan span;
+        if ("video".equals(type)) {
+            span = new VideoSpan(d, uri, source);
+        } else if ("audio".equals(type)) {
+            span = new AudioSpan(d, uri, source);
+        } else {
+            span = new CustomImageSpan(d, source);
+        }
 
-        ///[UPGRADE#android.text.Html]
-//        text.setSpan(new ImageSpan(d, src), len, text.length(),
-        text.setSpan(new CustomImageSpan(d, src), len, text.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ///[UPGRADE#android.text.Html]把width\height\align保存到text中
+//        text.append("\uFFFC");
+//        text.append(String.format(Resources.getSystem().getString(R.string.image_span_text), src, ///Note: Resources.getSystem() can only support system resources!
+        if ("img".equals(type)) {
+            text.append(String.format("[img src=\"%1$s\" width=%2$d height=%3$d align=%4$d]", source,
+                    span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
+        } else {
+            text.append(String.format("[media uri=\"%1$s\" src=\"%2$s\" width=%3$d height=%4$d align=%5$d]", uri, source,
+                    span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
+        }
+
+        text.setSpan(span, len, text.length(), getSpanFlags(span.getClass()));
     }
 
 
@@ -1670,9 +1506,7 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endBlockCssStyle(Editable text, BlockCssStyle blockCssStyle) {
         if (blockCssStyle != null) {
-//            final int where = text.getSpanStart(blockCssStyle);
             final int where = mLinkedList.getLast().where;
-//            text.removeSpan(blockCssStyle);
             for (Object obj : blockCssStyle.styles) {
                 if (obj instanceof Alignment) {
                     final int nestingLevel = getNestingLevel(text, Alignment.class);
@@ -1726,6 +1560,25 @@ class HtmlToSpannedConverter implements ContentHandler {
 
                     continue;
                 }
+
+                m = getFontSizePattern().matcher(style);
+                if (m.find()) {
+                    String size = m.group(1);
+                    if (size.endsWith("px")) {
+                        size = size.split("px")[0];
+                        cssStyle.styles.add(new AbsoluteSize(Integer.parseInt(size), true));
+                    } else if (size.endsWith("%")) {
+                        size = size.split("%")[0];
+                        cssStyle.styles.add(new RelativeSize(Float.parseFloat(size) / 100));
+                    } else if (size.endsWith("em")) {
+                        size = size.split("em")[0];
+                        cssStyle.styles.add(new RelativeSize(Float.parseFloat(size)));
+                    } else {
+                        // todo ...
+                    }
+
+                    continue;
+                }
             }
         }
         return cssStyle;
@@ -1744,6 +1597,10 @@ class HtmlToSpannedConverter implements ContentHandler {
                     setSpanFromMark(text, where, new CustomBackgroundColorSpan(((Background) obj).mBackgroundColor));
                 } else if (obj instanceof Strikethrough) {
                     setSpanFromMark(text, where, new CustomStrikethroughSpan());
+                } else if (obj instanceof AbsoluteSize) {
+                    setSpanFromMark(text, where, new CustomAbsoluteSizeSpan(((AbsoluteSize) obj).mSize, ((AbsoluteSize) obj).mDip));
+                } else if (obj instanceof RelativeSize) {
+                    setSpanFromMark(text, where, new CustomRelativeSizeSpan(((RelativeSize) obj).mProportion));
                 }
             }
         }
@@ -1763,18 +1620,15 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void start(Editable text, Object mark) {
-//        int len = text.length();
-//        text.setSpan(mark, len, len, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         mLinkedList.getLast().objList.add(mark);
     }
 
     private void end(Editable text, Class kind, Object repl) {
         Object obj = getLast(text, kind);
         if (obj != null) {
-//            final int where = text.getSpanStart(obj);
-            final int where = mLinkedList.getLast().where;
-//            text.removeSpan(obj);
             mLinkedList.getLast().objList.remove(obj);
+
+            final int where = mLinkedList.getLast().where;
             setSpanFromMark(text, where, repl);
         }
     }

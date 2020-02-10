@@ -11,8 +11,8 @@ import android.text.style.ReplacementSpan;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class CodeSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
-    private static final int CODE_COLOR = Color.parseColor("#F0F0F0");
+public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
+    private static final int COLOR = Color.parseColor("#F0F0F0");
     private static final float RADIUS = 10;
 
 
@@ -20,9 +20,9 @@ public class CodeSpan extends ReplacementSpan implements Parcelable, ICharacterS
     private float padding;
     private int width;
 
-    public CodeSpan() {
+    public BlockSpan() {
         GradientDrawable d = new GradientDrawable();
-        d.setColor(CODE_COLOR);
+        d.setColor(COLOR);
         d.setCornerRadius(RADIUS);
         drawable = d;
     }
@@ -42,15 +42,15 @@ public class CodeSpan extends ReplacementSpan implements Parcelable, ICharacterS
     }
 
 
-    public static final Creator<CodeSpan> CREATOR = new Creator<CodeSpan>() {
+    public static final Creator<BlockSpan> CREATOR = new Creator<BlockSpan>() {
         @Override
-        public CodeSpan createFromParcel(Parcel in) {
-            return new CodeSpan();
+        public BlockSpan createFromParcel(Parcel in) {
+            return new BlockSpan();
         }
 
         @Override
-        public CodeSpan[] newArray(int size) {
-            return new CodeSpan[size];
+        public BlockSpan[] newArray(int size) {
+            return new BlockSpan[size];
         }
     };
 
