@@ -17,14 +17,15 @@ public class UndoRedoHelper {
     public static final int RESTORE_DRAFT_ACTION = 2;
     public static final int CLEAR_SPANS_ACTION = 3;
 
-    public static final int CHANGE_QUOTE_SPAN_ACTION = 10;
-    public static final int CHANGE_LIST_SPAN_ACTION = 11;
-    public static final int CHANGE_HEAD_SPAN_ACTION = 12;
-    public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 13;
-    public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 14;
-    public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 15;
-    public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 16;
-    public static final int CHANGE_LINE_DIVIDER_SPAN_ACTION = 18;
+    public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 11;
+    public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 12;
+    public static final int CHANGE_ALIGN_OPPOSITE_SPAN_ACTION = 13;
+    public static final int CHANGE_LEADING_MARGIN_SPAN_ACTION = 14;
+    public static final int CHANGE_QUOTE_SPAN_ACTION = 15;
+    public static final int CHANGE_LIST_SPAN_ACTION = 16;
+    public static final int CHANGE_HEAD_SPAN_ACTION = 17;
+    public static final int CHANGE_PRE_SPAN_ACTION = 18;
+    public static final int CHANGE_LINE_DIVIDER_SPAN_ACTION = 19;
 
     public static final int CHANGE_BOLD_SPAN_ACTION = 20;
     public static final int CHANGE_ITALIC_SPAN_ACTION = 21;
@@ -32,17 +33,18 @@ public class UndoRedoHelper {
     public static final int CHANGE_STRIKE_THROUGH_SPAN_ACTION = 23;
     public static final int CHANGE_SUBSCRIPT_SPAN_ACTION = 24;
     public static final int CHANGE_SUPERSCRIPT_SPAN_ACTION = 25;
-    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 26;
-    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 27;
-    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 28;
-    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 29;
-    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 30;
-    public static final int CHANGE_SCALE_X_SPAN_ACTION = 31;
-    public static final int CHANGE_URL_SPAN_ACTION = 32;
-    public static final int CHANGE_BLOCK_SPAN_ACTION = 33;
-    public static final int CHANGE_IMAGE_SPAN_ACTION = 34;
-    public static final int CHANGE_VIDEO_SPAN_ACTION = 35;
-    public static final int CHANGE_AUDIO_SPAN_ACTION = 36;
+    public static final int CHANGE_CODE_SPAN_ACTION = 26;
+    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 27;
+    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 28;
+    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 29;
+    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 30;
+    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 31;
+    public static final int CHANGE_SCALE_X_SPAN_ACTION = 32;
+    public static final int CHANGE_URL_SPAN_ACTION = 33;
+    public static final int CHANGE_BLOCK_SPAN_ACTION = 34;
+    public static final int CHANGE_IMAGE_SPAN_ACTION = 35;
+    public static final int CHANGE_VIDEO_SPAN_ACTION = 36;
+    public static final int CHANGE_AUDIO_SPAN_ACTION = 37;
 
 
     private Context mContext;
@@ -80,12 +82,6 @@ public class UndoRedoHelper {
             case CLEAR_SPANS_ACTION:
                 return "clear spans";
 
-            case CHANGE_QUOTE_SPAN_ACTION:
-                return "change quote span";
-            case CHANGE_LIST_SPAN_ACTION:
-                return "change list span";
-            case CHANGE_HEAD_SPAN_ACTION:
-                return "change head span";
             case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
                 return "change align normal span";
             case CHANGE_ALIGN_CENTER_SPAN_ACTION:
@@ -94,6 +90,14 @@ public class UndoRedoHelper {
                 return "change align opposite span";
             case CHANGE_LEADING_MARGIN_SPAN_ACTION:
                 return "change leading margin span";
+            case CHANGE_QUOTE_SPAN_ACTION:
+                return "change quote span";
+            case CHANGE_LIST_SPAN_ACTION:
+                return "change list span";
+            case CHANGE_HEAD_SPAN_ACTION:
+                return "change head span";
+            case CHANGE_PRE_SPAN_ACTION:
+                return "change pre span";
             case CHANGE_LINE_DIVIDER_SPAN_ACTION:
                 return "change line divider span";
 
@@ -109,6 +113,8 @@ public class UndoRedoHelper {
                 return "change subscript span";
             case CHANGE_SUPERSCRIPT_SPAN_ACTION:
                 return "change superscript span";
+            case CHANGE_CODE_SPAN_ACTION:
+                return "change code span";
             case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
                 return "change foreground color span";
             case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:

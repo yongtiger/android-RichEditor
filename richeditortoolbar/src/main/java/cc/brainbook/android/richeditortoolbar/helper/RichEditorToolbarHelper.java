@@ -29,6 +29,7 @@ import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
 import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
+import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
@@ -50,6 +51,7 @@ import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.span.PreSpan;
 import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
@@ -197,6 +199,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == ListItemSpan.class
                 || clazz == CustomQuoteSpan.class
                 || clazz == HeadSpan.class
+                || clazz == PreSpan.class
                 || clazz == LineDividerSpan.class;
     }
     public static boolean isNestParagraphStyle(Class clazz) {
@@ -207,7 +210,8 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AlignOppositeSpan.class
                 || clazz == ListSpan.class
                 || clazz == ListItemSpan.class
-                || clazz == CustomQuoteSpan.class;
+                || clazz == CustomQuoteSpan.class
+                || clazz == PreSpan.class;
     }
     public static boolean isCharacterStyle(Class clazz) {
         return clazz == BoldSpan.class
@@ -216,6 +220,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomStrikethroughSpan.class
                 || clazz == CustomSuperscriptSpan.class
                 || clazz == CustomSubscriptSpan.class
+                || clazz == CodeSpan.class
                 || clazz == CustomForegroundColorSpan.class
                 || clazz == CustomBackgroundColorSpan.class
                 || clazz == CustomFontFamilySpan.class

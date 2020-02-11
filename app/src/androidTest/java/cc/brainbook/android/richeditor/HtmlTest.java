@@ -332,7 +332,7 @@ public class HtmlTest {
 //                "<p dir=\"ltr\"></p>\n");
 //
 //        check("<p style=\"color:darkgray;text-decoration:line-through;\">a</p>",
-//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-12303292},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0},{\"span\":{\"mColor\":-12303292},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
 //                "<p dir=\"ltr\"><span style=\"color:#444444;\"><span style=\"text-decoration:line-through;\">a</span></span></p>\n");
 //
 //    }
@@ -389,7 +389,7 @@ public class HtmlTest {
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "</div>\n" +
 //                        "</div>\n",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
@@ -402,7 +402,7 @@ public class HtmlTest {
 //                        "</div>\n" +
 //                        "<p dir=\"ltr\">b</p>\n" +
 //                        "</div>\n",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":4,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\nb\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":4,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\nb\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "<p dir=\"ltr\">a</p>\n" +
@@ -444,7 +444,7 @@ public class HtmlTest {
 //
 //
 //        check("<div style=\"text-align:center;text-indent:20px;\"></div>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "<p dir=\"ltr\"></p>\n" +
@@ -453,7 +453,7 @@ public class HtmlTest {
 //
 //
 //        check("<div style=\"text-align:center;text-indent:20px;\"><blockquote style=\"text-indent:20px;text-align:center;\"></blockquote></div>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":2},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":2},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "<blockquote>\n" +
@@ -627,7 +627,7 @@ public class HtmlTest {
 //
 //
 //        check("<blockquote style=\"text-align:center;text-indent:20px;\"></blockquote>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-indent:20px;\">\n" +
 //                        "<div style=\"text-align:center;\">\n" +
 //                        "<blockquote>\n" +
@@ -637,7 +637,7 @@ public class HtmlTest {
 //                        "</div>\n");
 //
 //        check("<blockquote style=\"text-indent:20px;text-align:center;\"></blockquote>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
 //                "<div style=\"text-align:center;\">\n" +
 //                        "<div style=\"text-indent:20px;\">\n" +
 //                        "<blockquote>\n" +
@@ -647,7 +647,7 @@ public class HtmlTest {
 //                        "</div>\n");
 //
 //        check("<blockquote style=\"text-indent:20px;text-align:center;\">a</blockquote>",
-//                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mRest\":0,\"mNestingLevel\":1},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
 //                "<div style=\"text-align:center;\">\n" +
 //                        "<div style=\"text-indent:20px;\">\n" +
 //                        "<blockquote>\n" +
@@ -667,7 +667,7 @@ public class HtmlTest {
 //                        "</div>\n");
 //
 //        check("<blockquote style=\"color:#0000FF;text-align:center;\">a</blockquote>",
-//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-2236963,\"mGapWidth\":40,\"mStripeWidth\":16,\"mNestingLevel\":1},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\\n\"}",
 //                "<div style=\"text-align:center;\">\n" +
 //                        "<blockquote>\n" +
 //                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
@@ -688,6 +688,47 @@ public class HtmlTest {
 //                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
 //                "<h2>a\n" +
 //                        "</h2>\n");
+//
+//
+//        check("<h2>b<font color=\"blue\">a</font>b</h2>",
+//                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":4,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":1}],\"text\":\"bab\\n\"}",
+//                "<h2>b<span style=\"color:#0000FF;\">a</span>b\n" +
+//                        "</h2>\n");
+//    }
+//
+//
+//    @Test
+//    public void testTagPre() {
+//        check("<pre></pre>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+//                "<pre>\n" +
+//                        "</pre>\n");
+//
+//        check("<pre>a</pre>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\n\"}",
+//                "<pre>a\n" +
+//                        "</pre>\n");
+//
+//
+//        check("<pre>b<font color=\"blue\">a</font>b</pre>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":4,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":18,\"spanStart\":1}],\"text\":\"bab\\n\"}",
+//                "<pre>b<span style=\"color:#0000FF;\">a</span>b\n" +
+//                        "</pre>\n");
+//
+//
+//        check("<pre>   int a = 0;\n" +
+//                        "   int a = 0;</pre>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":28,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;\\n\"}",
+//                "<pre>   int a = 0;\n" +
+//                        "   int a = 0;\n" +
+//                        "</pre>\n");
+//
+//        check("<pre>   int <font color=\"blue\">a</font> = 0;\n" +
+//                        "   int a = 0;</pre>",
+//                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":28,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":8,\"spanFlags\":18,\"spanStart\":7}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;\\n\"}",
+//                "<pre>   int <span style=\"color:#0000FF;\">a</span> = 0;\n" +
+//                        "   int a = 0;\n" +
+//                        "</pre>\n");
 //    }
 //
 //
@@ -780,6 +821,18 @@ public class HtmlTest {
 //
 //
 //    @Test
+//    public void testTagCode() {
+//        check("<code></code>",
+//                "{\"spans\":[],\"text\":\"\"}",
+//                "");
+//
+//        check("<code>a</code>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CodeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><code>a</code></p>\n");
+//    }
+//
+//
+//    @Test
 //    public void testTagSpan() {
 //        check("<span style=\"color:blue\"></span>",
 //                "{\"spans\":[],\"text\":\"\"}",
@@ -794,6 +847,17 @@ public class HtmlTest {
 //                "<p dir=\"ltr\"><span style=\"color:#0000FF;\"><span style=\"text-decoration:line-through;\">a</span></span></p>\n");
 //    }
 //
+//
+//    @Test
+//    public void testTt() {
+//        check("<tt></tt>",
+//                "{\"spans\":[],\"text\":\"\"}",
+//                "");
+//
+//        check("<tt>a</tt>",
+//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><tt>a</tt></p>\n");
+//    }
 //
 //    @Test
 //    public void testTagFont() {
@@ -843,25 +907,14 @@ public class HtmlTest {
 //    }
 //
 //    @Test
-//    public void testTagTt() {
-//        check("<tt></tt>",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "");
-//
-//        check("<tt>a</tt>",
-//                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><font face=\"monospace\">a</font></p>\n");
-//    }
-//
-//    @Test
 //    public void testTagBig() {
-//        check("<big></big>",
-//                "{\"spans\":[],\"text\":\"\"}",
-//                "");
+////        check("<big></big>",
+////                "{\"spans\":[],\"text\":\"\"}",
+////                "");
 //
 //        check("<big>a</big>",
 //                "{\"spans\":[{\"span\":{\"mProportion\":1.25},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"font-size:1.25em;\">a</span></p>\n");
+//                "<p dir=\"ltr\"><big>a</big></p>\n");
 //    }
 //
 //    @Test
@@ -872,7 +925,7 @@ public class HtmlTest {
 //
 //        check("<small>a</small>",
 //                "{\"spans\":[{\"span\":{\"mProportion\":0.8},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
-//                "<p dir=\"ltr\"><span style=\"font-size:0.80em;\">a</span></p>\n");
+//                "<p dir=\"ltr\"><small>a</small></p>\n");
 //    }
 //
 //
@@ -887,14 +940,7 @@ public class HtmlTest {
 //                "<p dir=\"ltr\"><a href=\"http://www.google.com\">a</a></p>\n");
 //    }
 //
-
-    @Test
-    public void testBlockSpan() {
-        check("",
-                "{\"spans\":[],\"text\":\"\"}",
-                "");
-    }
-
+//
 //    @Test
 //    public void testTagImg() {
 //        check("<img src=\"http://www.google.com/a.jpg\"></img>",  ///注意：等同于"<img src=\"http://www.google.com/a.jpg\" />"
@@ -914,17 +960,31 @@ public class HtmlTest {
 //
 //
 //    @Test
-//    public void testVideoSpan() {
+//    public void testTagVideo() {
 //        check("<video src=\"http://www.google.com/a.mp4\" />",
 //                "{\"spans\":[{\"span\":{\"mDrawableHeight\":68,\"mDrawableWidth\":74,\"mSource\":\"\",\"mUri\":\"http://www.google.com/a.mp4\"},\"spanClassName\":\"VideoSpan\",\"spanEnd\":75,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"[media uri\\u003d\\\"http://www.google.com/a.mp4\\\" src\\u003d\\\"\\\" width\\u003d74 height\\u003d68 align\\u003d0]\"}",
 //                "<p dir=\"ltr\"><video src=\"http://www.google.com/a.mp4\" img=\"\" width=\"74\" height=\"68\" align=\"0\" /></p>\n");
 //    }
 //
 //    @Test
-//    public void testAudioSpan() {
+//    public void testTagAudio() {
 //        check("<audio src=\"http://www.google.com/a.wav\" />",
 //                "{\"spans\":[{\"span\":{\"mDrawableHeight\":68,\"mDrawableWidth\":74,\"mSource\":\"\",\"mUri\":\"http://www.google.com/a.wav\"},\"spanClassName\":\"AudioSpan\",\"spanEnd\":75,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"[media uri\\u003d\\\"http://www.google.com/a.wav\\\" src\\u003d\\\"\\\" width\\u003d74 height\\u003d68 align\\u003d0]\"}",
 //                "<p dir=\"ltr\"><audio src=\"http://www.google.com/a.wav\" img=\"\" width=\"74\" height=\"68\" align=\"0\" /></p>\n");
 //    }
+//
+//
+//    /* -------------- 自定义tag ----------- */
+//    @Test
+//    public void testBlock() {
+////        check("<block></block>",
+////                "{\"spans\":[],\"text\":\"\"}",
+////                "");
+//
+//        check("<block>a</block>",
+//                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BlockSpan\",\"spanEnd\":1,\"spanFlags\":18,\"spanStart\":0}],\"text\":\"a\"}",
+//                "<p dir=\"ltr\"><block>a</block></p>\n");
+//    }
 
+    ///////////////LineMarginSpan?????????????
 }

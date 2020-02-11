@@ -7,15 +7,15 @@ import android.text.style.LineHeightSpan;
 
 import com.google.gson.annotations.Expose;
 
-///[UPGRADE#LineMarginSpan]
+//////??????[UPGRADE#LineMarginSpan]
 public class LineMarginSpan implements LineHeightSpan, Parcelable {
     @Expose
     private final int mMarginTop, mMarginBottom;
 
 
-    public LineMarginSpan(int mMarginTop, int mMarginBottom) {
-        this.mMarginTop = mMarginTop;
-        this.mMarginBottom = mMarginBottom;
+    public LineMarginSpan(int marginTop, int marginBottom) {
+        mMarginTop = marginTop;
+        mMarginBottom = marginBottom;
     }
 
 

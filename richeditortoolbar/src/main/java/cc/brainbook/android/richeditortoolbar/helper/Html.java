@@ -3,7 +3,6 @@ package cc.brainbook.android.richeditortoolbar.helper;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.text.TextDirectionHeuristicsCompat;
 import android.text.Editable;
@@ -42,12 +41,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.brainbook.android.richeditortoolbar.R;
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
 import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
+import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
 import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
 import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
@@ -68,6 +69,7 @@ import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.span.PreSpan;
 import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
@@ -82,6 +84,9 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isBlockCharacterStyle;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isCharacterStyle;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isParagraphStyle;
 
 /**
  * This class processes HTML strings into displayable styled text.
@@ -329,8 +334,13 @@ public class Html {
             if (nextParagraphStyleSpan == null) {
                 next = text.nextSpanTransition(i, end, ParagraphStyle.class);
 
-                handleParagraph(out, text, i, next, compareSpan == null
-                        || compareSpan instanceof NestSpan && !(compareSpan instanceof ListItemSpan));
+                ///[PreSpan]
+                if (compareSpan instanceof PreSpan) {
+                    withinParagraph(out, text, i, next);
+                } else {
+                    handleParagraph(out, text, i, next, compareSpan == null
+                            || compareSpan instanceof NestSpan && !(compareSpan instanceof ListItemSpan));
+                }
             } else {
                 next = text.getSpanEnd(nextParagraphStyleSpan);
 
@@ -396,9 +406,14 @@ public class Html {
                     out.append("<blockquote>\n");
                 } else
 
+                if (nextParagraphStyleSpan instanceof PreSpan) {    ///[PreSpan]
+                    out.append("<pre>");
+                } else
+
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("<h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">");
                 } else
+
                 if (nextParagraphStyleSpan instanceof LineDividerSpan) {
                     out.append("<hr>\n");
                 }
@@ -427,6 +442,9 @@ public class Html {
 
                 if (nextParagraphStyleSpan instanceof HeadSpan) {
                     out.append("</h").append(((HeadSpan) nextParagraphStyleSpan).getLevel() + 1).append(">\n");
+                } else
+                if (nextParagraphStyleSpan instanceof PreSpan) {    ///[PreSpan]
+                    out.append("</pre>\n");
                 }
             }
         }
@@ -496,9 +514,18 @@ public class Html {
         int next;
         for (int i = start; i < end; i = next) {
             next = text.nextSpanTransition(i, end, CharacterStyle.class);
-            CharacterStyle[] style = text.getSpans(i, next, CharacterStyle.class);
+
+            ///[PreSpan]注意：PreSpan同时继承ParagraphStyle和ICharacterStyle！
+            Object[] style = text.getSpans(i, next, ICharacterStyle.class);
 
             for (int j = 0; j < style.length; j++) {
+                if (style[j] instanceof CodeSpan) {
+                    out.append("<code>");
+                } else
+                if (style[j] instanceof BlockSpan) {
+                    out.append("<block>");
+                } else
+
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
 
@@ -539,12 +566,12 @@ public class Html {
 
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
-//                    ///注意：当face="monospace"时转换为tt标签
-//                    if ("monospace".equals(s)) {
-//                        out.append("<tt>");
-//                    } else {
+                    ///注意：当face="monospace"时转换为tt标签
+                    if ("monospace".equals(s)) {
+                        out.append("<tt>");
+                    } else {
                         out.append("<font face=\"").append(s).append("\">");
-//                    }
+                    }
                 } else
 
                 if (style[j] instanceof CustomAbsoluteSizeSpan) {
@@ -563,13 +590,13 @@ public class Html {
                 } else
                 if (style[j] instanceof CustomRelativeSizeSpan) {
                     float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
-//                    if (sizeEm == 1.25f) {
-//                        out.append("<big>");
-//                    } else if (sizeEm == 0.8f) {
-//                        out.append("<small>");
-//                    } else {
+                    if (sizeEm == 1.25f) {
+                        out.append("<big>");
+                    } else if (sizeEm == 0.8f) {
+                        out.append("<small>");
+                    } else {
                         out.append(String.format("<span style=\"font-size:%.2fem;\">", sizeEm));
-//                    }
+                    }
                 } else
 
                 if (style[j] instanceof URLSpan) {
@@ -598,9 +625,21 @@ public class Html {
                 }
             }
 
-            withinStyle(out, text, i, next);
+            ///[PreSpan]注意：PreSpan同时继承ParagraphStyle和ICharacterStyle！
+            if (style.length == 0 || !(style[0] instanceof PreSpan)) {
+                withinStyle(out, text, i, next);
+            } else {
+                out.append(text.subSequence(i, next));
+            }
 
             for (int j = style.length - 1; j >= 0; j--) {
+                if (style[j] instanceof CodeSpan) {
+                    out.append("</code>");
+                } else
+                if (style[j] instanceof BlockSpan) {
+                    out.append("</block>");
+                } else
+
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
 
@@ -634,26 +673,26 @@ public class Html {
 
                 if (style[j] instanceof CustomFontFamilySpan) {
                     String s = ((CustomFontFamilySpan) style[j]).getFamily();
-//                    ///注意：当face="monospace"时转换为tt标签
-//                    if ("monospace".equals(s)) {
-//                        out.append("</tt>");
-//                    } else {
+                    ///注意：当face="monospace"时转换为tt标签
+                    if ("monospace".equals(s)) {
+                        out.append("</tt>");
+                    } else {
                         out.append("</font>");
-//                    }
+                    }
                 } else
 
                 if (style[j] instanceof CustomAbsoluteSizeSpan) {
                     out.append("</span>");
                 } else
                 if (style[j] instanceof CustomRelativeSizeSpan) {
-//                    float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
-//                    if (sizeEm == 1.25f) {
-//                        out.append("</big>");
-//                    } else if (sizeEm == 0.8f) {
-//                        out.append("</small>");
-//                    } else {
+                    float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
+                    if (sizeEm == 1.25f) {
+                        out.append("</big>");
+                    } else if (sizeEm == 0.8f) {
+                        out.append("</small>");
+                    } else {
                         out.append("</span>");
-//                    }
+                    }
                 } else
 
                 if (style[j] instanceof URLSpan) {
@@ -848,7 +887,12 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     public void characters(char ch[], int start, int length) throws SAXException {
-        handleCharacters(ch, start, length);
+        ///[PreSpan]
+        if (getLast(null, Pre.class) == null) {
+            handleCharacters(ch, start, length);
+        } else {
+            mSpannableStringBuilder.append(String.valueOf(ch, start, length));
+        }
     }
 
     public void ignorableWhitespace(char ch[], int start, int length) throws SAXException {}
@@ -877,6 +921,23 @@ class HtmlToSpannedConverter implements ContentHandler {
         ///[更新ListSpan]
         updateListSpans(mSpannableStringBuilder, updateListSpans);
 
+        ///[FIX#如果SPAN_INCLUSIVE_INCLUSIVE或SPAN_EXCLUSIVE_INCLUSIVE，则需要暂时改为SPAN_EXCLUSIVE_EXCLUSIVE，将来再改回来
+        ///否则在添加内容后自动延长span的范围]//////??????CharacterStyle也用SPAN_INCLUSIVE_EXCLUSIVE，就无需FIX了
+        final CharacterStyle[] characterStyles = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), CharacterStyle.class);
+        for (CharacterStyle characterStyle : characterStyles) {
+            final Class clazz = characterStyle.getClass();
+            if (isCharacterStyle(clazz)
+                    && !isBlockCharacterStyle(clazz)
+                    && !isParagraphStyle(clazz)) {
+                final int flags = mSpannableStringBuilder.getSpanFlags(characterStyle);
+                if (flags != getSpanFlags(clazz)) {
+                    final int spanStart = mSpannableStringBuilder.getSpanStart(characterStyle);
+                    final int spanEnd = mSpannableStringBuilder.getSpanEnd(characterStyle);
+                    mSpannableStringBuilder.setSpan(characterStyle, spanStart, spanEnd, getSpanFlags(clazz));
+                }
+            }
+        }
+
         return mSpannableStringBuilder;
     }
 
@@ -902,6 +963,9 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         } else if (tag.equalsIgnoreCase("blockquote")) {
             startBlockquote(mSpannableStringBuilder, attributes);
+
+        } else if (tag.equalsIgnoreCase("pre")) {   ///[PreSpan]
+            startPre(mSpannableStringBuilder, attributes);
 
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
@@ -932,6 +996,11 @@ class HtmlToSpannedConverter implements ContentHandler {
             start(mSpannableStringBuilder, new Super());
         } else if (tag.equalsIgnoreCase("sub")) {
             start(mSpannableStringBuilder, new Sub());
+
+        } else if (tag.equalsIgnoreCase("code")) {
+            start(mSpannableStringBuilder, new Code());
+        } else if (tag.equalsIgnoreCase("block")) {
+            start(mSpannableStringBuilder, new Block());
 
         } else if (tag.equalsIgnoreCase("tt")) {
             start(mSpannableStringBuilder, new Monospace());
@@ -1027,6 +1096,9 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (tag.equalsIgnoreCase("blockquote")) {
             endBlockquote(mSpannableStringBuilder);
 
+        } else if (tag.equalsIgnoreCase("pre")) {   ///[PreSpan]
+            endPre(mSpannableStringBuilder);
+
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
@@ -1068,7 +1140,12 @@ class HtmlToSpannedConverter implements ContentHandler {
             ///[UPGRADE#android.text.Html]
 //            end(mSpannableStringBuilder, Sub.class, new SubscriptSpan());
             end(mSpannableStringBuilder, Sub.class, new CustomSubscriptSpan());
+        } else if (tag.equalsIgnoreCase("code")) {
+            end(mSpannableStringBuilder, Code.class, new CodeSpan());
+        } else if (tag.equalsIgnoreCase("block")) {
+            end(mSpannableStringBuilder, Block.class, new BlockSpan());
         } else if (tag.equalsIgnoreCase("tt")) {
+            ///[UPGRADE#android.text.Html]
 //            end(mSpannableStringBuilder, Monospace.class, new TypefaceSpan("monospace"));
             end(mSpannableStringBuilder, Monospace.class, new CustomFontFamilySpan("monospace"));
         } else if (tag.equalsIgnoreCase("font")) {
@@ -1280,7 +1357,7 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endHeading(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, null);
+        endBlockElement(text, Heading.class);
 
         final Heading h = (Heading) getLast(text, Heading.class);
         if (h != null) {
@@ -1289,6 +1366,19 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
+    }
+
+    ///[PreSpan]
+    private void startPre(Editable text, Attributes attributes) {
+        start(text, new Pre());
+        startBlockElement(text, attributes);
+    }
+    ///[PreSpan]
+    private void endPre(Editable text) {
+        endBlockElement(text, Pre.class);
+
+        final int nestingLevel = getNestingLevel(text, Pre.class);
+        end(text, Pre.class, new PreSpan(nestingLevel));
     }
 
     private void handleHr(Editable text) {
@@ -1637,11 +1727,14 @@ class HtmlToSpannedConverter implements ContentHandler {
         int len = text.length();
         if (where != len) {
             for (Object span : spans) {
-                ///[UPGRADE#android.text.Html]
-                ///注意：RichEditorToolbar要求BlockCharacterStyle为SPAN_EXCLUSIVE_EXCLUSIVE以外，
-                // CharacterStyle为SPAN_INCLUSIVE_INCLUSIVE，其它都为SPAN_INCLUSIVE_EXCLUSIVE
-//                text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                text.setSpan(span, where, len, getSpanFlags(span.getClass()));
+                ///[FIX#如果SPAN_INCLUSIVE_INCLUSIVE或SPAN_EXCLUSIVE_INCLUSIVE，
+                ///则需要暂时改为SPAN_EXCLUSIVE_EXCLUSIVE，将来再改回来，否则在添加内容后自动延长span的范围]
+                if (getSpanFlags(span.getClass()) == Spanned.SPAN_INCLUSIVE_INCLUSIVE
+                        || getSpanFlags(span.getClass()) == Spanned.SPAN_EXCLUSIVE_INCLUSIVE) {
+                    text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } else {
+                    text.setSpan(span, where, len, getSpanFlags(span.getClass()));
+                }
             }
         }
     }
@@ -1786,6 +1879,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             mLevel = level;
         }
     }
+    private class Pre { }   ///[PreSpan]
 
     private class Bold { }
     private class Italic { }
@@ -1793,6 +1887,8 @@ class HtmlToSpannedConverter implements ContentHandler {
     private class Strikethrough { }
     private class Super { }
     private class Sub { }
+    private class Code { }
+    private class Block { }
     private class Href {
         public String mHref;
 

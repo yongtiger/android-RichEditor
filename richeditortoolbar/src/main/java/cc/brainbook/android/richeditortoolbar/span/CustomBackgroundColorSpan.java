@@ -15,10 +15,12 @@ public class CustomBackgroundColorSpan extends BackgroundColorSpan implements IC
     @ColorInt
     private final int mColor;
 
+
     public CustomBackgroundColorSpan(int color) {
         super(color);
         mColor = color;
     }
+
 
     public static final Creator<CustomBackgroundColorSpan> CREATOR = new Creator<CustomBackgroundColorSpan>() {
         @Override

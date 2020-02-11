@@ -12,6 +12,7 @@ public class BoldSpan extends StyleSpan implements Parcelable, ICharacterStyle {
         super(Typeface.BOLD);
     }
 
+
     public static final Creator<BoldSpan> CREATOR = new Creator<BoldSpan>() {
         @Override
         public BoldSpan createFromParcel(Parcel in) {

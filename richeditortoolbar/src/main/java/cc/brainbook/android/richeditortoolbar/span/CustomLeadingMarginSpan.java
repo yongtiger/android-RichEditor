@@ -9,9 +9,9 @@ import android.text.style.LeadingMarginSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class CustomLeadingMarginSpan extends NestSpan implements LeadingMarginSpan, Parcelable, IParagraphStyle {
+public class CustomLeadingMarginSpan extends NestSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
     public static final int DEFAULT_INDENT = 40;
 
 
@@ -43,6 +43,7 @@ public class CustomLeadingMarginSpan extends NestSpan implements LeadingMarginSp
                                   int top, int baseline, int bottom,
                                   CharSequence text, int start, int end,
                                   boolean first, Layout layout) {}
+
 
     public static final Creator<CustomLeadingMarginSpan> CREATOR = new Creator<CustomLeadingMarginSpan>() {
         @Override

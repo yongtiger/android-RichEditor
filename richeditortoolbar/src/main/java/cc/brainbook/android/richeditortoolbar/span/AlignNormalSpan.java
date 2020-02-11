@@ -18,6 +18,7 @@ public class AlignNormalSpan extends NestSpan implements AlignmentSpan, Parcelab
 		return Alignment.ALIGN_NORMAL;
 	}
 
+
 	public static final Creator<AlignNormalSpan> CREATOR = new Creator<AlignNormalSpan>() {
 		@Override
 		public AlignNormalSpan createFromParcel(Parcel in) {

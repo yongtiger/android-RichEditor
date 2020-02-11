@@ -15,6 +15,7 @@ public class CustomForegroundColorSpan extends ForegroundColorSpan implements IC
     @ColorInt
     private final int mColor;
 
+
     public CustomForegroundColorSpan(int color) {
         super(color);
         mColor = color;

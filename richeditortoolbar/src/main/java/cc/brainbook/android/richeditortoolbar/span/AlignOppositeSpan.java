@@ -18,6 +18,7 @@ public class AlignOppositeSpan extends NestSpan implements AlignmentSpan, Parcel
 		return Alignment.ALIGN_OPPOSITE;
 	}
 
+
 	public static final Creator<AlignOppositeSpan> CREATOR = new Creator<AlignOppositeSpan>() {
 		@Override
 		public AlignOppositeSpan createFromParcel(Parcel in) {

@@ -57,6 +57,12 @@
         app:srcCompat="@drawable/ic_editor_quote"
         style="@style/ImageView" />
 
+    <ImageView
+        android:id="@+id/iv_pre"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_code"
+        style="@style/ImageView" />
+
     <TextView
         android:id="@+id/tv_head"
         android:text="@string/head"
@@ -104,6 +110,12 @@
         android:id="@+id/iv_superscript"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_size_black_24dp"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_code"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_code"
         style="@style/ImageView" />
 
     <ImageView

@@ -18,6 +18,7 @@ public class AlignCenterSpan extends NestSpan implements AlignmentSpan, Parcelab
 		return Alignment.ALIGN_CENTER;
 	}
 
+
 	public static final Creator<AlignCenterSpan> CREATOR = new Creator<AlignCenterSpan>() {
 		@Override
 		public AlignCenterSpan createFromParcel(Parcel in) {

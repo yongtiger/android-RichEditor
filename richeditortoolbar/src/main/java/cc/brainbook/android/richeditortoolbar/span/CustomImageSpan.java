@@ -138,6 +138,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
         if (DEBUG) Log.d("TAG", "onClick: ");
     }
 
+
     public static final Creator<CustomImageSpan> CREATOR = new Creator<CustomImageSpan>() {
         @Override
         public CustomImageSpan createFromParcel(Parcel in) {
