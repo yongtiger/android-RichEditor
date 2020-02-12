@@ -56,36 +56,36 @@ import cc.brainbook.android.richeditortoolbar.builder.ClickURLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
-import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
-import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
-import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
-import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
-import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
-import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomForegroundColorSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomLeadingMarginSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomRelativeSizeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomScaleXSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomStrikethroughSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomSubscriptSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomSuperscriptSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomURLSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
-import cc.brainbook.android.richeditortoolbar.span.DivSpan;
-import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
-import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
-import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListSpan;
-import cc.brainbook.android.richeditortoolbar.span.NestSpan;
-import cc.brainbook.android.richeditortoolbar.span.PreSpan;
-import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignOppositeSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BlockSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CodeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomAbsoluteSizeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomBackgroundColorSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomForegroundColorSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.CustomLeadingMarginSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.CustomQuoteSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomRelativeSizeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomScaleXSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomStrikethroughSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomSubscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomSuperscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomFontFamilySpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomURLSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomUnderlineSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.DivSpan;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.HeadSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.ItalicSpan;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.PreSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ArrayUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
@@ -2007,7 +2007,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
     /* ------------------------------------------------------------------------------------------ */
-    private <T extends NestSpan> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply, ArrayList<ListSpan> updateListSpans) {
+    private <T extends INestParagraphStyle> void adjustNestParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply, ArrayList<ListSpan> updateListSpans) {
         ///[FIX#选中行尾字符时应该把随后的'\n'也选中进来！]
         if (isApply && start < end && end < editable.length()) {
             end++;
@@ -2024,7 +2024,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         innerAdjustNestParagraphStyleSpans(view, clazz, editable, start, end, firstParagraphStart, lastParagraphEnd, isApply, updateListSpans);
     }
 
-    private <T extends NestSpan> void innerAdjustNestParagraphStyleSpans(
+    private <T extends INestParagraphStyle> void innerAdjustNestParagraphStyleSpans(
             View view, Class<T> clazz, Editable editable,
             int start, int end, int firstParagraphStart, int lastParagraphEnd, boolean isApply, ArrayList<ListSpan> updateListSpans) {
         if (isApply) {
@@ -2149,7 +2149,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             ///[FIX#在已有ListSpan上多选时，需要按照ListItemSpan等NestSpan分割来创建new span]
                             int next;
                             for (int i = newSpanStart; i < newSpanEnd; i = next) {
-                                next = editable.nextSpanTransition(i, newSpanEnd, NestSpan.class);
+                                next = editable.nextSpanTransition(i, newSpanEnd, INestParagraphStyle.class);
                                 createNewSpan(view, clazz, editable, i, next, null, parentSpan);
                             }
                         } else {
@@ -2622,7 +2622,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         if (clazz == CustomLeadingMarginSpan.class) {
             int nestingLevel = 1;
             if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
-                nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+                nestingLevel = ((INestParagraphStyle) parentSpan).getNestingLevel() + 1;
             }
             newSpan = new CustomLeadingMarginSpan(nestingLevel, mLeadingMarginSpanIndent);
         }
@@ -2631,7 +2631,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         else if (clazz == AlignNormalSpan.class || clazz == AlignCenterSpan.class || clazz == AlignOppositeSpan.class) {
             int nestingLevel = 1;
             if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
-                nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+                nestingLevel = ((INestParagraphStyle) parentSpan).getNestingLevel() + 1;
             }
             if (clazz == AlignNormalSpan.class) {
                 newSpan = new AlignNormalSpan(nestingLevel);
@@ -2657,7 +2657,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final boolean isReversed = (boolean) view.getTag(R.id.list_is_reversed);
                 int nestingLevel = 1;
                 if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
-                    nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+                    nestingLevel = ((INestParagraphStyle) parentSpan).getNestingLevel() + 1;
                 }
                 final int listType = (int) view.getTag(R.id.list_list_type);
                 newSpan = new ListSpan(nestingLevel, listType, listStart, isReversed, mIndicatorMargin);
@@ -2668,7 +2668,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         else if (clazz == CustomQuoteSpan.class) {
             int nestingLevel = 1;
             if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
-                nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+                nestingLevel = ((INestParagraphStyle) parentSpan).getNestingLevel() + 1;
             }
 //            newSpan = new QuoteSpan(Color.GREEN);
 //            newSpan = new QuoteSpan(Color.GREEN, 20, 40); ///Call requires API level 28 (current min is 15)
@@ -2679,7 +2679,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         else if (clazz == PreSpan.class) {
             int nestingLevel = 1;
             if (parentSpan != null) {   ///注意：这里使用parentSpan传递NestingLevel！
-                nestingLevel = ((NestSpan) parentSpan).getNestingLevel() + 1;
+                nestingLevel = ((INestParagraphStyle) parentSpan).getNestingLevel() + 1;
             }
             newSpan = new PreSpan(nestingLevel);
         }

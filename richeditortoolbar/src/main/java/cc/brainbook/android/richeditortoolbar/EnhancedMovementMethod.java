@@ -7,7 +7,7 @@ import android.text.method.MovementMethod;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
-import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 
 ///处理CustomImageSpan及其子类VideoSpan/AudioSpan的点击事件
 ///http://stackoverflow.com/a/23566268/569430

@@ -12,10 +12,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 
-import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListSpan;
-import cc.brainbook.android.richeditortoolbar.span.NestSpan;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 
 public abstract class SpanUtil {
     /**
@@ -41,8 +41,8 @@ public abstract class SpanUtil {
                         result = editable.getSpanStart(o2) - editable.getSpanStart(o1);
                     }
                     if (result == 0) {
-                        if (o1 instanceof NestSpan && o2 instanceof NestSpan) {
-                            result = ((NestSpan) o2).getNestingLevel() - ((NestSpan) o1).getNestingLevel();
+                        if (o1 instanceof INestParagraphStyle && o2 instanceof INestParagraphStyle) {
+                            result = ((INestParagraphStyle) o2).getNestingLevel() - ((INestParagraphStyle) o1).getNestingLevel();
 
                             if (result == 0) {
                                 if (o1 instanceof ListSpan && o2 instanceof ListItemSpan) {
@@ -52,9 +52,9 @@ public abstract class SpanUtil {
                                 }
                             }
                         } else if (clazz == ParagraphStyle.class) {
-                            if (o1 instanceof NestSpan) {
+                            if (o1 instanceof INestParagraphStyle) {
                                 result = 1;
-                            } else if (o2 instanceof NestSpan) {
+                            } else if (o2 instanceof INestParagraphStyle) {
                                 result = -1;
                             }
                         }

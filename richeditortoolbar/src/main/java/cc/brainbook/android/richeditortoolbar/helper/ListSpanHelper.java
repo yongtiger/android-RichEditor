@@ -4,8 +4,8 @@ import android.text.Editable;
 
 import java.util.ArrayList;
 
-import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;

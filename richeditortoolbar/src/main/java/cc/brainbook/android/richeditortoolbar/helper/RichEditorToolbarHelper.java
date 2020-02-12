@@ -23,36 +23,36 @@ import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.span.AlignCenterSpan;
-import cc.brainbook.android.richeditortoolbar.span.AlignNormalSpan;
-import cc.brainbook.android.richeditortoolbar.span.AlignOppositeSpan;
-import cc.brainbook.android.richeditortoolbar.span.AudioSpan;
-import cc.brainbook.android.richeditortoolbar.span.BoldSpan;
-import cc.brainbook.android.richeditortoolbar.span.BlockSpan;
-import cc.brainbook.android.richeditortoolbar.span.CodeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomAbsoluteSizeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomBackgroundColorSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomFontFamilySpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomForegroundColorSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomLeadingMarginSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomQuoteSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomRelativeSizeSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomScaleXSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomStrikethroughSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomSubscriptSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomSuperscriptSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomURLSpan;
-import cc.brainbook.android.richeditortoolbar.span.CustomUnderlineSpan;
-import cc.brainbook.android.richeditortoolbar.span.DivSpan;
-import cc.brainbook.android.richeditortoolbar.span.HeadSpan;
-import cc.brainbook.android.richeditortoolbar.span.ItalicSpan;
-import cc.brainbook.android.richeditortoolbar.span.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListItemSpan;
-import cc.brainbook.android.richeditortoolbar.span.ListSpan;
-import cc.brainbook.android.richeditortoolbar.span.NestSpan;
-import cc.brainbook.android.richeditortoolbar.span.PreSpan;
-import cc.brainbook.android.richeditortoolbar.span.VideoSpan;
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.AlignOppositeSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BlockSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CodeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomAbsoluteSizeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomBackgroundColorSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomFontFamilySpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomForegroundColorSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.CustomLeadingMarginSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.CustomQuoteSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomRelativeSizeSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomScaleXSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomStrikethroughSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomSubscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomSuperscriptSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomURLSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.CustomUnderlineSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.DivSpan;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.HeadSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.ItalicSpan;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.nest.PreSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
@@ -747,7 +747,7 @@ public abstract class RichEditorToolbarHelper {
                     || start == end && spanStart <= start && (end < spanEnd || end == spanEnd
                         && (isParagraphStyle(clazz) && editable.charAt(spanEnd - 1) != '\n'
                         || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
-                if (nestingLevel == 0 || ((NestSpan) span).getNestingLevel() == nestingLevel) {
+                if (nestingLevel == 0 || ((INestParagraphStyle) span).getNestingLevel() == nestingLevel) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
                 }
             }
@@ -759,7 +759,7 @@ public abstract class RichEditorToolbarHelper {
     /**
      * 更新区间内所有NestSpan的nesting level，偏移量为offset
      */
-    public static <T extends NestSpan> void updateDescendantNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
+    public static <T extends INestParagraphStyle> void updateDescendantNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
