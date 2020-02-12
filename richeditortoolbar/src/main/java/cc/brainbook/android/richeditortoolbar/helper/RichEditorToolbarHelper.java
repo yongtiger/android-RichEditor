@@ -242,17 +242,6 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AudioSpan.class;
     }
 
-    public static int getSpanFlags(Class clazz) {
-        if (isBlockCharacterStyle(clazz)) {
-            return Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
-        } else if (isCharacterStyle(clazz)) {
-            return Spanned.SPAN_INCLUSIVE_INCLUSIVE;
-        } else {
-            ///注意：段落span只在开始位置才延申！结束位置不延申
-            return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
-        }
-    }
-
 
     /* ------------------------------------------------------------------------------------------------------------ */
     public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
@@ -661,7 +650,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, getSpanFlags(clazz));
+            editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             editable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -680,7 +669,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, getSpanFlags(clazz));
+            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             editable.removeSpan(rightSpan);
         }
 

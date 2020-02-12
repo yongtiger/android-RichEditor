@@ -83,10 +83,6 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isBlockCharacterStyle;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isCharacterStyle;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isParagraphStyle;
 
 /**
  * This class processes HTML strings into displayable styled text.
@@ -895,7 +891,7 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     public void characters(char ch[], int start, int length) throws SAXException {
         ///[PreSpan]
-        if (getLast(null, Pre.class) == null) {
+        if (getLast(Pre.class) == null) {
             handleCharacters(ch, start, length);
         } else {
             mSpannableStringBuilder.append(String.valueOf(ch, start, length));
@@ -927,23 +923,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         ///[更新ListSpan]
         updateListSpans(mSpannableStringBuilder, updateListSpans);
-
-        ///[FIX#如果SPAN_INCLUSIVE_INCLUSIVE或SPAN_EXCLUSIVE_INCLUSIVE，则需要暂时改为SPAN_EXCLUSIVE_EXCLUSIVE，将来再改回来
-        ///否则在添加内容后自动延长span的范围]//////??????CharacterStyle也用SPAN_INCLUSIVE_EXCLUSIVE，就无需FIX了
-        final CharacterStyle[] characterStyles = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), CharacterStyle.class);
-        for (CharacterStyle characterStyle : characterStyles) {
-            final Class clazz = characterStyle.getClass();
-            if (isCharacterStyle(clazz)
-                    && !isBlockCharacterStyle(clazz)
-                    && !isParagraphStyle(clazz)) {
-                final int flags = mSpannableStringBuilder.getSpanFlags(characterStyle);
-                if (flags != getSpanFlags(clazz)) {
-                    final int spanStart = mSpannableStringBuilder.getSpanStart(characterStyle);
-                    final int spanEnd = mSpannableStringBuilder.getSpanEnd(characterStyle);
-                    mSpannableStringBuilder.setSpan(characterStyle, spanStart, spanEnd, getSpanFlags(clazz));
-                }
-            }
-        }
 
         return mSpannableStringBuilder;
     }
@@ -1188,7 +1167,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void startP(Editable text, Attributes attributes) {
         startBlockCssStyle(text, attributes);
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
@@ -1196,7 +1174,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, null);
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
     }
 
@@ -1205,18 +1183,17 @@ class HtmlToSpannedConverter implements ContentHandler {
             start(text, new Div());
         }
 
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
     private void endDiv(Editable text) {
         endCssStyle(text);
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         if (blockCssStyle == null || blockCssStyle.styles.isEmpty()) {
             endBlockElement(text, Div.class);
 
-            final int nestingLevel = getNestingLevel(text, Div.class);
+            final int nestingLevel = getNestingLevel(Div.class);
             end(text, Div.class, new DivSpan(nestingLevel));
         } else {
             for (Object obj : blockCssStyle.styles) {
@@ -1250,7 +1227,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         startBlockCssStyle(text, attributes);
         start(text, new UnOrderList(listType));
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
@@ -1258,12 +1234,12 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, UnOrderList.class);
 
-        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
-        final UnOrderList unOrderList = (UnOrderList) getLast(text, UnOrderList.class);
+        final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
+        final UnOrderList unOrderList = (UnOrderList) getLast(UnOrderList.class);
         final ListSpan listSpan = new ListSpan(nestingLevel, unOrderList.getListType());
         end(text, UnOrderList.class, listSpan);
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
 
         ///[更新ListSpan]
@@ -1301,7 +1277,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         startBlockCssStyle(text, attributes);
         start(text, new OrderList(listType, start, isReversed));
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
@@ -1309,12 +1284,12 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, OrderList.class);
 
-        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
-        final OrderList orderList = (OrderList) getLast(text, OrderList.class);
+        final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
+        final OrderList orderList = (OrderList) getLast(OrderList.class);
         final ListSpan listSpan = new ListSpan(nestingLevel, orderList.getListType(), orderList.mStart, orderList.isReversed);
         end(text, OrderList.class, listSpan);
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
 
         ///[更新ListSpan]
@@ -1324,7 +1299,6 @@ class HtmlToSpannedConverter implements ContentHandler {
     private void startLi(Editable text, Attributes attributes) {
         startBlockCssStyle(text, attributes);
         start(text, new ListItem());
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
@@ -1332,19 +1306,18 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, ListItem.class);
 
-        final int nestingLevel = getNestingLevel(text, OrderUnOrderList.class);
+        final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
         final ListItemSpan listItemSpan = new ListItemSpan(null, 0);   ///注意：需要最后更新！
         listItemSpan.setNestingLevel(nestingLevel);
         end(text, ListItem.class, listItemSpan);
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
     }
 
     private void startBlockquote(Editable text, Attributes attributes) {
         startBlockCssStyle(text, attributes);
         start(text, new Blockquote());
-        startBlockElement(text, attributes);
         startCssStyle(text, attributes);
     }
 
@@ -1352,15 +1325,14 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, Blockquote.class);
 
-        final int nestingLevel = getNestingLevel(text, Blockquote.class);
+        final int nestingLevel = getNestingLevel(Blockquote.class);
         end(text, Blockquote.class, new CustomQuoteSpan(nestingLevel));
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
     }
 
     private void startHeading(Editable text, Attributes attributes, int level) {
-        startBlockElement(text, attributes);
         start(text, new Heading(level));
         startBlockCssStyle(text, attributes);
         startCssStyle(text, attributes);
@@ -1370,25 +1342,24 @@ class HtmlToSpannedConverter implements ContentHandler {
         endCssStyle(text);
         endBlockElement(text, Heading.class);
 
-        final Heading h = (Heading) getLast(text, Heading.class);
+        final Heading h = (Heading) getLast(Heading.class);
         if (h != null) {
             end(text, Heading.class, new HeadSpan(h.mLevel));
         }
 
-        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(text, BlockCssStyle.class);
+        final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
     }
 
     ///[PreSpan]
     private void startPre(Editable text, Attributes attributes) {
         start(text, new Pre());
-        startBlockElement(text, attributes);
     }
     ///[PreSpan]
     private void endPre(Editable text) {
         endBlockElement(text, Pre.class);
 
-        final int nestingLevel = getNestingLevel(text, Pre.class);
+        final int nestingLevel = getNestingLevel(Pre.class);
         end(text, Pre.class, new PreSpan(nestingLevel));
     }
 
@@ -1436,12 +1407,12 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void endFont(Editable text) {
-        final Font font = (Font) getLast(text, Font.class);
+        final Font font = (Font) getLast(Font.class);
         if (font != null) {
             end(text, Font.class, new CustomFontFamilySpan(font.mFace));
         }
 
-        final Foreground foreground = (Foreground) getLast(text, Foreground.class);
+        final Foreground foreground = (Foreground) getLast(Foreground.class);
         if (foreground != null) {
             end(text, Foreground.class,
                     new CustomForegroundColorSpan(foreground.mForegroundColor));
@@ -1449,12 +1420,12 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
         ///https://blog.csdn.net/qq_36009027/article/details/84371825
-        final AbsoluteSize absoluteSize = (AbsoluteSize) getLast(text, AbsoluteSize.class);
+        final AbsoluteSize absoluteSize = (AbsoluteSize) getLast(AbsoluteSize.class);
         if (absoluteSize != null) {
             end(text, AbsoluteSize.class,
                     new CustomAbsoluteSizeSpan(absoluteSize.mSize, absoluteSize.mDip));
         } else {
-            final RelativeSize relativeSize = (RelativeSize) getLast(text, RelativeSize.class);
+            final RelativeSize relativeSize = (RelativeSize) getLast(RelativeSize.class);
             if (relativeSize != null) {
                 end(text, RelativeSize.class,
                         new CustomRelativeSizeSpan(relativeSize.mProportion));
@@ -1470,7 +1441,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void endA(Editable text) {
-        Href h = (Href) getLast(text, Href.class);
+        Href h = (Href) getLast(Href.class);
         if (h != null) {
             if (h.mHref != null) {
                 final int where = mLinkedList.getLast().where;
@@ -1541,22 +1512,18 @@ class HtmlToSpannedConverter implements ContentHandler {
                     span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
         }
 
-        text.setSpan(span, len, text.length(), getSpanFlags(span.getClass()));
+        text.setSpan(span, len, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
 
     /* ---------------------------------------------------------------------------------- */
-    private void startBlockElement(Editable text, Attributes attributes) {
-
-    }
-
     private void endBlockElement(Editable text, Class kind) {
         int len = text.length();
         if (kind == null || len == 0 || text.charAt(len - 1) != '\n') {
             text.append('\n');
         } else {
             ///注意：当kind不为null、且是嵌套而不是并列时（即其start大于等于text.length()），忽略添加'\n'
-            Object obj = getLast(text, kind);
+            Object obj = getLast(kind);
 //            if (obj == null || text.getSpanStart(obj) >= len) {
             if (obj == null || mLinkedList.getLast().where >= len) {
                 text.append('\n');
@@ -1610,7 +1577,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             final int where = mLinkedList.getLast().where;
             for (Object obj : blockCssStyle.styles) {
                 if (obj instanceof Alignment) {
-                    final int nestingLevel = getNestingLevel(text, Alignment.class);
+                    final int nestingLevel = getNestingLevel(Alignment.class);
                     if (((Alignment) obj).mAlignment == Layout.Alignment.ALIGN_CENTER) {
                         setSpanFromMark(text, where, new AlignCenterSpan(nestingLevel));
                     } else if (((Alignment) obj).mAlignment == Layout.Alignment.ALIGN_OPPOSITE) {
@@ -1619,7 +1586,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                         setSpanFromMark(text, where, new AlignNormalSpan(nestingLevel));
                     }
                 } else if (obj instanceof LeadingMargin) {
-                    final int nestingLevel = getNestingLevel(text, LeadingMargin.class);
+                    final int nestingLevel = getNestingLevel(LeadingMargin.class);
                     setSpanFromMark(text, where, new CustomLeadingMarginSpan(nestingLevel, ((LeadingMargin) obj).mIndent));
                 }
             }
@@ -1686,7 +1653,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private CssStyle endCssStyle(Editable text) {
-        final CssStyle cssStyle = (CssStyle) getLast(text, CssStyle.class);
+        final CssStyle cssStyle = (CssStyle) getLast(CssStyle.class);
         if (cssStyle != null) {
 //            final int where = text.getSpanStart(cssStyle);
             final int where = mLinkedList.getLast().where;
@@ -1715,7 +1682,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         int where;
         ArrayList<Object> objList = new ArrayList<>();
 
-        public LL(int where) {
+        LL(int where) {
             this.where = where;
         }
     }
@@ -1725,7 +1692,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void end(Editable text, Class kind, Object repl) {
-        Object obj = getLast(text, kind);
+        Object obj = getLast(kind);
         if (obj != null) {
             mLinkedList.getLast().objList.remove(obj);
 
@@ -1738,19 +1705,12 @@ class HtmlToSpannedConverter implements ContentHandler {
         int len = text.length();
         if (where != len) {
             for (Object span : spans) {
-                ///[FIX#如果SPAN_INCLUSIVE_INCLUSIVE或SPAN_EXCLUSIVE_INCLUSIVE，
-                ///则需要暂时改为SPAN_EXCLUSIVE_EXCLUSIVE，将来再改回来，否则在添加内容后自动延长span的范围]
-                if (getSpanFlags(span.getClass()) == Spanned.SPAN_INCLUSIVE_INCLUSIVE
-                        || getSpanFlags(span.getClass()) == Spanned.SPAN_EXCLUSIVE_INCLUSIVE) {
-                    text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                } else {
-                    text.setSpan(span, where, len, getSpanFlags(span.getClass()));
-                }
+                text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
     }
 
-    private Object getLast(Spanned text, Class kind) {
+    private Object getLast(Class kind) {
         for (Object obj : mLinkedList.getLast().objList) {
             if (kind == OrderUnOrderList.class) {
                 if (obj.getClass() == UnOrderList.class || obj.getClass() == OrderList.class) {
@@ -1779,7 +1739,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         return null;
     }
 
-    private int getNestingLevel(Spanned text, Class kind) {
+    private int getNestingLevel(Class kind) {
         int result = 0;
         for (LL ll : mLinkedList) {
             for (Object obj : ll.objList) {
