@@ -57,6 +57,7 @@ import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignOppositeSpan;
@@ -185,6 +186,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///字符span：Code ---------------- */
     private ImageView mImageViewCode;
+
+    /* ---------------- ///字符span：Border ---------------- */
+    private ImageView mImageViewBorder;
 
     /* ---------------- ///字符span（带参数）：ForegroundColor、BackgroundColor ---------------- */
     private ImageView mImageViewForegroundColor;
@@ -627,10 +631,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageViewSubscript.setOnClickListener(this);
         mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
 
-        /* -------------- ///字符span（带参数）：Code --------------- */
+        /* -------------- ///字符span：Code --------------- */
         mImageViewCode = (ImageView) findViewById(R.id.iv_code);
         mImageViewCode.setOnClickListener(this);
         mClassMap.put(CodeSpan.class, mImageViewCode);
+
+        /* -------------- ///字符span：Border --------------- */
+        mImageViewBorder = (ImageView) findViewById(R.id.iv_border);
+        mImageViewBorder.setOnClickListener(this);
+        mClassMap.put(BorderSpan.class, mImageViewBorder);
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
@@ -948,6 +957,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return UndoRedoHelper.CHANGE_SUPERSCRIPT_SPAN_ACTION;
         } else if (view == mImageViewCode) {
             return UndoRedoHelper.CHANGE_CODE_SPAN_ACTION;
+        } else if (view == mImageViewBorder) {
+            return UndoRedoHelper.CHANGE_BORDER_SPAN_ACTION;
         } else if (view == mImageViewForegroundColor) {
             return UndoRedoHelper.CHANGE_FOREGROUND_COLOR_SPAN_ACTION;
         } else if (view == mImageViewBackgroundColor) {

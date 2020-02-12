@@ -1,6 +1,7 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,7 +22,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
      * Default color for the quote stripe.
      */
     @ColorInt
-    public static final int STANDARD_COLOR = 0xffdddddd;
+    public static final int STANDARD_COLOR = Color.GRAY;
 
     /**
      * Default stripe width in pixels.

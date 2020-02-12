@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignOppositeSpan;
@@ -524,6 +525,9 @@ public class Html {
                 if (style[j] instanceof BlockSpan) {
                     out.append("<block>");
                 } else
+                if (style[j] instanceof BorderSpan) {
+                    out.append("<border>");
+                } else
 
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
@@ -638,6 +642,10 @@ public class Html {
                 if (style[j] instanceof BlockSpan) {
                     out.append("</block>");
                 } else
+                if (style[j] instanceof BorderSpan) {
+                    out.append("</border>");
+                } else
+
 
                 if (style[j] instanceof StyleSpan) {
                     int s = ((StyleSpan) style[j]).getStyle();
@@ -998,6 +1006,8 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         } else if (tag.equalsIgnoreCase("code")) {
             start(mSpannableStringBuilder, new Code());
+        } else if (tag.equalsIgnoreCase("border")) {
+            start(mSpannableStringBuilder, new Border());
         } else if (tag.equalsIgnoreCase("block")) {
             start(mSpannableStringBuilder, new Block());
 
@@ -1141,6 +1151,8 @@ class HtmlToSpannedConverter implements ContentHandler {
             end(mSpannableStringBuilder, Sub.class, new CustomSubscriptSpan());
         } else if (tag.equalsIgnoreCase("code")) {
             end(mSpannableStringBuilder, Code.class, new CodeSpan());
+        } else if (tag.equalsIgnoreCase("border")) {
+            end(mSpannableStringBuilder, Border.class, new BorderSpan());
         } else if (tag.equalsIgnoreCase("block")) {
             end(mSpannableStringBuilder, Block.class, new BlockSpan());
         } else if (tag.equalsIgnoreCase("tt")) {
@@ -1809,60 +1821,60 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private class LeadingMargin {
-        public int mIndent;
+        int mIndent;
 
-        public LeadingMargin(int indent) {
+        LeadingMargin(int indent) {
             mIndent = indent;
         }
     }
     private class Alignment {
-        private Layout.Alignment mAlignment;
+        Layout.Alignment mAlignment;
 
-        public Alignment(Layout.Alignment alignment) {
+        Alignment(Layout.Alignment alignment) {
             mAlignment = alignment;
         }
     }
     private class Foreground {
-        private int mForegroundColor;
+        int mForegroundColor;
 
-        public Foreground(int foregroundColor) {
+        Foreground(int foregroundColor) {
             mForegroundColor = foregroundColor;
         }
     }
     private class Background {
-        private int mBackgroundColor;
+        int mBackgroundColor;
 
-        public Background(int backgroundColor) {
+        Background(int backgroundColor) {
             mBackgroundColor = backgroundColor;
         }
     }
 
     private class Div { }
     private class OrderUnOrderList {
-        private int mListType;
+        int mListType;
 
-        public int getListType() {
+        int getListType() {
             return mListType;
         }
 
-        public void setListType(int listType) {
+        void setListType(int listType) {
             mListType = listType;
         }
 
-        public OrderUnOrderList(int listType) {
+        OrderUnOrderList(int listType) {
             mListType = listType;
         }
     }
     private class UnOrderList extends OrderUnOrderList {
-        public UnOrderList(int listType) {
+        UnOrderList(int listType) {
             super(listType);
         }
     }
     private class OrderList extends OrderUnOrderList {
-        private int mStart;
-        private boolean isReversed;
+        int mStart;
+        boolean isReversed;
 
-        public OrderList(int listType, int start, boolean isReversed) {
+        OrderList(int listType, int start, boolean isReversed) {
             super(listType);
             this.mStart = start;
             this.isReversed = isReversed;
@@ -1872,9 +1884,9 @@ class HtmlToSpannedConverter implements ContentHandler {
     private class Blockquote { }
 
     private class Heading {
-        private int mLevel;
+        int mLevel;
 
-        public Heading(int level) {
+        Heading(int level) {
             mLevel = level;
         }
     }
@@ -1887,18 +1899,19 @@ class HtmlToSpannedConverter implements ContentHandler {
     private class Super { }
     private class Sub { }
     private class Code { }
+    private class Border { }
     private class Block { }
     private class Href {
-        public String mHref;
+        String mHref;
 
-        public Href(String href) {
+        Href(String href) {
             mHref = href;
         }
     }
     private class Font {
-        public String mFace;
+        String mFace;
 
-        public Font(String face) {
+        Font(String face) {
             mFace = face;
         }
     }
@@ -1908,21 +1921,21 @@ class HtmlToSpannedConverter implements ContentHandler {
     ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
     ///https://blog.csdn.net/qq_36009027/article/details/84371825
     private class AbsoluteSize {
-        private int mSize;
-        private boolean mDip;
+        int mSize;
+        boolean mDip;
 
-        public AbsoluteSize(int size) {
+        AbsoluteSize(int size) {
             this(size, false);
         }
-        public AbsoluteSize(int size, boolean dip) {
+        AbsoluteSize(int size, boolean dip) {
             mSize = size;
             mDip = dip;
         }
     }
     private class RelativeSize {
-        private float mProportion;
+        float mProportion;
 
-        public RelativeSize(float proportion) {
+        RelativeSize(float proportion) {
             mProportion = proportion;
         }
     }

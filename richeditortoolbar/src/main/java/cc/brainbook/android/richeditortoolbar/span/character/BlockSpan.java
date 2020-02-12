@@ -12,7 +12,7 @@ import android.text.style.ReplacementSpan;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
-    private static final int COLOR = Color.parseColor("#F0F0F0");
+    private static final int COLOR = Color.GRAY;
     private static final float RADIUS = 10;
 
 

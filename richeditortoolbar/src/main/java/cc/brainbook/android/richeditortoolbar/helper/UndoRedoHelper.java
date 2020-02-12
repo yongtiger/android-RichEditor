@@ -34,17 +34,18 @@ public class UndoRedoHelper {
     public static final int CHANGE_SUBSCRIPT_SPAN_ACTION = 24;
     public static final int CHANGE_SUPERSCRIPT_SPAN_ACTION = 25;
     public static final int CHANGE_CODE_SPAN_ACTION = 26;
-    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 27;
-    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 28;
-    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 29;
-    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 30;
-    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 31;
-    public static final int CHANGE_SCALE_X_SPAN_ACTION = 32;
-    public static final int CHANGE_URL_SPAN_ACTION = 33;
-    public static final int CHANGE_BLOCK_SPAN_ACTION = 34;
-    public static final int CHANGE_IMAGE_SPAN_ACTION = 35;
-    public static final int CHANGE_VIDEO_SPAN_ACTION = 36;
-    public static final int CHANGE_AUDIO_SPAN_ACTION = 37;
+    public static final int CHANGE_BORDER_SPAN_ACTION = 27;
+    public static final int CHANGE_FOREGROUND_COLOR_SPAN_ACTION = 28;
+    public static final int CHANGE_BACKGROUND_COLOR_SPAN_ACTION = 29;
+    public static final int CHANGE_FONT_FAMILY_SPAN_ACTION = 30;
+    public static final int CHANGE_ABSOLUTE_SIZE_SPAN_ACTION = 31;
+    public static final int CHANGE_RELATIVE_SIZE_SPAN_ACTION = 32;
+    public static final int CHANGE_SCALE_X_SPAN_ACTION = 33;
+    public static final int CHANGE_URL_SPAN_ACTION = 34;
+    public static final int CHANGE_BLOCK_SPAN_ACTION = 35;
+    public static final int CHANGE_IMAGE_SPAN_ACTION = 36;
+    public static final int CHANGE_VIDEO_SPAN_ACTION = 37;
+    public static final int CHANGE_AUDIO_SPAN_ACTION = 38;
 
 
     private Context mContext;
@@ -115,6 +116,8 @@ public class UndoRedoHelper {
                 return "change superscript span";
             case CHANGE_CODE_SPAN_ACTION:
                 return "change code span";
+            case CHANGE_BORDER_SPAN_ACTION:
+                return "change border span";
             case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
                 return "change foreground color span";
             case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:

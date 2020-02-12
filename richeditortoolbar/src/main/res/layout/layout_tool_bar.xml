@@ -119,6 +119,12 @@
         style="@style/ImageView" />
 
     <ImageView
+        android:id="@+id/iv_border"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/ic_editor_code"
+        style="@style/ImageView" />
+
+    <ImageView
         android:id="@+id/iv_foreground_color"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/ic_format_color_text_black_24dp"

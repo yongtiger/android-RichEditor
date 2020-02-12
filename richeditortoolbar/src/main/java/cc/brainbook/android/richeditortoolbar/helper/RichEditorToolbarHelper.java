@@ -24,6 +24,7 @@ import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignOppositeSpan;
@@ -221,6 +222,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomSuperscriptSpan.class
                 || clazz == CustomSubscriptSpan.class
                 || clazz == CodeSpan.class
+                || clazz == BorderSpan.class
                 || clazz == CustomForegroundColorSpan.class
                 || clazz == CustomBackgroundColorSpan.class
                 || clazz == CustomFontFamilySpan.class

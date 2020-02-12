@@ -1,6 +1,7 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -17,7 +18,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 ///[PreSpan]注意：cc.brainbook.android.richeditortoolbar.helper.Html要求PreSpan同时继承ParagraphStyle和ICharacterStyle！
 public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphStyle, ICharacterStyle {
     @ColorInt
-    public static final int BACKGROUND_COLOR = 0xffdddddd;
+    public static final int BACKGROUND_COLOR = Color.GRAY;
     public static final int PADDING = 0;
 
     private Rect mBgRect;
