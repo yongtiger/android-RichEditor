@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
@@ -97,11 +98,22 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static ArrayList<Object> fromJson(Editable editable, String src) {
+        //////?????? java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap
         final TextBean textBean = new Gson().fromJson(src, TextBean.class);
 
         return loadSpans(editable, textBean);
     }
 
+    public static Editable fromJson(String src) {
+        //////?????? java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap
+        final TextBean textBean = new Gson().fromJson(src, TextBean.class);
+
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        final Editable editable = new SpannableStringBuilder(textBean.getText());
+        loadSpansFromSpanBeans(spanBeans, editable);
+
+        return editable;
+    }
 
     public static TextBean saveSpans(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = new TextBean();
@@ -650,7 +662,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             editable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -669,7 +681,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             editable.removeSpan(rightSpan);
         }
 

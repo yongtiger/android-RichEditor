@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
@@ -295,9 +294,8 @@ public class Html {
     public static String toHtml(Spanned text, int option) {
         StringBuilder out = new StringBuilder();
 
-        ///[UPGRADE#android.text.Html]
-//        withinHtml(out, text, option);
-        handleHtml(out, text, null);
+        sRemovedSpans.clear();
+        handleHtml(out, text, null, option);
 
         return out.toString();
     }
@@ -312,8 +310,7 @@ public class Html {
     }
 
 
-    /* ------------------- ///[UPGRADE#android.text.Html] ------------------- */
-    private static void handleHtml(StringBuilder out, Spanned text, ParagraphStyle compareSpan) {
+    private static void handleHtml(StringBuilder out, Spanned text, ParagraphStyle compareSpan, int option) {
         int start, end;
         if (compareSpan == null) {
             start = 0;
@@ -324,22 +321,34 @@ public class Html {
         }
 
         int next;
-        for (int i = start; i < end; i = next) {
+        for (int i = start; i <= end; i = next) {
             final ParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, i, compareSpan);
 
             if (nextParagraphStyleSpan == null) {
                 next = text.nextSpanTransition(i, end, ParagraphStyle.class);
 
-                ///[PreSpan]
-                if (compareSpan instanceof PreSpan) {
-                    withinParagraph(out, text, i, next);
+                if (i < next) {
+                    ///[PreSpan]
+                    if (compareSpan instanceof PreSpan) {
+                        withinParagraph(out, text, i, next, true);
+                    } else {
+                        final boolean isOutParagraph = compareSpan == null
+                                || compareSpan instanceof INestParagraphStyle && !(compareSpan instanceof ListItemSpan);
+
+                        if (isOutParagraph) {
+                            out.append("<p").append(getTextDirection(text, start, end)).append(">");
+                        }
+
+                        handleParagraph(out, text, i, next, option);
+
+                        if (isOutParagraph) {
+                            out.append("</p>\n");
+                        }
+                    }
                 } else {
-                    handleParagraph(out, text, i, next, compareSpan == null
-                            || compareSpan instanceof INestParagraphStyle && !(compareSpan instanceof ListItemSpan));
+                    next++;
                 }
             } else {
-                next = text.getSpanEnd(nextParagraphStyleSpan);
-
                 if (nextParagraphStyleSpan instanceof DivSpan) {
                     out.append("<div>\n");
                 } else
@@ -414,7 +423,7 @@ public class Html {
                     out.append("<hr>\n");
                 }
 
-                handleHtml(out, text, nextParagraphStyleSpan);
+                handleHtml(out, text, nextParagraphStyleSpan, option);
 
                 if (nextParagraphStyleSpan instanceof DivSpan
                         || nextParagraphStyleSpan instanceof CustomLeadingMarginSpan
@@ -442,35 +451,15 @@ public class Html {
                 if (nextParagraphStyleSpan instanceof PreSpan) {    ///[PreSpan]
                     out.append("</pre>\n");
                 }
+
+                sRemovedSpans.add(nextParagraphStyleSpan);
+
+                next = text.getSpanEnd(nextParagraphStyleSpan) + 1;
             }
         }
     }
 
-    private static ParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, ParagraphStyle compareSpan) {
-        ParagraphStyle resultSpan = null;
-
-        final ArrayList<ParagraphStyle> paragraphStyleSpans = SpanUtil.getFilteredSpans(ParagraphStyle.class, (Editable) text, where, where, true);
-        for (ParagraphStyle paragraphStyleSpan : paragraphStyleSpans) {
-            if (paragraphStyleSpan == compareSpan) {
-                break;
-            }
-
-            final int paragraphStyleSpanStart = text.getSpanStart(paragraphStyleSpan);
-            final int paragraphStyleSpanEnd = text.getSpanEnd(paragraphStyleSpan);
-            final int resultSpanEnd = text.getSpanEnd(resultSpan);
-            if (paragraphStyleSpanStart == where && (resultSpan == null || resultSpanEnd <= paragraphStyleSpanEnd)) {
-                resultSpan = paragraphStyleSpan;
-            }
-        }
-
-        return resultSpan;
-    }
-
-    private static void handleParagraph(StringBuilder out, Spanned text, int start, int end, boolean isOutParagraph) {
-        if (isOutParagraph) {
-            out.append("<p").append(getTextDirection(text, start, end)).append(">");
-        }
-
+    private static void handleParagraph(StringBuilder out, Spanned text, int start, int end, int option) {
         int next;
         for (int i = start; i < end; i = next) {
             next = TextUtils.indexOf(text, '\n', i, end);
@@ -478,41 +467,26 @@ public class Html {
                 next = end;
             }
 
-            withinParagraph(out, text, i, next);
+            withinParagraph(out, text, i, next, false);
 
-            if (++next < end) {
-                if (isOutParagraph) {
+            if (option == TO_HTML_PARAGRAPH_LINES_CONSECUTIVE) {
+                if (++next < end) {
                     out.append("</p>\n<p").append(getTextDirection(text, start, end)).append(">");
-                } else {
+                }
+            } else {
+                if (next++ < end) {
                     out.append("<br>\n");
                 }
             }
         }
-
-        if (isOutParagraph) {
-            out.append("</p>\n");
-        } else {
-            out.append('\n');
-        }
     }
 
-    private static String getTextDirection(Spanned text, int start, int end) {
-        ///[UPGRADE#android.text.Html]
-//        if (TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, start, end - start)) {
-        if (TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR.isRtl(text, start, end - start)) {
-            return " dir=\"rtl\"";
-        } else {
-            return " dir=\"ltr\"";
-        }
-    }
-
-    private static void withinParagraph(StringBuilder out, Spanned text, int start, int end) {
+    private static void withinParagraph(StringBuilder out, Spanned text, int start, int end, boolean isOutPreTag) {
         int next;
         for (int i = start; i < end; i = next) {
             next = text.nextSpanTransition(i, end, CharacterStyle.class);
 
-            ///[PreSpan]注意：PreSpan同时继承ParagraphStyle和ICharacterStyle！
-            Object[] style = text.getSpans(i, next, ICharacterStyle.class);
+            Object[] style = text.getSpans(i, next, CharacterStyle.class);
 
             for (int j = 0; j < style.length; j++) {
                 if (style[j] instanceof CodeSpan) {
@@ -624,11 +598,11 @@ public class Html {
                 }
             }
 
-            ///[PreSpan]注意：PreSpan同时继承ParagraphStyle和ICharacterStyle！
-            if (style.length == 0 || !(style[0] instanceof PreSpan)) {
-                withinStyle(out, text, i, next);
-            } else {
+            ///[PreSpan]
+            if (isOutPreTag) {
                 out.append(text.subSequence(i, next));
+            } else {
+                withinStyle(out, text, i, next);
             }
 
             for (int j = style.length - 1; j >= 0; j--) {
@@ -739,16 +713,44 @@ public class Html {
             }
         }
     }
+
+    private static ArrayList<Object> sRemovedSpans = new ArrayList<>();
+    private static ParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, ParagraphStyle compareSpan) {
+        ParagraphStyle resultSpan = null;
+
+        final ArrayList<ParagraphStyle> paragraphStyleSpans = SpanUtil.getFilteredSpans(ParagraphStyle.class, (Editable) text, where, where, true);
+        for (ParagraphStyle paragraphStyleSpan : paragraphStyleSpans) {
+            if (paragraphStyleSpan == compareSpan) {
+                break;
+            } else if (sRemovedSpans.contains(paragraphStyleSpan)) {
+                continue;
+            }
+
+            final int paragraphStyleSpanStart = text.getSpanStart(paragraphStyleSpan);
+            final int paragraphStyleSpanEnd = text.getSpanEnd(paragraphStyleSpan);
+            final int resultSpanEnd = text.getSpanEnd(resultSpan);
+            if (paragraphStyleSpanStart == where && (resultSpan == null || resultSpanEnd <= paragraphStyleSpanEnd)) {
+                resultSpan = paragraphStyleSpan;
+            }
+        }
+
+        return resultSpan;
+    }
+
+    private static String getTextDirection(Spanned text, int start, int end) {
+        ///[UPGRADE#android.text.Html]
+//        if (TextDirectionHeuristics.FIRSTSTRONG_LTR.isRtl(text, start, end - start)) {
+        if (TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR.isRtl(text, start, end - start)) {
+            return " dir=\"rtl\"";
+        } else {
+            return " dir=\"ltr\"";
+        }
+    }
+
 }
 
 
-
 class HtmlToSpannedConverter implements ContentHandler {
-
-//    private static final float[] HEADING_SIZES = {
-//            1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f,
-//    };
-
     private String mSource;
     private XMLReader mReader;
     private SpannableStringBuilder mSpannableStringBuilder;
@@ -778,10 +780,9 @@ class HtmlToSpannedConverter implements ContentHandler {
         sColorMap.put("grey", 0xFF808080);
         sColorMap.put("lightgrey", 0xFFD3D3D3);
         sColorMap.put("green", 0xFF008000);
-//        //////??????[UPGRADE#增加颜色]参考Color#sColorNameMap
-//        sColorMap.put("red", 0xFFFF0000);
-//        sColorMap.put("yellow", 0xFFFFFF00);
-//        sColorMap.put("blue", 0xFF0000FF);
+        sColorMap.put("red", 0xFFFF0000);
+        sColorMap.put("yellow", 0xFFFFFF00);
+        sColorMap.put("blue", 0xFF0000FF);
     }
 
     private static Pattern getListTypePattern() {
@@ -837,14 +838,6 @@ class HtmlToSpannedConverter implements ContentHandler {
         return sFontSizePattern;
     }
 
-    private static boolean isInteger(String str) {
-        if (TextUtils.isEmpty(str)) {
-            return false;
-        }
-        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
-        return pattern.matcher(str).matches();
-    }
-
     private int getHtmlColor(String color) {
         if ((mFlags & Html.FROM_HTML_OPTION_USE_CSS_COLORS)
                 == Html.FROM_HTML_OPTION_USE_CSS_COLORS) {
@@ -889,12 +882,28 @@ class HtmlToSpannedConverter implements ContentHandler {
         handleEndTag(localName);
     }
 
-    public void characters(char ch[], int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length) throws SAXException {
         ///[PreSpan]
         if (getLast(Pre.class) == null) {
-            handleCharacters(ch, start, length);
+            ///trim ch[]
+            char[] characters;
+            final StringBuilder sb = new StringBuilder();
+            for (int i = start; i < length; i++) {
+                sb.append(ch[i]);
+            }
+            characters = sb.toString().trim().toCharArray();
+
+            if (characters.length > 0) {
+                if (!isCharacterStyleTag) {    ///不在CharacterStyle tag中
+                    addNewLine(mSpannableStringBuilder, false);
+                }
+
+                handleCharacters(characters, 0, characters.length);
+            }
         } else {
-            mSpannableStringBuilder.append(String.valueOf(ch, start, length));
+            if (length > 0) {
+                mSpannableStringBuilder.append(String.valueOf(ch, start, length));
+            }
         }
     }
 
@@ -906,8 +915,9 @@ class HtmlToSpannedConverter implements ContentHandler {
 
 
     /* ---------------------------------------------------------------------------------- */
-    ///[更新ListSpan]
     private ArrayList<ListSpan> updateListSpans = new ArrayList<>();
+    private boolean hasParagraphStyle = false;
+    private boolean isCharacterStyleTag = false;
 
     public Spanned convert() {
         mReader.setContentHandler(this);
@@ -921,6 +931,9 @@ class HtmlToSpannedConverter implements ContentHandler {
             throw new RuntimeException(e);
         }
 
+        ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+        adjustNewLine(mSpannableStringBuilder);
+
         ///[更新ListSpan]
         updateListSpans(mSpannableStringBuilder, updateListSpans);
 
@@ -928,6 +941,20 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void handleStartTag(String tag, Attributes attributes) {
+        ///[添加'\n'#添加ParagraphStyle tags之前]
+        if (tag.equalsIgnoreCase("p")
+                || tag.equalsIgnoreCase("div")
+                || tag.equalsIgnoreCase("ul")
+                || tag.equalsIgnoreCase("ol")
+                || tag.equalsIgnoreCase("li")
+                || tag.equalsIgnoreCase("blockquote")
+                || tag.equalsIgnoreCase("pre")
+                || isHeadTag(tag)) {
+            addNewLine(mSpannableStringBuilder, true);
+        } else {
+            isCharacterStyleTag = true;
+        }
+
         mLinkedList.add(new LL(mSpannableStringBuilder.length()));
 
         if (tag.equalsIgnoreCase("br")) {
@@ -953,13 +980,12 @@ class HtmlToSpannedConverter implements ContentHandler {
         } else if (tag.equalsIgnoreCase("pre")) {   ///[PreSpan]
             startPre(mSpannableStringBuilder, attributes);
 
-        } else if (tag.length() == 2 &&
-                Character.toLowerCase(tag.charAt(0)) == 'h' &&
-                tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
+        } else if (isHeadTag(tag)) {
             startHeading(mSpannableStringBuilder, attributes, tag.charAt(1) - '1');
 
         } else if (tag.equalsIgnoreCase("hr")) {
             // We don't need to handle this.
+
 
         } else if (tag.equalsIgnoreCase("span")) {
             startCssStyle(mSpannableStringBuilder, attributes);
@@ -1049,14 +1075,12 @@ class HtmlToSpannedConverter implements ContentHandler {
                 ///[UPGRADE#android.text.Html#'\n'应该忽略！]
 //                if (pred != ' ' && pred != '\n') {
                 if (pred != ' ') {
-
                     sb.append(' ');
                 }
 
                 ///[UPGRADE#android.text.Html#'\n'应该忽略！]
 //            } else {
             } else if (c != '\n') {
-
                 sb.append(c);
             }
         }
@@ -1066,27 +1090,30 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void handleEndTag(String tag) {
         if (tag.equalsIgnoreCase("br")) {
-            handleBr(mSpannableStringBuilder);
-
+            mSpannableStringBuilder.append('\n');
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("p")) {
             endP(mSpannableStringBuilder);
-
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("div")) {
             endDiv(mSpannableStringBuilder);
-
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("ul")) {
             endUl(mSpannableStringBuilder);
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("ol")) {
             endOl(mSpannableStringBuilder);
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("li")) {
             endLi(mSpannableStringBuilder);
+            hasParagraphStyle = true;
 
         } else if (tag.equalsIgnoreCase("blockquote")) {
             endBlockquote(mSpannableStringBuilder);
-
+            hasParagraphStyle = true;
         } else if (tag.equalsIgnoreCase("pre")) {   ///[PreSpan]
             endPre(mSpannableStringBuilder);
-
+            hasParagraphStyle = true;
         } else if (tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6') {
@@ -1094,6 +1121,8 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         } else if (tag.equalsIgnoreCase("hr")) {
             handleHr(mSpannableStringBuilder);
+            hasParagraphStyle = true;
+
 
         } else if (tag.equalsIgnoreCase("span")) {
             endCssStyle(mSpannableStringBuilder);
@@ -1157,14 +1186,11 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
 
         mLinkedList.removeLast();
+        isCharacterStyleTag = false;
     }
 
 
     /* ----------------------------------------------------------------------------------------- */
-    private void handleBr(Editable text) {
-        text.append('\n');
-    }
-
     private void startP(Editable text, Attributes attributes) {
         startBlockCssStyle(text, attributes);
         startCssStyle(text, attributes);
@@ -1172,7 +1198,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endP(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, null);
 
         final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         endBlockCssStyle(text, blockCssStyle);
@@ -1191,18 +1216,8 @@ class HtmlToSpannedConverter implements ContentHandler {
 
         final BlockCssStyle blockCssStyle = (BlockCssStyle) getLast(BlockCssStyle.class);
         if (blockCssStyle == null || blockCssStyle.styles.isEmpty()) {
-            endBlockElement(text, Div.class);
-
             final int nestingLevel = getNestingLevel(Div.class);
             end(text, Div.class, new DivSpan(nestingLevel));
-        } else {
-            for (Object obj : blockCssStyle.styles) {
-                if (obj instanceof Alignment) {
-                    endBlockElement(text, Alignment.class);
-                } else if (obj instanceof LeadingMargin) {
-                    endBlockElement(text, LeadingMargin.class);
-                }
-            }
         }
 
         endBlockCssStyle(text, blockCssStyle);
@@ -1232,7 +1247,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endUl(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, UnOrderList.class);
 
         final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
         final UnOrderList unOrderList = (UnOrderList) getLast(UnOrderList.class);
@@ -1282,7 +1296,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endOl(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, OrderList.class);
 
         final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
         final OrderList orderList = (OrderList) getLast(OrderList.class);
@@ -1304,7 +1317,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endLi(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, ListItem.class);
 
         final int nestingLevel = getNestingLevel(OrderUnOrderList.class);
         final ListItemSpan listItemSpan = new ListItemSpan(null, 0);   ///注意：需要最后更新！
@@ -1323,7 +1335,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endBlockquote(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, Blockquote.class);
 
         final int nestingLevel = getNestingLevel(Blockquote.class);
         end(text, Blockquote.class, new CustomQuoteSpan(nestingLevel));
@@ -1340,7 +1351,6 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void endHeading(Editable text) {
         endCssStyle(text);
-        endBlockElement(text, Heading.class);
 
         final Heading h = (Heading) getLast(Heading.class);
         if (h != null) {
@@ -1357,16 +1367,15 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
     ///[PreSpan]
     private void endPre(Editable text) {
-        endBlockElement(text, Pre.class);
-
         final int nestingLevel = getNestingLevel(Pre.class);
         end(text, Pre.class, new PreSpan(nestingLevel));
     }
 
     private void handleHr(Editable text) {
         final int where = text.length();
-        text.append('\n');
         setSpanFromMark(text, where, new LineDividerSpan());
+
+        text.append('\n');
     }
 
 
@@ -1512,25 +1521,11 @@ class HtmlToSpannedConverter implements ContentHandler {
                     span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
         }
 
-        text.setSpan(span, len, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        text.setSpan(span, len, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
     }
 
 
     /* ---------------------------------------------------------------------------------- */
-    private void endBlockElement(Editable text, Class kind) {
-        int len = text.length();
-        if (kind == null || len == 0 || text.charAt(len - 1) != '\n') {
-            text.append('\n');
-        } else {
-            ///注意：当kind不为null、且是嵌套而不是并列时（即其start大于等于text.length()），忽略添加'\n'
-            Object obj = getLast(kind);
-//            if (obj == null || text.getSpanStart(obj) >= len) {
-            if (obj == null || mLinkedList.getLast().where >= len) {
-                text.append('\n');
-            }
-        }
-    }
-
     private BlockCssStyle startBlockCssStyle(Editable text, Attributes attributes) {
         final BlockCssStyle blockCssStyle = new BlockCssStyle();
         final String styles = attributes.getValue("", "style");
@@ -1655,9 +1650,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     private CssStyle endCssStyle(Editable text) {
         final CssStyle cssStyle = (CssStyle) getLast(CssStyle.class);
         if (cssStyle != null) {
-//            final int where = text.getSpanStart(cssStyle);
             final int where = mLinkedList.getLast().where;
-//            text.removeSpan(cssStyle);
             for (Object obj : cssStyle.styles) {
                 if (obj instanceof Foreground) {
                     setSpanFromMark(text, where, new CustomForegroundColorSpan(((Foreground) obj).mForegroundColor));
@@ -1703,10 +1696,8 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     private void setSpanFromMark(Spannable text, int where, Object... spans) {
         int len = text.length();
-        if (where != len) {
-            for (Object span : spans) {
-                text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+        for (Object span : spans) {
+            text.setSpan(span, where, len, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
     }
 
@@ -1736,6 +1727,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                 return obj;
             }
         }
+
         return null;
     }
 
@@ -1768,6 +1760,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                 }
             }
         }
+
         return result;
     }
 
@@ -1898,6 +1891,61 @@ class HtmlToSpannedConverter implements ContentHandler {
         RelativeSize(float proportion) {
             mProportion = proportion;
         }
+    }
+
+    /* ---------------------------------------------------------------------------------- */
+    ///[添加'\n']
+    private void addNewLine(Editable text, Boolean isFromTag) {
+        final int len = text.length();
+        if (len == 0) { ///当文首时
+            if (hasParagraphStyle) { ///如果已经存在ParagraphStyle spans（此时为空ParagraphStyle spans）
+                text.append('\n');
+            }
+        } else {    ///当非文首时
+            if (text.charAt(len - 1) == '\n') { ///如果文尾是'\n'
+                ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+                adjustNewLine(text);
+            } else if (isFromTag) {  ///如果文尾不是'\n'，且来自Tag
+                text.append('\n');
+            } else {    ///如果文尾不是'\n'，且不是来自Tag
+                if (text.getSpans(len, len, CharacterStyle.class).length == 0) {    ///注意：PreSpan继承ICharacterStyle，而不是CharacterStyle
+                    text.append('\n');
+                }
+            }
+        }
+    }
+
+    ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+    private void adjustNewLine(Editable text) {
+        ///len为0时，Spannable和EditText都能正常添加这类spans，无需添加'\n'
+        ///len大于0时，虽然Spannable能正常添加，但EditText无法添加，需要添加'\n'
+        final int len = text.length();
+        if (len > 0) {
+            final Object[] spans = text.getSpans(len, len, ParagraphStyle.class);
+            for (Object obj : spans) {
+                final int spanStart = text.getSpanStart(obj);
+                final int spanEnd = text.getSpanEnd(obj);
+
+                if (spanStart == spanEnd) {
+                    text.append('\n');
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean isHeadTag(String tag) {
+        return tag.length() == 2 &&
+                Character.toLowerCase(tag.charAt(0)) == 'h' &&
+                tag.charAt(1) >= '1' && tag.charAt(1) <= '6';
+    }
+
+    private boolean isInteger(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("^[-\\+]?[\\d]*$");
+        return pattern.matcher(str).matches();
     }
 
 }

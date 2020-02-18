@@ -12,11 +12,9 @@ import android.text.style.LineBackgroundSpan;
 
 import com.google.gson.annotations.Expose;
 
-import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-///[PreSpan]注意：cc.brainbook.android.richeditortoolbar.helper.Html要求PreSpan同时继承ParagraphStyle和ICharacterStyle！
-public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphStyle, ICharacterStyle {
+public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphStyle {
     @ColorInt
     public static final int BACKGROUND_COLOR = Color.GRAY;
     public static final int PADDING = 0;

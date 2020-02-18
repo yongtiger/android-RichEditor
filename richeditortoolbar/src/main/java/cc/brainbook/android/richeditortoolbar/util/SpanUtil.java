@@ -77,11 +77,6 @@ public abstract class SpanUtil {
 
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
-            ///删除spanStart == spanEnd的span
-            if (spanStart == spanEnd) {
-                editable.removeSpan(span);
-                continue;
-            }
 
             filteredSpans.add(span);
         }

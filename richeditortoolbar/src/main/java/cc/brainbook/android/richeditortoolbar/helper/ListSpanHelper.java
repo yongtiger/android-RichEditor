@@ -249,7 +249,7 @@ public class ListSpanHelper {
             final ListItemSpan newListItemSpan = new ListItemSpan(listSpan, index,
                     indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
 
-            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
             if (listSpan.isReversed()) {
                 index--;
@@ -307,7 +307,7 @@ public class ListSpanHelper {
                 span.setIndex(index);
 
                 ///注意：必须重新setSpan，否则不会自动更新绘制！
-                editable.setSpan(span, st, en, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                editable.setSpan(span, st, en, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
                 if (listSpan.isReversed()) {
                     index--;
