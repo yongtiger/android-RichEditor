@@ -18,6 +18,9 @@
     <!--    前景色：app:tint="@color/color_state_view"-->
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
+
+    <!-- ///[取消按钮功能]注释可取消某按钮（必须同时注释RichEditorToolbar中的findViewById()） -->
+
     <ImageView
         android:id="@+id/iv_leading_margin"
         android:longClickable="true"

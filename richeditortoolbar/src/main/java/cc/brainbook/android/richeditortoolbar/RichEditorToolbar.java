@@ -554,270 +554,336 @@ public class RichEditorToolbar extends FlexboxLayout implements
         /* -------------- ///段落span：Div --------------- */
         mClassMap.put(DivSpan.class, null);
 
-        /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
-        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
-        mImageViewAlignNormal.setOnClickListener(this);
-        mClassMap.put(AlignNormalSpan.class, mImageViewAlignNormal);
-
-        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center);
-        mImageViewAlignCenter.setOnClickListener(this);
-        mClassMap.put(AlignCenterSpan.class, mImageViewAlignCenter);
-
-        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite);
-        mImageViewAlignOpposite.setOnClickListener(this);
-        mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
-
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
-        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
-        mImageViewLeadingMargin.setOnClickListener(this);
-        mImageViewLeadingMargin.setOnLongClickListener(this);
-        mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
+        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewLeadingMargin != null) {
+            mImageViewLeadingMargin.setOnClickListener(this);
+            mImageViewLeadingMargin.setOnLongClickListener(this);
+            mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
+        }
 
-        /* -------------- ///段落span（带初始化参数）：Quote --------------- */
-        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
-        mImageViewQuote.setOnClickListener(this);
-        mImageViewQuote.setOnLongClickListener(this);
-        mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
+        /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
+        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewAlignNormal != null) {
+            mImageViewAlignNormal.setOnClickListener(this);
+            mClassMap.put(AlignNormalSpan.class, mImageViewAlignNormal);
+        }
 
-        /* -------------- ///字符span（带参数）：Pre --------------- */
-        mImageViewPre = (ImageView) findViewById(R.id.iv_pre);
-        mImageViewPre.setOnClickListener(this);
-        mClassMap.put(PreSpan.class, mImageViewPre);
+        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewAlignCenter != null) {
+            mImageViewAlignCenter.setOnClickListener(this);
+            mClassMap.put(AlignCenterSpan.class, mImageViewAlignCenter);
+        }
+
+        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewAlignOpposite != null) {
+            mImageViewAlignOpposite.setOnClickListener(this);
+            mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
+        }
 
         /* -------------- ///段落span（带初始化参数）：List --------------- */
-        mImageViewList = (ImageView) findViewById(R.id.iv_list);
-        mImageViewList.setOnClickListener(this);
-        mImageViewList.setOnLongClickListener(this);
-        mClassMap.put(ListSpan.class, mImageViewList);
-        ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
-        ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
-        mClassMap.put(ListItemSpan.class, null);
+        mImageViewList = (ImageView) findViewById(R.id.iv_list); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewList != null) {
+            mImageViewList.setOnClickListener(this);
+            mImageViewList.setOnLongClickListener(this);
+            mClassMap.put(ListSpan.class, mImageViewList);
+            ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
+            ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
+            mClassMap.put(ListItemSpan.class, null);
+        }
+
+        /* -------------- ///段落span（带初始化参数）：Quote --------------- */
+        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewQuote != null) {
+            mImageViewQuote.setOnClickListener(this);
+            mImageViewQuote.setOnLongClickListener(this);
+            mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
+        }
+
+        /* -------------- ///字符span（带参数）：Pre --------------- */
+        mImageViewPre = (ImageView) findViewById(R.id.iv_pre); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewPre != null) {
+            mImageViewPre.setOnClickListener(this);
+            mClassMap.put(PreSpan.class, mImageViewPre);
+        }
 
         /* -------------- ///段落span（带参数）：Head --------------- */
-        mTextViewHead = (TextView) findViewById(R.id.tv_head);
-        mTextViewHead.setOnClickListener(this);
-        mClassMap.put(HeadSpan.class, mTextViewHead);
+        mTextViewHead = (TextView) findViewById(R.id.tv_head); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mTextViewHead != null) {
+            mTextViewHead.setOnClickListener(this);
+            mClassMap.put(HeadSpan.class, mTextViewHead);
+        }
 
         /* -------------- ///段落span：LineDivider --------------- */
-        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
-        mImageViewLineDivider.setOnClickListener(this);
-        mImageViewLineDivider.setOnLongClickListener(this);
-        mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
+        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewLineDivider != null) {
+            mImageViewLineDivider.setOnClickListener(this);
+            mImageViewLineDivider.setOnLongClickListener(this);
+            mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
+        }
 
         /* -------------- ///字符span：Bold、Italic --------------- */
-        mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
-        mImageViewBold.setOnClickListener(this);
-        mClassMap.put(BoldSpan.class, mImageViewBold);
+        mImageViewBold = (ImageView) findViewById(R.id.iv_bold); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewBold != null) {
+            mImageViewBold.setOnClickListener(this);
+            mClassMap.put(BoldSpan.class, mImageViewBold);
+        }
 
-        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic);
-        mImageViewItalic.setOnClickListener(this);
-        mClassMap.put(ItalicSpan.class, mImageViewItalic);
+        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewItalic != null) {
+            mImageViewItalic.setOnClickListener(this);
+            mClassMap.put(ItalicSpan.class, mImageViewItalic);
+        }
 
         /* ------------ ///字符span：Underline、StrikeThrough、Subscript、Superscript ------------ */
-        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline);
-        mImageViewUnderline.setOnClickListener(this);
-        mClassMap.put(CustomUnderlineSpan.class, mImageViewUnderline);
+        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewUnderline != null) {
+            mImageViewUnderline.setOnClickListener(this);
+            mClassMap.put(CustomUnderlineSpan.class, mImageViewUnderline);
+        }
 
-        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough);
-        mImageViewStrikeThrough.setOnClickListener(this);
-        mClassMap.put(CustomStrikethroughSpan.class, mImageViewStrikeThrough);
+        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewStrikeThrough != null) {
+            mImageViewStrikeThrough.setOnClickListener(this);
+            mClassMap.put(CustomStrikethroughSpan.class, mImageViewStrikeThrough);
+        }
 
-        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript);
-        mImageViewSuperscript.setOnClickListener(this);
-        mClassMap.put(CustomSuperscriptSpan.class, mImageViewSuperscript);
+        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewSuperscript != null) {
+            mImageViewSuperscript.setOnClickListener(this);
+            mClassMap.put(CustomSuperscriptSpan.class, mImageViewSuperscript);
+        }
 
-        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript);
-        mImageViewSubscript.setOnClickListener(this);
-        mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
+        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewSubscript != null) {
+            mImageViewSubscript.setOnClickListener(this);
+            mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
+        }
 
         /* -------------- ///字符span：Code --------------- */
-        mImageViewCode = (ImageView) findViewById(R.id.iv_code);
-        mImageViewCode.setOnClickListener(this);
-        mClassMap.put(CodeSpan.class, mImageViewCode);
+        mImageViewCode = (ImageView) findViewById(R.id.iv_code); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewCode != null) {
+            mImageViewCode.setOnClickListener(this);
+            mClassMap.put(CodeSpan.class, mImageViewCode);
+        }
 
         /* -------------- ///字符span：Border --------------- */
-        mImageViewBorder = (ImageView) findViewById(R.id.iv_border);
-        mImageViewBorder.setOnClickListener(this);
-        mClassMap.put(BorderSpan.class, mImageViewBorder);
+        mImageViewBorder = (ImageView) findViewById(R.id.iv_border); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewBorder != null) {
+            mImageViewBorder.setOnClickListener(this);
+            mClassMap.put(BorderSpan.class, mImageViewBorder);
+        }
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
-        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
-        mImageViewForegroundColor.setOnClickListener(this);
-        mClassMap.put(CustomForegroundColorSpan.class, mImageViewForegroundColor);
+        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewForegroundColor != null) {
+            mImageViewForegroundColor.setOnClickListener(this);
+            mClassMap.put(CustomForegroundColorSpan.class, mImageViewForegroundColor);
+        }
 
-        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color);
-        mImageViewBackgroundColor.setOnClickListener(this);
-        mClassMap.put(CustomBackgroundColorSpan.class, mImageViewBackgroundColor);
+        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewBackgroundColor != null) {
+            mImageViewBackgroundColor.setOnClickListener(this);
+            mClassMap.put(CustomBackgroundColorSpan.class, mImageViewBackgroundColor);
+        }
 
         /* -------------- ///字符span（带参数）：FontFamily --------------- */
-        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family);
-        mTextViewFontFamily.setOnClickListener(this);
-        mClassMap.put(CustomFontFamilySpan.class, mTextViewFontFamily);
+        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mTextViewFontFamily != null) {
+            mTextViewFontFamily.setOnClickListener(this);
+            mClassMap.put(CustomFontFamilySpan.class, mTextViewFontFamily);
+        }
 
         /* -------------- ///字符span（带参数）：AbsoluteSize --------------- */
-        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size);
-        mTextViewAbsoluteSize.setOnClickListener(this);
-        mClassMap.put(CustomAbsoluteSizeSpan.class, mTextViewAbsoluteSize);
+        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mTextViewAbsoluteSize != null) {
+            mTextViewAbsoluteSize.setOnClickListener(this);
+            mClassMap.put(CustomAbsoluteSizeSpan.class, mTextViewAbsoluteSize);
+        }
 
         /* -------------- ///字符span（带参数）：RelativeSize --------------- */
-        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size);
-        mTextViewRelativeSize.setOnClickListener(this);
-        mClassMap.put(CustomRelativeSizeSpan.class, mTextViewRelativeSize);
+        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mTextViewRelativeSize != null) {
+            mTextViewRelativeSize.setOnClickListener(this);
+            mClassMap.put(CustomRelativeSizeSpan.class, mTextViewRelativeSize);
+        }
 
         /* -------------- ///字符span（带参数）：ScaleX --------------- */
-        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x);
-        mTextViewScaleX.setOnClickListener(this);
-        mClassMap.put(CustomScaleXSpan.class, mTextViewScaleX);
+        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mTextViewScaleX != null) {
+            mTextViewScaleX.setOnClickListener(this);
+            mClassMap.put(CustomScaleXSpan.class, mTextViewScaleX);
+        }
 
         /* -------------- ///字符span（带参数）：URL --------------- */
-        mImageViewURL = (ImageView) findViewById(R.id.iv_url);
-        mImageViewURL.setOnClickListener(this);
-        mClassMap.put(CustomURLSpan.class, mImageViewURL);
+        mImageViewURL = (ImageView) findViewById(R.id.iv_url); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewURL != null) {
+            mImageViewURL.setOnClickListener(this);
+            mClassMap.put(CustomURLSpan.class, mImageViewURL);
+        }
 
         /* -------------- ///字符span（带参数）：Block --------------- */
-        mImageViewBlock = (ImageView) findViewById(R.id.iv_block);
-        mImageViewBlock.setOnClickListener(this);
-        mClassMap.put(BlockSpan.class, mImageViewBlock);
+        mImageViewBlock = (ImageView) findViewById(R.id.iv_block); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewBlock != null) {
+            mImageViewBlock.setOnClickListener(this);
+            mClassMap.put(BlockSpan.class, mImageViewBlock);
+        }
 
         /* -------------- ///字符span（带参数）：Image --------------- */
-        mImageViewVideo = (ImageView) findViewById(R.id.iv_video);
-        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio);
-        mImageViewImage = (ImageView) findViewById(R.id.iv_image);
-        mImageViewVideo.setOnClickListener(this);
-        mImageViewAudio.setOnClickListener(this);
-        mImageViewImage.setOnClickListener(this);
-        mClassMap.put(VideoSpan.class, mImageViewVideo);
-        mClassMap.put(AudioSpan.class, mImageViewAudio);
-        mClassMap.put(CustomImageSpan.class, mImageViewImage);
+        mImageViewVideo = (ImageView) findViewById(R.id.iv_video); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewVideo != null) {
+            mImageViewVideo.setOnClickListener(this);
+            mClassMap.put(VideoSpan.class, mImageViewVideo);
+        }
+
+        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewAudio != null) {
+            mImageViewAudio.setOnClickListener(this);
+            mClassMap.put(AudioSpan.class, mImageViewAudio);
+        }
+
+        mImageViewImage = (ImageView) findViewById(R.id.iv_image); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewImage != null) {
+            mImageViewImage.setOnClickListener(this);
+            mClassMap.put(CustomImageSpan.class, mImageViewImage);
+        }
 
         /* -------------- ///[清除样式] --------------- */
-        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
-        mImageViewClearSpans.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Editable editable = mRichEditText.getText();
-
-                final int selectionStart = Selection.getSelectionStart(editable);
-                final int selectionEnd = Selection.getSelectionEnd(editable);
-                if (selectionStart == -1 || selectionEnd == -1) {
-                    return;
-                }
-
-                ///[更新ListSpan]
-                ArrayList<ListSpan> updateListSpans = new ArrayList<>();
-
-                for (Class clazz : mClassMap.keySet()) {
-                    if (mClassMap.get(clazz) == null) {
-                        continue;
-                    }
-                    if (isParagraphStyle(clazz)) {
-                        mClassMap.get(clazz).setSelected(false);
-                        if (isNestParagraphStyle(clazz)) {
-                            adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true, updateListSpans);
-                        } else {
-                            adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
-                        }
-                        updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
-                    } else if (isCharacterStyle(clazz)) {
-                        mClassMap.get(clazz).setSelected(false);
-                        if (isBlockCharacterStyle(clazz)) {
-                            adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
-                        } else {
-                            adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
-                        }
-                        updateCharacterStyleView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
-                    }
-                }
-
-                ///[更新ListSpan]
-                updateListSpans(editable, updateListSpans);
-
-                ///[Preview]
-                updatePreview();
-
-                ///[Undo/Redo]
-                mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_SPANS_ACTION, selectionStart, null, null,
-                        RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
-            }
-        });
-
-        /* -------------- ///[草稿Draft] --------------- */
-        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft);
-        mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Editable editable = mRichEditText.getText();
-
-                final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), true);
-                PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
-
-                if (checkDraft()) {
-                    Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_failed, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft);
-        mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
-                if (TextUtils.isEmpty(draftText)) {
-                    return;
-                }
-
-                final TextBean textBean = ParcelUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT), TextBean.CREATOR);
-                if (textBean != null) {
-                    final Editable beforeEditable = mRichEditText.getText();
-                    final int selectionStart = Selection.getSelectionStart(beforeEditable);
-                    final int selectionEnd = Selection.getSelectionEnd(beforeEditable);
-                    final String beforeChange = beforeEditable.toString();
-
-                    ///忽略TextWatcher
-                    isSkipTextWatcher = true;
-                    mRichEditText.setText(textBean.getText());
-                    isSkipTextWatcher = false;
-
+        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewClearSpans != null) {
+            mImageViewClearSpans.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     final Editable editable = mRichEditText.getText();
-                    final List<SpanBean> spanBeans = textBean.getSpans();
-                    ///执行setSpanFromSpanBeans及后处理
-                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
 
-                    ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
-                    ///解决：此时应手动调用selectionChanged()来更新view的select状态
-                    if (selectionStart == selectionEnd && selectionEnd == 0) {
-                        selectionChanged(0, 0);
-                    } else {
-                        Selection.setSelection(editable, 0);
+                    final int selectionStart = Selection.getSelectionStart(editable);
+                    final int selectionEnd = Selection.getSelectionEnd(editable);
+                    if (selectionStart == -1 || selectionEnd == -1) {
+                        return;
                     }
+
+                    ///[更新ListSpan]
+                    ArrayList<ListSpan> updateListSpans = new ArrayList<>();
+
+                    for (Class clazz : mClassMap.keySet()) {
+                        if (mClassMap.get(clazz) == null) {
+                            continue;
+                        }
+                        if (isParagraphStyle(clazz)) {
+                            mClassMap.get(clazz).setSelected(false);
+                            if (isNestParagraphStyle(clazz)) {
+                                adjustNestParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true, updateListSpans);
+                            } else {
+                                adjustParagraphStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                            }
+                            updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
+                        } else if (isCharacterStyle(clazz)) {
+                            mClassMap.get(clazz).setSelected(false);
+                            if (isBlockCharacterStyle(clazz)) {
+                                adjustBlockCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                            } else {
+                                adjustCharacterStyleSpans(mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd, true);
+                            }
+                            updateCharacterStyleView(mContext, mClassMap.get(clazz), clazz, editable, selectionStart, selectionEnd);
+                        }
+                    }
+
+                    ///[更新ListSpan]
+                    updateListSpans(editable, updateListSpans);
 
                     ///[Preview]
                     updatePreview();
 
                     ///[Undo/Redo]
-                    mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
+                    mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_SPANS_ACTION, selectionStart, null, null,
                             RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
-
-                    Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
+            });
+        }
 
-        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft);
-        mImageViewClearDraft.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME);
+        /* -------------- ///[草稿Draft] --------------- */
+        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewSaveDraft != null) {
+            mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Editable editable = mRichEditText.getText();
 
-                if (!checkDraft()) {
-                    Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_failed, Toast.LENGTH_SHORT).show();
+                    final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), true);
+                    PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
+
+                    if (checkDraft()) {
+                        Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_failed, Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewRestoreDraft != null) {
+            mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+                    if (TextUtils.isEmpty(draftText)) {
+                        return;
+                    }
+
+                    final TextBean textBean = ParcelUtil.unmarshall(Base64.decode(draftText, Base64.DEFAULT), TextBean.CREATOR);
+                    if (textBean != null) {
+                        final Editable beforeEditable = mRichEditText.getText();
+                        final int selectionStart = Selection.getSelectionStart(beforeEditable);
+                        final int selectionEnd = Selection.getSelectionEnd(beforeEditable);
+                        final String beforeChange = beforeEditable.toString();
+
+                        ///忽略TextWatcher
+                        isSkipTextWatcher = true;
+                        mRichEditText.setText(textBean.getText());
+                        isSkipTextWatcher = false;
+
+                        final Editable editable = mRichEditText.getText();
+                        final List<SpanBean> spanBeans = textBean.getSpans();
+                        ///执行setSpanFromSpanBeans及后处理
+                        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
+
+                        ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
+                        ///解决：此时应手动调用selectionChanged()来更新view的select状态
+                        if (selectionStart == selectionEnd && selectionEnd == 0) {
+                            selectionChanged(0, 0);
+                        } else {
+                            Selection.setSelection(editable, 0);
+                        }
+
+                        ///[Preview]
+                        updatePreview();
+
+                        ///[Undo/Redo]
+                        mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
+                                RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
+
+                        Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewClearDraft != null) {
+            mImageViewClearDraft.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME);
+
+                    if (!checkDraft()) {
+                        Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
 
         ///初始化时检查有无草稿Draft
         if (checkDraft()) {
@@ -825,89 +891,101 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* ------------------- ///[Undo/Redo] ------------------- */
-        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo);
-        mImageViewUndo.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUndoRedoHelper.undo();
+        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewUndo != null) {
+            mImageViewUndo.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUndoRedoHelper.undo();
 
-                ///[Preview]
-                updatePreview();
-            }
-        });
-        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo);
-        mImageViewRedo.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUndoRedoHelper.redo();
+                    ///[Preview]
+                    updatePreview();
+                }
+            });
+        }
 
-                ///[Preview]
-                updatePreview();
-            }
-        });
-        mImageViewSave = (ImageView) findViewById(R.id.iv_save);
-        mImageViewSave.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mUndoRedoHelper.resetSavedPosition();
-                mImageViewSave.setSelected(false);
-                mImageViewSave.setEnabled(false);
-            }
-        });
+        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewRedo != null) {
+            mImageViewRedo.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUndoRedoHelper.redo();
+
+                    ///[Preview]
+                    updatePreview();
+                }
+            });
+        }
+
+        mImageViewSave = (ImageView) findViewById(R.id.iv_save); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewSave != null) {
+            mImageViewSave.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mUndoRedoHelper.resetSavedPosition();
+                    mImageViewSave.setSelected(false);
+                    mImageViewSave.setEnabled(false);
+                }
+            });
+        }
 
         /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
-        mImageViewPreview.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setSelected(!view.isSelected());
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewPreview != null) {
+            mImageViewPreview.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.setSelected(!view.isSelected());
 
-                if (view.isSelected()) {
-                    mRichEditText.setVisibility(GONE);
-                    mTextViewPreview.setVisibility(VISIBLE);
-                    updatePreview();
-                } else {
-                    mRichEditText.setVisibility(VISIBLE);
-                    mTextViewPreview.setVisibility(GONE);
-                    mTextViewPreview.setText(null);
+                    if (view.isSelected()) {
+                        mRichEditText.setVisibility(GONE);
+                        mTextViewPreview.setVisibility(VISIBLE);
+                        updatePreview();
+                    } else {
+                        mRichEditText.setVisibility(VISIBLE);
+                        mTextViewPreview.setVisibility(GONE);
+                        mTextViewPreview.setText(null);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         /* -------------- ///[Html] --------------- */
-        mImageViewHtml = (ImageView) findViewById(R.id.iv_html);
-        mImageViewHtml.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                view.setSelected(!view.isSelected());
+        mImageViewHtml = (ImageView) findViewById(R.id.iv_html); ///[取消按钮功能]注释此行以便取消此按钮！
+        if (mImageViewHtml != null) {
+            mImageViewHtml.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.setSelected(!view.isSelected());
 
-                if (view.isSelected()) {
-                    setAllViewsEnabled(false);
+                    if (view.isSelected()) {
+                        setAllViewsEnabled(false);
 
-                    final String htmlString = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
-                    mEditTextHtml.setText(htmlString);
+                        final String htmlString = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
+                        mEditTextHtml.setText(htmlString);
 
-                    mRichEditText.setVisibility(GONE);
-                    mTextViewPreview.setVisibility(GONE);
-                    mEditTextHtml.setVisibility(VISIBLE);
-                } else {
-                    setAllViewsEnabled(true);
+                        mRichEditText.setVisibility(GONE);
+                        mTextViewPreview.setVisibility(GONE);
+                        mEditTextHtml.setVisibility(VISIBLE);
+                    } else {
+                        setAllViewsEnabled(true);
 
-                    final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
-                    mRichEditText.setText(htmlSpanned);
+                        final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
+                        mRichEditText.setText(htmlSpanned);
 
-                    ///执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！
-                    final Editable editable = mRichEditText.getText();
-                    final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
-                    final List<SpanBean> spanBeans = textBean.getSpans();
-                    postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
+                        ///执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！
+                        final Editable editable = mRichEditText.getText();
+                        final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
+                        final List<SpanBean> spanBeans = textBean.getSpans();
+                        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
 
-                    mRichEditText.setVisibility(VISIBLE);
-                    mTextViewPreview.setVisibility(GONE);
-                    mEditTextHtml.setVisibility(GONE);
+                        mRichEditText.setVisibility(VISIBLE);
+                        mTextViewPreview.setVisibility(GONE);
+                        mEditTextHtml.setVisibility(GONE);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void setupEditText(RichEditText richEditText) {
@@ -922,7 +1000,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     private int getActionId(View view) {
-        if (view == mImageViewAlignNormal) {
+        if (view == null) {
+            return -1;
+        } else if (view == mImageViewAlignNormal) {
             return UndoRedoHelper.CHANGE_ALIGN_NORMAL_SPAN_ACTION;
         } else if (view == mImageViewAlignCenter) {
             return UndoRedoHelper.CHANGE_ALIGN_CENTER_SPAN_ACTION;
