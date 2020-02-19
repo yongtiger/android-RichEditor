@@ -22,45 +22,45 @@
         android:id="@+id/iv_leading_margin"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_indent_increase_black_24dp"
+        app:srcCompat="@drawable/icon_leading_margin"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_normal"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_left_black_24dp"
+        app:srcCompat="@drawable/icon_align_normal"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_center"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_center_black_24dp"
+        app:srcCompat="@drawable/icon_align_center"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_opposite"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_align_right_black_24dp"
+        app:srcCompat="@drawable/icon_align_opposite"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_list"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_list_numbered_black_24dp"
+        app:srcCompat="@drawable/icon_list"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_quote"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_quote"
+        app:srcCompat="@drawable/icon_quote"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_pre"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/icon_pre"
         style="@style/ImageView" />
 
     <TextView
@@ -72,68 +72,68 @@
         android:id="@+id/iv_line_divider"
         android:longClickable="true"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_remove_black_24dp"
+        app:srcCompat="@drawable/icon_line_divider"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_bold"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_bold"
+        app:srcCompat="@drawable/icon_bold"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_italic"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_italic"
+        app:srcCompat="@drawable/icon_italic"
         style="@style/ImageView" />
 
     <!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
     <ImageView
         android:id="@+id/iv_underline"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_underline"
+        app:srcCompat="@drawable/icon_underline"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_strikethrough"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_strikethrough_black_24dp"
+        app:srcCompat="@drawable/icon_strikethrough"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_subscript"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_text_fields_black_24dp"
+        app:srcCompat="@drawable/icon_subscript"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_superscript"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_size_black_24dp"
+        app:srcCompat="@drawable/icon_superscript"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_code"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/icon_code"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_border"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/icon_border"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_foreground_color"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_format_color_text_black_24dp"
+        app:srcCompat="@drawable/icon_foreground_color"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_background_color"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_border_color_black_24dp"
+        app:srcCompat="@drawable/icon_background_color"
         style="@style/ImageView" />
 
     <TextView
@@ -159,85 +159,93 @@
     <ImageView
         android:id="@+id/iv_url"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_insert_link_black_24dp"
+        app:srcCompat="@drawable/icon_url"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_block"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_editor_code"
+        app:srcCompat="@drawable/icon_block"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_video"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_videocam_black_24dp"
+        app:srcCompat="@drawable/icon_video"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_audio"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_audiotrack_black_24dp"
+        app:srcCompat="@drawable/icon_audio"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_image"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_insert_photo_black_24dp"
+        app:srcCompat="@drawable/icon_image"
         style="@style/ImageView" />
+
+    <View
+        android:layout_width="1dip"
+        android:layout_height="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/darker_gray"
+        android:layout_gravity="center_horizontal" />
 
     <ImageView
         android:id="@+id/iv_clear_spans"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_remove_circle_black_24dp"
+        app:srcCompat="@drawable/icon_clear_spans"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_save_draft"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_save_draft_black_24dp"
+        app:srcCompat="@drawable/icon_save_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_restore_draft"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_restore_draft_black_24dp"
+        app:srcCompat="@drawable/icon_restore_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_clear_draft"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_clear_draft_black_24dp"
+        app:srcCompat="@drawable/icon_clear_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_undo"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_undo_black_24dp"
+        app:srcCompat="@drawable/icon_undo"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_redo"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_redo_black_24dp"
+        app:srcCompat="@drawable/icon_redo"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_save"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_save_black_24dp"
+        app:srcCompat="@drawable/icon_save"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_preview"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_local_parking_black_24dp"
+        app:srcCompat="@drawable/icon_preview"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_html"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/ic_http_black_24dp"
+        app:srcCompat="@drawable/icon_html"
         style="@style/ImageView" />
 
 </merge>

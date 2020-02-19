@@ -3,4 +3,6 @@
     <dimen name="image_view_size">32dp</dimen>
     <dimen name="text_size">12sp</dimen>
     <dimen name="text_view_padding">8dp</dimen>
+
+    <dimen name="dialog_layout_margin">8dp</dimen>
 </resources>

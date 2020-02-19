@@ -13,13 +13,13 @@
             android:id="@+id/tv_margin_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
+            android:layout_margin="@dimen/dialog_layout_margin" />
 
         <SeekBar
             android:id="@+id/sb_margin_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/dialog_layout_margin"
             android:max="100"
             android:progress="0" />
 
@@ -27,13 +27,13 @@
             android:id="@+id/tv_margin_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp" />
+            android:layout_margin="@dimen/dialog_layout_margin" />
 
         <SeekBar
             android:id="@+id/sb_margin_bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_margin="@dimen/dialog_layout_margin"
             android:max="100"
             android:progress="0" />
 

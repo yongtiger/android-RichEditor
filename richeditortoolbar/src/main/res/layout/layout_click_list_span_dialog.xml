@@ -8,7 +8,7 @@
         android:id="@+id/tv_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/dialog_layout_margin"
         android:layout_alignParentTop="true"
         android:textAllCaps="false"
         android:text="@string/list_span_start" />
@@ -17,7 +17,7 @@
         android:id="@+id/et_start"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/dialog_layout_margin"
         android:layout_alignBaseline="@+id/tv_start"
         android:layout_toRightOf="@+id/tv_start"
         android:layout_toEndOf="@+id/tv_start"
@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_start"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/dialog_layout_margin"
         android:text="@string/list_span_reverse" />
 
 </RelativeLayout>
