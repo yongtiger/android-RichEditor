@@ -1,8 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import android.support.annotation.ColorInt;
 import android.text.Editable;
@@ -15,7 +17,14 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,138 +79,6 @@ public abstract class RichEditorToolbarHelper {
         return null;
     }
 
-    public static byte[] toByteArray(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
-
-        return ParcelUtil.marshall(textBean);
-    }
-
-    public static ArrayList<Object> fromByteArray(Editable editable, byte[] bytes) {
-        final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
-
-        return loadSpans(editable, textBean);
-    }
-
-    public static String toJson(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
-
-        ///[Gson#Exclude父类成员变量的序列化和反序列化]
-        ///一是因为只测试显示使用而不进行真正的反序列化，并不需要父类成员变量序列化
-        ///二是父类可能包含图片等，造成测试时获取的jsonString字符串长度超长！
-        ///https://howtodoinjava.com/gson/gson-exclude-or-ignore-fields/
-        ///https://www.baeldung.com/gson-exclude-fields-serialization
-        final Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-
-        return gson.toJson(textBean);
-    }
-
-    public static ArrayList<Object> fromJson(Editable editable, String src) {
-        //////?????? java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap
-        final TextBean textBean = new Gson().fromJson(src, TextBean.class);
-
-        return loadSpans(editable, textBean);
-    }
-
-    public static Editable fromJson(String src) {
-        //////?????? java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap
-        final TextBean textBean = new Gson().fromJson(src, TextBean.class);
-
-        final List<SpanBean> spanBeans = textBean.getSpans();
-        final Editable editable = new SpannableStringBuilder(textBean.getText());
-        loadSpansFromSpanBeans(spanBeans, editable);
-
-        return editable;
-    }
-
-    public static TextBean saveSpans(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = new TextBean();
-        if (isSetText) {
-            final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
-            textBean.setText(subSequence.toString());
-        }
-
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class clazz : classHashMap.keySet()) {
-            saveSpansToSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
-        }
-        textBean.setSpans(spanBeans);
-
-        return textBean;
-    }
-
-    public static ArrayList<Object> loadSpans(Editable editable, TextBean textBean) {
-        if (textBean != null) {
-            if (textBean.getText() != null) {
-                //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-                if (!TextUtils.equals(textBean.getText(), editable)) {
-                    return null;
-                }
-
-                ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
-                ///注意：必须保证selectionChanged()不被执行！否则死循环！
-                editable.clearSpans();
-            }
-
-            final List<SpanBean> spanBeans = textBean.getSpans();
-
-            return loadSpansFromSpanBeans(spanBeans, editable);
-        }
-
-        return null;
-    }
-
-    public static <T extends Parcelable> void saveSpansToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
-        for (T span : spans) {
-            ///注意：必须过滤掉没有CREATOR变量的span！
-            ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
-            try {
-                clazz.getField("CREATOR");
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
-                final int spanFlags = editable.getSpanFlags(span);
-                final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
-                final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
-                final SpanBean<T> spanBean = new SpanBean<>(span, span.getClass().getSimpleName(), adjustSpanStart, adjustSpanEnd, spanFlags);
-                spanBeans.add(spanBean);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static ArrayList<Object> loadSpansFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
-        final ArrayList<Object> resultSpanList = new ArrayList<>();
-        if (spanBeans != null) {
-            for (SpanBean spanBean : spanBeans) {
-                final int spanStart = spanBean.getSpanStart();
-                final int spanEnd = spanBean.getSpanEnd();
-                final int spanFlags = spanBean.getSpanFlags();
-                final Object span = spanBean.getSpan();
-                editable.setSpan(span, spanStart, spanEnd, spanFlags);
-                resultSpanList.add(span);
-
-                ///[FIX#由于ListItemSpan类含有ListSpan成员，反序列化后生成的ListSpan成员必须更改为实际保存的ListSpan！]
-                if (span instanceof ListItemSpan) {
-                    final ListSpan parentListSpan =
-                            getParentSpan(null, ListSpan.class, editable, spanStart, spanEnd, null, true, ((ListItemSpan) span).getNestingLevel());
-
-                    if (parentListSpan == null) {
-                        Log.e("TAG", "loadSpansFromSpanBeans()# parentListSpan cannot be null !!!");
-                    }
-
-                    ((ListItemSpan) span).setListSpan(parentListSpan);
-                }
-            }
-        }
-
-        return resultSpanList;
-    }
-
-
-    /* ------------------------------------------------------------------------------------------------------------ */
     public static boolean isParagraphStyle(Class clazz) {
         return clazz == DivSpan.class
                 || clazz == CustomLeadingMarginSpan.class
@@ -233,22 +110,23 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomStrikethroughSpan.class
                 || clazz == CustomSuperscriptSpan.class
                 || clazz == CustomSubscriptSpan.class
-                || clazz == CodeSpan.class
-                || clazz == BorderSpan.class
                 || clazz == CustomForegroundColorSpan.class
                 || clazz == CustomBackgroundColorSpan.class
                 || clazz == CustomFontFamilySpan.class
                 || clazz == CustomAbsoluteSizeSpan.class
                 || clazz == CustomRelativeSizeSpan.class
                 || clazz == CustomScaleXSpan.class
-                || clazz == CustomURLSpan.class
+                || clazz == CodeSpan.class
                 || clazz == BlockSpan.class
+                || clazz == BorderSpan.class
+                || clazz == CustomURLSpan.class
                 || clazz == CustomImageSpan.class
                 || clazz == VideoSpan.class
                 || clazz == AudioSpan.class;
     }
     public static boolean isBlockCharacterStyle(Class clazz) {
-        return clazz == CustomURLSpan.class
+        return /* clazz == BlockSpan.class  ///注意：BlockSpan不是BlockCharacterStyle！
+                || */ clazz == CustomURLSpan.class
                 || clazz == CustomImageSpan.class
                 || clazz == VideoSpan.class
                 || clazz == AudioSpan.class;
@@ -748,8 +626,7 @@ public abstract class RichEditorToolbarHelper {
             ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
             if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                     || start == end && spanStart <= start && (end < spanEnd || end == spanEnd
-                        && (isParagraphStyle(clazz) && editable.charAt(spanEnd - 1) != '\n'
-                        || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
+                        && (isParagraphStyle(clazz) || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
                 if (nestingLevel == 0 || ((INestParagraphStyle) span).getNestingLevel() == nestingLevel) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
                 }
@@ -774,6 +651,377 @@ public abstract class RichEditorToolbarHelper {
                 span.setNestingLevel(span.getNestingLevel() + offset);
             }
         }
+    }
+
+
+    /* --------------------------------------------------------------------------------------- */
+    public static TextBean saveSpans(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = new TextBean();
+        if (isSetText) {
+            final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
+            textBean.setText(subSequence.toString());
+        }
+
+        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+        for (Class clazz : classHashMap.keySet()) {
+            saveSpansToSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+        }
+        textBean.setSpans(spanBeans);
+
+        return textBean;
+    }
+
+    public static ArrayList<Object> loadSpans(Editable editable, TextBean textBean) {
+        if (textBean != null) {
+            if (textBean.getText() != null) {
+                //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+                if (!TextUtils.equals(textBean.getText(), editable)) {
+                    return null;
+                }
+
+                ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
+                ///注意：必须保证selectionChanged()不被执行！否则死循环！
+                editable.clearSpans();
+            }
+
+            final List<SpanBean> spanBeans = textBean.getSpans();
+
+            return loadSpansFromSpanBeans(spanBeans, editable);
+        }
+
+        return null;
+    }
+
+    public static <T extends Parcelable> void saveSpansToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+        for (T span : spans) {
+            ///注意：必须过滤掉没有CREATOR变量的span！
+            ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
+            try {
+                clazz.getField("CREATOR");
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+                final int spanFlags = editable.getSpanFlags(span);
+                final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
+                final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
+                final SpanBean<T> spanBean = new SpanBean<>(span, span.getClass().getSimpleName(), adjustSpanStart, adjustSpanEnd, spanFlags);
+                spanBeans.add(spanBean);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static ArrayList<Object> loadSpansFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+        final ArrayList<Object> resultSpanList = new ArrayList<>();
+        if (spanBeans != null) {
+            for (SpanBean spanBean : spanBeans) {
+                final int spanStart = spanBean.getSpanStart();
+                final int spanEnd = spanBean.getSpanEnd();
+                final int spanFlags = spanBean.getSpanFlags();
+                final Object span = spanBean.getSpan();
+                editable.setSpan(span, spanStart, spanEnd, spanFlags);
+                resultSpanList.add(span);
+
+                ///[FIX#由于ListItemSpan类含有ListSpan成员，反序列化后生成的ListSpan成员必须更改为实际保存的ListSpan！]
+                if (span instanceof ListItemSpan) {
+                    final ListSpan parentListSpan =
+                            getParentSpan(null, ListSpan.class, editable, spanStart, spanEnd, null, true, ((ListItemSpan) span).getNestingLevel());
+
+                    if (parentListSpan == null) {
+                        Log.e("TAG", "loadSpansFromSpanBeans()# parentListSpan cannot be null !!!");
+                    }
+
+                    ((ListItemSpan) span).setListSpan(parentListSpan);
+                }
+            }
+        }
+
+        return resultSpanList;
+    }
+
+    public static byte[] toByteArray(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
+
+        return ParcelUtil.marshall(textBean);
+    }
+
+    public static ArrayList<Object> fromByteArray(Editable editable, byte[] bytes) {
+        final TextBean textBean = ParcelUtil.unmarshall(bytes, TextBean.CREATOR);
+
+        return loadSpans(editable, textBean);
+    }
+
+    public static String toJson(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
+
+        ///[Gson#Exclude父类成员变量的序列化和反序列化]
+        ///一是因为只测试显示使用而不进行真正的反序列化，并不需要父类成员变量序列化
+        ///二是父类可能包含图片等，造成测试时获取的jsonString字符串长度超长！
+        ///https://howtodoinjava.com/gson/gson-exclude-or-ignore-fields/
+        ///https://www.baeldung.com/gson-exclude-fields-serialization
+        final Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+
+        return gson.toJson(textBean);
+    }
+
+    public static ArrayList<Object> fromJson(Editable editable, String src) {
+        final TextBean textBean = getTextBeanFromJson(src);
+
+        return loadSpans(editable, textBean);
+    }
+
+    public static Editable fromJson(String src) {
+        final TextBean textBean = getTextBeanFromJson(src);
+
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        final Editable editable = new SpannableStringBuilder(textBean.getText());
+        loadSpansFromSpanBeans(spanBeans, editable);
+
+        return editable;
+    }
+
+    ///[FIX#java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap]
+    ///https://www.jianshu.com/p/3108f1e44155
+    ///https://www.jianshu.com/p/d62c2be60617
+    public static TextBean getTextBeanFromJson(String src) {
+        final Gson gson = new GsonBuilder().registerTypeAdapter(TextBean.class, new JsonDeserializer<TextBean>() {
+            @Override
+            public TextBean deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                final TextBean textBean = new TextBean();
+                if (json.isJsonObject()) {
+                    final JsonObject jsonObject = json.getAsJsonObject();
+
+                    JsonElement jsonElement = jsonObject.get("text");
+                    final String text = jsonElement == null ? null : jsonElement.getAsString();
+                    textBean.setText(text);
+
+                    jsonElement = jsonObject.get("spans");
+                    final JsonArray spansJsonArray = jsonElement == null ? null : jsonElement.getAsJsonArray();
+                    final ArrayList<SpanBean> spans = new ArrayList<>();
+                    if (spansJsonArray != null) {
+                        for (JsonElement spanJsonElement : spansJsonArray) {
+                            final JsonObject spanBeanJsonObject = spanJsonElement.getAsJsonObject();
+                            if (spanBeanJsonObject == null) {
+                                continue;
+                            }
+
+                            JsonElement spanBeanJsonElement = spanBeanJsonObject.get("spanClassName");
+                            if (spanBeanJsonElement == null) {
+                                continue;
+                            }
+                            final String spanClassName = spanBeanJsonElement.getAsString();
+
+                            spanBeanJsonElement = spanBeanJsonObject.get("span");
+                            if (spanBeanJsonElement == null) {
+                                continue;
+                            }
+                            final JsonObject spanJsonObject = spanBeanJsonElement.getAsJsonObject();
+
+                            final Parcelable span = createSpan(spanClassName, spanJsonObject);
+
+                            if (span != null) {
+                                JsonElement jsonElemen = spanBeanJsonObject.get("spanStart");
+                                final int spanStart = jsonElemen == null ? -1 : jsonElemen.getAsInt();
+                                jsonElemen = spanBeanJsonObject.get("spanEnd");
+                                final int spanEnd = jsonElemen == null ? -1 : jsonElemen.getAsInt();
+                                jsonElemen = spanBeanJsonObject.get("spanFlags");
+                                final int spanFlags = jsonElemen == null ? Spanned.SPAN_INCLUSIVE_EXCLUSIVE : jsonElemen.getAsInt();
+
+                                spans.add(new SpanBean<>(span, spanClassName, spanStart, spanEnd, spanFlags));
+                            }
+                        }
+                    }
+
+                    textBean.setSpans(spans);
+                }
+
+                return textBean;
+            }
+        }).create();
+
+        return gson.fromJson(src, TextBean.class);
+    }
+
+    private static Parcelable createSpan(String spanClassName, JsonObject spanJsonObject) {
+        JsonElement jsonElement;
+
+        jsonElement = spanJsonObject.get("mNestingLevel");
+        final int nestingLevel = jsonElement == null ? 1 : jsonElement.getAsInt();
+
+        if ("DivSpan".equals(spanClassName)) {
+            return new DivSpan(nestingLevel);
+        } else if ("CustomLeadingMarginSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mFirst");
+            final int first = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mRest");
+            final int rest = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new CustomLeadingMarginSpan(nestingLevel, first, rest);
+        } else if ("AlignNormalSpan".equals(spanClassName)) {
+            return new AlignNormalSpan(nestingLevel);
+        } else if ("AlignCenterSpan".equals(spanClassName)) {
+            return new AlignCenterSpan(nestingLevel);
+        } else if ("AlignOppositeSpan".equals(spanClassName)) {
+            return new AlignOppositeSpan(nestingLevel);
+        } else if ("ListSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mStart");
+            final int start = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("isReversed");
+            final boolean isReversed = jsonElement != null && jsonElement.getAsBoolean();
+            jsonElement = spanJsonObject.get("mListType");
+            final int listType = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mIntent");
+            final int intent = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new ListSpan(nestingLevel, listType, start, isReversed, intent);
+        } else if ("ListItemSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mIndex");
+            final int index = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mIndicatorWidth");
+            final int indicatorWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mIndicatorGapWidth");
+            final int indicatorGapWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mIndicatorColor");
+            final int indicatorColor = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            final ListItemSpan listItemSpan = new ListItemSpan(null, index,
+                    indicatorWidth, indicatorGapWidth, indicatorColor, true);   ///注意：需要最后更新ListSpan！
+            listItemSpan.setNestingLevel(nestingLevel);
+
+            return listItemSpan;
+        } else if ("CustomQuoteSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mColor");
+            final int color = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mStripeWidth");
+            final int stripWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mGapWidth");
+            final int gapWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new CustomQuoteSpan(nestingLevel, color, stripWidth, gapWidth);
+        } else if ("PreSpan".equals(spanClassName)) {
+            return new PreSpan(nestingLevel);
+        } else if ("HeadSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mLevel");
+            final int level = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new HeadSpan(level);
+        } else if ("LineDividerSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mMarginTop");
+            final int marginTop = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mMarginBottom");
+            final int marginBottom = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new LineDividerSpan(marginTop, marginBottom);   ///注意：需要最后更新mDrawBackgroundCallback！
+        } else if ("CustomForegroundColorSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mColor");
+            final int foregroundColor = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new CustomForegroundColorSpan(foregroundColor);
+        } else if ("CustomBackgroundColorSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mColor");
+            final int backgroundColor = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new CustomBackgroundColorSpan(backgroundColor);
+        } else if ("CustomFontFamilySpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mFamily");
+            final String family = jsonElement == null ? null : jsonElement.getAsString();
+
+            return new CustomFontFamilySpan(family);
+        } else if ("CustomAbsoluteSizeSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mSize");
+            final int size = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mDip");
+            final boolean isDip = jsonElement != null && jsonElement.getAsBoolean();
+
+            return new CustomAbsoluteSizeSpan(size, isDip);
+        } else if ("CustomRelativeSizeSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mProportion");
+            final float sizeChange = jsonElement == null ? 0f : jsonElement.getAsFloat();
+
+            return new CustomRelativeSizeSpan(sizeChange);
+        } else if ("CustomScaleXSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mProportion");
+            final float scaleX = jsonElement == null ? 0f : jsonElement.getAsFloat();
+
+            return new CustomScaleXSpan(scaleX);
+        } else if ("BoldSpan".equals(spanClassName)) {
+            return new BoldSpan();
+        } else if ("ItalicSpan".equals(spanClassName)) {
+            return new ItalicSpan();
+        } else if ("CustomUnderlineSpan".equals(spanClassName)) {
+            return new CustomUnderlineSpan();
+        } else if ("CustomStrikethroughSpan".equals(spanClassName)) {
+            return new CustomStrikethroughSpan();
+        } else if ("CustomSubscriptSpan".equals(spanClassName)) {
+            return new CustomSubscriptSpan();
+        } else if ("CustomSuperscriptSpan".equals(spanClassName)) {
+            return new CustomSuperscriptSpan();
+        } else if ("CodeSpan".equals(spanClassName)) {
+            return new CodeSpan();
+        } else if ("BorderSpan".equals(spanClassName)) {
+            return new BorderSpan();
+        } else if ("BlockSpan".equals(spanClassName)) {
+            return new BlockSpan();
+        } else if ("CustomURLSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mURL");
+            final String url = jsonElement == null ? "" : jsonElement.getAsString();
+
+            return new CustomURLSpan(url);
+        } else if ("CustomImageSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mUri");
+            final String uri = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mSource");
+            final String source = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mVerticalAlignment");
+            final int verticalAlignment = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            jsonElement = spanJsonObject.get("mDrawableWidth");
+            final int drawableWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mDrawableHeight");
+            final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+        } else if ("VideoSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mUri");
+            final String uri = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mSource");
+            final String source = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mVerticalAlignment");
+            final int verticalAlignment = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            jsonElement = spanJsonObject.get("mDrawableWidth");
+            final int drawableWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mDrawableHeight");
+            final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+        } else if ("AudioSpan".equals(spanClassName)) {
+            jsonElement = spanJsonObject.get("mUri");
+            final String uri = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mSource");
+            final String source = jsonElement == null ? "" : jsonElement.getAsString();
+            jsonElement = spanJsonObject.get("mVerticalAlignment");
+            final int verticalAlignment = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            jsonElement = spanJsonObject.get("mDrawableWidth");
+            final int drawableWidth = jsonElement == null ? 0 : jsonElement.getAsInt();
+            jsonElement = spanJsonObject.get("mDrawableHeight");
+            final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
+
+            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+        }
+
+        return null;
+    }
+
+    private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
+        final Drawable d = Resources.getSystem().getDrawable(android.R.drawable.picture_frame);
+        d.setBounds(0, 0, drawableWidth, drawableHeight);
+
+        return d;
     }
 
 }

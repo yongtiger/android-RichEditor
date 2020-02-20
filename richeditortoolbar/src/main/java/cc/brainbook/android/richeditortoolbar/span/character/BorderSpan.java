@@ -40,15 +40,15 @@ public class BorderSpan  extends ReplacementSpan implements Parcelable, ICharact
     }
 
 
-    public static final Creator<BlockSpan> CREATOR = new Creator<BlockSpan>() {
+    public static final Creator<BorderSpan> CREATOR = new Creator<BorderSpan>() {
         @Override
-        public BlockSpan createFromParcel(Parcel in) {
-            return new BlockSpan();
+        public BorderSpan createFromParcel(Parcel in) {
+            return new BorderSpan();
         }
 
         @Override
-        public BlockSpan[] newArray(int size) {
-            return new BlockSpan[size];
+        public BorderSpan[] newArray(int size) {
+            return new BorderSpan[size];
         }
     };
 

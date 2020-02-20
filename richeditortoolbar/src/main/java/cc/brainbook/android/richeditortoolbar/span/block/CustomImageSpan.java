@@ -30,13 +30,15 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
 
 
     @Expose
-    private int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
+    private final int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
     public int getDrawableWidth() {
         return mDrawableWidth;
     }
     public int getDrawableHeight() {
         return mDrawableHeight;
     }
+    @Expose
+    private final int mVerticalAlignment;
 
     @Nullable
     @Expose
@@ -61,19 +63,24 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
         this(drawable, null, source, ALIGN_BOTTOM);
     }
 
+    public CustomImageSpan(@NonNull Drawable drawable, @NonNull String source, int verticalAlignment) {
+        this(drawable, null, source, verticalAlignment);
+    }
+
     public CustomImageSpan(@NonNull Drawable drawable, @Nullable String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, source, verticalAlignment);
         mUri = uri;
         mSource = source;
         mDrawableWidth = drawable.getBounds().right;
         mDrawableHeight = drawable.getBounds().bottom;
+        mVerticalAlignment = verticalAlignment;
     }
 
     ///https://segmentfault.com/a/1190000007133405
     @Override
     public int getSize(@NonNull Paint paint, CharSequence text, int start, int end,
                                  Paint.FontMetricsInt fm) {
-        if (getVerticalAlignment() != ALIGN_CENTER) {
+        if (mVerticalAlignment != ALIGN_CENTER) {
             return super.getSize(paint, text, start, end, fm);
         }
 
@@ -96,7 +103,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y,
                      int bottom, @NonNull Paint paint) {
-        if (getVerticalAlignment() != ALIGN_CENTER) {
+        if (mVerticalAlignment != ALIGN_CENTER) {
             super.draw(canvas, text, start, end, x, top, y, bottom, paint);
             return;
         }

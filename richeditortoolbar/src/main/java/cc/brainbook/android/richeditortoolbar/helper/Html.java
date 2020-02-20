@@ -1460,6 +1460,12 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void startMedia(Editable text, Attributes attributes, Html.ImageGetter imageGetter, String type) {
+        String alignString = attributes.getValue("", "align");
+        int align = 0;
+        if (isInteger(alignString)) {
+            Integer.parseInt(alignString);
+        }
+
         String source = attributes.getValue("", "img".equals(type) ? "src" : "img");
         if (TextUtils.isEmpty(source)) {
             source = "";
@@ -1503,11 +1509,11 @@ class HtmlToSpannedConverter implements ContentHandler {
         int len = text.length();
         CustomImageSpan span;
         if ("video".equals(type)) {
-            span = new VideoSpan(d, uri, source);
+            span = new VideoSpan(d, uri, source, align);
         } else if ("audio".equals(type)) {
-            span = new AudioSpan(d, uri, source);
+            span = new AudioSpan(d, uri, source, align);
         } else {
-            span = new CustomImageSpan(d, source);
+            span = new CustomImageSpan(d, source, align);
         }
 
         ///[UPGRADE#android.text.Html]把width\height\align保存到text中

@@ -116,18 +116,6 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_code"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/icon_code"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_border"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/icon_border"
-        style="@style/ImageView" />
-
-    <ImageView
         android:id="@+id/iv_foreground_color"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_foreground_color"
@@ -160,15 +148,27 @@
         style="@style/TextView"/>
 
     <ImageView
-        android:id="@+id/iv_url"
+        android:id="@+id/iv_code"
         app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/icon_url"
+        app:srcCompat="@drawable/icon_code"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_block"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_block"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_border"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/icon_border"
+        style="@style/ImageView" />
+
+    <ImageView
+        android:id="@+id/iv_url"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/icon_url"
         style="@style/ImageView" />
 
     <ImageView
