@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.text.Editable;
-import android.text.Spanned;
 
 import java.util.ArrayList;
 

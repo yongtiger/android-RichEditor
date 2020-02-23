@@ -133,7 +133,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
     public static <T> int getSpanFlags(Class<T> clazz) {
-//        return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;    ///test only! 选择ParagraphStyle span的flags
+//        return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;    ///for test only! 选择ParagraphStyle span的flags
         return isParagraphStyle(clazz) ? Spanned.SPAN_PARAGRAPH : Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
     }
 

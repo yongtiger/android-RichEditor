@@ -247,6 +247,7 @@
 
     <ImageView
         android:id="@+id/iv_html"
+        android:longClickable="true"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_html"
         style="@style/ImageView" />

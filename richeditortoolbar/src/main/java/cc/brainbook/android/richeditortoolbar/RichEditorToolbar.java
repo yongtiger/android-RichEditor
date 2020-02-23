@@ -1815,20 +1815,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
     @Override
     public boolean onLongClick(final View view) {
 
-        ///段落span（带初始化参数）：Quote
-        if (view == mImageViewQuote) {
-            ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
+        ///段落span（带初始化参数）：LeadingMargin
+        if (view == mImageViewLeadingMargin) {
+            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
                     .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
+                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
-                            mQuoteSpanColor = selectedColor;
-                            mQuoteSpanStripWidth = stripWidth;
-                            mQuoteSpanGapWidth = gapWidth;
+                        public void onClick(DialogInterface dialog, int indent) {
+                            mLeadingMarginSpanIndent = indent;
                         }
                     })
                     .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
+                    .initial(mLeadingMarginSpanIndent)
                     .build().show();
 
             return true;
@@ -1854,18 +1852,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return true;
         }
 
-        ///段落span（带初始化参数）：LeadingMargin
-        else if (view == mImageViewLeadingMargin) {
-            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
+        ///段落span（带初始化参数）：Quote
+        else if (view == mImageViewQuote) {
+            ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
                     .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
+                    .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int indent) {
-                            mLeadingMarginSpanIndent = indent;
+                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
+                            mQuoteSpanColor = selectedColor;
+                            mQuoteSpanStripWidth = stripWidth;
+                            mQuoteSpanGapWidth = gapWidth;
                         }
                     })
                     .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mLeadingMarginSpanIndent)
+                    .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
                     .build().show();
 
             return true;
