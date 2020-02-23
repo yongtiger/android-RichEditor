@@ -132,6 +132,11 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AudioSpan.class;
     }
 
+    public static <T> int getSpanFlags(Class<T> clazz) {
+//        return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;    ///test only! 选择ParagraphStyle span的flags
+        return isParagraphStyle(clazz) ? Spanned.SPAN_PARAGRAPH : Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
+    }
+
 
     /* ------------------------------------------------------------------------------------------------------------ */
     public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
@@ -540,7 +545,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            editable.setSpan(span, resultStart, spanEnd, editable.getSpanFlags(span));
             editable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -559,7 +564,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            editable.setSpan(span, spanStart, resultEnd, editable.getSpanFlags(span));
             editable.removeSpan(rightSpan);
         }
 
@@ -626,7 +631,8 @@ public abstract class RichEditorToolbarHelper {
             ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
             if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                     || start == end && spanStart <= start && (end < spanEnd || end == spanEnd
-                        && (isParagraphStyle(clazz) || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
+                        && (isParagraphStyle(clazz) && editable.charAt(spanEnd - 1) != '\n'
+                        || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
                 if (nestingLevel == 0 || ((INestParagraphStyle) span).getNestingLevel() == nestingLevel) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
                 }
@@ -828,7 +834,9 @@ public abstract class RichEditorToolbarHelper {
                                 jsonElemen = spanBeanJsonObject.get("spanEnd");
                                 final int spanEnd = jsonElemen == null ? -1 : jsonElemen.getAsInt();
                                 jsonElemen = spanBeanJsonObject.get("spanFlags");
-                                final int spanFlags = jsonElemen == null ? Spanned.SPAN_INCLUSIVE_EXCLUSIVE : jsonElemen.getAsInt();
+                                final int spanFlags = jsonElemen == null ?
+                                        getSpanFlags(span.getClass())
+                                        : jsonElemen.getAsInt();
 
                                 spans.add(new SpanBean<>(span, spanClassName, spanStart, spanEnd, spanFlags));
                             }

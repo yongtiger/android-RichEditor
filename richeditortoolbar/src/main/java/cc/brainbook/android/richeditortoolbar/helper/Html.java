@@ -82,12 +82,18 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
 
 /**
  * This class processes HTML strings into displayable styled text.
  * Not all HTML tags are supported.
  */
 public class Html {
+    ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
+    ///注意：Spanned.SPAN_PARAGRAPH要求ParagraphStyle span的结束位置在'\n'之后，即isSpanEndAtNewLine为false
+    ///注意：当在'\n'处时，会引起ParagraphStyle span绘制问题！比如'a\n[\n]'时第一行也会被绘制
+    public static boolean isSpanEndAtNewLine = false;   ///for test only if true
+
     ///[UPGRADE#android.text.Html]缺省的屏幕密度
     ///px in CSS is the equivalance of dip in Android
     ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
@@ -454,7 +460,8 @@ public class Html {
 
                 sRemovedSpans.add(nextParagraphStyleSpan);
 
-                next = text.getSpanEnd(nextParagraphStyleSpan) + 1;
+                ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
+                next = text.getSpanEnd(nextParagraphStyleSpan) + (isSpanEndAtNewLine ? 1 : 0);
             }
         }
     }
@@ -714,6 +721,7 @@ public class Html {
         }
     }
 
+
     private static ArrayList<Object> sRemovedSpans = new ArrayList<>();
     private static ParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, ParagraphStyle compareSpan) {
         ParagraphStyle resultSpan = null;
@@ -931,17 +939,34 @@ class HtmlToSpannedConverter implements ContentHandler {
             throw new RuntimeException(e);
         }
 
-        ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+        ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
         adjustNewLine(mSpannableStringBuilder);
 
-        ///[更新ListSpan]
+        ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
+        if (!Html.isSpanEndAtNewLine) {
+            ///[更新ParagraphStyle span的flags、end]
+            Object[] obj = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), ParagraphStyle.class);
+            for (int i = 0; i < obj.length; i++) {
+                int start = mSpannableStringBuilder.getSpanStart(obj[i]);
+                int end = mSpannableStringBuilder.getSpanEnd(obj[i]);
+
+                ///end位置之前为'\n'的位置，需要调整（加一即可）
+                if (end < mSpannableStringBuilder.length()) {
+                    end++;
+                }
+
+                mSpannableStringBuilder.setSpan(obj[i], start, end, getSpanFlags(obj[i].getClass()));
+            }
+        }
+
+        ///[UPGRADE#android.text.Html#更新ListSpan]
         updateListSpans(mSpannableStringBuilder, updateListSpans);
 
         return mSpannableStringBuilder;
     }
 
     private void handleStartTag(String tag, Attributes attributes) {
-        ///[添加'\n'#添加ParagraphStyle tags之前]
+        ///[UPGRADE#android.text.Html#添加'\n'#添加ParagraphStyle tags之前]
         if (tag.equalsIgnoreCase("p")
                 || tag.equalsIgnoreCase("div")
                 || tag.equalsIgnoreCase("ul")
@@ -949,6 +974,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                 || tag.equalsIgnoreCase("li")
                 || tag.equalsIgnoreCase("blockquote")
                 || tag.equalsIgnoreCase("pre")
+                || tag.equalsIgnoreCase("hr")
                 || isHeadTag(tag)) {
             addNewLine(mSpannableStringBuilder, true);
         } else {
@@ -1900,7 +1926,7 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     /* ---------------------------------------------------------------------------------- */
-    ///[添加'\n']
+    ///[UPGRADE#android.text.Html#添加'\n']
     private void addNewLine(Editable text, Boolean isFromTag) {
         final int len = text.length();
         if (len == 0) { ///当文首时
@@ -1909,33 +1935,29 @@ class HtmlToSpannedConverter implements ContentHandler {
             }
         } else {    ///当非文首时
             if (text.charAt(len - 1) == '\n') { ///如果文尾是'\n'
-                ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+                ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
                 adjustNewLine(text);
-            } else if (isFromTag) {  ///如果文尾不是'\n'，且来自Tag
+            } else if (isFromTag
+                    || text.getSpans(len, len, ParagraphStyle.class).length > 0
+                    || text.getSpans(len, len, CharacterStyle.class).length == 0) {
                 text.append('\n');
-            } else {    ///如果文尾不是'\n'，且不是来自Tag
-                if (text.getSpans(len, len, CharacterStyle.class).length == 0) {    ///注意：PreSpan继承ICharacterStyle，而不是CharacterStyle
-                    text.append('\n');
-                }
             }
         }
     }
 
-    ///[添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
+    ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
     private void adjustNewLine(Editable text) {
-        ///len为0时，Spannable和EditText都能正常添加这类spans，无需添加'\n'
+        ///len为0时，Spannable和EditText虽然都能正常添加这类spans，但违背了ParagraphStyle至少包含'\n'的原则！需要添加'\n'
         ///len大于0时，虽然Spannable能正常添加，但EditText无法添加，需要添加'\n'
         final int len = text.length();
-        if (len > 0) {
-            final Object[] spans = text.getSpans(len, len, ParagraphStyle.class);
-            for (Object obj : spans) {
-                final int spanStart = text.getSpanStart(obj);
-                final int spanEnd = text.getSpanEnd(obj);
+        final Object[] spans = text.getSpans(len, len, ParagraphStyle.class);
+        for (Object obj : spans) {
+            final int spanStart = text.getSpanStart(obj);
+            final int spanEnd = text.getSpanEnd(obj);
 
-                if (spanStart == spanEnd) {
-                    text.append('\n');
-                    break;
-                }
+            if (spanStart == spanEnd) {
+                text.append('\n');
+                break;
             }
         }
     }

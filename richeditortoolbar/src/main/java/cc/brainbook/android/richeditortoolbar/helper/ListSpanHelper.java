@@ -9,6 +9,9 @@ import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
+import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidParagraph;
+
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
 ///Unicode在线转换工具：http://tool.chinaz.com/tools/unicode.aspx, http://www.jsons.cn/unicode/
 ///https://html.spec.whatwg.org/multipage/grouping-content.html#attr-ol-type
@@ -249,7 +252,7 @@ public class ListSpanHelper {
             final ListItemSpan newListItemSpan = new ListItemSpan(listSpan, index,
                     indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
 
-            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, getSpanFlags(newListItemSpan.getClass()));
 
             if (listSpan.isReversed()) {
                 index--;
@@ -290,11 +293,11 @@ public class ListSpanHelper {
 
                 ///调整span的起止位置（删除含有'\n'的文本时会造成一行中存在多个不完整的段落span！需要调整）
                 int st = spanStart, en = spanEnd;
-                if (spanStart < 0 && editable.charAt(spanStart - 1) != '\n') {
+                if (isInvalidParagraph(editable, spanStart)) {
                     ///如果span的起始位置不正确，则左缩（即设置spanStart为其所在行的行尾）
                     st = SpanUtil.getParagraphEnd(editable, spanStart);
                 }
-                if (spanEnd < editable.length() && editable.charAt(spanEnd - 1) != '\n') {
+                if (isInvalidParagraph(editable, spanEnd)) {
                     en = start == end ? SpanUtil.getParagraphEnd(editable, spanEnd) : SpanUtil.getParagraphEnd(editable, spanEnd - 1);
                 }
                 if (st == en) {
@@ -307,7 +310,7 @@ public class ListSpanHelper {
                 span.setIndex(index);
 
                 ///注意：必须重新setSpan，否则不会自动更新绘制！
-                editable.setSpan(span, st, en, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                editable.setSpan(span, st, en, editable.getSpanFlags(span));
 
                 if (listSpan.isReversed()) {
                     index--;

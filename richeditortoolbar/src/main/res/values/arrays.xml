@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="html_option">
+        <item>CONSECUTIVE</item>
+        <item>INDIVIDUAL</item>
+    </string-array>
     <string-array name="head_items">
         <item>H1</item>
         <item>H2</item>

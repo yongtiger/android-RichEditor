@@ -391,7 +391,7 @@ public class HtmlTest {
                         "a</p>\n");
 
         check("<p style=\"color:darkgray;text-decoration:line-through;\"></p>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-12303292},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -411,101 +411,162 @@ public class HtmlTest {
     @Test
     public void testTagDiv() {
         check("<div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check("<div></div><div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check("<div><div></div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "</div>\n");
         check("<div></div><div><div></div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "<div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<div>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "</div>\n");
 
         check("<div> </div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check(" <div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check("<div></div> ",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check(" <div></div> ",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
 
         check("a<div></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"a\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\n\"}",
                 "<p dir=\"ltr\">a</p>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
         check("<div></div>a",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\na\"}",
                 "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n",
                 "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n");
         check("a<div></div>a",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"a\\n\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\na\"}",
                 "<p dir=\"ltr\">a</p>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n",
                 "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</div>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+        check("a<div>a</div>",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<div>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</div>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<div>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</div>\n");
+        check("<div>a</div>a",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "<div>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</div>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<div>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n");
         check("a<div>a</div>a",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"a\\na\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\na\\na\"}",
                 "<p dir=\"ltr\">a</p>\n" +
                         "<div>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -514,11 +575,12 @@ public class HtmlTest {
                 "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n");
         check("a<div>a</div><div>a</div>a",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":2},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":5,\"spanFlags\":17,\"spanStart\":4}],\"text\":\"a\\na\\na\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":2},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":6,\"spanFlags\":51,\"spanStart\":4}],\"text\":\"a\\na\\na\\na\"}",
                 "<p dir=\"ltr\">a</p>\n" +
                         "<div>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -530,14 +592,16 @@ public class HtmlTest {
                 "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<div>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n");
         check("a<div>a</div>a<div>a</div>a",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":2},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":7,\"spanFlags\":17,\"spanStart\":6}],\"text\":\"a\\na\\na\\na\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":2},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"DivSpan\",\"spanEnd\":8,\"spanFlags\":51,\"spanStart\":6}],\"text\":\"a\\na\\na\\na\\na\"}",
                 "<p dir=\"ltr\">a</p>\n" +
                         "<div>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -550,40 +614,51 @@ public class HtmlTest {
                 "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a<br>\n" +
                         "</p>\n" +
                         "<div>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">a</p>\n");
 
         check("<div style=\"text-align:center;\"></div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
 
         check("<div style=\"text-indent:20px;\"></div>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-indent:20px;\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n",
                 "<div style=\"text-indent:20px;\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n");
 
         check("<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "</div>\n" +
                         "</div>\n",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "</div>\n");
 
@@ -593,7 +668,7 @@ public class HtmlTest {
                         "</div>\n" +
                         "<p dir=\"ltr\">b</p>\n" +
                         "</div>\n",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\nb\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\nb\"}",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -602,7 +677,8 @@ public class HtmlTest {
                         "</div>\n",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "<p dir=\"ltr\">b</p>\n" +
                         "</div>\n");
@@ -610,31 +686,37 @@ public class HtmlTest {
         check("<div style=\"text-align:center;\">" +
                         "<blockquote></blockquote>"+
                         "</div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</div>\n");
 
         check("<div style=\"text-align:center;text-indent:20px;\"></div>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "</div>\n");
 
         check("<div style=\"text-align:center;\">" +
                         "<blockquote>a</blockquote>a"+
                         "</div>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\na\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -643,18 +725,20 @@ public class HtmlTest {
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
-                        "<p dir=\"ltr\">a</p>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
                         "</div>\n");
 
         check("<div style=\"text-align:center;text-indent:20px;\"><blockquote style=\"text-indent:20px;text-align:center;\"></blockquote></div>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":2,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":2,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":2},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<div style=\"text-indent:20px;\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</div>\n" +
                         "</div>\n" +
                         "</blockquote>\n" +
@@ -665,6 +749,8 @@ public class HtmlTest {
                         "<blockquote>\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<div style=\"text-indent:20px;\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</div>\n" +
                         "</div>\n" +
                         "</blockquote>\n" +
@@ -675,69 +761,87 @@ public class HtmlTest {
     @Test
     public void testListSpan() {
         check("<ul></ul>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</ul>\n",
                 "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</ul>\n");
 
         check("<ol></ol>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</ol>\n",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</ol>\n");
 
         check("<ul><li></li></ul>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ul style=\"list-style-type:disc\">\n" +
                         "<li>\n" +
                         "</li>\n" +
                         "</ul>\n",
                 "<ul style=\"list-style-type:disc\">\n" +
                         "<li>\n" +
+                        "<br>\n" +
                         "</li>\n" +
                         "</ul>\n");
 
         check("<ol><li></li></ol>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
                         "<li>\n" +
                         "</li>\n" +
                         "</ol>\n",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
                         "<li>\n" +
+                        "<br>\n" +
                         "</li>\n" +
                         "</ol>\n");
 
+        ///注意：<ol>或<ul>不能直接含<ol>或<ul>！只能含<li>
         check("<ol><ul></ul></ol>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":1,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</ol>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</ul>\n",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</ol>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</ul>\n");
 
         check("<ol><li><ul></ul></li></ol>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
                         "<li>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</ul>\n" +
                         "</li>\n" +
                         "</ol>\n",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
                         "<li>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</ul>\n" +
                         "</li>\n" +
                         "</ol>\n");
 
         check("<ol><li><ul><li></li></ul></li></ol>",
-                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"mNestingLevel\":2,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"spanClassName\":\"ListSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mIndex\":0,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":1,\"mNestingLevel\":2,\"mStart\":0},\"mNestingLevel\":2,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mIndex\":1,\"mIndicatorColor\":-2236963,\"mIndicatorGapWidth\":40,\"mIndicatorWidth\":20,\"mListSpan\":{\"isReversed\":false,\"mIntent\":160,\"mListType\":-1,\"mNestingLevel\":1,\"mStart\":1},\"mNestingLevel\":1,\"mWantColor\":true},\"spanClassName\":\"ListItemSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<ol start=\"1\" style=\"list-style-type:decimal\">\n" +
                         "<li>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
@@ -750,6 +854,7 @@ public class HtmlTest {
                         "<li>\n" +
                         "<ul style=\"list-style-type:disc\">\n" +
                         "<li>\n" +
+                        "<br>\n" +
                         "</li>\n" +
                         "</ul>\n" +
                         "</li>\n" +
@@ -759,28 +864,45 @@ public class HtmlTest {
     @Test
     public void testTagBlockquote() {
         check("<blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
-
         check("<blockquote> </blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n");
+        check("<blockquote>  </blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</blockquote>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
 
-        check("<blockquote>  </blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+        check("<blockquote><br></blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
 
         check("<blockquote>a</blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\"}",
                 "<blockquote>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
                         "</blockquote>\n",
@@ -789,7 +911,7 @@ public class HtmlTest {
                         "</blockquote>\n");
 
         check("<blockquote>a<br>a</blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\na\"}",
                 "<blockquote>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -800,35 +922,50 @@ public class HtmlTest {
                         "</blockquote>\n");
 
         check("<blockquote></blockquote><blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
 
         check("<blockquote> </blockquote><blockquote> </blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
 
         check("<blockquote><blockquote></blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
@@ -838,111 +975,220 @@ public class HtmlTest {
                         "</blockquote>\n" +
                         "<p dir=\"ltr\"> </p>\n" +
                         "</blockquote>\n",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
         check("<blockquote><blockquote></blockquote> </blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
         check("<blockquote> <blockquote></blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
         check("<blockquote> <blockquote></blockquote> </blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
         check("<blockquote><blockquote><blockquote></blockquote></blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":3,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":3,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
         check("<blockquote><blockquote></blockquote></blockquote><blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1}],\"text\":\"\\n\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n");
 
         check("<blockquote><blockquote><blockquote></blockquote></blockquote><blockquote></blockquote></blockquote>",
-                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":3,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":1},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\\n\"}",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":3,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":2,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":1},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\\n\"}",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n",
                 "<blockquote>\n" +
                         "<blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</blockquote>\n");
 
+        check("<blockquote></blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\na\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+
+        check("a<blockquote></blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\n\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</blockquote>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n");
+
+        check("a<blockquote></blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+
+        check("<blockquote>a</blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+
+        check("a<blockquote>a</blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</blockquote>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</blockquote>\n");
+
+        check("a<blockquote>a</blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\na\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+
         check("<blockquote style=\"text-align:center;\"></blockquote>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</div>\n");
 
         check("<blockquote style=\"text-align:center;\">a</blockquote>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
@@ -955,37 +1201,43 @@ public class HtmlTest {
                         "</div>\n");
 
         check("<blockquote style=\"text-align:center;text-indent:20px;\"></blockquote>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div style=\"text-indent:20px;\">\n" +
                         "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</div>\n" +
                         "</div>\n");
 
         check("<blockquote style=\"text-indent:20px;text-align:center;\"></blockquote>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<div style=\"text-indent:20px;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n" +
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
                         "<div style=\"text-indent:20px;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</div>\n" +
                         "</div>\n");
 
         check("<blockquote style=\"text-indent:20px;text-align:center;\">a</blockquote>",
-                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mFirst\":20,\"mNestingLevel\":1,\"mRest\":0},\"spanClassName\":\"CustomLeadingMarginSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<div style=\"text-indent:20px;\">\n" +
                         "<blockquote>\n" +
@@ -1002,19 +1254,52 @@ public class HtmlTest {
                         "</div>\n");
 
         ///段落/块元素含多个不同的style样式（即段落/块样式、内联样式）
+        ///注意：如果内联样式where == len，则忽略，避免产生零长度的span！
+        check("<blockquote style=\"color:#0000FF\"></blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\na\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+        check("<blockquote style=\"color:#0000FF\">a</blockquote>",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
+                        "</blockquote>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
+                        "</blockquote>\n");
+        check("<blockquote style=\"color:#0000FF\">a</blockquote>a",
+                "{\"spans\":[{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
         check("<blockquote style=\"color:#0000FF;text-align:center;\"></blockquote>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
+                        "<p dir=\"ltr\"><br>\n" +
+                        "</p>\n" +
                         "</blockquote>\n" +
                         "</div>\n");
-
         check("<blockquote style=\"color:#0000FF;text-align:center;\">a</blockquote>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
                 "<div style=\"text-align:center;\">\n" +
                         "<blockquote>\n" +
                         "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
@@ -1025,27 +1310,43 @@ public class HtmlTest {
                         "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
                         "</blockquote>\n" +
                         "</div>\n");
+        check("<blockquote style=\"color:#0000FF;text-align:center;\">a</blockquote>a",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"AlignCenterSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-7829368,\"mGapWidth\":40,\"mNestingLevel\":1,\"mStripeWidth\":16},\"spanClassName\":\"CustomQuoteSpan\",\"spanEnd\":2,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\\na\"}",
+                "<div style=\"text-align:center;\">\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span></p>\n" +
+                        "</blockquote>\n" +
+                        "</div>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<div style=\"text-align:center;\">\n" +
+                        "<blockquote>\n" +
+                        "<p dir=\"ltr\"><span style=\"color:#0000FF;\">a</span><br>\n" +
+                        "</p>\n" +
+                        "</blockquote>\n" +
+                        "</div>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
     }
 
     @Test
     public void testTagH() {
         check("<h1></h1>",
-                "{\"spans\":[{\"span\":{\"mLevel\":0,\"mMarginBottom\":60,\"mMarginTop\":60},\"spanClassName\":\"HeadSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[{\"span\":{\"mLevel\":0,\"mMarginBottom\":60,\"mMarginTop\":60},\"spanClassName\":\"HeadSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<h1></h1>\n",
-                "<h1></h1>\n");
+                "<h1><br>\n" +
+                        "</h1>\n");
 
         check("<h2>a</h2>",
-                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\"}",
                 "<h2>a</h2>\n",
                 "<h2>a</h2>\n");
 
         check("<h2>b<font color=\"blue\">a</font>b</h2>",
-                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"bab\"}",
+                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"bab\"}",
                 "<h2>b<span style=\"color:#0000FF;\">a</span>b</h2>\n",
                 "<h2>b<span style=\"color:#0000FF;\">a</span>b</h2>\n");
 
         check("<h2>b<font color=\"blue\">a</font><font color=\"blue\">a</font>b</h2>",
-                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":4,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"baab\"}",
+                "{\"spans\":[{\"span\":{\"mLevel\":1,\"mMarginBottom\":50,\"mMarginTop\":50},\"spanClassName\":\"HeadSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"baab\"}",
                 "<h2>b<span style=\"color:#0000FF;\">a</span><span style=\"color:#0000FF;\">a</span>b</h2>\n",
                 "<h2>b<span style=\"color:#0000FF;\">a</span><span style=\"color:#0000FF;\">a</span>b</h2>\n");
     }
@@ -1053,23 +1354,25 @@ public class HtmlTest {
     @Test
     public void testTagPre() {
         check("<pre></pre>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
-                "<pre></pre>\n",
-                "<pre></pre>\n");
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "<pre>\n" +
+                        "</pre>\n",
+                "<pre>\n" +
+                        "</pre>\n");
 
         check("<pre>a</pre>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"a\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"a\"}",
                 "<pre>a</pre>\n",
                 "<pre>a</pre>\n");
 
         check("<pre>b<font color=\"blue\">a</font>b</pre>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":3,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"bab\"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":1}],\"text\":\"bab\"}",
                 "<pre>b<span style=\"color:#0000FF;\">a</span>b</pre>\n",
                 "<pre>b<span style=\"color:#0000FF;\">a</span>b</pre>\n");
 
         check("<pre>   int a = 0;\n" +
                         "   int a = 0;   </pre>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":30,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;   \"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":30,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;   \"}",
                 "<pre>   int a = 0;\n" +
                         "   int a = 0;   </pre>\n",
                 "<pre>   int a = 0;\n" +
@@ -1077,7 +1380,7 @@ public class HtmlTest {
 
         check("<pre>   int <font color=\"blue\">a</font> = 0;\n" +
                         "   int a = 0;   </pre>",
-                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":30,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":8,\"spanFlags\":17,\"spanStart\":7}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;   \"}",
+                "{\"spans\":[{\"span\":{\"mNestingLevel\":1},\"spanClassName\":\"PreSpan\",\"spanEnd\":30,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":8,\"spanFlags\":17,\"spanStart\":7}],\"text\":\"   int a \\u003d 0;\\n   int a \\u003d 0;   \"}",
                 "<pre>   int <span style=\"color:#0000FF;\">a</span> = 0;\n" +
                         "   int a = 0;   </pre>\n",
                 "<pre>   int <span style=\"color:#0000FF;\">a</span> = 0;\n" +
@@ -1087,19 +1390,80 @@ public class HtmlTest {
     @Test
     public void testTagHr() {
         check("<hr>",
-                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\n\"}",
                 "<hr>\n",
-                "<hr>\n");
+                "<hr>\n" +
+                        "<br>\n");
+
+        check("a<hr />",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\n\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<hr>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n");
+        check("<hr />a",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0}],\"text\":\"\\na\"}",
+                "<hr>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+        check("a<hr />a",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2}],\"text\":\"a\\n\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<hr>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
 
         check("<hr />a<hr />a",
-                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":2,\"spanFlags\":17,\"spanStart\":2}],\"text\":\"\\na\\na\"}",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":51,\"spanStart\":0},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":4,\"spanFlags\":51,\"spanStart\":3}],\"text\":\"\\na\\n\\na\"}",
                 "<hr>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
                         "<hr>\n" +
                         "<p dir=\"ltr\">a</p>\n",
                 "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a</p>\n");
+        check("a<hr />a<hr />",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":51,\"spanStart\":5}],\"text\":\"a\\n\\na\\n\\n\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<hr>\n" +
+                        "<p dir=\"ltr\">a</p>\n" +
+                        "<hr>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n");
+
+        check("a<hr /><p>a</p><hr />a",
+                "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":3,\"spanFlags\":51,\"spanStart\":2},{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":6,\"spanFlags\":51,\"spanStart\":5}],\"text\":\"a\\n\\na\\n\\na\"}",
+                "<p dir=\"ltr\">a</p>\n" +
+                        "<hr>\n" +
                         "<p dir=\"ltr\">a</p>\n" +
                         "<hr>\n" +
+                        "<p dir=\"ltr\">a</p>\n",
+                "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n" +
+                        "<p dir=\"ltr\">a<br>\n" +
+                        "</p>\n" +
+                        "<hr>\n" +
+                        "<br>\n" +
                         "<p dir=\"ltr\">a</p>\n");
     }
 
@@ -1110,7 +1474,7 @@ public class HtmlTest {
     @Test
     public void testTagSpan() {
         check("<span style=\"color:blue\"></span>",
-                "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1129,7 +1493,7 @@ public class HtmlTest {
     @Test
     public void testTagB() {
         check("<b></b>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1143,7 +1507,7 @@ public class HtmlTest {
     @Test
     public void testTagI() {
         check("<i></i>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"ItalicSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1156,7 +1520,7 @@ public class HtmlTest {
     @Test
     public void testTagU() {
         check("<u></u>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomUnderlineSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1170,7 +1534,7 @@ public class HtmlTest {
     @Test
     public void testTagS() {
         check("<s></s>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1183,7 +1547,7 @@ public class HtmlTest {
     @Test
     public void testTagSup() {
         check("<sup></sup>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSuperscriptSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1196,7 +1560,7 @@ public class HtmlTest {
     @Test
     public void testTagSub() {
         check("<sub></sub>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSubscriptSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1209,7 +1573,7 @@ public class HtmlTest {
     @Test
     public void testTagCode() {
         check("<code></code>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"CodeSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1222,7 +1586,7 @@ public class HtmlTest {
     @Test
     public void testTt() {
         check("<tt></tt>",
-                "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1288,7 +1652,7 @@ public class HtmlTest {
     @Test
     public void testTagBig() {
         check("<big></big>",
-                "{\"spans\":[{\"span\":{\"mProportion\":1.25},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1301,7 +1665,7 @@ public class HtmlTest {
     @Test
     public void testTagSmall() {
         check("<small></small>",
-                "{\"spans\":[{\"span\":{\"mProportion\":0.8},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1314,7 +1678,7 @@ public class HtmlTest {
     @Test
     public void testTagA() {
         check("<a href=\"http://www.google.com\"></a>",
-                "{\"spans\":[{\"span\":{\"mURL\":\"http://www.google.com\"},\"spanClassName\":\"CustomURLSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1362,9 +1726,9 @@ public class HtmlTest {
 
     /* -------------- 自定义tag ----------- */
     @Test
-    public void testBlock() {
+    public void testTagBlock() {
         check("<block></block>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BlockSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 
@@ -1375,9 +1739,9 @@ public class HtmlTest {
     }
 
     @Test
-    public void testBorder() {
+    public void testTagBorder() {
         check("<border></border>",
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BorderSpan\",\"spanEnd\":0,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\"}",
+                "{\"spans\":[],\"text\":\"\"}",
                 "",
                 "");
 

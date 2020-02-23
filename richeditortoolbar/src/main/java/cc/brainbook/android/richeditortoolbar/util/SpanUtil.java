@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 
+import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
@@ -71,12 +72,20 @@ public abstract class SpanUtil {
             ///比如：HeadSpan extends AbsoluteSizeSpan：
             ///editable.getSpans(start, end, AbsoluteSizeSpan)也能获取到AbsoluteSizeSpan的子类HeadSpan
             if (clazz != ParagraphStyle.class && span.getClass() != clazz) {
-//                editable.removeSpan(span);///注意：千万不要remove！因为有可能是子类！
+//                editable.removeSpan(span);    ///注意：千万不要remove！因为有可能是子类！
                 continue;
             }
 
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
+            if (!Html.isSpanEndAtNewLine) {
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+                ///删除多余的span
+                if (spanStart == spanEnd) {
+                    editable.removeSpan(span);
+                    continue;
+                }
+            }
 
             filteredSpans.add(span);
         }
@@ -124,6 +133,10 @@ public abstract class SpanUtil {
             look++; // we want the index after the \n
 
         return look;
+    }
+
+    public static boolean isInvalidParagraph(Editable editable, int index) {
+        return index != 0 && index != editable.length() && editable.charAt(index - 1) != '\n';
     }
 
     /**
