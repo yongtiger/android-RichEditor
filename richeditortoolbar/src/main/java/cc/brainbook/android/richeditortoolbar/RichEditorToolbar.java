@@ -2373,7 +2373,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
 
                 ///段落span（带初始化参数）：List
-                if (clazz == ListSpan.class && span != null && (start == end || st != spanStart || en != spanEnd)) {
+                if (clazz == ListSpan.class && span != null) {
                     ///更新ListSpan包含的儿子一级ListItemSpans（注意：只children！）
                     if (!updateListSpans.contains((ListSpan) span)) {
                         updateListSpans.add((ListSpan) span);
