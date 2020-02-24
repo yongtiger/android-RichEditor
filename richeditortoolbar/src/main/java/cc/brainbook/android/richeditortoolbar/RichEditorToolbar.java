@@ -1130,6 +1130,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///改变selection的span
                                 applyParagraphStyleSpans(view, editable);
 
+                                ///更新View
+                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
+                                selectionChanged(selectionStart, selectionEnd);
+
                                 ///清空view tag
                                 view.setTag(R.id.list_start, null);
                                 view.setTag(R.id.list_is_reversed, null);
@@ -1164,10 +1168,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///改变selection的span
                                 applyParagraphStyleSpans(view, editable);
-
-                                ///更新View
-                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
-                                selectionChanged(selectionStart, selectionEnd);
 
                                 ///[Preview]
                                 updatePreview();
