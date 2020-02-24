@@ -82,7 +82,6 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
 
 /**
  * This class processes HTML strings into displayable styled text.
@@ -955,7 +954,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                     end++;
                 }
 
-                mSpannableStringBuilder.setSpan(obj[i], start, end, getSpanFlags(obj[i].getClass()));
+                mSpannableStringBuilder.setSpan(obj[i], start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         }
 

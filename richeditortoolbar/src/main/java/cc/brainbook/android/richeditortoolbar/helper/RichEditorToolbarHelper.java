@@ -132,11 +132,6 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == AudioSpan.class;
     }
 
-    public static <T> int getSpanFlags(Class<T> clazz) {
-//        return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;    ///for test only! 选择ParagraphStyle span的flags
-        return isParagraphStyle(clazz) ? Spanned.SPAN_PARAGRAPH : Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
-    }
-
 
     /* ------------------------------------------------------------------------------------------------------------ */
     public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
@@ -835,7 +830,7 @@ public abstract class RichEditorToolbarHelper {
                                 final int spanEnd = jsonElemen == null ? -1 : jsonElemen.getAsInt();
                                 jsonElemen = spanBeanJsonObject.get("spanFlags");
                                 final int spanFlags = jsonElemen == null ?
-                                        getSpanFlags(span.getClass())
+                                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
                                         : jsonElemen.getAsInt();
 
                                 spans.add(new SpanBean<>(span, spanClassName, spanStart, spanEnd, spanFlags));

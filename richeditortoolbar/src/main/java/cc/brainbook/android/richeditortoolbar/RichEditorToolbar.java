@@ -104,7 +104,6 @@ import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHel
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getLeftSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getParentSpan;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getRightSpan;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isBlockCharacterStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isNestParagraphStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.isCharacterStyle;
@@ -1097,53 +1096,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int selectionStart = Selection.getSelectionStart(editable);
             final int selectionEnd = Selection.getSelectionEnd(editable);
 
-            ///段落span（带初始化参数）：Quote
-            if (view == mImageViewQuote && selectionStart < selectionEnd && view.isSelected()) {
-                new AlertDialog.Builder(mContext)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///如果view未选中则选中view
-                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
-                                if (!view.isSelected()) {
-                                    view.setSelected(true);
-                                }
-
-                                ///改变selection的span
-                                applyParagraphStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
-                            }
-                        })
-                        ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///如果view选中则未选中view
-                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
-                                if (view.isSelected()) {
-                                    view.setSelected(false);
-                                }
-
-                                ///改变selection的span
-                                applyParagraphStyleSpans(view, editable);
-
-                                ///清空view tag
-                                view.setTag(null);
-
-                                ///[Preview]
-                                updatePreview();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-
-                return;
-            }
-
             ///段落span（带初始化参数）：List
-            else if (view == mImageViewList) {
+            if (view == mImageViewList) {
                 final int listType = view.getTag(R.id.list_list_type) == null ? Integer.MIN_VALUE :  (int) view.getTag(R.id.list_list_type);
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
                 final int checkedItem = view.getTag(R.id.list_list_type) == null ? -1 :
@@ -1211,6 +1165,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///改变selection的span
                                 applyParagraphStyleSpans(view, editable);
 
+                                ///更新View
+                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
+                                selectionChanged(selectionStart, selectionEnd);
+
                                 ///[Preview]
                                 updatePreview();
                             }
@@ -1234,6 +1192,55 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 switchIsReversed.setEnabled(isEnabled);
                 final boolean isReversed = view.getTag(R.id.list_is_reversed) != null && (boolean) view.getTag(R.id.list_is_reversed);
                 switchIsReversed.setChecked(isReversed);
+
+                return;
+            }
+
+            ///段落span（带初始化参数）：Quote
+            else if (view == mImageViewQuote && selectionStart < selectionEnd && view.isSelected()) {
+                new AlertDialog.Builder(mContext)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///如果view未选中则选中view
+                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
+                                if (!view.isSelected()) {
+                                    view.setSelected(true);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        })
+                        ///清除样式
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///如果view选中则未选中view
+                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
+                                if (view.isSelected()) {
+                                    view.setSelected(false);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///更新View
+                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
+                                selectionChanged(selectionStart, selectionEnd);
+
+                                ///清空view tag
+                                view.setTag(null);
+
+                                ///[Preview]
+                                updatePreview();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
 
                 return;
             }
@@ -1313,7 +1320,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             view.setSelected(!view.isSelected());
 
+            ///改变selection的span
             applyParagraphStyleSpans(view, editable);
+
+            ///更新View
+            ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
+            if (view == mImageViewQuote && selectionStart == selectionEnd) {
+                selectionChanged(selectionStart, selectionEnd);
+            }
 
             ///同组选择互斥
             ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan
@@ -2302,12 +2316,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         && start + 1 == end && editable.charAt(start) == '\n') {    ///输入一个换行时，只切割最上面一层ListItemSpan
                     final ListSpan listSpan = ((ListItemSpan) span).getListSpan();
 
-                    editable.setSpan(span, spanStart, end, getSpanFlags(span.getClass()));
+                    editable.setSpan(span, spanStart, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
                     if (end < spanEnd) {
                         final ListItemSpan newListItemSpan = new ListItemSpan(listSpan, ((ListItemSpan) span).getIndex() + 1,
                                 mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor, true);
-                        editable.setSpan(newListItemSpan, end, spanEnd, getSpanFlags(newListItemSpan.getClass()));
+                        editable.setSpan(newListItemSpan, end, spanEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
 
                     ///更新ListSpan包含的儿子一级ListItemSpans（注意：只children！）
@@ -2355,7 +2369,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                     editable.removeSpan(span);
                 } else if (st != spanStart || en != spanEnd) {
-                    editable.setSpan(span, st, en, getSpanFlags(span.getClass()));
+                    editable.setSpan(span, st, en, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
 
                 ///段落span（带初始化参数）：List
@@ -2418,7 +2432,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 if (clazz == LineDividerSpan.class) {
                     editable.removeSpan(span);
                 } else {
-                    editable.setSpan(span, start, end, getSpanFlags(span.getClass()));
+                    editable.setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
@@ -2901,7 +2915,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         if (newSpan != null) {
-            editable.setSpan(newSpan, start, end, getSpanFlags(newSpan.getClass()));
+            editable.setSpan(newSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
 
             ///段落span（带初始化参数）：List
             if (clazz == ListSpan.class) {
