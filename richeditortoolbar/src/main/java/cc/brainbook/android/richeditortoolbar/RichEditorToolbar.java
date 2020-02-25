@@ -845,9 +845,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         isSkipTextWatcher = false;
 
                         final Editable editable = mRichEditText.getText();
-                        final List<SpanBean> spanBeans = textBean.getSpans();
-                        ///执行setSpanFromSpanBeans及后处理
-                        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
 
                         ///[FIX#当光标位置未发生变化时不会调用selectionChanged()来更新view的select状态！]
                         ///解决：此时应手动调用selectionChanged()来更新view的select状态
@@ -856,6 +853,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         } else {
                             Selection.setSelection(editable, 0);
                         }
+
+                        final List<SpanBean> spanBeans = textBean.getSpans();
+                        ///执行setSpanFromSpanBeans及后处理
+                        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
 
                         ///[Preview]
                         updatePreview();
