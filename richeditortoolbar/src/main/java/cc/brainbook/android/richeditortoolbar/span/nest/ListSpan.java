@@ -114,6 +114,7 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, INestParagraphSt
             final @IntRange(from = 0) int start = in.readInt();
             final boolean isReversed = in.readInt() == 1;
             final @IntRange(from = 0) int intent = in.readInt();
+
             return new ListSpan(nestingLevel, listType, start, isReversed, intent);
         }
 

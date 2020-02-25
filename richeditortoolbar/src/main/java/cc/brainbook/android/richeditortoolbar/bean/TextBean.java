@@ -37,7 +37,9 @@ public class TextBean implements Parcelable {
     protected TextBean(Parcel in) {
         this();
         text = in.readString();
-        in.readTypedList(spans, SpanBean.CREATOR);
+        ///[FIX#API24/25/26/27#readParcelable()#android.os.BadParcelableException: ClassNotFoundException when unmarshalling]
+//        in.readTypedList(spans, SpanBean.CREATOR);
+        in.readList(spans, getClass().getClassLoader());
     }
 
     public static final Creator<TextBean> CREATOR = new Creator<TextBean>() {
@@ -60,6 +62,8 @@ public class TextBean implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(text);
-        dest.writeTypedList(spans);
+        ///[FIX#API24/25/26/27#readParcelable()#android.os.BadParcelableException: ClassNotFoundException when unmarshalling]
+//        dest.writeTypedList(spans);
+        dest.writeList(spans);
     }
 }
