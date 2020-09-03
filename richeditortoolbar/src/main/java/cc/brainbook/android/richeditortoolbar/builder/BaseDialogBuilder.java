@@ -2,7 +2,7 @@ package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 public class BaseDialogBuilder {
     protected AlertDialog.Builder builder;

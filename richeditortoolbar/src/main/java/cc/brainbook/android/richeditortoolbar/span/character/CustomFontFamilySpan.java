@@ -2,7 +2,7 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.style.TypefaceSpan;
 
 import com.google.gson.annotations.Expose;

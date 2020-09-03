@@ -1,7 +1,7 @@
 package cc.brainbook.android.richeditor;
 
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import android.text.Editable;
 import android.view.View;
 
@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.fromJson;

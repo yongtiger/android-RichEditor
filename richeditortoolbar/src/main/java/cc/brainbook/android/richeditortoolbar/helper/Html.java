@@ -4,7 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.support.v4.text.TextDirectionHeuristicsCompat;
+import androidx.core.text.TextDirectionHeuristicsCompat;
 import android.text.Editable;
 import android.text.Layout;
 import android.text.Spannable;

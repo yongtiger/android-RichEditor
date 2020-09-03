@@ -9,7 +9,6 @@
     <!-- [Android 9.0 (API level 28)#http网络请求的问题#Cleartext HTTP traffic not permitted]android:networkSecurityConfig -->
     <!--https://www.jianshu.com/p/57047a84e559-->
     <application
-        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -35,7 +34,7 @@
         <!--///适应Android 7.0-->
 <!--        https://blog.csdn.net/lmj623565791/article/details/72859156-->
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.android7.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

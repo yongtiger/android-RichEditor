@@ -1,8 +1,8 @@
 package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
-import android.support.annotation.FloatRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.RelativeSizeSpan;
 

@@ -1,7 +1,7 @@
 package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.text.style.ForegroundColorSpan;
 
 import com.google.gson.annotations.Expose;

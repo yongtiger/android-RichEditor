@@ -3,7 +3,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Base64;
 
 ///保存Parcelable：marshall/unmarshall

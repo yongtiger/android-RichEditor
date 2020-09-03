@@ -1,7 +1,7 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.content.Context;
-import android.support.annotation.ArrayRes;
+import androidx.annotation.ArrayRes;
 
 public abstract class ArrayUtil {
     public static int getStringIndex(Context context, @ArrayRes int itemsId, String item) {

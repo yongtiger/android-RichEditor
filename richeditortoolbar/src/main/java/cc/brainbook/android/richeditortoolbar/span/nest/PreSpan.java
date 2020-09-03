@@ -7,7 +7,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 import android.text.style.LineBackgroundSpan;
 
 import com.google.gson.annotations.Expose;
