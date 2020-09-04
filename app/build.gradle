@@ -1,14 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion setup.compileSdk
+    buildToolsVersion setup.buildTools
 
     defaultConfig {
         applicationId "cc.brainbook.android.richeditor"
-        minSdkVersion 15
-        targetSdkVersion 30
-        versionCode 10001
-        versionName "1.0.1"
+
+        minSdkVersion setup.minSdk
+        targetSdkVersion setup.targetSdk
+        versionCode release.versionCode
+        versionName release.versionName
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
