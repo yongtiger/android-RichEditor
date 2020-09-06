@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.ic_image_black_24dp);
 
-        ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录
+        ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
+        ///注意：getExternalCacheDir()在API 30中可能会返回null！
         final File imageFilePath = getExternalCacheDir();   ///test
         mRichEditorToolbar.setImageFilePath(imageFilePath);
 

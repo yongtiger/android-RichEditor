@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.0.2",
-                versionCode: 10002
+                versionName: "1.0.3",   ///[v1.0.3#FIX#设置ImageSpan存放图片文件的缺省缓存目录]
+                versionCode: 10003
         ]
     }
 

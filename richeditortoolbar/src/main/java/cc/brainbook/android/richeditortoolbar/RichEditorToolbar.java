@@ -221,7 +221,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     private File mImageFilePath;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
     public void setImageFilePath(File imageFilePath) {
-        mImageFilePath = imageFilePath;
+        if (imageFilePath != null && imageFilePath.exists() && imageFilePath.canWrite()) {
+            mImageFilePath = imageFilePath;
+        }
+    }
+    public File getImageFilePath() {
+        return mImageFilePath;
     }
     private int mImageOverrideWidth = 1000;
     private int mImageOverrideHeight = 1000;
@@ -748,6 +753,22 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewImage.setOnClickListener(this);
             mClassMap.put(CustomImageSpan.class, mImageViewImage);
         }
+
+        ///设置ImageSpan存放图片文件的缺省缓存目录
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            ///外部存储可用
+            ///注意：getExternalCacheDir()在API 30中可能会返回null！
+            if (null == context.getExternalCacheDir()) {
+                mImageFilePath = context.getCacheDir();
+            } else {
+                mImageFilePath = context.getExternalCacheDir();
+            }
+        } else {
+            ///外部存储不可用
+            mImageFilePath = context.getCacheDir();
+        }
+
 
         /* -------------- ///[清除样式] --------------- */
         mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans); ///[取消按钮功能]注释此行以便取消此按钮！
@@ -1742,6 +1763,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int mediaType = view == mImageViewVideo ? 1 : view == mImageViewAudio ? 2 : 0;
                 clickImageSpanDialogBuilder = ClickImageSpanDialogBuilder
                         .with(mContext, mediaType)
+                        .setImageFilePath(mImageFilePath)
                         .setPositiveButton(android.R.string.ok, new ClickImageSpanDialogBuilder.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
@@ -1802,7 +1824,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 updatePreview();
                             }
                         })
-                        .setImageFilePath(mImageFilePath)
                         ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
                         .setNegativeButton(android.R.string.cancel, (ClickImageSpanDialogBuilder.OnClickListener) null);
 

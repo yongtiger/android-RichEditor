@@ -11,6 +11,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -74,10 +75,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private File mDestinationFile;	///图片Crop、Draw生成的目标文件
     private File mImageFilePath;	///ImageSpan存放图片文件的目录
     public ClickImageSpanDialogBuilder setImageFilePath(File imageFilePath) {
-        mImageFilePath = imageFilePath;
-		mImageFilePath.mkdirs();
+		if (imageFilePath != null && imageFilePath.exists() && imageFilePath.canWrite()) {
+			mImageFilePath = imageFilePath;
+		}
+
         return this;
     }
+	public File getImageFilePath() {
+		return mImageFilePath;
+	}
 
 	private int mVerticalAlignment;
 
@@ -429,10 +435,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
         mContext = context;
 
 		mMediaType = mediaType;
-		mImageFilePath = context.getExternalCacheDir();///设置ImageSpan存放图片文件的缺省目录
 
 		if (mMediaType != 0) {
-			mDefaultImageFileName = "file:///android_asset/" + (mMediaType ==1 ? "video.png" : "audio.png");
+			mDefaultImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");
 		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
