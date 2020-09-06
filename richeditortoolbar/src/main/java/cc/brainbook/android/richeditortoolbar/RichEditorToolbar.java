@@ -561,35 +561,35 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mClassMap.put(DivSpan.class, null);
 
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
-        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewLeadingMargin != null) {
+        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewLeadingMargin != null && mImageViewLeadingMargin.getVisibility() == VISIBLE) {
             mImageViewLeadingMargin.setOnClickListener(this);
             mImageViewLeadingMargin.setOnLongClickListener(this);
             mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
         }
 
         /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
-        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewAlignNormal != null) {
+        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewAlignNormal != null && mImageViewAlignNormal.getVisibility() == VISIBLE) {
             mImageViewAlignNormal.setOnClickListener(this);
             mClassMap.put(AlignNormalSpan.class, mImageViewAlignNormal);
         }
 
-        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewAlignCenter != null) {
+        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewAlignCenter != null && mImageViewAlignCenter.getVisibility() == VISIBLE) {
             mImageViewAlignCenter.setOnClickListener(this);
             mClassMap.put(AlignCenterSpan.class, mImageViewAlignCenter);
         }
 
-        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewAlignOpposite != null) {
+        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewAlignOpposite != null && mImageViewAlignOpposite.getVisibility() == VISIBLE) {
             mImageViewAlignOpposite.setOnClickListener(this);
             mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
         }
 
         /* -------------- ///段落span（带初始化参数）：List --------------- */
-        mImageViewList = (ImageView) findViewById(R.id.iv_list); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewList != null) {
+        mImageViewList = (ImageView) findViewById(R.id.iv_list); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewList != null && mImageViewList.getVisibility() == VISIBLE) {
             mImageViewList.setOnClickListener(this);
             mImageViewList.setOnLongClickListener(this);
             mClassMap.put(ListSpan.class, mImageViewList);
@@ -599,157 +599,157 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* -------------- ///段落span（带初始化参数）：Quote --------------- */
-        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewQuote != null) {
+        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewQuote != null && mImageViewQuote.getVisibility() == VISIBLE) {
             mImageViewQuote.setOnClickListener(this);
             mImageViewQuote.setOnLongClickListener(this);
             mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
         }
 
         /* -------------- ///字符span（带参数）：Pre --------------- */
-        mImageViewPre = (ImageView) findViewById(R.id.iv_pre); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewPre != null) {
+        mImageViewPre = (ImageView) findViewById(R.id.iv_pre); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewPre != null && mImageViewPre.getVisibility() == VISIBLE) {
             mImageViewPre.setOnClickListener(this);
             mClassMap.put(PreSpan.class, mImageViewPre);
         }
 
         /* -------------- ///段落span（带参数）：Head --------------- */
-        mTextViewHead = (TextView) findViewById(R.id.tv_head); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mTextViewHead != null) {
+        mTextViewHead = (TextView) findViewById(R.id.tv_head); ///[取消按钮功能]android:visibility="gone"
+        if (mTextViewHead != null && mTextViewHead.getVisibility() == VISIBLE) {
             mTextViewHead.setOnClickListener(this);
             mClassMap.put(HeadSpan.class, mTextViewHead);
         }
 
         /* -------------- ///段落span：LineDivider --------------- */
-        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewLineDivider != null) {
+        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewLineDivider != null && mImageViewLineDivider.getVisibility() == VISIBLE) {
             mImageViewLineDivider.setOnClickListener(this);
             mImageViewLineDivider.setOnLongClickListener(this);
             mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
         }
 
         /* -------------- ///字符span：Bold、Italic --------------- */
-        mImageViewBold = (ImageView) findViewById(R.id.iv_bold); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewBold != null) {
+        mImageViewBold = (ImageView) findViewById(R.id.iv_bold); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewBold != null && mImageViewBold.getVisibility() == VISIBLE) {
             mImageViewBold.setOnClickListener(this);
             mClassMap.put(BoldSpan.class, mImageViewBold);
         }
 
-        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewItalic != null) {
+        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewItalic != null && mImageViewItalic.getVisibility() == VISIBLE) {
             mImageViewItalic.setOnClickListener(this);
             mClassMap.put(ItalicSpan.class, mImageViewItalic);
         }
 
         /* ------------ ///字符span：Underline、StrikeThrough、Subscript、Superscript ------------ */
-        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewUnderline != null) {
+        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewUnderline != null && mImageViewUnderline.getVisibility() == VISIBLE) {
             mImageViewUnderline.setOnClickListener(this);
             mClassMap.put(CustomUnderlineSpan.class, mImageViewUnderline);
         }
 
-        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewStrikeThrough != null) {
+        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewStrikeThrough != null && mImageViewStrikeThrough.getVisibility() == VISIBLE) {
             mImageViewStrikeThrough.setOnClickListener(this);
             mClassMap.put(CustomStrikethroughSpan.class, mImageViewStrikeThrough);
         }
 
-        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewSuperscript != null) {
+        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewSuperscript != null && mImageViewSuperscript.getVisibility() == VISIBLE) {
             mImageViewSuperscript.setOnClickListener(this);
             mClassMap.put(CustomSuperscriptSpan.class, mImageViewSuperscript);
         }
 
-        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewSubscript != null) {
+        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewSubscript != null && mImageViewSubscript.getVisibility() == VISIBLE) {
             mImageViewSubscript.setOnClickListener(this);
             mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
         }
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
-        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewForegroundColor != null) {
+        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewForegroundColor != null && mImageViewForegroundColor.getVisibility() == VISIBLE) {
             mImageViewForegroundColor.setOnClickListener(this);
             mClassMap.put(CustomForegroundColorSpan.class, mImageViewForegroundColor);
         }
 
-        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewBackgroundColor != null) {
+        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewBackgroundColor != null && mImageViewBackgroundColor.getVisibility() == VISIBLE) {
             mImageViewBackgroundColor.setOnClickListener(this);
             mClassMap.put(CustomBackgroundColorSpan.class, mImageViewBackgroundColor);
         }
 
         /* -------------- ///字符span（带参数）：FontFamily --------------- */
-        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mTextViewFontFamily != null) {
+        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family); ///[取消按钮功能]android:visibility="gone"
+        if (mTextViewFontFamily != null && mTextViewFontFamily.getVisibility() == VISIBLE) {
             mTextViewFontFamily.setOnClickListener(this);
             mClassMap.put(CustomFontFamilySpan.class, mTextViewFontFamily);
         }
 
         /* -------------- ///字符span（带参数）：AbsoluteSize --------------- */
-        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mTextViewAbsoluteSize != null) {
+        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size); ///[取消按钮功能]android:visibility="gone"
+        if (mTextViewAbsoluteSize != null && mTextViewAbsoluteSize.getVisibility() == VISIBLE) {
             mTextViewAbsoluteSize.setOnClickListener(this);
             mClassMap.put(CustomAbsoluteSizeSpan.class, mTextViewAbsoluteSize);
         }
 
         /* -------------- ///字符span（带参数）：RelativeSize --------------- */
-        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mTextViewRelativeSize != null) {
+        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size); ///[取消按钮功能]android:visibility="gone"
+        if (mTextViewRelativeSize != null && mTextViewRelativeSize.getVisibility() == VISIBLE) {
             mTextViewRelativeSize.setOnClickListener(this);
             mClassMap.put(CustomRelativeSizeSpan.class, mTextViewRelativeSize);
         }
 
         /* -------------- ///字符span（带参数）：ScaleX --------------- */
-        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mTextViewScaleX != null) {
+        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x); ///[取消按钮功能]android:visibility="gone"
+        if (mTextViewScaleX != null && mTextViewScaleX.getVisibility() == VISIBLE) {
             mTextViewScaleX.setOnClickListener(this);
             mClassMap.put(CustomScaleXSpan.class, mTextViewScaleX);
         }
 
         /* -------------- ///字符span：Code --------------- */
-        mImageViewCode = (ImageView) findViewById(R.id.iv_code); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewCode != null) {
+        mImageViewCode = (ImageView) findViewById(R.id.iv_code); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewCode != null && mImageViewCode.getVisibility() == VISIBLE) {
             mImageViewCode.setOnClickListener(this);
             mClassMap.put(CodeSpan.class, mImageViewCode);
         }
 
         /* -------------- ///字符span：Block --------------- */
-        mImageViewBlock = (ImageView) findViewById(R.id.iv_block); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewBlock != null) {
+        mImageViewBlock = (ImageView) findViewById(R.id.iv_block); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewBlock != null && mImageViewBlock.getVisibility() == VISIBLE) {
             mImageViewBlock.setOnClickListener(this);
             mClassMap.put(BlockSpan.class, mImageViewBlock);
         }
 
         /* -------------- ///字符span：Border --------------- */
-        mImageViewBorder = (ImageView) findViewById(R.id.iv_border); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewBorder != null) {
+        mImageViewBorder = (ImageView) findViewById(R.id.iv_border); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewBorder != null && mImageViewBorder.getVisibility() == VISIBLE) {
             mImageViewBorder.setOnClickListener(this);
             mClassMap.put(BorderSpan.class, mImageViewBorder);
         }
 
         /* -------------- ///字符span（带参数）：URL --------------- */
-        mImageViewURL = (ImageView) findViewById(R.id.iv_url); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewURL != null) {
+        mImageViewURL = (ImageView) findViewById(R.id.iv_url); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewURL != null && mImageViewURL.getVisibility() == VISIBLE) {
             mImageViewURL.setOnClickListener(this);
             mClassMap.put(CustomURLSpan.class, mImageViewURL);
         }
 
         /* -------------- ///字符span（带参数）：Image --------------- */
-        mImageViewVideo = (ImageView) findViewById(R.id.iv_video); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewVideo != null) {
+        mImageViewVideo = (ImageView) findViewById(R.id.iv_video); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewVideo != null && mImageViewVideo.getVisibility() == VISIBLE) {
             mImageViewVideo.setOnClickListener(this);
             mClassMap.put(VideoSpan.class, mImageViewVideo);
         }
 
-        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewAudio != null) {
+        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewAudio != null && mImageViewAudio.getVisibility() == VISIBLE) {
             mImageViewAudio.setOnClickListener(this);
             mClassMap.put(AudioSpan.class, mImageViewAudio);
         }
 
-        mImageViewImage = (ImageView) findViewById(R.id.iv_image); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewImage != null) {
+        mImageViewImage = (ImageView) findViewById(R.id.iv_image); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewImage != null && mImageViewImage.getVisibility() == VISIBLE) {
             mImageViewImage.setOnClickListener(this);
             mClassMap.put(CustomImageSpan.class, mImageViewImage);
         }
@@ -771,8 +771,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
         /* -------------- ///[清除样式] --------------- */
-        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewClearSpans != null) {
+        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewClearSpans != null && mImageViewClearSpans.getVisibility() == VISIBLE) {
             mImageViewClearSpans.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -824,8 +824,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* -------------- ///[草稿Draft] --------------- */
-        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewSaveDraft != null) {
+        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewSaveDraft != null && mImageViewSaveDraft.getVisibility() == VISIBLE) {
             mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -843,8 +843,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             });
         }
 
-        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewRestoreDraft != null) {
+        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewRestoreDraft != null && mImageViewRestoreDraft.getVisibility() == VISIBLE) {
             mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -892,8 +892,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             });
         }
 
-        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewClearDraft != null) {
+        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewClearDraft != null && mImageViewClearDraft.getVisibility() == VISIBLE) {
             mImageViewClearDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -914,8 +914,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* ------------------- ///[Undo/Redo] ------------------- */
-        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewUndo != null) {
+        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewUndo != null && mImageViewUndo.getVisibility() == VISIBLE) {
             mImageViewUndo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -927,8 +927,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             });
         }
 
-        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewRedo != null) {
+        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewRedo != null && mImageViewRedo.getVisibility() == VISIBLE) {
             mImageViewRedo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -940,8 +940,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             });
         }
 
-        mImageViewSave = (ImageView) findViewById(R.id.iv_save); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewSave != null) {
+        mImageViewSave = (ImageView) findViewById(R.id.iv_save); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewSave != null && mImageViewSave.getVisibility() == VISIBLE) {
             mImageViewSave.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -953,8 +953,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewPreview != null) {
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewPreview != null && mImageViewPreview.getVisibility() == VISIBLE) {
             mImageViewPreview.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -974,8 +974,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* -------------- ///[Html] --------------- */
-        mImageViewHtml = (ImageView) findViewById(R.id.iv_html); ///[取消按钮功能]注释此行以便取消此按钮！
-        if (mImageViewHtml != null) {
+        mImageViewHtml = (ImageView) findViewById(R.id.iv_html); ///[取消按钮功能]android:visibility="gone"
+        if (mImageViewHtml != null && mImageViewHtml.getVisibility() == VISIBLE) {
             mImageViewHtml.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {

@@ -19,31 +19,35 @@
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
 
-    <!-- ///[取消按钮功能]注释可取消某按钮（必须同时注释RichEditorToolbar中的findViewById()） -->
+    <!-- ///[取消按钮功能]android:visibility="gone" -->
 
     <ImageView
         android:id="@+id/iv_leading_margin"
         android:longClickable="true"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_leading_margin"
+        android:visibility="gone"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_normal"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_align_normal"
+        android:visibility="gone"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_center"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_align_center"
+        android:visibility="gone"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_opposite"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_align_opposite"
+        android:visibility="gone"
         style="@style/ImageView" />
 
     <ImageView
@@ -51,6 +55,7 @@
         android:longClickable="true"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_list"
+        android:visibility="gone"
         style="@style/ImageView" />
 
     <ImageView
