@@ -7,44 +7,17 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
-        android:id="@+id/rich_editor_tool_bar"
+    <Button
+        android:id="@+id/btn_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:alignItems="flex_start"
-        app:flexDirection="row"
-        app:flexWrap="wrap"
-        app:justifyContent="flex_start" />
-
-    <cc.brainbook.android.richeditortoolbar.RichEditText
-        android:id="@+id/et_rich_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="start"
-        android:scrollbars="vertical"
-        android:lineSpacingExtra="8dp"
-        android:textSize="24sp"
-        android:inputType="textMultiLine|textImeMultiLine|textVisiblePassword" />
-        <!--android:inputType="textVisiblePassword"：解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失！-->
-        <!--android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
-        <!--android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
+        android:onClick="btnClickEdit"
+        android:text="Edit"/>
 
     <TextView
-        android:id="@+id/tv_preview"
+        android:id="@+id/tv_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="start"
-        android:scrollbars="vertical"
-        android:lineSpacingExtra="8dp"
-        android:textSize="24sp"
-        android:visibility="gone" />
-
-    <EditText
-        android:id="@+id/et_html"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="start"
-        android:scrollbars="vertical"
-        android:visibility="gone" />
+        android:textSize="24sp" />
 
 </LinearLayout>

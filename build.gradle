@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.0.5",   ///v1.0.5#[取消按钮功能]android:visibility="gone"
-                versionCode: 10005
+                versionName: "1.0.6",   ///v1.0.6#[startActivityForResult]启动Activity来获取数据
+                versionCode: 10006
         ]
     }
 
