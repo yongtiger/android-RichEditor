@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.0.7",   ///v1.0.7#[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
-                versionCode: 10007
+                versionName: "1.0.8",   ///v1.0.8#[postSetSpans#执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+                versionCode: 10008
         ]
     }
 

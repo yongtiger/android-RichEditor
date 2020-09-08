@@ -1109,11 +1109,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
                         mRichEditText.setText(htmlSpanned);
 
-                        ///执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！
-                        final Editable editable = mRichEditText.getText();
-                        final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
-                        final List<SpanBean> spanBeans = textBean.getSpans();
-                        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
+                        ///[postSetSpans#执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+                        postSetSpans();
 
                         mRichEditText.setVisibility(VISIBLE);
                         mTextViewPreview.setVisibility(GONE);
@@ -1153,6 +1150,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
         initUndoRedo();
+
+        ///[postSetSpans#执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+        postSetSpans();
+    }
+
+    ///[postSetSpans#执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+    private void postSetSpans() {
+        final Editable editable = mRichEditText.getText();
+        final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
+        final List<SpanBean> spanBeans = textBean.getSpans();
+        postSetSpanFromSpanBeans(null, -1, RichEditorToolbarHelper.loadSpansFromSpanBeans(spanBeans, editable));
     }
 
     private int getActionId(View view) {

@@ -45,6 +45,15 @@ public class TextActivity extends AppCompatActivity {
         mEditTextHtml = (EditText) findViewById(R.id.et_html);
 
 
+        /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
+        final Intent intent = getIntent();
+        final String htmlTextString = intent.getStringExtra("html_text");
+        if (!TextUtils.isEmpty(htmlTextString)) {
+            final Spanned htmlTextSpanned = Html.fromHtml(htmlTextString);
+            mRichEditText.setText(htmlTextSpanned);
+        }
+
+
         /* -------------- ///设置 -------------- */
 //        ///（可选）设置编辑器初始文本
 //        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
@@ -71,15 +80,6 @@ public class TextActivity extends AppCompatActivity {
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2); ///test
-
-
-        /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
-        final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra("html_text");
-        if (!TextUtils.isEmpty(htmlTextString)) {
-            final Spanned htmlTextSpanned = Html.fromHtml(htmlTextString);
-            mRichEditText.setText(htmlTextSpanned);
-        }
     }
 
     @Override
