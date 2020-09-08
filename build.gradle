@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.0.6",   ///v1.0.6#[startActivityForResult]启动Activity来获取数据
-                versionCode: 10006
+                versionName: "1.0.7",   ///v1.0.7#[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+                versionCode: 10007
         ]
     }
 

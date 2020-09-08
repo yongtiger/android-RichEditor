@@ -1,20 +1,15 @@
 package cc.brainbook.android.richeditor;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import cc.brainbook.android.richeditortoolbar.EnhancedMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTextView = findViewById(R.id.tv_text);
+        mTextView.setClickable(true);
+        mTextView.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
     }
-
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
     @Override
@@ -43,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 if (data != null) {
                     mHtmlText = data.getStringExtra("html_result");
                     mTextView.setText(TextUtils.isEmpty(mHtmlText)? null : Html.fromHtml(mHtmlText));
+                    mTextView.setClickable(true);
+                    mTextView.setMovementMethod(EnhancedMovementMethod.getInstance());
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -533,21 +534,24 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private Context mContext;
 
     public RichEditorToolbar(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public RichEditorToolbar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+        this(context, attrs, 0);
     }
 
     public RichEditorToolbar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
+
+        final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RichEditorToolbar, defStyleAttr, 0);
+
+        init(context, a);
+
+        a.recycle();
     }
 
-    public void init(Context context) {
+    public void init(Context context, TypedArray a) {
         mContext = context;
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
 
@@ -561,197 +565,281 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mClassMap.put(DivSpan.class, null);
 
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
-        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewLeadingMargin != null && mImageViewLeadingMargin.getVisibility() == VISIBLE) {
+        mImageViewLeadingMargin = (ImageView) findViewById(R.id.iv_leading_margin);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_leading_margin, true)) {
             mImageViewLeadingMargin.setOnClickListener(this);
             mImageViewLeadingMargin.setOnLongClickListener(this);
             mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
+        } else {
+            mImageViewLeadingMargin.setVisibility(GONE);
         }
 
         /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
-        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewAlignNormal != null && mImageViewAlignNormal.getVisibility() == VISIBLE) {
+        mImageViewAlignNormal = (ImageView) findViewById(R.id.iv_align_normal);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_align_normal, true)) {
             mImageViewAlignNormal.setOnClickListener(this);
             mClassMap.put(AlignNormalSpan.class, mImageViewAlignNormal);
+        } else {
+            mImageViewAlignNormal.setVisibility(GONE);
         }
 
-        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewAlignCenter != null && mImageViewAlignCenter.getVisibility() == VISIBLE) {
+        mImageViewAlignCenter = (ImageView) findViewById(R.id.iv_align_center);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_align_center, true)) {
             mImageViewAlignCenter.setOnClickListener(this);
             mClassMap.put(AlignCenterSpan.class, mImageViewAlignCenter);
+        } else {
+            mImageViewAlignCenter.setVisibility(GONE);
         }
 
-        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewAlignOpposite != null && mImageViewAlignOpposite.getVisibility() == VISIBLE) {
+        mImageViewAlignOpposite = (ImageView) findViewById(R.id.iv_align_opposite);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_align_opposite, true)) {
             mImageViewAlignOpposite.setOnClickListener(this);
             mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
+        } else {
+            mImageViewAlignOpposite.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带初始化参数）：List --------------- */
-        mImageViewList = (ImageView) findViewById(R.id.iv_list); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewList != null && mImageViewList.getVisibility() == VISIBLE) {
+        mImageViewList = (ImageView) findViewById(R.id.iv_list);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_list, true)) {
             mImageViewList.setOnClickListener(this);
             mImageViewList.setOnLongClickListener(this);
             mClassMap.put(ListSpan.class, mImageViewList);
             ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
             ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
             mClassMap.put(ListItemSpan.class, null);
+        } else {
+            mImageViewList.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带初始化参数）：Quote --------------- */
-        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewQuote != null && mImageViewQuote.getVisibility() == VISIBLE) {
+        mImageViewQuote = (ImageView) findViewById(R.id.iv_quote);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_quote, true)) {
             mImageViewQuote.setOnClickListener(this);
             mImageViewQuote.setOnLongClickListener(this);
             mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
+        } else {
+            mImageViewQuote.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：Pre --------------- */
-        mImageViewPre = (ImageView) findViewById(R.id.iv_pre); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewPre != null && mImageViewPre.getVisibility() == VISIBLE) {
+        mImageViewPre = (ImageView) findViewById(R.id.iv_pre);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_pre, true)) {
             mImageViewPre.setOnClickListener(this);
             mClassMap.put(PreSpan.class, mImageViewPre);
+        } else {
+            mImageViewPre.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带参数）：Head --------------- */
-        mTextViewHead = (TextView) findViewById(R.id.tv_head); ///[取消按钮功能]android:visibility="gone"
-        if (mTextViewHead != null && mTextViewHead.getVisibility() == VISIBLE) {
+        mTextViewHead = (TextView) findViewById(R.id.tv_head);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_head, true)) {
             mTextViewHead.setOnClickListener(this);
             mClassMap.put(HeadSpan.class, mTextViewHead);
+        } else {
+            mTextViewHead.setVisibility(GONE);
         }
 
         /* -------------- ///段落span：LineDivider --------------- */
-        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewLineDivider != null && mImageViewLineDivider.getVisibility() == VISIBLE) {
+        mImageViewLineDivider = (ImageView) findViewById(R.id.iv_line_divider);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_line_divider, true)) {
             mImageViewLineDivider.setOnClickListener(this);
             mImageViewLineDivider.setOnLongClickListener(this);
             mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
+        } else {
+            mImageViewLineDivider.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Bold、Italic --------------- */
-        mImageViewBold = (ImageView) findViewById(R.id.iv_bold); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewBold != null && mImageViewBold.getVisibility() == VISIBLE) {
+        mImageViewBold = (ImageView) findViewById(R.id.iv_bold);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_bold, true)) {
             mImageViewBold.setOnClickListener(this);
             mClassMap.put(BoldSpan.class, mImageViewBold);
+        } else {
+            mImageViewBold.setVisibility(GONE);
         }
 
-        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewItalic != null && mImageViewItalic.getVisibility() == VISIBLE) {
+        mImageViewItalic = (ImageView) findViewById(R.id.iv_italic);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_italic, true)) {
             mImageViewItalic.setOnClickListener(this);
             mClassMap.put(ItalicSpan.class, mImageViewItalic);
+        } else {
+            mImageViewItalic.setVisibility(GONE);
         }
 
         /* ------------ ///字符span：Underline、StrikeThrough、Subscript、Superscript ------------ */
-        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewUnderline != null && mImageViewUnderline.getVisibility() == VISIBLE) {
+        mImageViewUnderline = (ImageView) findViewById(R.id.iv_underline);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_underline, true)) {
             mImageViewUnderline.setOnClickListener(this);
             mClassMap.put(CustomUnderlineSpan.class, mImageViewUnderline);
+        } else {
+            mImageViewUnderline.setVisibility(GONE);
         }
 
-        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewStrikeThrough != null && mImageViewStrikeThrough.getVisibility() == VISIBLE) {
+        mImageViewStrikeThrough = (ImageView) findViewById(R.id.iv_strikethrough);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_strikethrough, true)) {
             mImageViewStrikeThrough.setOnClickListener(this);
             mClassMap.put(CustomStrikethroughSpan.class, mImageViewStrikeThrough);
+        } else {
+            mImageViewStrikeThrough.setVisibility(GONE);
         }
 
-        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewSuperscript != null && mImageViewSuperscript.getVisibility() == VISIBLE) {
+        mImageViewSuperscript = (ImageView) findViewById(R.id.iv_superscript);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_superscript, true)) {
             mImageViewSuperscript.setOnClickListener(this);
             mClassMap.put(CustomSuperscriptSpan.class, mImageViewSuperscript);
+        } else {
+            mImageViewSuperscript.setVisibility(GONE);
         }
 
-        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewSubscript != null && mImageViewSubscript.getVisibility() == VISIBLE) {
+        mImageViewSubscript = (ImageView) findViewById(R.id.iv_subscript);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_subscript, true)) {
             mImageViewSubscript.setOnClickListener(this);
             mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
+        } else {
+            mImageViewSubscript.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
-        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewForegroundColor != null && mImageViewForegroundColor.getVisibility() == VISIBLE) {
+        mImageViewForegroundColor = (ImageView) findViewById(R.id.iv_foreground_color);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_foreground_color, true)) {
             mImageViewForegroundColor.setOnClickListener(this);
             mClassMap.put(CustomForegroundColorSpan.class, mImageViewForegroundColor);
+        } else {
+            mImageViewForegroundColor.setVisibility(GONE);
         }
 
-        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewBackgroundColor != null && mImageViewBackgroundColor.getVisibility() == VISIBLE) {
+        mImageViewBackgroundColor = (ImageView) findViewById(R.id.iv_background_color);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_background_color, true)) {
             mImageViewBackgroundColor.setOnClickListener(this);
             mClassMap.put(CustomBackgroundColorSpan.class, mImageViewBackgroundColor);
+        } else {
+            mImageViewBackgroundColor.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：FontFamily --------------- */
-        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family); ///[取消按钮功能]android:visibility="gone"
-        if (mTextViewFontFamily != null && mTextViewFontFamily.getVisibility() == VISIBLE) {
+        mTextViewFontFamily = (TextView) findViewById(R.id.tv_font_family);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_font_family, true)) {
             mTextViewFontFamily.setOnClickListener(this);
             mClassMap.put(CustomFontFamilySpan.class, mTextViewFontFamily);
+        } else {
+            mTextViewFontFamily.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：AbsoluteSize --------------- */
-        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size); ///[取消按钮功能]android:visibility="gone"
-        if (mTextViewAbsoluteSize != null && mTextViewAbsoluteSize.getVisibility() == VISIBLE) {
+        mTextViewAbsoluteSize = (TextView) findViewById(R.id.tv_absolute_size);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_absolute_size, true)) {
             mTextViewAbsoluteSize.setOnClickListener(this);
             mClassMap.put(CustomAbsoluteSizeSpan.class, mTextViewAbsoluteSize);
+        } else {
+            mTextViewAbsoluteSize.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：RelativeSize --------------- */
-        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size); ///[取消按钮功能]android:visibility="gone"
-        if (mTextViewRelativeSize != null && mTextViewRelativeSize.getVisibility() == VISIBLE) {
+        mTextViewRelativeSize = (TextView) findViewById(R.id.tv_relative_size);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_relative_size, true)) {
             mTextViewRelativeSize.setOnClickListener(this);
             mClassMap.put(CustomRelativeSizeSpan.class, mTextViewRelativeSize);
+        } else {
+            mTextViewRelativeSize.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：ScaleX --------------- */
-        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x); ///[取消按钮功能]android:visibility="gone"
-        if (mTextViewScaleX != null && mTextViewScaleX.getVisibility() == VISIBLE) {
+        mTextViewScaleX = (TextView) findViewById(R.id.tv_scale_x);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_scale_x, true)) {
             mTextViewScaleX.setOnClickListener(this);
             mClassMap.put(CustomScaleXSpan.class, mTextViewScaleX);
+        } else {
+            mTextViewScaleX.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Code --------------- */
-        mImageViewCode = (ImageView) findViewById(R.id.iv_code); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewCode != null && mImageViewCode.getVisibility() == VISIBLE) {
+        mImageViewCode = (ImageView) findViewById(R.id.iv_code);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_code, true)) {
             mImageViewCode.setOnClickListener(this);
             mClassMap.put(CodeSpan.class, mImageViewCode);
+        } else {
+            mImageViewCode.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Block --------------- */
-        mImageViewBlock = (ImageView) findViewById(R.id.iv_block); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewBlock != null && mImageViewBlock.getVisibility() == VISIBLE) {
+        mImageViewBlock = (ImageView) findViewById(R.id.iv_block);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_block, true)) {
             mImageViewBlock.setOnClickListener(this);
             mClassMap.put(BlockSpan.class, mImageViewBlock);
+        } else {
+            mImageViewBlock.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Border --------------- */
-        mImageViewBorder = (ImageView) findViewById(R.id.iv_border); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewBorder != null && mImageViewBorder.getVisibility() == VISIBLE) {
+        mImageViewBorder = (ImageView) findViewById(R.id.iv_border);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_border, true)) {
             mImageViewBorder.setOnClickListener(this);
             mClassMap.put(BorderSpan.class, mImageViewBorder);
+        } else {
+            mImageViewBorder.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：URL --------------- */
-        mImageViewURL = (ImageView) findViewById(R.id.iv_url); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewURL != null && mImageViewURL.getVisibility() == VISIBLE) {
+        mImageViewURL = (ImageView) findViewById(R.id.iv_url);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_url, true)) {
             mImageViewURL.setOnClickListener(this);
             mClassMap.put(CustomURLSpan.class, mImageViewURL);
+        } else {
+            mImageViewURL.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：Image --------------- */
-        mImageViewVideo = (ImageView) findViewById(R.id.iv_video); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewVideo != null && mImageViewVideo.getVisibility() == VISIBLE) {
+        mImageViewVideo = (ImageView) findViewById(R.id.iv_video);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_video, true)) {
             mImageViewVideo.setOnClickListener(this);
             mClassMap.put(VideoSpan.class, mImageViewVideo);
+        } else {
+            mImageViewVideo.setVisibility(GONE);
         }
 
-        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewAudio != null && mImageViewAudio.getVisibility() == VISIBLE) {
+        mImageViewAudio = (ImageView) findViewById(R.id.iv_audio);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_audio, true)) {
             mImageViewAudio.setOnClickListener(this);
             mClassMap.put(AudioSpan.class, mImageViewAudio);
+        } else {
+            mImageViewAudio.setVisibility(GONE);
         }
 
-        mImageViewImage = (ImageView) findViewById(R.id.iv_image); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewImage != null && mImageViewImage.getVisibility() == VISIBLE) {
+        mImageViewImage = (ImageView) findViewById(R.id.iv_image);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_image, true)) {
             mImageViewImage.setOnClickListener(this);
             mClassMap.put(CustomImageSpan.class, mImageViewImage);
+        } else {
+            mImageViewImage.setVisibility(GONE);
         }
 
         ///设置ImageSpan存放图片文件的缺省缓存目录
@@ -771,8 +859,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
         /* -------------- ///[清除样式] --------------- */
-        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewClearSpans != null && mImageViewClearSpans.getVisibility() == VISIBLE) {
+        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_clear_spans, true)) {
             mImageViewClearSpans.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -821,11 +910,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
                 }
             });
+        } else {
+            mImageViewClearSpans.setVisibility(GONE);
         }
 
         /* -------------- ///[草稿Draft] --------------- */
-        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewSaveDraft != null && mImageViewSaveDraft.getVisibility() == VISIBLE) {
+        mImageViewSaveDraft = (ImageView) findViewById(R.id.iv_save_draft);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_save_draft, true)) {
             mImageViewSaveDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -841,10 +933,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             });
+        } else {
+            mImageViewSaveDraft.setVisibility(GONE);
         }
 
-        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewRestoreDraft != null && mImageViewRestoreDraft.getVisibility() == VISIBLE) {
+        mImageViewRestoreDraft = (ImageView) findViewById(R.id.iv_restore_draft);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_restore_draft, true)) {
             mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -890,10 +985,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             });
+        } else {
+            mImageViewRestoreDraft.setVisibility(GONE);
         }
 
-        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewClearDraft != null && mImageViewClearDraft.getVisibility() == VISIBLE) {
+        mImageViewClearDraft = (ImageView) findViewById(R.id.iv_clear_draft);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_clear_draft, true)) {
             mImageViewClearDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -906,6 +1004,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             });
+        } else {
+            mImageViewClearDraft.setVisibility(GONE);
         }
 
         ///初始化时检查有无草稿Draft
@@ -913,9 +1013,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
             Toast.makeText(mContext.getApplicationContext(), R.string.has_draft, Toast.LENGTH_SHORT).show();
         }
 
-        /* ------------------- ///[Undo/Redo] ------------------- */
-        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewUndo != null && mImageViewUndo.getVisibility() == VISIBLE) {
+        /* ------------------- ///[Undo/Redo/Save] ------------------- */
+        mImageViewUndo = (ImageView) findViewById(R.id.iv_undo);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_undo, true)) {
             mImageViewUndo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -925,10 +1026,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     updatePreview();
                 }
             });
+        } else {
+            mImageViewUndo.setVisibility(GONE);
         }
 
-        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewRedo != null && mImageViewRedo.getVisibility() == VISIBLE) {
+        mImageViewRedo = (ImageView) findViewById(R.id.iv_redo);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_redo, true)) {
             mImageViewRedo.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -938,10 +1042,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     updatePreview();
                 }
             });
+        } else {
+            mImageViewRedo.setVisibility(GONE);
         }
 
-        mImageViewSave = (ImageView) findViewById(R.id.iv_save); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewSave != null && mImageViewSave.getVisibility() == VISIBLE) {
+        mImageViewSave = (ImageView) findViewById(R.id.iv_save);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_save, true)) {
             mImageViewSave.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -950,11 +1057,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     mImageViewSave.setEnabled(false);
                 }
             });
+        } else {
+            mImageViewSave.setVisibility(GONE);
         }
 
         /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewPreview != null && mImageViewPreview.getVisibility() == VISIBLE) {
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_preview, true)) {
             mImageViewPreview.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -971,11 +1081,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             });
+        } else {
+            mImageViewPreview.setVisibility(GONE);
         }
 
         /* -------------- ///[Html] --------------- */
-        mImageViewHtml = (ImageView) findViewById(R.id.iv_html); ///[取消按钮功能]android:visibility="gone"
-        if (mImageViewHtml != null && mImageViewHtml.getVisibility() == VISIBLE) {
+        mImageViewHtml = (ImageView) findViewById(R.id.iv_html);
+        ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_html, true)) {
             mImageViewHtml.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1026,6 +1139,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     return true;
                 }
             });
+        } else {
+            mImageViewHtml.setVisibility(GONE);
         }
     }
 

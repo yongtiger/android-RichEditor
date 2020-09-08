@@ -22,6 +22,7 @@
         app:flexDirection="row"
         app:flexWrap="wrap"
         app:justifyContent="flex_start" />
+        <!--///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]-->
 
     <cc.brainbook.android.richeditortoolbar.RichEditText
         android:id="@+id/et_rich_edit_text"
