@@ -159,7 +159,7 @@ public abstract class SpanUtil {
      * 清除所有spans
      */
     public static void clearAllSpans(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable) {
-        for (Class<? extends Parcelable> clazz : classHashMap.keySet()) {
+        for (Class<?> clazz : classHashMap.keySet()) {
             removeSpans(clazz, spannable, 0, spannable.length());
         }
     }

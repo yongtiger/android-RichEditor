@@ -75,8 +75,8 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public abstract class RichEditorToolbarHelper {
-    public static Class<? extends Parcelable> getClassMapKey(LinkedHashMap<Class<? extends Parcelable>, View> classMap, View view) {
-        for (Class<? extends Parcelable> clazz : classMap.keySet()) {
+    public static Class<?> getClassMapKey(LinkedHashMap<Class<? extends Parcelable>, View> classMap, View view) {
+        for (Class<?> clazz : classMap.keySet()) {
             if (classMap.get(clazz) == view) {
                 return clazz;
             }

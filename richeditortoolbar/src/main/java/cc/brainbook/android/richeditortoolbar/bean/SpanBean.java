@@ -79,14 +79,14 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         spanClassName = in.readString();
     }
 
-    public static final Creator<SpanBean> CREATOR = new Creator<SpanBean>() {
+    public static final Creator<SpanBean<?>> CREATOR = new Creator<SpanBean<?>>() {
         @Override
-        public SpanBean createFromParcel(Parcel in) {
-            return new SpanBean(in);
+        public SpanBean<?> createFromParcel(Parcel in) {
+            return new SpanBean<>(in);
         }
 
         @Override
-        public SpanBean[] newArray(int size) {
+        public SpanBean<?>[] newArray(int size) {
             return new SpanBean[size];
         }
     };

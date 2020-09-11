@@ -1144,7 +1144,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
-        final Class<? extends Parcelable> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
         if (isParagraphStyle(clazz)) {
             final int selectionStart = Selection.getSelectionStart(editable);
             final int selectionEnd = Selection.getSelectionEnd(editable);
@@ -1994,7 +1994,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[更新ListSpan]
         ArrayList<ListSpan> updateListSpans = new ArrayList<>();
 
-        final Class<? extends Parcelable> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
         if (isNestParagraphStyle(clazz)) {
             adjustNestParagraphStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true, updateListSpans);
         } else {
@@ -2015,7 +2015,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         final int selectionStart = Selection.getSelectionStart(editable);
         final int selectionEnd = Selection.getSelectionEnd(editable);
         ///当selectionStart != selectionEnd时改变selection的span
-        final Class<? extends Parcelable> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
         if (selectionStart == -1 || selectionEnd == -1) {
             return;
         }
@@ -2517,7 +2517,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    private <T extends Parcelable> void adjustBlockCharacterStyleSpans(View view, Class<T> clazz, final Editable editable, final int start, final int end, boolean isApply) {
+    private <T> void adjustBlockCharacterStyleSpans(View view, Class<T> clazz, final Editable editable, final int start, final int end, boolean isApply) {
         ///[isUpdateNeeded]
         ///注意：EditText的文本被replace后，selection区间变为不存在
         ///从而调用updateCharacterStyleView()，导致view的selected变为false、viewTag被清空
