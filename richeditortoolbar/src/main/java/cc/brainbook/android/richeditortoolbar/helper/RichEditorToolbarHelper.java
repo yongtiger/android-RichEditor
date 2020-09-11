@@ -1,5 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -7,7 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import cc.brainbook.android.richeditortoolbar.GlideImageLoader;
 import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
@@ -665,7 +672,7 @@ public abstract class RichEditorToolbarHelper {
 
         final ArrayList<SpanBean> spanBeans = new ArrayList<>();
         for (Class clazz : classHashMap.keySet()) {
-            saveSpansToSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+            toSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
         }
         textBean.setSpans(spanBeans);
 
@@ -687,13 +694,13 @@ public abstract class RichEditorToolbarHelper {
 
             final List<SpanBean> spanBeans = textBean.getSpans();
 
-            return loadSpansFromSpanBeans(spanBeans, editable);
+            return fromSpanBeans(spanBeans, editable);
         }
 
         return null;
     }
 
-    public static <T extends Parcelable> void saveSpansToSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
+    public static <T extends Parcelable> void toSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         for (T span : spans) {
             ///注意：必须过滤掉没有CREATOR变量的span！
@@ -704,7 +711,7 @@ public abstract class RichEditorToolbarHelper {
                 final int spanEnd = editable.getSpanEnd(span);
                 final int spanFlags = editable.getSpanFlags(span);
                 final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
-                final int adjustSpanEnd = (spanEnd > end ? end : spanEnd) - start;
+                final int adjustSpanEnd = (Math.min(spanEnd, end)) - start;
                 final SpanBean<T> spanBean = new SpanBean<>(span, span.getClass().getSimpleName(), adjustSpanStart, adjustSpanEnd, spanFlags);
                 spanBeans.add(spanBean);
             } catch (NoSuchFieldException e) {
@@ -713,7 +720,7 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
-    public static ArrayList<Object> loadSpansFromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+    public static ArrayList<Object> fromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
         final ArrayList<Object> resultSpanList = new ArrayList<>();
         if (spanBeans != null) {
             for (SpanBean spanBean : spanBeans) {
@@ -779,7 +786,7 @@ public abstract class RichEditorToolbarHelper {
 
         final List<SpanBean> spanBeans = textBean.getSpans();
         final Editable editable = new SpannableStringBuilder(textBean.getText());
-        loadSpansFromSpanBeans(spanBeans, editable);
+        fromSpanBeans(spanBeans, editable);
 
         return editable;
     }
@@ -821,7 +828,7 @@ public abstract class RichEditorToolbarHelper {
                             }
                             final JsonObject spanJsonObject = spanBeanJsonElement.getAsJsonObject();
 
-                            final Parcelable span = createSpan(spanClassName, spanJsonObject);
+                            final Parcelable span = newSpan(spanClassName, spanJsonObject);
 
                             if (span != null) {
                                 JsonElement jsonElemen = spanBeanJsonObject.get("spanStart");
@@ -848,7 +855,7 @@ public abstract class RichEditorToolbarHelper {
         return gson.fromJson(src, TextBean.class);
     }
 
-    private static Parcelable createSpan(String spanClassName, JsonObject spanJsonObject) {
+    private static Parcelable newSpan(String spanClassName, JsonObject spanJsonObject) {
         JsonElement jsonElement;
 
         jsonElement = spanJsonObject.get("mNestingLevel");
@@ -1020,11 +1027,126 @@ public abstract class RichEditorToolbarHelper {
         return null;
     }
 
+    @DrawableRes
+    public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;
     private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
-        final Drawable d = Resources.getSystem().getDrawable(android.R.drawable.picture_frame);
+        @SuppressLint("UseCompatLoadingForDrawables")
+        final Drawable d = Resources.getSystem().getDrawable(sPlaceHolderDrawable);
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
         return d;
     }
 
+
+    /* --------------------------------------------------------------------------------------- */
+    ///执行postLoadSpans后处理
+    ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
+    public static void postLoadSpans(Context context, Spannable editable, int pasteOffset, List<Object> spans,
+                                     Drawable placeholderDrawable,
+                                     @DrawableRes int placeholderResourceId,
+                                     Drawable.Callback drawableCallback,
+                                     LineDividerSpan.DrawBackgroundCallback drawBackgroundCallback
+    ) {
+        if (spans == null || spans.isEmpty()) {
+            return;
+        }
+
+        for (Object span : spans) {
+            if (span instanceof LineDividerSpan) {
+                ((LineDividerSpan) span).setDrawBackgroundCallback(drawBackgroundCallback);
+            } else if (span instanceof CustomImageSpan) {
+                final String uri = ((CustomImageSpan) span).getUri();
+                final String source = ((CustomImageSpan) span).getSource();
+                final int verticalAlignment = ((CustomImageSpan) span).getVerticalAlignment();
+                final int drawableWidth = ((CustomImageSpan) span).getDrawableWidth();
+                final int drawableHeight = ((CustomImageSpan) span).getDrawableHeight();
+
+                final int spanStart = editable.getSpanStart(span);
+                final int spanEnd = editable.getSpanEnd(span);
+                editable.removeSpan(span);
+
+                ///[ImageSpan#Glide#GifDrawable]
+                loadImage(context, span.getClass(), editable, pasteOffset, spanStart, spanEnd,
+                        uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback);
+            }
+        }
+    }
+
+    public static void loadImage(Context context, final Class clazz, final Spannable editable, final int pasteOffset, final int start, final int end,
+                                 final String viewTagUri, final String viewTagSrc,
+                                 final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
+                                 Drawable placeholderDrawable,
+                                 @DrawableRes int placeholderResourceId,
+                                 Drawable.Callback drawableCallback) {
+        final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
+
+        ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
+        if (placeholderDrawable == null) {
+            glideImageLoader.setPlaceholderResourceId(placeholderResourceId);
+        } else {
+            glideImageLoader.setPlaceholderDrawable(placeholderDrawable);
+        }
+
+        glideImageLoader.setDrawableCallback(drawableCallback);
+        glideImageLoader.setCallback(new GlideImageLoader.Callback() {
+            ///[GlideImageLoader#isAsync]GlideImageLoader是否为异步加载图片
+            ///说明：当paste含有ImageSpan的文本时，有可能造成已经replace完了paste文本才完成Glide异步加载图片，
+            ///此时loadImage仍然执行paste的setSpan，而此时应该执行mRichEditText的setSpan！
+            private boolean isAsync = false;
+
+            private CustomImageSpan mImagePlaceholderSpan = null;///避免产生重复span！
+
+            @Override
+            public void onLoadStarted(@Nullable Drawable drawable) {
+                isAsync = true;
+
+                if (drawable != null) {
+                    drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);   ///注意：Drawable必须设置Bounds才能显示
+
+                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                            : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+
+                    editable.setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                }
+            }
+
+            @Override
+            public void onResourceReady(@NonNull Drawable drawable) {
+                drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
+
+                if (mImagePlaceholderSpan != null) {
+                    editable.removeSpan(mImagePlaceholderSpan);
+                }
+
+                final int spanStart = pasteOffset == -1 ? start : isAsync ? start + pasteOffset : start;
+                final int spanEnd = pasteOffset == -1 ? end : isAsync ? end + pasteOffset : end;
+
+                editable.setSpan(
+                        clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                                : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                                : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign),
+                        spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            }
+        });
+
+        ///[ImageSpan#Glide#loadImage()]
+        glideImageLoader.loadImage(viewTagSrc);
+    }
+
+    public static void setImageSpan(Spannable spannable, @NonNull Drawable drawable) {
+        ///注意：实测此方法不闪烁！
+        ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
+        final CustomImageSpan imageSpan = SpanUtil.getImageSpanByDrawable(spannable, drawable);
+        if (imageSpan != null) {
+            if (!TextUtils.isEmpty(spannable)) {
+                final int spanStart = spannable.getSpanStart(imageSpan);
+                final int spanEnd = spannable.getSpanEnd(imageSpan);
+
+                ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
+//                editable.removeSpan(imageSpan);
+                spannable.setSpan(imageSpan, spanStart, spanEnd, spannable.getSpanFlags(imageSpan));
+            }
+        }
+    }
 }

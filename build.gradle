@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.0.8",   ///v1.0.8#[postSetSpans#执行setSpanFromSpanBeans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
-                versionCode: 10008
+                versionName: "1.1.0",   ///v1.1.0#RichEditorToolbarHelper.postLoadSpans
+                versionCode: 10100
         ]
     }
 

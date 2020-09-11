@@ -3,7 +3,9 @@ package cc.brainbook.android.richeditor;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Spanned;
@@ -18,6 +20,7 @@ import cc.brainbook.android.richeditortoolbar.EnhancedMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
 
 public class TextActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
@@ -61,13 +64,21 @@ public class TextActivity extends AppCompatActivity {
 //        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);    ///test
 
         ///（必选）RichEditorToolbar设置编辑器
-        mRichEditorToolbar.setupEditText(mRichEditText);
+        mRichEditorToolbar.setEditText(mRichEditText);
 
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreview(mTextViewPreview);
 
         ///（必选）RichEditorToolbar设置Html
         mRichEditorToolbar.setHtml(mEditTextHtml);
+
+        ///（必选）RichEditorToolbar设置LineDividerSpan.DrawBackgroundCallback
+        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
+            @Override
+            public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+                c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
+            }
+        });
 
         ///（必选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
@@ -80,6 +91,9 @@ public class TextActivity extends AppCompatActivity {
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2); ///test
+
+        ///初始化RichEditorToolbar
+        mRichEditorToolbar.init();
     }
 
     @Override

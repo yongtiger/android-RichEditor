@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.ParagraphStyle;
 import android.view.View;
@@ -165,20 +166,19 @@ public abstract class SpanUtil {
     /**
      * 通过Drawable获取ImageSpan
      */
-    public static CustomImageSpan getImageSpanByDrawable(Editable editable, Drawable drawable) {
-        CustomImageSpan imageSpan = null;
+    public static CustomImageSpan getImageSpanByDrawable(Spannable editable, Drawable drawable) {
         if (!TextUtils.isEmpty(editable)) {
             final CustomImageSpan[] spans = editable.getSpans(0, editable.length(), CustomImageSpan.class);
             if (spans != null && spans.length > 0) {
                 for (CustomImageSpan span : spans) {
                     if (drawable == span.getDrawable()) {
-                        imageSpan = span;
+                        return span;
                     }
                 }
             }
         }
 
-        return imageSpan;
+        return null;
     }
 
 }

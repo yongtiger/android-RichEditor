@@ -71,7 +71,6 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     }
 
 
-    ///注意：mDrawBackgroundCallback需要执行setSpanFromSpanBeans后处理
     public static final Creator<LineDividerSpan> CREATOR = new Creator<LineDividerSpan>() {
         @Override
         public LineDividerSpan createFromParcel(Parcel in) {
