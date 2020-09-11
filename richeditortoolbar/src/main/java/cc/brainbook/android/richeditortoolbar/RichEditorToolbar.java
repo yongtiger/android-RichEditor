@@ -293,15 +293,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /* ---------------- ///[TextContextMenu#Clipboard] ---------------- */
-    ///保存spans到进程App共享空间，因此不建议用SharedPreferences
-    ///Environment.getDataDirectory() Permission denied
-    ///在/data文件夹进行操作是不被允许的!
-    ///能操作文件夹只有两个地方：
-    ///1.sdcard
-    ///2./data/<package_name>/files/
-    ///参考：docs/guide/topics/data/data-storage.html#filesExternal
-//    private File mClipboardFile = new File(Environment.getDataDirectory() + File.separator + CLIPBOARD_FILE_NAME);
-    private File mClipboardFile = new File(Environment.getExternalStorageDirectory() + File.separator + CLIPBOARD_FILE_NAME);
+    ///保存spans到进程App共享空间的文件目录
+    private File mClipboardFile;
 
     @Override
     public void saveSpans(Editable editable, int selectionStart, int selectionEnd) {
@@ -429,6 +422,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     public void init(Context context, TypedArray a) {
         mContext = context;
+
+        ///设置保存spans到进程App共享空间的文件目录，因此不建议用SharedPreferences或应用的cache目录！
+        ///方案一（放弃！）：Environment.getDataDirectory() Permission denied
+        ///在/data文件夹进行操作是不被允许的!
+        ///能操作文件夹只有两个地方：
+        ///1.sdcard
+        ///2./data/<package_name>/files/
+        ///参考：docs/guide/topics/data/data-storage.html#filesExternal
+        ///方案二（放弃！）：Environment.getExternalStorageDirectory()
+        ///Android>7.0获得外部存储设备路径建议不要使用Environment.getExternalStorageDirectory()
+        ///方案三：context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        ///注意：Environment.DIRECTORY_DOCUMENTS需要API 19!
+        final File clipboardDir = mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        mClipboardFile = new File(clipboardDir + File.separator + CLIPBOARD_FILE_NAME);
+
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
 
         setFlexDirection(FlexDirection.ROW);

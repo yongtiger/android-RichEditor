@@ -1,15 +1,21 @@
 package cc.brainbook.android.richeditor;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.text.Spannable;
 import android.text.Spanned;
@@ -25,10 +31,15 @@ import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity implements
         LineDividerSpan.DrawBackgroundCallback,
         Drawable.Callback {
+    private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 101;
+
+    ///[权限申请]
+    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private String mHtmlText;
     private TextView mTextView;
@@ -37,6 +48,18 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ///[权限申请]当手机系统大于 23 时，才有必要去判断权限是否获取
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 检查该权限是否已经获取
+            final int permission0 = ContextCompat.checkSelfPermission(this, permissions[0]);
+            final int permission1 = ContextCompat.checkSelfPermission(this, permissions[1]);
+            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+            if (permission0 != PackageManager.PERMISSION_GRANTED || permission1 != PackageManager.PERMISSION_GRANTED) {
+                // 如果没有授予该权限，就去提示用户请求
+                ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS);
+            }
+        }
 
         mTextView = findViewById(R.id.tv_text);
         mTextView.setClickable(true);
