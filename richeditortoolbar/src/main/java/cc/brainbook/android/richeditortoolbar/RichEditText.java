@@ -71,6 +71,10 @@ public class RichEditText extends AppCompatEditText {
     ///注意：一个App可含有多个RichEditor，多个App的所有RichEditor共享剪切板的存储空间！所以可以实现跨进程复制粘贴
     @Override
     public boolean onTextContextMenuItem(int id) {
+        if (getText() == null) {
+            return super.onTextContextMenuItem(id);
+        }
+
         int min = 0;
         int max = length();
 
@@ -154,6 +158,10 @@ public class RichEditText extends AppCompatEditText {
      * Paste clipboard content between min and max positions.
      */
     private void paste(int min, int max, boolean withFormatting) {
+        if (getText() == null) {
+            return;
+        }
+
         ClipboardManager clipboard =
                 (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = clipboard.getPrimaryClip();

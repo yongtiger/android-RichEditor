@@ -225,6 +225,10 @@ public class UndoRedoHelper {
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {
         final Editable editable = mRichEditorToolbar.getRichEditText().getText();
+        if (editable == null) {
+           return;
+        }
+
         final int start = action.mStart;
         final int end = start + (originalText == null ? 0 : originalText.length());
 
@@ -272,7 +276,7 @@ public class UndoRedoHelper {
         /**
          * The list of edits in chronological order.
          */
-        private final LinkedList<Action> mHistory = new LinkedList<Action>();
+        private final LinkedList<Action> mHistory = new LinkedList<>();
 
         private Action current() {
             return mHistory.get(mPosition);

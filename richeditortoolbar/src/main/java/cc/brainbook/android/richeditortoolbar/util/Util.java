@@ -3,7 +3,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.text.Editable;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 
@@ -35,16 +35,16 @@ public abstract class Util {
 
 
     /* ---------------------- ///test ---------------------- */
-    public static <T> void testOutput(Editable editable, Class<T> clazz) {
-        final T[] spans = editable.getSpans(0, editable.length(), clazz);
+    public static <T> void testOutput(Spanned spanned, Class<T> clazz) {
+        final T[] spans = spanned.getSpans(0, spanned.length(), clazz);
         for (T span : spans) {
             ///忽略getSpans()获取的子类（不是clazz本身）
             if (span.getClass() != clazz) {
                 continue;
             }
 
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spanned.getSpanStart(span);
+            final int spanEnd = spanned.getSpanEnd(span);
 
             if (span instanceof INestParagraphStyle) {
                 Log.d("TAG", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd

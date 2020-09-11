@@ -11,7 +11,7 @@ public class TextBean implements Parcelable {
     @Expose
     private String text;
     @Expose
-    private ArrayList<SpanBean> spans;
+    private ArrayList<SpanBean<?>> spans;
 
     public String getText() {
         return text;
@@ -21,11 +21,11 @@ public class TextBean implements Parcelable {
         this.text = text;
     }
 
-    public ArrayList<SpanBean> getSpans() {
+    public ArrayList<SpanBean<?>> getSpans() {
         return spans;
     }
 
-    public void setSpans(ArrayList<SpanBean> spans) {
+    public void setSpans(ArrayList<SpanBean<?>> spans) {
         this.spans = spans;
     }
 

@@ -17,7 +17,6 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -76,8 +75,8 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public abstract class RichEditorToolbarHelper {
-    public static Class getClassMapKey(LinkedHashMap<Class, View> classMap, View view) {
-        for (Class clazz : classMap.keySet()) {
+    public static Class<? extends Parcelable> getClassMapKey(LinkedHashMap<Class<? extends Parcelable>, View> classMap, View view) {
+        for (Class<? extends Parcelable> clazz : classMap.keySet()) {
             if (classMap.get(clazz) == view) {
                 return clazz;
             }
@@ -86,7 +85,7 @@ public abstract class RichEditorToolbarHelper {
         return null;
     }
 
-    public static boolean isParagraphStyle(Class clazz) {
+    public static <T> boolean isParagraphStyle(Class<T> clazz) {
         return clazz == DivSpan.class
                 || clazz == CustomLeadingMarginSpan.class
                 || clazz == AlignNormalSpan.class
@@ -99,7 +98,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == PreSpan.class
                 || clazz == LineDividerSpan.class;
     }
-    public static boolean isNestParagraphStyle(Class clazz) {
+    public static <T> boolean isNestParagraphStyle(Class<T> clazz) {
         return clazz == DivSpan.class
                 || clazz == CustomLeadingMarginSpan.class
                 || clazz == AlignNormalSpan.class
@@ -110,7 +109,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomQuoteSpan.class
                 || clazz == PreSpan.class;
     }
-    public static boolean isCharacterStyle(Class clazz) {
+    public static <T> boolean isCharacterStyle(Class<T> clazz) {
         return clazz == BoldSpan.class
                 || clazz == ItalicSpan.class
                 || clazz == CustomUnderlineSpan.class
@@ -131,7 +130,7 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == VideoSpan.class
                 || clazz == AudioSpan.class;
     }
-    public static boolean isBlockCharacterStyle(Class clazz) {
+    public static <T> boolean isBlockCharacterStyle(Class<T> clazz) {
         return /* clazz == BlockSpan.class  ///注意：BlockSpan不是BlockCharacterStyle！
                 || */ clazz == CustomURLSpan.class
                 || clazz == CustomImageSpan.class
@@ -141,16 +140,16 @@ public abstract class RichEditorToolbarHelper {
 
 
     /* ------------------------------------------------------------------------------------------------------------ */
-    public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
+    public static <T> void updateParagraphView(Context context, View view, Class<T> clazz, Spannable spannable, int start, int end) {
         ///注意：因为可能要用到spans.size()，所以不应使用getParentSpan()
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///按照spanEnd升序
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, true);    ///按照spanEnd升序
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
 
             ///如果span包含了选中区间开始位置所在行的首尾[start, end]，则select
             ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
-            if (start < end || spanStart <= start && (end < spanEnd || editable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
+            if (start < end || spanStart <= start && (end < spanEnd || spannable.charAt(spanEnd - 1) != '\n' && end == spanEnd)) {
                 if (!view.isSelected()) {
                     view.setSelected(true);
                 }
@@ -201,12 +200,12 @@ public abstract class RichEditorToolbarHelper {
 
     }
 
-    public static <T> void updateCharacterStyleView(Context context, View view, Class<T> clazz, Editable editable, int start, int end) {
+    public static <T> void updateCharacterStyleView(Context context, View view, Class<T> clazz, Spannable spannable, int start, int end) {
         ///注意：因为CustomURLSpan、CustomImageSpan等要用到spans.size()，所以不应使用getParentSpan()
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);    ///按照spanEnd升序
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, true);    ///按照spanEnd升序
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
 
             ///如果不是单光标、或者span在光标区间外
             ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
@@ -218,7 +217,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：URL
                 if (clazz == CustomURLSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                         final String url = ((CustomURLSpan) span).getURL();
                         view.setTag(R.id.url_text, text);
                         view.setTag(R.id.url_url, url);
@@ -231,7 +230,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：Image
                 else if (clazz == CustomImageSpan.class || clazz == VideoSpan.class || clazz == AudioSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
 
                         final String uri = clazz == CustomImageSpan.class ? null :
                                 clazz == VideoSpan.class ? ((VideoSpan) span).getUri() : ((AudioSpan) span).getUri();
@@ -311,7 +310,7 @@ public abstract class RichEditorToolbarHelper {
         if (clazz == CustomURLSpan.class) {
             ///初始化对话框：无、单选、多选，只有单选时才初始化对话框
             if (start < end) {
-                final String text = String.valueOf(editable.toString().toCharArray(), start, end - start);
+                final String text = String.valueOf(spannable.toString().toCharArray(), start, end - start);
                 view.setTag(R.id.url_text, text);///以选中的文本作为url_text
                 view.setTag(R.id.url_url, null);
             } else {
@@ -524,12 +523,12 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> void joinSpanByPosition(View view, Class<T> clazz, Editable editable, int position) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, position, position, true);
+    public static <T> void joinSpanByPosition(View view, Class<T> clazz, Spannable spannable, int position) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, position, position, true);
         for (T span : spans) {
-            final T leftSpan = getLeftSpan(view, clazz, editable, position, position, span);
+            final T leftSpan = getLeftSpan(view, clazz, spannable, position, position, span);
             if (leftSpan != null) {
-                findAndJoinRightSpan(view, clazz, editable, span);
+                findAndJoinRightSpan(view, clazz, spannable, span);
             }
         }
     }
@@ -539,16 +538,16 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> int findAndJoinLeftSpan(View view, Class<T> clazz, Editable editable, T span) {
-        final int spanStart = editable.getSpanStart(span);
-        final int spanEnd = editable.getSpanEnd(span);
+    public static <T> int findAndJoinLeftSpan(View view, Class<T> clazz, Spannable spannable, T span) {
+        final int spanStart = spannable.getSpanStart(span);
+        final int spanEnd = spannable.getSpanEnd(span);
 
         int resultStart = spanStart;
-        final T leftSpan = getLeftSpan(view, clazz, editable, spanStart, spanEnd, span);
+        final T leftSpan = getLeftSpan(view, clazz, spannable, spanStart, spanEnd, span);
         if (leftSpan != null) {
-            resultStart = editable.getSpanStart(leftSpan);
-            editable.setSpan(span, resultStart, spanEnd, editable.getSpanFlags(span));
-            editable.removeSpan(leftSpan);
+            resultStart = spannable.getSpanStart(leftSpan);
+            spannable.setSpan(span, resultStart, spanEnd, spannable.getSpanFlags(span));
+            spannable.removeSpan(leftSpan);
         }
         return resultStart;
     }
@@ -558,16 +557,16 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> int findAndJoinRightSpan(View view, Class<T> clazz, Editable editable, T span) {
-        final int spanStart = editable.getSpanStart(span);
-        final int spanEnd = editable.getSpanEnd(span);
+    public static <T> int findAndJoinRightSpan(View view, Class<T> clazz, Spannable spannable, T span) {
+        final int spanStart = spannable.getSpanStart(span);
+        final int spanEnd = spannable.getSpanEnd(span);
 
         int resultEnd = spanEnd;
-        final T rightSpan = getRightSpan(view, clazz, editable, spanStart, spanEnd, span);
+        final T rightSpan = getRightSpan(view, clazz, spannable, spanStart, spanEnd, span);
         if (rightSpan != null) {
-            resultEnd = editable.getSpanEnd(rightSpan);
-            editable.setSpan(span, spanStart, resultEnd, editable.getSpanFlags(span));
-            editable.removeSpan(rightSpan);
+            resultEnd = spannable.getSpanEnd(rightSpan);
+            spannable.setSpan(span, spanStart, resultEnd, spannable.getSpanFlags(span));
+            spannable.removeSpan(rightSpan);
         }
 
         return resultEnd;
@@ -578,14 +577,14 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> T getLeftSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
+    public static <T> T getLeftSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
         if (start == 0) {
             return null;
         }
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, start, true);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, start, true);
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
             if (spanStart < start && spanEnd <= end) {
                 return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
             }
@@ -598,15 +597,15 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> T getRightSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan) {
-        if (end == editable.length()) {
+    public static <T> T getRightSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
+        if (end == spannable.length()) {
             return null;
         }
 
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, end, end, true);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, end, end, true);
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
             if (start <= spanStart && end < spanEnd) {
                 return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
             }
@@ -620,12 +619,12 @@ public abstract class RichEditorToolbarHelper {
      *
      * 比如：ListItemSpan和ListSpan的父span是ListSpan
      */
-    public static <T> T getParentSpan(View view, Class<T> clazz, Editable editable, int start, int end,
+    public static <T> T getParentSpan(View view, Class<T> clazz, Spannable spannable, int start, int end,
                                       T compareSpan, boolean isIncludeSameRange, int nestingLevel) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, true);
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, true);
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
 
             ///如果isParagraphStyle，且span包含了选中区间开始位置所在行的首尾[start, end]，则select
             ///单光标选择时spanStart <= start && end < spanEnd，当spanEnd前一字符为 '\n'时spanStart <= start && end <= spanEnd
@@ -633,7 +632,7 @@ public abstract class RichEditorToolbarHelper {
             ///如果isBlockCharacterStyle为false，并且上光标尾等于span尾
             if (start < end && spanStart <= start && end <= spanEnd && (isIncludeSameRange || spanStart != start || end != spanEnd)
                     || start == end && spanStart <= start && (end < spanEnd || end == spanEnd
-                        && (isParagraphStyle(clazz) && editable.charAt(spanEnd - 1) != '\n'
+                        && (isParagraphStyle(clazz) && spannable.charAt(spanEnd - 1) != '\n'
                         || isCharacterStyle(clazz) && !isBlockCharacterStyle(clazz)))) {
                 if (nestingLevel == 0 || ((INestParagraphStyle) span).getNestingLevel() == nestingLevel) {
                     return filterSpanByCompareSpanOrViewParameter(view, clazz, span, compareSpan);
@@ -647,32 +646,36 @@ public abstract class RichEditorToolbarHelper {
     /**
      * 更新区间内所有NestSpan的nesting level，偏移量为offset
      */
-    public static <T extends INestParagraphStyle> void updateDescendantNestingLevel(Class<T> clazz, Editable editable, int start, int end, int offset) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+    public static <T> void updateDescendantNestingLevel(Class<T> clazz, Spannable spannable, int start, int end, int offset) {
+        if (!clazz.equals(INestParagraphStyle.class)) {
+            return;
+        }
+
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, false);
         for (T span : spans) {
-            final int spanStart = editable.getSpanStart(span);
-            final int spanEnd = editable.getSpanEnd(span);
+            final int spanStart = spannable.getSpanStart(span);
+            final int spanEnd = spannable.getSpanEnd(span);
 
             if (start < spanStart && spanEnd < end
                     || start < spanStart && spanEnd == end
                     || start == spanStart && spanEnd < end) {
-                span.setNestingLevel(span.getNestingLevel() + offset);
+                ((INestParagraphStyle) span).setNestingLevel(((INestParagraphStyle) span).getNestingLevel() + offset);
             }
         }
     }
 
 
     /* --------------------------------------------------------------------------------------- */
-    public static TextBean saveSpans(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
+    public static TextBean saveSpans(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = new TextBean();
         if (isSetText) {
-            final CharSequence subSequence = editable.subSequence(selectionStart, selectionEnd);
+            final CharSequence subSequence = spannable.subSequence(selectionStart, selectionEnd);
             textBean.setText(subSequence.toString());
         }
 
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class clazz : classHashMap.keySet()) {
-            toSpanBeans(spanBeans, clazz, editable, selectionStart, selectionEnd);
+        final ArrayList<SpanBean<?>> spanBeans = new ArrayList<>();
+        for (Class<? extends Parcelable> clazz : classHashMap.keySet()) {
+            toSpanBeans(spanBeans, clazz, spannable, selectionStart, selectionEnd);
         }
         textBean.setSpans(spanBeans);
 
@@ -692,7 +695,7 @@ public abstract class RichEditorToolbarHelper {
                 editable.clearSpans();
             }
 
-            final List<SpanBean> spanBeans = textBean.getSpans();
+            final List<SpanBean<?>> spanBeans = textBean.getSpans();
 
             return fromSpanBeans(spanBeans, editable);
         }
@@ -700,16 +703,16 @@ public abstract class RichEditorToolbarHelper {
         return null;
     }
 
-    public static <T extends Parcelable> void toSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Editable editable, int start, int end) {
-        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
+    public static <T extends Parcelable> void toSpanBeans(List<SpanBean<?>> spanBeans, Class<T> clazz, Spannable spannable, int start, int end) {
+        final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, false);
         for (T span : spans) {
             ///注意：必须过滤掉没有CREATOR变量的span！
             ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
             try {
                 clazz.getField("CREATOR");
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
-                final int spanFlags = editable.getSpanFlags(span);
+                final int spanStart = spannable.getSpanStart(span);
+                final int spanEnd = spannable.getSpanEnd(span);
+                final int spanFlags = spannable.getSpanFlags(span);
                 final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
                 final int adjustSpanEnd = (Math.min(spanEnd, end)) - start;
                 final SpanBean<T> spanBean = new SpanBean<>(span, span.getClass().getSimpleName(), adjustSpanStart, adjustSpanEnd, spanFlags);
@@ -720,26 +723,23 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
-    public static ArrayList<Object> fromSpanBeans(List<SpanBean> spanBeans, Editable editable) {
+    public static ArrayList<Object> fromSpanBeans(List<SpanBean<?>> spanBeans, Spannable spannable) {
         final ArrayList<Object> resultSpanList = new ArrayList<>();
         if (spanBeans != null) {
-            for (SpanBean spanBean : spanBeans) {
+            for (SpanBean<?> spanBean : spanBeans) {
                 final int spanStart = spanBean.getSpanStart();
                 final int spanEnd = spanBean.getSpanEnd();
                 final int spanFlags = spanBean.getSpanFlags();
                 final Object span = spanBean.getSpan();
-                editable.setSpan(span, spanStart, spanEnd, spanFlags);
+                spannable.setSpan(span, spanStart, spanEnd, spanFlags);
                 resultSpanList.add(span);
 
                 ///[FIX#由于ListItemSpan类含有ListSpan成员，反序列化后生成的ListSpan成员必须更改为实际保存的ListSpan！]
                 if (span instanceof ListItemSpan) {
                     final ListSpan parentListSpan =
-                            getParentSpan(null, ListSpan.class, editable, spanStart, spanEnd, null, true, ((ListItemSpan) span).getNestingLevel());
+                            getParentSpan(null, ListSpan.class, spannable, spanStart, spanEnd, null, true, ((ListItemSpan) span).getNestingLevel());
 
-                    if (parentListSpan == null) {
-                        Log.e("TAG", "loadSpansFromSpanBeans()# parentListSpan cannot be null !!!");
-                    }
-
+                    assert parentListSpan != null;
                     ((ListItemSpan) span).setListSpan(parentListSpan);
                 }
             }
@@ -748,8 +748,8 @@ public abstract class RichEditorToolbarHelper {
         return resultSpanList;
     }
 
-    public static byte[] toByteArray(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
+    public static byte[] toByteArray(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = saveSpans(classHashMap, spannable, selectionStart, selectionEnd, isSetText);
 
         return ParcelUtil.marshall(textBean);
     }
@@ -760,8 +760,8 @@ public abstract class RichEditorToolbarHelper {
         return loadSpans(editable, textBean);
     }
 
-    public static String toJson(LinkedHashMap<Class, View> classHashMap, Editable editable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(classHashMap, editable, selectionStart, selectionEnd, isSetText);
+    public static String toJson(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
+        final TextBean textBean = saveSpans(classHashMap, spannable, selectionStart, selectionEnd, isSetText);
 
         ///[Gson#Exclude父类成员变量的序列化和反序列化]
         ///一是因为只测试显示使用而不进行真正的反序列化，并不需要父类成员变量序列化
@@ -781,14 +781,14 @@ public abstract class RichEditorToolbarHelper {
         return loadSpans(editable, textBean);
     }
 
-    public static Editable fromJson(String src) {
+    public static Spannable fromJson(String src) {
         final TextBean textBean = getTextBeanFromJson(src);
 
-        final List<SpanBean> spanBeans = textBean.getSpans();
-        final Editable editable = new SpannableStringBuilder(textBean.getText());
-        fromSpanBeans(spanBeans, editable);
+        final List<SpanBean<?>> spanBeans = textBean.getSpans();
+        final Spannable spannable = new SpannableStringBuilder(textBean.getText());
+        fromSpanBeans(spanBeans, spannable);
 
-        return editable;
+        return spannable;
     }
 
     ///[FIX#java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap]
@@ -808,7 +808,7 @@ public abstract class RichEditorToolbarHelper {
 
                     jsonElement = jsonObject.get("spans");
                     final JsonArray spansJsonArray = jsonElement == null ? null : jsonElement.getAsJsonArray();
-                    final ArrayList<SpanBean> spans = new ArrayList<>();
+                    final ArrayList<SpanBean<?>> spans = new ArrayList<>();
                     if (spansJsonArray != null) {
                         for (JsonElement spanJsonElement : spansJsonArray) {
                             final JsonObject spanBeanJsonObject = spanJsonElement.getAsJsonObject();
@@ -1041,7 +1041,7 @@ public abstract class RichEditorToolbarHelper {
     /* --------------------------------------------------------------------------------------- */
     ///执行postLoadSpans后处理
     ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
-    public static void postLoadSpans(Context context, Spannable editable, int pasteOffset, List<Object> spans,
+    public static void postLoadSpans(Context context, Spannable spannable, int pasteOffset, List<Object> spans,
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
@@ -1061,18 +1061,18 @@ public abstract class RichEditorToolbarHelper {
                 final int drawableWidth = ((CustomImageSpan) span).getDrawableWidth();
                 final int drawableHeight = ((CustomImageSpan) span).getDrawableHeight();
 
-                final int spanStart = editable.getSpanStart(span);
-                final int spanEnd = editable.getSpanEnd(span);
-                editable.removeSpan(span);
+                final int spanStart = spannable.getSpanStart(span);
+                final int spanEnd = spannable.getSpanEnd(span);
+                spannable.removeSpan(span);
 
                 ///[ImageSpan#Glide#GifDrawable]
-                loadImage(context, span.getClass(), editable, pasteOffset, spanStart, spanEnd,
+                loadImage(context, span.getClass(), spannable, pasteOffset, spanStart, spanEnd,
                         uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback);
             }
         }
     }
 
-    public static void loadImage(Context context, final Class clazz, final Spannable editable, final int pasteOffset, final int start, final int end,
+    public static <T> void loadImage(Context context, final Class<T> clazz, final Spannable spannable, final int pasteOffset, final int start, final int end,
                                  final String viewTagUri, final String viewTagSrc,
                                  final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
                                  Drawable placeholderDrawable,
@@ -1107,7 +1107,7 @@ public abstract class RichEditorToolbarHelper {
                             : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                             : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
 
-                    editable.setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannable.setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
@@ -1116,13 +1116,13 @@ public abstract class RichEditorToolbarHelper {
                 drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
 
                 if (mImagePlaceholderSpan != null) {
-                    editable.removeSpan(mImagePlaceholderSpan);
+                    spannable.removeSpan(mImagePlaceholderSpan);
                 }
 
                 final int spanStart = pasteOffset == -1 ? start : isAsync ? start + pasteOffset : start;
                 final int spanEnd = pasteOffset == -1 ? end : isAsync ? end + pasteOffset : end;
 
-                editable.setSpan(
+                spannable.setSpan(
                         clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                 : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                                 : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign),
@@ -1144,7 +1144,7 @@ public abstract class RichEditorToolbarHelper {
                 final int spanEnd = spannable.getSpanEnd(imageSpan);
 
                 ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
-//                editable.removeSpan(imageSpan);
+//                spannable.removeSpan(imageSpan);
                 spannable.setSpan(imageSpan, spanStart, spanEnd, spannable.getSpanFlags(imageSpan));
             }
         }
