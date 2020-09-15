@@ -2,7 +2,9 @@ package cc.brainbook.android.richeditor;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import android.text.Editable;
+
+import android.os.Parcelable;
+import android.text.Spannable;
 import android.view.View;
 
 import org.junit.Before;
@@ -25,10 +27,8 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class FromJsonTest {
-    private Editable editable;
 
-    private RichEditorToolbar mRichEditorToolbar;
-    private LinkedHashMap<Class, View> mClassMap;
+    private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap = new LinkedHashMap<>();
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
@@ -36,9 +36,9 @@ public class FromJsonTest {
 
     @Before
     public void beforeTest() {
-        mRichEditorToolbar = mActivityRule.getActivity().findViewById(R.id.rich_editor_tool_bar);
+        RichEditorToolbar richEditorToolbar = mActivityRule.getActivity().findViewById(R.id.rich_editor_tool_bar);
 
-        mClassMap = mRichEditorToolbar.getClassMap();
+        mClassMap = richEditorToolbar.getClassMap();
 
 //        ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
 //        ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
@@ -47,8 +47,8 @@ public class FromJsonTest {
     }
 
     private void check(String srcString) {
-        editable = fromJson(srcString);
-        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
+        Spannable spannable = fromJson(srcString);
+        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, spannable, 0, spannable.length(), true);
         assertEquals(srcString, jsonString);
     }
 

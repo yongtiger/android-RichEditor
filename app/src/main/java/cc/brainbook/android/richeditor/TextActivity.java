@@ -7,7 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
@@ -39,10 +41,11 @@ public class TextActivity extends AppCompatActivity {
         ///[Preview]
         mTextViewPreview = (TextView) findViewById(R.id.tv_preview);
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
-        ///设置TextView可点击，比如响应URLSpan点击事件。LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
+        ///设置TextView可点击，比如响应URLSpan点击事件。
+//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+        ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
 //        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
         mTextViewPreview.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
-//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
 
         ///[Html]
         mEditTextHtml = (EditText) findViewById(R.id.et_html);
@@ -84,10 +87,25 @@ public class TextActivity extends AppCompatActivity {
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.ic_image_black_24dp);
 
+
+        ///设置存放ImageSpan图片的文件目录
         ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
         ///注意：getExternalCacheDir()在API 30中可能会返回null！
-        final File imageFilePath = getExternalCacheDir();   ///test
+        File imageFilePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            ///外部存储可用
+            ///注意：getExternalCacheDir()在API 30中可能会返回null！
+            imageFilePath = getExternalCacheDir();
+            if (imageFilePath == null) {
+                imageFilePath = getCacheDir();
+            }
+        } else {
+            ///外部存储不可用
+            imageFilePath = getCacheDir();
+        }
         mRichEditorToolbar.setImageFilePath(imageFilePath);
+
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2); ///test
@@ -118,5 +136,23 @@ public class TextActivity extends AppCompatActivity {
         setResult(RESULT_OK, intent);
 
         finish();
+    }
+
+    @Override
+    public File getExternalCacheDir() {
+        if (super.getExternalCacheDir() != null) {
+            return super.getExternalCacheDir();
+        }
+
+        ///注意：getExternalCacheDir()在API 30中可能会返回null！
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            for (File externalCacheDir : getExternalCacheDirs()) {
+                if (externalCacheDir != null) {
+                    return externalCacheDir;
+                }
+            }
+        }
+
+        return null;
     }
 }

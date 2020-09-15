@@ -173,8 +173,6 @@ public class UndoRedoHelper {
         final Action action = new Action(id, start, beforeChange, afterChange, bytes);
         mHistory.add(action);
 
-//        if (DEBUG) Log.d("TAG", "addHistory: " + action);
-
         ///[PositionChanged]
         onPositionChanged(false);
     }
@@ -257,7 +255,7 @@ public class UndoRedoHelper {
     /**
      * Keeps track of all the edit history of a text.
      */
-    private final class History {
+    private static final class History {
         /**
          * The position from which an Action will be retrieved when next()
          * is called. If previous() has not been called, this has the same
@@ -358,7 +356,7 @@ public class UndoRedoHelper {
     /**
      * Represents the changes performed by a single edit operation.
      */
-    public final class Action {
+    public static final class Action {
         private final int mId;
         private final int mStart;
         private final CharSequence mBefore;

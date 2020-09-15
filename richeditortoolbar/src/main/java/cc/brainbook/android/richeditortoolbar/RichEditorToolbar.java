@@ -9,7 +9,6 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -126,6 +125,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
 
+
     ///使用LinkedHashMap是为了保证顺序（ListItemSpan必须在ListSpan之后注册）
     private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap = new LinkedHashMap<>();
     public LinkedHashMap<Class<? extends Parcelable>, View> getClassMap() {
@@ -224,9 +224,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     private File mImageFilePath;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
     public void setImageFilePath(File imageFilePath) {
-        if (imageFilePath != null && imageFilePath.exists() && imageFilePath.canWrite()) {
-            mImageFilePath = imageFilePath;
-        }
+        mImageFilePath = imageFilePath;
     }
     public File getImageFilePath() {
         return mImageFilePath;
@@ -293,17 +291,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /* ---------------- ///[TextContextMenu#Clipboard] ---------------- */
-    ///保存spans到进程App共享空间的文件目录
+    ///[clipboard]存放剪切板的文件目录
+    ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
     private File mClipboardFile;
 
     @Override
     public void saveSpans(Editable editable, int selectionStart, int selectionEnd) {
-        ///保存spans到进程App共享空间
-        ///注意：由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans，而且应该保存到进程App共享空间！
         try {
             final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, selectionStart, selectionEnd, true);
             FileUtil.writeFile(mClipboardFile, bytes);
         } catch (IOException e) {
+            if (DEBUG) Log.e("TAG", "Error: Cannot write Clipboard file");
             e.printStackTrace();
         }
     }
@@ -313,7 +311,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     ///如果pasteEditable为null，则忽略pasteOffset（即pasteOffset为-1）
     @Override
     public void loadSpans(Editable pasteEditable, int pasteOffset) {
-        ///从进程App共享空间恢复spans
         try {
             final byte[] bytes = FileUtil.readFile(mClipboardFile);
 
@@ -321,6 +318,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             RichEditorToolbarHelper.postLoadSpans(mContext, pasteEditable, pasteOffset, RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes),
                     mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
         } catch (IOException e) {
+            if (DEBUG) Log.e("TAG", "Error: Cannot read Clipboard file");
             e.printStackTrace();
         }
     }
@@ -423,19 +421,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void init(Context context, TypedArray a) {
         mContext = context;
 
-        ///设置保存spans到进程App共享空间的文件目录，因此不建议用SharedPreferences或应用的cache目录！
-        ///方案一（放弃！）：Environment.getDataDirectory() Permission denied
-        ///在/data文件夹进行操作是不被允许的!
-        ///能操作文件夹只有两个地方：
-        ///1.sdcard
-        ///2./data/<package_name>/files/
-        ///参考：docs/guide/topics/data/data-storage.html#filesExternal
-        ///方案二（放弃！）：Environment.getExternalStorageDirectory()
-        ///Android>7.0获得外部存储设备路径建议不要使用Environment.getExternalStorageDirectory()
-        ///方案三：context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        ///注意：Environment.DIRECTORY_DOCUMENTS需要API 19!
-        final File clipboardDir = mContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        mClipboardFile = new File(clipboardDir + File.separator + CLIPBOARD_FILE_NAME);
+        ///[clipboard]设置存放剪切板的文件目录
+        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
+        ///注意：建议使用应用的cache目录，而getExternalCacheDir()在API 30中可能会返回null！
+        mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);
 
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
 
@@ -726,21 +715,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewImage.setVisibility(GONE);
         }
 
-        ///设置ImageSpan存放图片文件的缺省缓存目录
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable()) {
-            ///外部存储可用
-            ///注意：getExternalCacheDir()在API 30中可能会返回null！
-            if (null == context.getExternalCacheDir()) {
-                mImageFilePath = context.getCacheDir();
-            } else {
-                mImageFilePath = context.getExternalCacheDir();
-            }
-        } else {
-            ///外部存储不可用
-            mImageFilePath = context.getCacheDir();
-        }
-
 
         /* -------------- ///[清除样式] --------------- */
         mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
@@ -1000,7 +974,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         setAllViewsEnabled(true);
 
                         final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
+                        ///忽略TextWatcher
+                        isSkipTextWatcher = true;
                         mRichEditText.setText(htmlSpanned);
+                        isSkipTextWatcher = false;
 
                         ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
                         postSetText();
@@ -2028,6 +2005,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
+        ///[beforeChange]
+        final String beforeChange = editable.subSequence(selectionStart, selectionEnd).toString();
+
         if (isBlockCharacterStyle(clazz)) {
             adjustBlockCharacterStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         } else {
@@ -2040,7 +2020,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int afterSelectionStart = Selection.getSelectionStart(editable);
                 final int afterSelectionEnd = Selection.getSelectionEnd(editable);
                 mUndoRedoHelper.addHistory(getActionId(view), selectionStart,
-                        editable.subSequence(selectionStart, selectionEnd).toString(),
+                        beforeChange,   ///[beforeChange]
                         editable.subSequence(afterSelectionStart, afterSelectionEnd).toString(),
                         RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
             } else{
@@ -2563,7 +2543,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         ///忽略TextWatcher中的UndoRedo
                         isSkipUndoRedo = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
-                        Selection.setSelection(editable, start, start + viewTagText.length());
+                        Selection.setSelection(editable, spanStart, spanStart + viewTagText.length());
                         isSkipUndoRedo = false;
 
                         ///[isUpdateNeeded]
@@ -2594,7 +2574,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         ///忽略TextWatcher中的UndoRedo
                         isSkipUndoRedo = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
-                        Selection.setSelection(editable, start, start + viewTagText.length());
+                        Selection.setSelection(editable, spanStart, spanStart + viewTagText.length());
                         isSkipUndoRedo = false;
 
                         ///[isUpdateNeeded]
@@ -2640,7 +2620,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final String viewTagUrl = (String) view.getTag(R.id.url_url);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher
+                    ///忽略TextWatcher中的UndoRedo
                     isSkipUndoRedo = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
@@ -2662,7 +2642,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int viewTagAlign = view.getTag(R.id.image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher
+                    ///忽略TextWatcher中的UndoRedo
                     isSkipUndoRedo = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
@@ -2726,7 +2706,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             if (start == end) {
                 if (isApply) { ///单选点击
                     if (start != spanStart && end != spanEnd) { ///不在span首尾处
-                        if (view != null && view.isSelected()) {
+                        if (view.isSelected()) {
                             if (!isSameWithViewParameter) {
                                 editable.removeSpan(span);
 
@@ -2744,7 +2724,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
                 }
             } else {
-                if (view != null && view.isSelected() && isSameWithViewParameter) {
+                if (view.isSelected() && isSameWithViewParameter) {
                     final int st = Math.min(start, spanStart);
                     final int en = Math.max(end, spanEnd);
                     if (st != spanStart || en != spanEnd) {
@@ -2795,7 +2775,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         ///extendOrNew+join
-        if (view != null && view.isSelected() && (!hasSpan || !isSameWithViewParameter)) {
+        if (view.isSelected() && (!hasSpan || !isSameWithViewParameter)) {
             int spanSt = start;
             int spanEn = end;
             T span = null;

@@ -11,7 +11,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 
 import com.google.gson.annotations.Expose;
@@ -20,8 +19,6 @@ import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
-
-import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
@@ -140,11 +137,6 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
         return d;
     }
 
-    @Override
-    public void onClick(View widget) {
-        if (DEBUG) Log.d("TAG", "onClick: ");
-    }
-
 
     public static final Creator<CustomImageSpan> CREATOR = new Creator<CustomImageSpan>() {
         @Override
@@ -163,6 +155,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
             ///注意：Drawable必须设置Bounds才能显示
             drawable.setBounds(0, 0, drawableWidth, drawableHeight);
 
+            assert source != null;
             return new CustomImageSpan(drawable, uri, source, verticalAlignment);
         }
 
@@ -186,6 +179,21 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
         ///保存drawable的宽高到Parcel
         dest.writeInt(mDrawableWidth);
         dest.writeInt(mDrawableHeight);
+    }
+
+
+    public interface OnClickListener {
+        void onClick(View widget);
+    }
+    private OnClickListener mOnClickListener;
+    public void setOnClickListener(OnClickListener onClickListener) {
+        mOnClickListener = onClickListener;
+    }
+    @Override
+    public void onClick(View widget) {
+        if (mOnClickListener != null) {
+            mOnClickListener.onClick(widget);
+        }
     }
 
 }

@@ -62,7 +62,12 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         mTextView = findViewById(R.id.tv_text);
-        mTextView.setClickable(true);
+
+        ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
+        ///设置TextView可点击，比如响应URLSpan点击事件。
+//        mTextView.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+        ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
+//        mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         mTextView.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
     }
 

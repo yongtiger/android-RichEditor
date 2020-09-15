@@ -1,6 +1,7 @@
 package cc.brainbook.android.richeditortoolbar;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
@@ -88,12 +89,12 @@ public class RichEditText extends AppCompatEditText {
 
         switch (id) {
             case android.R.id.cut:
-                final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
+                ///注意：必须getText().subSequence(min, max).toString()！否则getText().subSequence(min, max)在api 23以下无法获得剪切板内容
+                final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max).toString());
                 if (setPrimaryClip(cutData)) {
 
                     if (mSaveSpansCallback != null) {
-                        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                        ///而且应该保存到进程App共享空间！
+                        ///[clipboard]由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                         mSaveSpansCallback.saveSpans(getText(), min, max);
                     }
 
@@ -111,12 +112,12 @@ public class RichEditText extends AppCompatEditText {
                 final int selEnd = getSelectionEnd();
                 min = Math.max(0, Math.min(selStart, selEnd));
                 max = Math.max(0, Math.max(selStart, selEnd));
-                final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max));
+                ///注意：必须getText().subSequence(min, max).toString()！否则getText().subSequence(min, max)在api 23以下无法获得剪切板内容
+                final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max).toString());
                 if (setPrimaryClip(copyData)) {
 
                     if (mSaveSpansCallback != null) {
-                        ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                        ///而且应该保存到进程App共享空间！
+                        ///[clipboard]由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
                         mSaveSpansCallback.saveSpans(getText(), min, max);
                     }
 
@@ -170,7 +171,6 @@ public class RichEditText extends AppCompatEditText {
             for (int i = 0; i < clip.getItemCount(); i++) {
                 final SpannableStringBuilder paste;
                 if (withFormatting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    //////??????[BUG]模拟器中：api 23以下无法获得剪切板内容
                     paste = new SpannableStringBuilder(clip.getItemAt(i).coerceToStyledText(getContext()));
                 } else {
                     // Get an item as text and remove all spans by toString().
@@ -182,11 +182,10 @@ public class RichEditText extends AppCompatEditText {
 
                         ///如果为paint text则不执行loadSpans
                         if (withFormatting && mLoadSpansCallback != null) {
-                            //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-//                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
-//                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
-                            mLoadSpansCallback.loadSpans(paste, min);
-//                            }
+                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
+                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
+                                mLoadSpansCallback.loadSpans(paste, min);
+                            }
                         }
 
                         ///注意：必须加入Selection.setSelection()，否则，在API 28会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]

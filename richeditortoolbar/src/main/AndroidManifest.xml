@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cc.brainbook.android.richeditortoolbar">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--///READ可以不添加。因为在8.0以前，申请WRITE会自动获取 一组 相关的权限，其中就包括READ权限，因此仅申请WRITE权限也能用。但8.0之后必须单独申请！-->
 
     <application>
 
@@ -15,5 +17,6 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>
+    <!--///android:requestLegacyExternalStorage="true" 适配API 29读写外部存储卡，但API 30以后失效！-->
 
 </manifest>

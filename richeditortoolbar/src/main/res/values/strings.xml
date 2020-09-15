@@ -68,5 +68,6 @@
     <string name="please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
 
     <string name="error_activity_not_found">Error: Activity not found</string>
+    <string name="error_system_camera_not_available">Error: System camera not available</string>
 
 </resources>

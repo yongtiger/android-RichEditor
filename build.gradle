@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.3",   ///v1.1.3#[权限申请]、设置保存spans到进程App共享空间的文件目录
-                versionCode: 10103
+                versionName: "1.1.4",   ///v1.1.4#注意：getExternalCacheDir()在API 30中可能会返回null！
+                versionCode: 10104
         ]
     }
 

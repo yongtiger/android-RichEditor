@@ -71,13 +71,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private int mImageOverrideHeight = 1000;
 	private File mCachedOriginalImageFile;
 	private File mCachedOldImageFile;
-	private File mCachedImageFile;	///相机拍照、图片Crop剪切生成的图片文件
-	private File mDestinationFile;	///图片Crop、Draw生成的目标文件
-    private File mImageFilePath;	///ImageSpan存放图片文件的目录
+	private File mCachedImageFile;	///相机拍照、图片Crop剪切生成的临时图片文件
+	private File mDestinationFile;	///图片Crop、Draw生成的临时目标文件
+    private File mImageFilePath;	///存放ImageSpan图片的文件目录
     public ClickImageSpanDialogBuilder setImageFilePath(File imageFilePath) {
-		if (imageFilePath != null && imageFilePath.exists() && imageFilePath.canWrite()) {
-			mImageFilePath = imageFilePath;
-		}
+		mImageFilePath = imageFilePath;
 
         return this;
     }
@@ -222,13 +220,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				///Glide下载图片（使用已经缓存的图片）给imageView
 				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-				//////??????placeholer（占位符）、error（错误符）、fallback（后备回调符）
+				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
 				final RequestOptions options = new RequestOptions()
 						.placeholder(R.drawable.ic_image_black_24dp); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
-//				Glide.with(context.getApplicationContext())
-//						.load(src)
-//						.apply(options)
-//						.into(mImageViewPreview);
 
 				///获取图片真正的宽高
 				///https://www.jianshu.com/p/299b637afe7c
@@ -634,6 +628,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			} catch (ActivityNotFoundException e) {
 				Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
+		} else {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_system_camera_not_available, Toast.LENGTH_SHORT).show();
 		}
 	}
 
