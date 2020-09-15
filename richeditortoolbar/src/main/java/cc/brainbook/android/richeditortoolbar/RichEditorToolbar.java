@@ -2597,6 +2597,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             } else if (isApply) {
                 editable.removeSpan(span);
+            } else if (spanStart < end) { ///[FIX#因为SpanFlags全部为Spanned.SPAN_INCLUSIVE_EXCLUSIVE，而BlockCharacterStyle左侧不应添加文本的！因此要左缩]
+                editable.setSpan(span, end, spanEnd, editable.getSpanFlags(span));
             }
 
             ///[isRemoveNeeded]

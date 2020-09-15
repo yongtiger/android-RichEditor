@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.4",   ///v1.1.4#注意：getExternalCacheDir()在API 30中可能会返回null！
-                versionCode: 10104
+                versionName: "1.1.5",   ///v1.1.5#[FIX#因为SpanFlags全部为Spanned.SPAN_INCLUSIVE_EXCLUSIVE，而BlockCharacterStyle左侧不应添加文本的！因此要左缩]
+                versionCode: 10105
         ]
     }
 
