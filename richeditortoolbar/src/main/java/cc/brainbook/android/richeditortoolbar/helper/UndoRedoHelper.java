@@ -6,9 +6,12 @@ import java.util.LinkedList;
 import android.content.Context;
 import android.text.Editable;
 import android.text.Selection;
+import android.util.Log;
 import android.widget.Toast;
 
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+
+import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 
 ///https://gist.github.com/zeleven/0cfa738c1e8b65b23ff7df1fc30c9f7e
 public class UndoRedoHelper {
@@ -172,6 +175,8 @@ public class UndoRedoHelper {
     public void addHistory(int id, int start, String beforeChange, String afterChange, byte[] bytes) {
         final Action action = new Action(id, start, beforeChange, afterChange, bytes);
         mHistory.add(action);
+
+        if (DEBUG) Log.d("TAG", "addHistory: " + action.mStart + "," + action.mBefore + "," + action.mAfter + "," + new String (action.mBytes));
 
         ///[PositionChanged]
         onPositionChanged(false);

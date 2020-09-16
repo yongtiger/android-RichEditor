@@ -2005,7 +2005,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
 
         ///[BlockCharacterStyle#beforeChange]调整BlockCharacterStyle的Selection为第一个span的起始位置和最后span的结尾位置
-        if (isBlockCharacterStyle(clazz)) {
+        if (isBlockCharacterStyle(clazz) && view.isSelected()) {
             final ArrayList<?> selectedSpans = SpanUtil.getSelectedSpans(clazz, editable);
             if (!selectedSpans.isEmpty()) {
                 selectionStart = editable.getSpanStart(selectedSpans.get(0));
@@ -2031,7 +2031,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[Undo/Redo]
         if (getActionId(view) >= 0) {
-            if (isBlockCharacterStyle(clazz)) {
+            if (isBlockCharacterStyle(clazz) && view.isSelected()) {
                 final int afterSelectionStart = Selection.getSelectionStart(editable);
                 final int afterSelectionEnd = Selection.getSelectionEnd(editable);
                 mUndoRedoHelper.addHistory(getActionId(view), selectionStart,
@@ -2619,7 +2619,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             } else if (isApply) {
                 editable.removeSpan(span);
-            } else if (spanStart < end) { ///[FIX#因为SpanFlags全部为Spanned.SPAN_INCLUSIVE_EXCLUSIVE，而BlockCharacterStyle左侧不应添加文本的！因此要左缩]
+            } else if (spanStart < end && end < spanEnd) { ///[FIX#因为SpanFlags全部为Spanned.SPAN_INCLUSIVE_EXCLUSIVE，而BlockCharacterStyle左侧不应添加文本的！因此要左缩]
                 editable.setSpan(span, end, spanEnd, editable.getSpanFlags(span));
             }
 

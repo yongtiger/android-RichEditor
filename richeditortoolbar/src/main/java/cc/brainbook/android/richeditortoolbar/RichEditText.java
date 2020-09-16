@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar;
 
 import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
@@ -163,18 +162,18 @@ public class RichEditText extends AppCompatEditText {
             return;
         }
 
-        ClipboardManager clipboard =
+        final ClipboardManager clipboard =
                 (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = clipboard.getPrimaryClip();
-        if (clip != null) {
+        final ClipData clipData = clipboard.getPrimaryClip();
+        if (clipData != null) {
             boolean didFirst = false;
-            for (int i = 0; i < clip.getItemCount(); i++) {
+            for (int i = 0; i < clipData.getItemCount(); i++) {
                 final SpannableStringBuilder paste;
                 if (withFormatting && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    paste = new SpannableStringBuilder(clip.getItemAt(i).coerceToStyledText(getContext()));
+                    paste = new SpannableStringBuilder(clipData.getItemAt(i).coerceToStyledText(getContext()));
                 } else {
                     // Get an item as text and remove all spans by toString().
-                    final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
+                    final CharSequence text = clipData.getItemAt(i).coerceToText(getContext());
                     paste = new SpannableStringBuilder((text instanceof Spanned) ? text.toString() : text);
                 }
                 if (!TextUtils.isEmpty(paste)) {
@@ -205,7 +204,7 @@ public class RichEditText extends AppCompatEditText {
 
     @CheckResult
     private boolean setPrimaryClip(ClipData clip) {
-        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        final ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         try {
             clipboard.setPrimaryClip(clip);
         } catch (Throwable t) {

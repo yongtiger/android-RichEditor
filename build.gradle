@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.7",   ///v1.1.7#[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
-                versionCode: 10107
+                versionName: "1.1.8",   ///v1.1.8#[TYPO#BlockCharacterStyle#beforeChange]if (isBlockCharacterStyle(clazz) && view.isSelected())
+                versionCode: 10108
         ]
     }
 
