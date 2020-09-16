@@ -231,8 +231,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public File getImageFilePath() {
         return mImageFilePath;
     }
-    private int mImageOverrideWidth = 1000;
-    private int mImageOverrideHeight = 1000;
+    private int mImageOverrideWidth = 200;
+    private int mImageOverrideHeight = 200;
     public void setImageOverrideWidth(int imageOverrideWidth) {
         mImageOverrideWidth = imageOverrideWidth;
     }
@@ -2658,7 +2658,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     Selection.setSelection(editable, start, start + viewTagText.length());
                     isSkipUndoRedo = false;
                 } else {
-                    if (!TextUtils.isEmpty(viewTagUrl)) {
+                    if (!TextUtils.isEmpty(viewTagUrl) && start < end) {
                         editable.setSpan(new CustomURLSpan(viewTagUrl), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                     }
                 }
@@ -2680,7 +2680,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     Selection.setSelection(editable, start, start + viewTagText.length());
                     isSkipUndoRedo = false;
                 } else {
-                    if (!TextUtils.isEmpty(viewTagSrc)) {
+                    if (!TextUtils.isEmpty(viewTagSrc) && start < end) {
                         ///[ImageSpan#Glide#GifDrawable]
                         RichEditorToolbarHelper.loadImage(mContext, clazz, editable, -1, start, end,
                                 viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this);

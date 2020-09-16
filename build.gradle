@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.8",   ///v1.1.8#[TYPO#BlockCharacterStyle#beforeChange]if (isBlockCharacterStyle(clazz) && view.isSelected())
-                versionCode: 10108
+                versionName: "1.1.9",   ///v1.1.9#[FIX#BlockCharacterStyle#beforeChange]if (!TextUtils.isEmpty(viewTagSrc) && start < end)
+                versionCode: 10109
         ]
     }
 

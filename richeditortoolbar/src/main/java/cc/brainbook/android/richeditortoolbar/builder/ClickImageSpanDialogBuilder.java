@@ -67,8 +67,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private int mMediaType;	///0: image; 1: video; 2: audio
 	private String mDefaultImageFileName;	///缺省的media图片
 
-	private int mImageOverrideWidth = 1000;
-	private int mImageOverrideHeight = 1000;
+	private int mImageOverrideWidth = 200;
+	private int mImageOverrideHeight = 200;
 	private File mCachedOriginalImageFile;
 	private File mCachedOldImageFile;
 	private File mCachedImageFile;	///相机拍照、图片Crop剪切生成的临时图片文件

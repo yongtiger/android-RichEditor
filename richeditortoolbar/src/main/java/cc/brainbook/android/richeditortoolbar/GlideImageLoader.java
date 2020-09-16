@@ -15,8 +15,8 @@ import com.bumptech.glide.request.transition.Transition;
 public class GlideImageLoader {
     ///Glide要求的Image最大尺寸
     ///注意：如果宽高都限制1000，则可能出现(1000, 1800)的情况！
-    private static final int DEFAULT_IMAGE_OVERRIDE_WIDTH = 1000;
-    private static final int DEFAULT_IMAGE_OVERRIDE_HEIGHT = 1000;
+    private static final int DEFAULT_IMAGE_OVERRIDE_WIDTH = 200;
+    private static final int DEFAULT_IMAGE_OVERRIDE_HEIGHT = 200;
     private int mImageOverrideWidth, mImageOverrideHeight;
 
     private Context mContext;
