@@ -2,12 +2,13 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.Selection;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ParagraphStyle;
 import android.view.View;
-import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,15 +99,24 @@ public abstract class SpanUtil {
     /**
      * 获取光标选择区间的spans
      */
-    public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, EditText editText) {
-        ArrayList<T> filteredSpans = new ArrayList<>();
-        final int selectionStart = editText.getSelectionStart();
-        final int selectionEnd = editText.getSelectionEnd();
-        if (selectionStart != -1 && selectionEnd != -1) { ///-1 if there is no selection or cursor
-            filteredSpans = getFilteredSpans(clazz, editText.getText(), selectionStart, selectionEnd, false);
+    public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, Editable editable) {
+        final int selectionStart = Selection.getSelectionStart(editable);
+        final int selectionEnd = Selection.getSelectionEnd(editable);
+        if (selectionStart == -1 || selectionEnd == -1) { ///-1 if there is no selection or cursor
+            return new ArrayList<>();
         }
 
-        return filteredSpans;
+        final ArrayList<T> resultSpans = new ArrayList<>();
+        final ArrayList<T> filteredSpans = getFilteredSpans(clazz, editable, selectionStart, selectionEnd, true);
+        for (T filteredSpan : filteredSpans) {
+            final int spanStart = editable.getSpanStart(filteredSpan);
+            final int spanEnd = editable.getSpanEnd(filteredSpan);
+            if (spanStart < selectionEnd && selectionStart < spanEnd) {
+                resultSpans.add(filteredSpan);
+            }
+        }
+
+        return resultSpans;
 //        return (T[]) Array.newInstance(clazz);  ///https://bbs.csdn.net/topics/370137571, https://blog.csdn.net/qing0706/article/details/51067981
     }
 

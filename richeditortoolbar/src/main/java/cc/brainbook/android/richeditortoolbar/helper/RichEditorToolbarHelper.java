@@ -578,9 +578,6 @@ public abstract class RichEditorToolbarHelper {
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     public static <T> T getLeftSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
-        if (start == 0) {
-            return null;
-        }
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, start, true);
         for (T span : spans) {
             final int spanStart = spannable.getSpanStart(span);
@@ -598,10 +595,6 @@ public abstract class RichEditorToolbarHelper {
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
     public static <T> T getRightSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
-        if (end == spannable.length()) {
-            return null;
-        }
-
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, end, end, true);
         for (T span : spans) {
             final int spanStart = spannable.getSpanStart(span);

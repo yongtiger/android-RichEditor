@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.5",   ///v1.1.5#[FIX#因为SpanFlags全部为Spanned.SPAN_INCLUSIVE_EXCLUSIVE，而BlockCharacterStyle左侧不应添加文本的！因此要左缩]
-                versionCode: 10105
+                versionName: "1.1.6",   ///v1.1.6#[BlockCharacterStyle#beforeChange]调整BlockCharacterStyle的Selection为第一个span的起始位置和最后span的结尾位置
+                versionCode: 10106
         ]
     }
 

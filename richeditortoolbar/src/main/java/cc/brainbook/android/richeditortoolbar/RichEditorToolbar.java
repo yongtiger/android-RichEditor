@@ -115,6 +115,8 @@ import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHel
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.updateDescendantNestingLevel;
 import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.updateParagraphView;
 import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidParagraph;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class RichEditorToolbar extends FlexboxLayout implements
         Drawable.Callback, View.OnClickListener, View.OnLongClickListener,
@@ -1731,8 +1733,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 if (text.length() == 0 && url.length() == 0) {  //////??????url正则表达式
                                     return;
                                 }
-                                final ArrayList<CustomURLSpan> selectedSpans = SpanUtil.getSelectedSpans(CustomURLSpan.class, mRichEditText);
-                                if ((text.length() == 0 || url.length() == 0) && (selectedSpans == null || selectedSpans.size() == 0)) {  //////??????url正则表达式
+                                final ArrayList<CustomURLSpan> selectedSpans = SpanUtil.getSelectedSpans(CustomURLSpan.class, mRichEditText.getText());
+                                if ((text.length() == 0 || url.length() == 0) && selectedSpans.size() == 0) {  //////??????url正则表达式
                                     return;
                                 }
 
@@ -1997,18 +1999,31 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     private void applyCharacterStyleSpans(View view, Editable editable) {
-        final int selectionStart = Selection.getSelectionStart(editable);
-        final int selectionEnd = Selection.getSelectionEnd(editable);
-        ///当selectionStart != selectionEnd时改变selection的span
+        String beforeChange = null;
+        int selectionStart = -1;
+        int selectionEnd = -1;
         final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+
+        ///[BlockCharacterStyle#beforeChange]调整BlockCharacterStyle的Selection为第一个span的起始位置和最后span的结尾位置
+        if (isBlockCharacterStyle(clazz)) {
+            final ArrayList<?> selectedSpans = SpanUtil.getSelectedSpans(clazz, editable);
+            if (!selectedSpans.isEmpty()) {
+                selectionStart = editable.getSpanStart(selectedSpans.get(0));
+                selectionEnd = editable.getSpanEnd(selectedSpans.get(selectedSpans.size() - 1));
+            }
+        }
+        if (selectionStart == -1 || selectionEnd == -1) {
+            selectionStart = Selection.getSelectionStart(editable);
+            selectionEnd = Selection.getSelectionEnd(editable);
+        }
+
+        ///当selectionStart != selectionEnd时改变selection的span
         if (selectionStart == -1 || selectionEnd == -1) {
             return;
         }
 
-        ///[beforeChange]
-        final String beforeChange = editable.subSequence(selectionStart, selectionEnd).toString();
-
         if (isBlockCharacterStyle(clazz)) {
+            beforeChange = editable.subSequence(selectionStart, selectionEnd).toString();
             adjustBlockCharacterStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
         } else {
             adjustCharacterStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true);
@@ -2020,7 +2035,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int afterSelectionStart = Selection.getSelectionStart(editable);
                 final int afterSelectionEnd = Selection.getSelectionEnd(editable);
                 mUndoRedoHelper.addHistory(getActionId(view), selectionStart,
-                        beforeChange,   ///[beforeChange]
+                        beforeChange,
                         editable.subSequence(afterSelectionStart, afterSelectionEnd).toString(),
                         RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
             } else{
@@ -2506,6 +2521,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     private <T> void adjustBlockCharacterStyleSpans(View view, Class<T> clazz, final Editable editable, final int start, final int end, boolean isApply) {
+        if (view == null) {
+            return;
+        }
+
         ///[isUpdateNeeded]
         ///注意：EditText的文本被replace后，selection区间变为不存在
         ///从而调用updateCharacterStyleView()，导致view的selected变为false、viewTag被清空
@@ -2521,6 +2540,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         boolean isNewSpanNeeded = true;
 
+        ///[BlockCharacterStyle#newEnd]选中区间内如果存在多个span，则取其中最大的spanEnd为选中区间的结尾
+        int newEnd = -1;
+
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
@@ -2531,7 +2553,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 continue;
             }
 
-            if (view != null && view.isSelected()) {
+            if (view.isSelected()) {
 
                 ///字符span（带参数）：URL
                 if (view == mImageViewURL) {
@@ -2540,11 +2562,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanUrl = ((CustomURLSpan) span).getURL();
                     if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        ///忽略TextWatcher中的UndoRedo
-                        isSkipUndoRedo = true;
+                        ///忽略TextWatcher
+                        isSkipTextWatcher = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
-                        Selection.setSelection(editable, spanStart, spanStart + viewTagText.length());
-                        isSkipUndoRedo = false;
+                        newEnd = max(newEnd, spanStart + viewTagText.length());    ///[BlockCharacterStyle#newEnd]
+                        isSkipTextWatcher = false;
 
                         ///[isUpdateNeeded]
                         view.setSelected(view.isSelected());
@@ -2571,11 +2593,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanSrc = ((CustomImageSpan) span).getSource();
                     if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        ///忽略TextWatcher中的UndoRedo
-                        isSkipUndoRedo = true;
+                        ///忽略TextWatcher
+                        isSkipTextWatcher = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
-                        Selection.setSelection(editable, spanStart, spanStart + viewTagText.length());
-                        isSkipUndoRedo = false;
+                        newEnd = max(newEnd, spanStart + viewTagText.length());    ///[BlockCharacterStyle#newEnd]
+                        isSkipTextWatcher = false;
 
                         ///[isUpdateNeeded]
                         view.setTag(R.id.image_text, viewTagText);
@@ -2614,7 +2636,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
             isNewSpanNeeded = false;
         }
 
-        if (view != null && view.isSelected() && isNewSpanNeeded) {
+        ///[BlockCharacterStyle#newEnd]
+        if (newEnd != -1) {
+            ///忽略TextWatcher
+            isSkipTextWatcher = true;
+            Selection.setSelection(editable, start, newEnd);
+            isSkipTextWatcher = false;
+        }
+
+        if (view.isSelected() && isNewSpanNeeded) {
 
             ///字符span（带参数）：URL
             if (view == mImageViewURL) {
@@ -2622,11 +2652,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final String viewTagUrl = (String) view.getTag(R.id.url_url);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher中的UndoRedo
-                    isSkipUndoRedo = true;
+                    ///忽略TextWatcher
+                    isSkipTextWatcher = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
-                    isSkipUndoRedo = false;
+                    isSkipTextWatcher = false;
                 } else {
                     if (!TextUtils.isEmpty(viewTagUrl)) {
                         editable.setSpan(new CustomURLSpan(viewTagUrl), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -2644,11 +2674,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int viewTagAlign = view.getTag(R.id.image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher中的UndoRedo
-                    isSkipUndoRedo = true;
+                    ///忽略TextWatcher
+                    isSkipTextWatcher = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
-                    isSkipUndoRedo = false;
+                    isSkipTextWatcher = false;
                 } else {
                     if (!TextUtils.isEmpty(viewTagSrc)) {
                         ///[ImageSpan#Glide#GifDrawable]
@@ -2727,8 +2757,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             } else {
                 if (view.isSelected() && isSameWithViewParameter) {
-                    final int st = Math.min(start, spanStart);
-                    final int en = Math.max(end, spanEnd);
+                    final int st = min(start, spanStart);
+                    final int en = max(end, spanEnd);
                     if (st != spanStart || en != spanEnd) {
                         editable.setSpan(span, st, en, editable.getSpanFlags(span));
 
