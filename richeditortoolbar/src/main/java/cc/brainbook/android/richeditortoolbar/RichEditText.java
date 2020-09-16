@@ -182,10 +182,11 @@ public class RichEditText extends AppCompatEditText {
 
                         ///如果为paint text则不执行loadSpans
                         if (withFormatting && mLoadSpansCallback != null) {
-                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
-                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
+                            //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
+//                            final ClipDescription clipDescription = clipboard.getPrimaryClipDescription();
+//                            if (clipDescription != null && getContext().getPackageName().equals(clipDescription.getLabel().toString())) {
                                 mLoadSpansCallback.loadSpans(paste, min);
-                            }
+//                            }
                         }
 
                         ///注意：必须加入Selection.setSelection()，否则，在API 28会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]

@@ -2562,11 +2562,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanUrl = ((CustomURLSpan) span).getURL();
                     if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        ///忽略TextWatcher
-                        isSkipTextWatcher = true;
+                        ///忽略TextWatcher的UndoRedo
+                        isSkipUndoRedo = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
                         newEnd = max(newEnd, spanStart + viewTagText.length());    ///[BlockCharacterStyle#newEnd]
-                        isSkipTextWatcher = false;
+                        isSkipUndoRedo = false;
 
                         ///[isUpdateNeeded]
                         view.setSelected(view.isSelected());
@@ -2593,11 +2593,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final String compareText = String.valueOf(editable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                     final String spanSrc = ((CustomImageSpan) span).getSource();
                     if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                        ///忽略TextWatcher
-                        isSkipTextWatcher = true;
+                        ///忽略TextWatcher的UndoRedo
+                        isSkipUndoRedo = true;
                         editable.replace(spanStart, spanEnd, viewTagText);
                         newEnd = max(newEnd, spanStart + viewTagText.length());    ///[BlockCharacterStyle#newEnd]
-                        isSkipTextWatcher = false;
+                        isSkipUndoRedo = false;
 
                         ///[isUpdateNeeded]
                         view.setTag(R.id.image_text, viewTagText);
@@ -2638,10 +2638,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[BlockCharacterStyle#newEnd]
         if (newEnd != -1) {
-            ///忽略TextWatcher
-            isSkipTextWatcher = true;
+            ///忽略TextWatcher的UndoRedo
+            isSkipUndoRedo = true;
             Selection.setSelection(editable, start, newEnd);
-            isSkipTextWatcher = false;
+            isSkipUndoRedo = false;
         }
 
         if (view.isSelected() && isNewSpanNeeded) {
@@ -2652,11 +2652,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final String viewTagUrl = (String) view.getTag(R.id.url_url);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher
-                    isSkipTextWatcher = true;
+                    ///忽略TextWatcher的UndoRedo
+                    isSkipUndoRedo = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
-                    isSkipTextWatcher = false;
+                    isSkipUndoRedo = false;
                 } else {
                     if (!TextUtils.isEmpty(viewTagUrl)) {
                         editable.setSpan(new CustomURLSpan(viewTagUrl), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -2674,11 +2674,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int viewTagAlign = view.getTag(R.id.image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
                 final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
-                    ///忽略TextWatcher
-                    isSkipTextWatcher = true;
+                    ///忽略TextWatcher的UndoRedo
+                    isSkipUndoRedo = true;
                     editable.replace(start, end, viewTagText);
                     Selection.setSelection(editable, start, start + viewTagText.length());
-                    isSkipTextWatcher = false;
+                    isSkipUndoRedo = false;
                 } else {
                     if (!TextUtils.isEmpty(viewTagSrc)) {
                         ///[ImageSpan#Glide#GifDrawable]
