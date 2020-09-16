@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TextActivity"
+    tools:context=".EditorActivity"
     android:orientation="vertical">
 
     <Button
@@ -45,14 +45,6 @@
         android:scrollbars="vertical"
         android:lineSpacingExtra="8dp"
         android:textSize="24sp"
-        android:visibility="gone" />
-
-    <EditText
-        android:id="@+id/et_html"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="start"
-        android:scrollbars="vertical"
         android:visibility="gone" />
 
 </LinearLayout>

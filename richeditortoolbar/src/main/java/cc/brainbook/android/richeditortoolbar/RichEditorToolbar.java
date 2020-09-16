@@ -95,6 +95,7 @@ import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.Util;
 
+import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.createChildrenListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
@@ -126,6 +127,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
+    public static final int REQUEST_CODE_HTML_EDITOR = 101;
 
 
     ///使用LinkedHashMap是为了保证顺序（ListItemSpan必须在ListSpan之后注册）
@@ -240,9 +242,27 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageOverrideHeight = imageOverrideHeight;
     }
 
-    ///[ImageSpan#ClickImageSpanDialogBuilder#onActivityResult()]
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mClickImageSpanDialogBuilder != null) {
+        if (REQUEST_CODE_HTML_EDITOR == requestCode) {
+            if (RESULT_OK == resultCode) {
+                ///[HtmlEditor#onActivityResult]
+                final Editable editable = mRichEditText.getText();
+                if (editable != null) {
+                    CharSequence htmlResult;
+
+                    if (data != null) {
+                        final String htmlText = data.getStringExtra("html_result");
+                        if (htmlText != null) {
+                            editable.replace(0, editable.length(), Html.fromHtml(htmlText));
+
+                            ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+                            postSetText();
+                        }
+                    }
+                }
+            }
+        } else if (mClickImageSpanDialogBuilder != null) {
+            ///[ImageSpan#ClickImageSpanDialogBuilder#onActivityResult()]
             mClickImageSpanDialogBuilder.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -389,14 +409,24 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /* ---------------- ///[Html] ---------------- */
-    private int mImageViewHtmlOption = Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
     private ImageView mImageViewHtml;
 
-    private EditText mEditTextHtml;
-    public void setHtml(EditText editTextHtml) {
-        mEditTextHtml = editTextHtml;
+    private int mHtmlOption = Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE;
+    public void setHtmlOption(int htmlOption) {
+        mHtmlOption = htmlOption;
+    }
+    public int getHtmlOption() {
+        return mHtmlOption;
     }
 
+    ///[HtmlEditor#HtmlEditorCallback]
+    public interface HtmlEditorCallback {
+        void startHtmlEditorActivity(String htmlString);
+    }
+    private HtmlEditorCallback mHtmlEditorCallback;
+    public void setHtmlEditorCallback(HtmlEditorCallback htmlEditorCallback) {
+        mHtmlEditorCallback = htmlEditorCallback;
+    }
 
     /* ------------------------------------------------ */
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
@@ -961,33 +991,42 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewHtml.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    view.setSelected(!view.isSelected());
+                    final String htmlString = Html.toHtml(mRichEditText.getText(), mHtmlOption);
 
-                    if (view.isSelected()) {
-                        setAllViewsEnabled(false);
-
-                        final String htmlString = Html.toHtml(mRichEditText.getText(), mImageViewHtmlOption);
-                        mEditTextHtml.setText(htmlString);
-
-                        mRichEditText.setVisibility(GONE);
-                        mTextViewPreview.setVisibility(GONE);
-                        mEditTextHtml.setVisibility(VISIBLE);
-                    } else {
-                        setAllViewsEnabled(true);
-
-                        final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
-                        ///忽略TextWatcher
-                        isSkipTextWatcher = true;
-                        mRichEditText.setText(htmlSpanned);
-                        isSkipTextWatcher = false;
-
-                        ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
-                        postSetText();
-
-                        mRichEditText.setVisibility(VISIBLE);
-                        mTextViewPreview.setVisibility(GONE);
-                        mEditTextHtml.setVisibility(GONE);
+                    ///[HtmlEditor#启动HtmlEditorActivity]
+                    if (mHtmlEditorCallback != null) {
+                        mHtmlEditorCallback.startHtmlEditorActivity(htmlString);
                     }
+
+
+
+//                    view.setSelected(!view.isSelected());
+//
+//                    if (view.isSelected()) {
+//                        setAllViewsEnabled(false);
+//
+//                        final String htmlString = Html.toHtml(mRichEditText.getText(), mImageViewHtmlOption);
+//                        mEditTextHtml.setText(htmlString);
+//
+//                        mRichEditText.setVisibility(GONE);
+//                        mTextViewPreview.setVisibility(GONE);
+//                        mEditTextHtml.setVisibility(VISIBLE);
+//                    } else {
+//                        setAllViewsEnabled(true);
+//
+//                        final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
+//                        ///忽略TextWatcher
+//                        isSkipTextWatcher = true;
+//                        mRichEditText.setText(htmlSpanned);
+//                        isSkipTextWatcher = false;
+//
+//                        ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+//                        postSetText();
+//
+//                        mRichEditText.setVisibility(VISIBLE);
+//                        mTextViewPreview.setVisibility(GONE);
+//                        mEditTextHtml.setVisibility(GONE);
+//                    }
                 }
             });
 
@@ -995,10 +1034,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 @Override
                 public boolean onLongClick(View v) {
                     new AlertDialog.Builder(mContext)
-                            .setSingleChoiceItems(R.array.html_option, mImageViewHtmlOption, new DialogInterface.OnClickListener() {
+                            .setSingleChoiceItems(R.array.html_option, mHtmlOption, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    mImageViewHtmlOption = which;
+                                    mHtmlOption = which;
 
                                     dialog.dismiss();
                                 }
@@ -1103,23 +1142,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         } else {
             return -1;
         }
-    }
-
-    private void setAllViewsEnabled(boolean enabled) {
-        for (View view : mClassMap.values()) {
-            if (view != null && view != mImageViewHtml) {
-                view.setEnabled(enabled);
-            }
-        }
-
-        mImageViewClearSpans.setEnabled(enabled);
-        mImageViewSaveDraft.setEnabled(enabled);
-        mImageViewRestoreDraft.setEnabled(enabled);
-        mImageViewClearDraft.setEnabled(enabled);
-        mImageViewUndo.setEnabled(enabled);
-        mImageViewRedo.setEnabled(enabled);
-        mImageViewSave.setEnabled(enabled);
-        mImageViewPreview.setEnabled(enabled);
     }
 
 

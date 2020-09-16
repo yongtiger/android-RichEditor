@@ -23,6 +23,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,12 +38,12 @@ public class MainActivity extends AppCompatActivity implements
         LineDividerSpan.DrawBackgroundCallback,
         Drawable.Callback {
     private static final int REQUEST_CODE_PERMISSIONS = 1;
-    private static final int REQUEST_CODE_RICH_EDITOR = 101;
+    private static final int REQUEST_CODE_RICH_EDITOR = 100;
 
     ///[权限申请]
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    private String mHtmlText;
+    private String mHtmlText = "<hr>";  ///设置初始文本
     private TextView mTextView;
 
     @Override
@@ -69,6 +71,13 @@ public class MainActivity extends AppCompatActivity implements
         ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
 //        mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         mTextView.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
+
+        ///设置初始文本
+        final Spanned spanned = Html.fromHtml(mHtmlText);
+        mTextView.setText(spanned);
+        ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
+        final Spannable textSpanned = ((Spannable) mTextView.getText());
+        postSetText(textSpanned);
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -86,15 +95,9 @@ public class MainActivity extends AppCompatActivity implements
                         final Spanned spanned = Html.fromHtml(mHtmlText);
                         mTextView.setText(spanned);
 
-
-                        /* ----------------------------------------------------------------------- */
                         ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
                         final Spannable textSpanned = ((Spannable) mTextView.getText());
-                        final Object[] spans = textSpanned.getSpans(0, textSpanned.length(), Object.class);
-                        final List<Object> spanList = Arrays.asList(spans);
-                        ///执行postLoadSpans及后处理
-                        RichEditorToolbarHelper.postLoadSpans(this, textSpanned, -1, spanList,
-                                new ColorDrawable(Color.LTGRAY), -1, this, this);
+                        postSetText(textSpanned);
                     }
                 }
             }
@@ -102,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+    public void drawBackground(@NotNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
         c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
     }
 
@@ -114,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements
         RichEditorToolbarHelper.setImageSpan(spannable, drawable);
     }
 
-
     @Override
     public void scheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable, long l) {}
 
@@ -122,14 +124,19 @@ public class MainActivity extends AppCompatActivity implements
     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
 
 
+    ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
+    public void postSetText(@NotNull Spannable textSpanned) {
+        final Object[] spans = textSpanned.getSpans(0, textSpanned.length(), Object.class);
+        final List<Object> spanList = Arrays.asList(spans);
+        ///执行postLoadSpans及后处理
+        RichEditorToolbarHelper.postLoadSpans(this, textSpanned, -1, spanList,
+                new ColorDrawable(Color.LTGRAY), -1, this, this);
+    }
+
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
-        final Intent intent = new Intent(MainActivity.this, TextActivity.class);
-
-        if (!TextUtils.isEmpty(mHtmlText)) {
-            intent.putExtra("html_text", mHtmlText);
-        }
-
+        final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+        intent.putExtra("html_text", mHtmlText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
     }
 

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.9",   ///v1.1.9#[FIX#BlockCharacterStyle#beforeChange]if (!TextUtils.isEmpty(viewTagSrc) && start < end)
-                versionCode: 10109
+                versionName: "1.1.10",   ///v1.1.10#[HtmlEditor]
+                versionCode: 10110
         ]
     }
 

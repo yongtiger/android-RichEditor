@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.File;
@@ -24,16 +23,17 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
 
-public class TextActivity extends AppCompatActivity {
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.REQUEST_CODE_HTML_EDITOR;
+
+public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
     private TextView mTextViewPreview;
-    private EditText mEditTextHtml;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_text);
+        setContentView(R.layout.activity_editor);
 
         mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
         mRichEditText = (RichEditText) findViewById(R.id.et_rich_edit_text);
@@ -46,9 +46,6 @@ public class TextActivity extends AppCompatActivity {
         ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
 //        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
         mTextViewPreview.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
-
-        ///[Html]
-        mEditTextHtml = (EditText) findViewById(R.id.et_html);
 
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
@@ -71,9 +68,6 @@ public class TextActivity extends AppCompatActivity {
 
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreview(mTextViewPreview);
-
-        ///（必选）RichEditorToolbar设置Html
-        mRichEditorToolbar.setHtml(mEditTextHtml);
 
         ///（必选）RichEditorToolbar设置LineDividerSpan.DrawBackgroundCallback
         mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
@@ -106,12 +100,29 @@ public class TextActivity extends AppCompatActivity {
         }
         mRichEditorToolbar.setImageFilePath(imageFilePath);
 
+        ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
+//        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2); ///test
 
-        ///初始化RichEditorToolbar
+        ///（可选）设置HtmlEditorCallback
+        mRichEditorToolbar.setHtmlEditorCallback(new RichEditorToolbar.HtmlEditorCallback() {
+            @Override
+            public void startHtmlEditorActivity(String htmlString) {
+                ///[HtmlEditor#启动HtmlEditorActivity]
+                final Intent intent = new Intent(EditorActivity.this, HtmlEditorActivity.class);
+                intent.putExtra("html_text", htmlString);
+
+                startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
+            }
+        });
+
+        ///（必选）初始化RichEditorToolbar
         mRichEditorToolbar.init();
+
+        ///（可选）设置初始文本
+//        mRichEditText.setText(Html.fromHtml("<hr>"));
     }
 
     @Override
@@ -122,20 +133,6 @@ public class TextActivity extends AppCompatActivity {
         if (mRichEditorToolbar != null) {
             mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    public void btnClickSave(View view) {
-        ///[startActivityForResult#setResult()返回数据]
-        final Intent intent = new Intent();
-
-        if (!TextUtils.isEmpty(mRichEditText.getText())) {
-            final String htmlResult = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-            intent.putExtra("html_result", htmlResult);
-        }
-
-        setResult(RESULT_OK, intent);
-
-        finish();
     }
 
     @Override
@@ -155,4 +152,18 @@ public class TextActivity extends AppCompatActivity {
 
         return null;
     }
+
+
+    public void btnClickSave(View view) {
+        ///[startActivityForResult#setResult()返回数据]
+        final Intent intent = new Intent();
+
+        final String htmlResult = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+        intent.putExtra("html_result", htmlResult);
+
+        setResult(RESULT_OK, intent);
+
+        finish();
+    }
+
 }

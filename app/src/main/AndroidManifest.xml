@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".HtmlEditorActivity"></activity>
         <!-- 注意：Samsung Android 5在拍照后会引起自动翻屏导致Activity重建而使得Toolbar对话框消失！因此要设置android:configChanges="orientation|keyboardHidden|screenSize" -->
         <!-- 注意：自从Android 3.2（API 13），在设置Activity的android:configChanges="orientation|keyboardHidden"后，还是一样会重新调用各个生命周期的。 -->
         <!-- 因为screen size也开始跟着设备的横竖切换而改变。所以，在AndroidManifest.xml里设置的MiniSdkVersion和 TargetSdkVersion属性大于等于13的情况下， -->
@@ -28,10 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".TextActivity" />
-
-        <!-- ///适应Android 7.0 -->
+        <activity android:name=".EditorActivity" /> <!-- ///适应Android 7.0 -->
         <!-- https://blog.csdn.net/lmj623565791/article/details/72859156 -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,7 +39,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
 
 </manifest>
