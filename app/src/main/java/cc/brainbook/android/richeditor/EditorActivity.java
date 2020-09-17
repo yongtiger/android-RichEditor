@@ -120,9 +120,6 @@ public class EditorActivity extends AppCompatActivity {
 
         ///（必选）初始化RichEditorToolbar
         mRichEditorToolbar.init();
-
-        ///（可选）设置初始文本
-//        mRichEditText.setText(Html.fromHtml("<hr>"));
     }
 
     @Override

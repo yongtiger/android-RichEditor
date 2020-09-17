@@ -997,36 +997,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     if (mHtmlEditorCallback != null) {
                         mHtmlEditorCallback.startHtmlEditorActivity(htmlString);
                     }
-
-
-
-//                    view.setSelected(!view.isSelected());
-//
-//                    if (view.isSelected()) {
-//                        setAllViewsEnabled(false);
-//
-//                        final String htmlString = Html.toHtml(mRichEditText.getText(), mImageViewHtmlOption);
-//                        mEditTextHtml.setText(htmlString);
-//
-//                        mRichEditText.setVisibility(GONE);
-//                        mTextViewPreview.setVisibility(GONE);
-//                        mEditTextHtml.setVisibility(VISIBLE);
-//                    } else {
-//                        setAllViewsEnabled(true);
-//
-//                        final Spanned htmlSpanned = Html.fromHtml(mEditTextHtml.getText().toString());
-//                        ///忽略TextWatcher
-//                        isSkipTextWatcher = true;
-//                        mRichEditText.setText(htmlSpanned);
-//                        isSkipTextWatcher = false;
-//
-//                        ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
-//                        postSetText();
-//
-//                        mRichEditText.setVisibility(VISIBLE);
-//                        mTextViewPreview.setVisibility(GONE);
-//                        mEditTextHtml.setVisibility(GONE);
-//                    }
                 }
             });
 
