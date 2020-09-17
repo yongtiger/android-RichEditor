@@ -2487,14 +2487,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
-            ///先调整span的起止位置
-            if (spanStart != start || spanEnd != end) {
+            if (clazz == LineDividerSpan.class) {
                 ///[FIX#当LineDivider起止位置不正确时，应删除！]
-                if (clazz == LineDividerSpan.class) {
+                if (spanStart + 1 != spanEnd || editable.charAt(spanStart) != '\n') {
                     editable.removeSpan(span);
-                } else {
-                    editable.setSpan(span, start, end, editable.getSpanFlags(span));
                 }
+            } else if ((spanStart != start || spanEnd != end) && start < end) {
+                ///调整span的起止位置
+                editable.setSpan(span, start, end, editable.getSpanFlags(span));
             }
 
             if (view != null && view.isSelected()) {

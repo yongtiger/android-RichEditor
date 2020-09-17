@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.10",   ///v1.1.10#[HtmlEditor]
-                versionCode: 10110
+                versionName: "1.1.11",   ///v1.1.11#[FIX#当LineDivider起止位置不正确时，应删除！]
+                versionCode: 10111
         ]
     }
 

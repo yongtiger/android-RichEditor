@@ -71,7 +71,8 @@ public class RichEditText extends AppCompatEditText {
     ///注意：一个App可含有多个RichEditor，多个App的所有RichEditor共享剪切板的存储空间！所以可以实现跨进程复制粘贴
     @Override
     public boolean onTextContextMenuItem(int id) {
-        if (getText() == null) {
+        final Editable editable = getText();
+        if (editable == null) {
             return super.onTextContextMenuItem(id);
         }
 
@@ -88,16 +89,16 @@ public class RichEditText extends AppCompatEditText {
 
         switch (id) {
             case android.R.id.cut:
-                ///注意：必须getText().subSequence(min, max).toString()！否则getText().subSequence(min, max)在api 23以下无法获得剪切板内容
-                final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max).toString());
+                ///注意：必须editable.subSequence(min, max).toString()！否则editable.subSequence(min, max)在api 23以下无法获得剪切板内容
+                final ClipData cutData = ClipData.newPlainText(getContext().getPackageName(), editable.subSequence(min, max).toString());
                 if (setPrimaryClip(cutData)) {
 
                     if (mSaveSpansCallback != null) {
                         ///[clipboard]由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                        mSaveSpansCallback.saveSpans(getText(), min, max);
+                        mSaveSpansCallback.saveSpans(editable, min, max);
                     }
 
-                    getText().delete(min, max);
+                    editable.delete(min, max);
                 } else {
                     Toast.makeText(getContext(),
                             R.string.failed_to_copy_to_clipboard,
@@ -111,13 +112,13 @@ public class RichEditText extends AppCompatEditText {
                 final int selEnd = getSelectionEnd();
                 min = Math.max(0, Math.min(selStart, selEnd));
                 max = Math.max(0, Math.max(selStart, selEnd));
-                ///注意：必须getText().subSequence(min, max).toString()！否则getText().subSequence(min, max)在api 23以下无法获得剪切板内容
-                final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), getText().subSequence(min, max).toString());
+                ///注意：必须editable.subSequence(min, max).toString()！否则editable.subSequence(min, max)在api 23以下无法获得剪切板内容
+                final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), editable.subSequence(min, max).toString());
                 if (setPrimaryClip(copyData)) {
 
                     if (mSaveSpansCallback != null) {
                         ///[clipboard]由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-                        mSaveSpansCallback.saveSpans(getText(), min, max);
+                        mSaveSpansCallback.saveSpans(editable, min, max);
                     }
 
                     //////??????如何关闭TextContextMenuItem
@@ -158,7 +159,8 @@ public class RichEditText extends AppCompatEditText {
      * Paste clipboard content between min and max positions.
      */
     private void paste(int min, int max, boolean withFormatting) {
-        if (getText() == null) {
+        final Editable editable = getText();
+        if (editable == null) {
             return;
         }
 
@@ -189,13 +191,13 @@ public class RichEditText extends AppCompatEditText {
                         }
 
                         ///注意：必须加入Selection.setSelection()，否则，在API 28会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
-                        Selection.setSelection(getText(), max);
+                        Selection.setSelection(editable, max);
 
-                        getText().replace(min, max, paste);
+                        editable.replace(min, max, paste);
                         didFirst = true;
                     } else {
-                        getText().insert(getSelectionEnd(), "\n");
-                        getText().insert(getSelectionEnd(), paste);
+                        editable.insert(getSelectionEnd(), "\n");
+                        editable.insert(getSelectionEnd(), paste);
                     }
                 }
             }
