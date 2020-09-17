@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
             // 检查该权限是否已经获取
             final int permission0 = ContextCompat.checkSelfPermission(this, permissions[0]);
             final int permission1 = ContextCompat.checkSelfPermission(this, permissions[1]);
-            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+            // 权限是否已经 授权 GRANTED---授权  DENIED---拒绝
             if (permission0 != PackageManager.PERMISSION_GRANTED || permission1 != PackageManager.PERMISSION_GRANTED) {
                 // 如果没有授予该权限，就去提示用户请求
                 ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS);

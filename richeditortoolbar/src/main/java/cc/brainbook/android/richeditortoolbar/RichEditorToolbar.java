@@ -124,9 +124,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
-    public static final String SHARED_PREFERENCES_NAME = "draft_preferences";
-    public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "draft_text";
-    public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
+    public static final String SHARED_PREFERENCES_NAME_DRAFT = "rich_editor_shared_preferences_name_draft";
+    public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
+    public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file_name";
     public static final int REQUEST_CODE_HTML_EDITOR = 101;
 
 
@@ -303,7 +303,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewClearDraft;
 
     private boolean checkDraft() {
-        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME_DRAFT, Context.MODE_PRIVATE);
         final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
         final boolean hasDraft = !TextUtils.isEmpty(draftText);
         mImageViewRestoreDraft.setEnabled(hasDraft);
@@ -820,7 +820,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     }
 
                     final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), true);
-                    PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
+                    PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME_DRAFT, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                     if (checkDraft()) {
                         Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
@@ -839,7 +839,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewRestoreDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+                    final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME_DRAFT, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
                     if (TextUtils.isEmpty(draftText)) {
                         return;
                     }
@@ -894,7 +894,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewClearDraft.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME);
+                    PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME_DRAFT);
 
                     if (!checkDraft()) {
                         Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
