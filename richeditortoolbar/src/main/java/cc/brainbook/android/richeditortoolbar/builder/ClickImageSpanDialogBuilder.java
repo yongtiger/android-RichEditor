@@ -609,27 +609,33 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		// create Intent to take a picture and return control to the calling application
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-		// Ensure that there's a camera activity to handle the intent
-		if (intent.resolveActivity(mContext.getPackageManager()) != null) {
-			mCachedImageFile = new File(mImageFilePath, FileUtil.generateImageFileName("jpg"));
-            final Uri imageUri = FileUtil.getUriFromFile(mContext, mCachedImageFile);
-            // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
-            // 返回图片在onActivityResult中通过以下代码获取
-            // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-			intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+		///Android 11 (API 30)开始，只有预装的系统相机应用可以响应action.IMAGE_CAPTURE 等操作，
+		///而且intent.resolveActivity(mContext.getPackageManager())会返回null
+		///https://juejin.im/post/6860370635664261128
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+			// Ensure that there's a camera activity to handle the intent
+			if (intent.resolveActivity(mContext.getPackageManager()) == null) {
+				Toast.makeText(mContext.getApplicationContext(), R.string.error_system_camera_not_available, Toast.LENGTH_SHORT).show();
+				return;
+			}
+		}
 
-			///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
+		mCachedImageFile = new File(mImageFilePath, FileUtil.generateImageFileName("jpg"));
+		final Uri imageUri = FileUtil.getUriFromFile(mContext, mCachedImageFile);
+		// MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
+		// 返回图片在onActivityResult中通过以下代码获取
+		// Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+		///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
 //			final Activity activity = Util.getActivityFromContext(context);
 //            if (activity != null) {
 //                activity.startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 //            }
-			try {
-				((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
-			} catch (ActivityNotFoundException e) {
-				Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
-			}
-		} else {
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_system_camera_not_available, Toast.LENGTH_SHORT).show();
+		try {
+			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
+		} catch (ActivityNotFoundException e) {
+			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.11",   ///v1.1.11#[FIX#当LineDivider起止位置不正确时，应删除！]
-                versionCode: 10111
+                versionName: "1.1.12",   ///v1.1.12#Android 11 (API 30)开始，只有预装的系统相机应用可以响应action.IMAGE_CAPTURE 等操作，而且intent.resolveActivity(mContext.getPackageManager())会返回null
+                versionCode: 10112
         ]
     }
 
