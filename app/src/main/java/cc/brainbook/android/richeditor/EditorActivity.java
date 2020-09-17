@@ -83,13 +83,12 @@ public class EditorActivity extends AppCompatActivity {
 
 
         ///设置存放ImageSpan图片的文件目录
-        ///（可选，缺省为getExternalCacheDir()）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
-        ///注意：getExternalCacheDir()在API 30中可能会返回null！
+        ///（必选）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
         File imageFilePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
             ///外部存储可用
-            ///注意：getExternalCacheDir()在API 30中可能会返回null！
+            ///注意：getExternalCacheDir()在API 30（预装版）中可能会返回null！而正式版则正常
             imageFilePath = getExternalCacheDir();
             if (imageFilePath == null) {
                 imageFilePath = getCacheDir();
@@ -130,24 +129,6 @@ public class EditorActivity extends AppCompatActivity {
         if (mRichEditorToolbar != null) {
             mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
         }
-    }
-
-    @Override
-    public File getExternalCacheDir() {
-        if (super.getExternalCacheDir() != null) {
-            return super.getExternalCacheDir();
-        }
-
-        ///注意：getExternalCacheDir()在API 30中可能会返回null！
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            for (File externalCacheDir : getExternalCacheDirs()) {
-                if (externalCacheDir != null) {
-                    return externalCacheDir;
-                }
-            }
-        }
-
-        return null;
     }
 
 

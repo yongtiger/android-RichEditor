@@ -455,7 +455,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[clipboard]设置存放剪切板的文件目录
         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
-        ///注意：建议使用应用的cache目录，而getExternalCacheDir()在API 30中可能会返回null！
+        ///注意：建议使用应用的cache目录
         mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);
 
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
