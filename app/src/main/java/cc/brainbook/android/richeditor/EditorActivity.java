@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Spanned;
@@ -81,21 +80,19 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.ic_image_black_24dp);
 
-
         ///设置存放ImageSpan图片的文件目录
         ///（必选）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
         File imageFilePath;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
             ///外部存储可用
-            ///注意：getExternalCacheDir()在API 30（预装版）中可能会返回null！而正式版则正常
-            imageFilePath = getExternalCacheDir();
+            imageFilePath = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
             if (imageFilePath == null) {
-                imageFilePath = getCacheDir();
+                imageFilePath = new File(getExternalCacheDir(), Environment.DIRECTORY_PICTURES);
             }
         } else {
             ///外部存储不可用
-            imageFilePath = getCacheDir();
+            imageFilePath = new File(getFilesDir(), Environment.DIRECTORY_PICTURES);
         }
         mRichEditorToolbar.setImageFilePath(imageFilePath);
 

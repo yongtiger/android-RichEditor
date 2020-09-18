@@ -128,6 +128,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file_name";
     public static final int REQUEST_CODE_HTML_EDITOR = 101;
+    public static final String PROVIDER_AUTHORITIES = ".android7.fileprovider";
 
 
     ///使用LinkedHashMap是为了保证顺序（ListItemSpan必须在ListSpan之后注册）

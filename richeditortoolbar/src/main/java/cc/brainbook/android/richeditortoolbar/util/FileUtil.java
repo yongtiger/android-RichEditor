@@ -52,11 +52,12 @@ public abstract class FileUtil {
      *
      * @param context
      * @param file
+     * @param authorities
      * @return
      */
-    public static Uri getUriFromFile(@NonNull Context context, @NonNull File file) {
+    public static Uri getUriFromFile(@NonNull Context context, @NonNull File file, String authorities) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context, context.getPackageName() + ".android7.fileprovider", file);
+            return FileProvider.getUriForFile(context, authorities, file);
         } else {
             return Uri.fromFile(file);
         }

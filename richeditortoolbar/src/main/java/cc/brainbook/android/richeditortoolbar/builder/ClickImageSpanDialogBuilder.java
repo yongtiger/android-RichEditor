@@ -48,6 +48,7 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	public static final int ALIGN_BOTTOM = 0;
@@ -372,7 +373,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				if (StringUtil.isUrl(src)) {
 					mCachedImageFile = new File(mImageFilePath, imageFileName);
 					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mCachedImageFile, Bitmap.CompressFormat.JPEG, 100);
-					source = FileUtil.getUriFromFile(mContext, mCachedImageFile);
+					source = FileUtil.getUriFromFile(mContext, mCachedImageFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 				} else {
 					source = Uri.parse("file://" + src);///[FIX#startCrop()#src]加前缀"file://"
 				}
@@ -621,7 +622,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		}
 
 		mCachedImageFile = new File(mImageFilePath, FileUtil.generateImageFileName("jpg"));
-		final Uri imageUri = FileUtil.getUriFromFile(mContext, mCachedImageFile);
+		final Uri imageUri = FileUtil.getUriFromFile(mContext, mCachedImageFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 		// MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
 		// 返回图片在onActivityResult中通过以下代码获取
 		// Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -675,7 +676,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							///生成视频的第一帧图片
 							final File thumbnailFile = generateThumbnail(selectedUri);
-							mEditTextSrc.setText(thumbnailFile.getAbsolutePath());
+							mEditTextSrc.setText(thumbnailFile == null ? null : thumbnailFile.getAbsolutePath());
 						}
 
 						return;
@@ -706,7 +707,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
 							///生成视频的第一帧图片
 							final File thumbnailFile = generateThumbnail(selectedUri);
-							mEditTextSrc.setText(thumbnailFile.getAbsolutePath());
+							mEditTextSrc.setText(thumbnailFile == null ? null : thumbnailFile.getAbsolutePath());
 						}
 
 						return;
@@ -811,6 +812,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mmr.setDataSource(mContext, videoUri);
 		final Bitmap bitmap = mmr.getFrameAtTime();
 		mmr.release();//释放资源
+
+		if (bitmap == null) {
+			return null;
+		}
 
 		final String imageFileName = FileUtil.generateImageFileName("jpg");
 		final File file = new File(mImageFilePath, imageFileName);

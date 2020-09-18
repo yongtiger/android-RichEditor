@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.1.13",   ///v1.1.13#getExternalCacheDir()在API 30（预装版）中可能会返回null！而正式版则正常
-                versionCode: 10113
+                versionName: "1.1.14",   ///v1.1.14#设置存放ImageSpan图片的文件目录getExternalFilesDir(Environment.DIRECTORY_PICTURES)；PROVIDER_AUTHORITIES
+                versionCode: 10114
         ]
     }
 
