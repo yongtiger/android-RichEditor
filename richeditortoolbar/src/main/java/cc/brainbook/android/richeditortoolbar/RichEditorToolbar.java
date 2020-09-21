@@ -338,7 +338,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final byte[] bytes = FileUtil.readFile(mClipboardFile);
 
             ///执行postLoadSpans及后处理
-            RichEditorToolbarHelper.postLoadSpans(mContext, pasteEditable, pasteOffset, RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes),
+            RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
+                    RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes),
+                    pasteEditable, pasteOffset,
                     mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
         } catch (IOException e) {
             if (DEBUG) Log.e("TAG", "Error: Cannot read Clipboard file");
@@ -385,7 +387,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
 
             ///执行postLoadSpans及后处理
-            RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(), -1, RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
+            RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
+                    RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
+                    null, -1,
                     mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
         }
     }
@@ -870,7 +874,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                         final List<SpanBean<?>> spanBeans = textBean.getSpans();
                         ///执行postLoadSpans及后处理
-                        RichEditorToolbarHelper.postLoadSpans(mContext, editable, -1, RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
+                        RichEditorToolbarHelper.postLoadSpans(mContext, editable,
+                                RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
+                                null, -1,
                                 mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, mDrawBackgroundCallback);
 
                         ///[Preview]
@@ -1045,7 +1051,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         final TextBean textBean = RichEditorToolbarHelper.saveSpans(mClassMap, editable, 0, editable.length(), false);
         final List<SpanBean<?>> spanBeans = textBean.getSpans();
-        RichEditorToolbarHelper.postLoadSpans(mContext, editable, -1, RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
+        RichEditorToolbarHelper.postLoadSpans(mContext, editable,
+                RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
+                null, -1,
                 mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
     }
 
@@ -2605,7 +2613,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             editable.removeSpan(span);
 
                             ///[ImageSpan#Glide#GifDrawable]
-                            RichEditorToolbarHelper.loadImage(mContext, clazz, editable, -1, start, end,
+                            RichEditorToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
                                     viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this);
                         }
                     }
@@ -2675,7 +2683,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 } else {
                     if (!TextUtils.isEmpty(viewTagSrc) && start < end) {
                         ///[ImageSpan#Glide#GifDrawable]
-                        RichEditorToolbarHelper.loadImage(mContext, clazz, editable, -1, start, end,
+                        RichEditorToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
                                 viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this);
                     }
                 }
@@ -2809,7 +2817,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final T leftSpan = getLeftSpan(view, clazz, editable, start, end, null);
             if (leftSpan != null) {
                 final int leftSpanStart = editable.getSpanStart(leftSpan);
-                editable.setSpan(leftSpan, leftSpanStart, end, editable.getSpanFlags(span));
+                editable.setSpan(leftSpan, leftSpanStart, end, editable.getSpanFlags(leftSpan));
                 final int rightSpanEnd = findAndJoinRightSpan(view, clazz, editable, leftSpan);
 
                 spanSt = leftSpanStart;
@@ -2819,7 +2827,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final T rightSpan = getRightSpan(view, clazz, editable, start, end, null);
                 if (rightSpan != null) {
                     final int rightSpanEnd = editable.getSpanEnd(rightSpan);
-                    editable.setSpan(rightSpan, start, rightSpanEnd, editable.getSpanFlags(span));
+                    editable.setSpan(rightSpan, start, rightSpanEnd, editable.getSpanFlags(rightSpan));
 
                     spanSt = start;
                     spanEn = rightSpanEnd;

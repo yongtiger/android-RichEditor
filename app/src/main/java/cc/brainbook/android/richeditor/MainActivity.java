@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements
         final Object[] spans = textSpanned.getSpans(0, textSpanned.length(), Object.class);
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
-        RichEditorToolbarHelper.postLoadSpans(this, textSpanned, -1, spanList,
+        RichEditorToolbarHelper.postLoadSpans(this, textSpanned, spanList, null, -1,
                 new ColorDrawable(Color.LTGRAY), -1, this, this);
     }
 

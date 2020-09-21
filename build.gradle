@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.2.0",   ///v1.2.00#[FIX#Doodle#在文件浏览器中出现无效的图片！应注释掉DoodleActivity中ImageUtils.addImage()]
-                versionCode: 10200
+                versionName: "1.2.1",   ///v1.2.1#[FIX#RichEditorToolbarHelper#postLoadSpans(), loadImage()]
+                versionCode: 10201
         ]
     }
 

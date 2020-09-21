@@ -1034,7 +1034,8 @@ public abstract class RichEditorToolbarHelper {
     /* --------------------------------------------------------------------------------------- */
     ///执行postLoadSpans后处理
     ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
-    public static void postLoadSpans(Context context, Spannable spannable, int pasteOffset, List<Object> spans,
+    public static void postLoadSpans(Context context, Spannable spannable, List<Object> spans,
+                                     Spannable pasteSpannable, int pasteOffset,
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
@@ -1054,23 +1055,25 @@ public abstract class RichEditorToolbarHelper {
                 final int drawableWidth = ((CustomImageSpan) span).getDrawableWidth();
                 final int drawableHeight = ((CustomImageSpan) span).getDrawableHeight();
 
-                final int spanStart = spannable.getSpanStart(span);
-                final int spanEnd = spannable.getSpanEnd(span);
-                spannable.removeSpan(span);
+                final Spannable spannable0 = pasteSpannable == null ? spannable : pasteSpannable;
+                final int spanStart = spannable0.getSpanStart(span);
+                final int spanEnd = spannable0.getSpanEnd(span);
+                spannable0.removeSpan(span);
 
                 ///[ImageSpan#Glide#GifDrawable]
-                loadImage(context, span.getClass(), spannable, pasteOffset, spanStart, spanEnd,
+                loadImage(context, span.getClass(), spannable, spanStart, spanEnd, pasteSpannable, pasteOffset,
                         uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback);
             }
         }
     }
 
-    public static <T> void loadImage(Context context, final Class<T> clazz, final Spannable spannable, final int pasteOffset, final int start, final int end,
-                                 final String viewTagUri, final String viewTagSrc,
-                                 final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
-                                 Drawable placeholderDrawable,
-                                 @DrawableRes int placeholderResourceId,
-                                 Drawable.Callback drawableCallback) {
+    public static <T> void loadImage(Context context, final Class<T> clazz, final Spannable spannable, final int start, final int end,
+                                     final Spannable pasteSpannable, final int pasteOffset,
+                                     final String viewTagUri, final String viewTagSrc,
+                                     final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
+                                     Drawable placeholderDrawable,
+                                     @DrawableRes int placeholderResourceId,
+                                     Drawable.Callback drawableCallback) {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
@@ -1100,7 +1103,8 @@ public abstract class RichEditorToolbarHelper {
                             : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                             : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
 
-                    spannable.setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    (pasteSpannable == null ? spannable : pasteSpannable)
+                            .setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
             }
 
@@ -1108,18 +1112,24 @@ public abstract class RichEditorToolbarHelper {
             public void onResourceReady(@NonNull Drawable drawable) {
                 drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
 
-                if (mImagePlaceholderSpan != null) {
-                    spannable.removeSpan(mImagePlaceholderSpan);
+                final Object span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                        : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                        : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+
+                if (isAsync || pasteSpannable == null) {
+                    if (mImagePlaceholderSpan != null) {
+                        spannable.removeSpan(mImagePlaceholderSpan);
+                    }
+                    spannable.setSpan(span,
+                            pasteSpannable == null ? start : start + pasteOffset,
+                            pasteSpannable == null ? end : end + pasteOffset,
+                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                } else {
+                    if (mImagePlaceholderSpan != null) {
+                        pasteSpannable.removeSpan(mImagePlaceholderSpan);
+                    }
+                    pasteSpannable.setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
                 }
-
-                final int spanStart = pasteOffset == -1 ? start : isAsync ? start + pasteOffset : start;
-                final int spanEnd = pasteOffset == -1 ? end : isAsync ? end + pasteOffset : end;
-
-                spannable.setSpan(
-                        clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                                : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                                : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign),
-                        spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
         });
 
