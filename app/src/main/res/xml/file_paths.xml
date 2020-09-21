@@ -11,9 +11,11 @@
 <!--    https://blog.csdn.net/lmj623565791/article/details/72859156-->
     <!--https://developer.android.com/reference/android/support/v4/content/FileProvider.html#SpecifyFiles-->
 
-    <cache-path name="cache_path" path="./Pictures" />
-    <external-cache-path name="external_cache_path" path="./Pictures" />
-    <files-path name="files_path" path="./Pictures" />
-    <external-files-path name="external_files_path" path="./Pictures" />
+    <cache-path name="cache_path" path="./" />
+    <files-path name="files_path" path="./" />
+    <external-cache-path name="external_cache_path" path="./" />
+    <external-files-path name="external_files_path" path="./" />
+    <external-path name="external_path" path="./" />
+    <external-media-path name="external_media_path" path="./" />
 
 </paths>

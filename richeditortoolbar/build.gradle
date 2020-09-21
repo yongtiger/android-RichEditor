@@ -56,6 +56,8 @@ dependencies {
 
     /* --------------- AndroidX#legcy support --------------- */
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
-    implementation 'com.github.1993hzw:Doodle:5.5.4'
+//    implementation 'com.github.1993hzw:Doodle:5.5.4'
+    ///[FIX#Doodle#在文件浏览器中出现无效的图片！应注释掉DoodleActivity中ImageUtils.addImage()]
+    implementation 'com.github.yongtiger:android-project-Doodle:v15.5.6'
 
 }

@@ -82,19 +82,18 @@ public class EditorActivity extends AppCompatActivity {
 
         ///设置存放ImageSpan图片的文件目录
         ///（必选）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
-        File imageFilePath;
+        File imageFileDir;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
             ///外部存储可用
-            imageFilePath = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            if (imageFilePath == null) {
-                imageFilePath = new File(getExternalCacheDir(), Environment.DIRECTORY_PICTURES);
-            }
+            ///注意：Android 10 Q (API 29) 访问公共外部存储必须MediaStore API！而11 R (API 30)则恢复29之前，即照常访问
+//            imageFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            imageFileDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         } else {
             ///外部存储不可用
-            imageFilePath = new File(getFilesDir(), Environment.DIRECTORY_PICTURES);
+            imageFileDir = new File(getFilesDir(), Environment.DIRECTORY_PICTURES);
         }
-        mRichEditorToolbar.setImageFilePath(imageFilePath);
+        mRichEditorToolbar.setImageFileDir(imageFileDir);
 
         ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
 //        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);

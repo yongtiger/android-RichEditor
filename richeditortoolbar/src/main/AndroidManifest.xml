@@ -11,17 +11,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <!-- https://blog.csdn.net/lmj623565791/article/details/72859156 -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.android7.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
     </application>
-    <!--///android:requestLegacyExternalStorage="true" 适配API 29读写外部存储卡，但API 30以后失效！-->
 
 </manifest>

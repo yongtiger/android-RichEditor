@@ -17,23 +17,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public abstract class FileUtil {
-    public static String generateImageFileName(String suffix) {
-        ///注意：尽量不要用空格、冒号、下划线、减号等特殊字符！
-        ///比如：URI的fromFile方法会将路径中的空格用“%20”取代，而个别手机（如酷派7260）系统自带的相机没有将“%20”读成空格，拍照后的照片的名字是123%201.jpg
-        ///https://www.jianshu.com/p/b78aaebd9a88
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
-        return dateFormat.format(new Date()) + "." + suffix;
-    }
 
-    public static File generateFileByPreffix(File file, String preffix) {
+    public static File generateFileByPrefix(File file, String prefix) {
         final String path = file.getPath();
         final String name = file.getName();
-        return new File(path, preffix + name);
+        return new File(path, prefix + name);
     }
 
     /**
