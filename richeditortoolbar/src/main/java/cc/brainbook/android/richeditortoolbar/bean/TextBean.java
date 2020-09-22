@@ -3,6 +3,8 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class TextBean implements Parcelable {
         spans = new ArrayList<>();
     }
 
-    protected TextBean(Parcel in) {
+    protected TextBean(@NonNull Parcel in) {
         this();
         text = in.readString();
         ///[FIX#API24/25/26/27#readParcelable()#android.os.BadParcelableException: ClassNotFoundException when unmarshalling]
@@ -44,11 +46,13 @@ public class TextBean implements Parcelable {
 
     public static final Creator<TextBean> CREATOR = new Creator<TextBean>() {
         @Override
+        @NonNull
         public TextBean createFromParcel(Parcel in) {
             return new TextBean(in);
         }
 
         @Override
+        @NonNull
         public TextBean[] newArray(int size) {
             return new TextBean[size];
         }
@@ -60,7 +64,7 @@ public class TextBean implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(text);
         ///[FIX#API24/25/26/27#readParcelable()#android.os.BadParcelableException: ClassNotFoundException when unmarshalling]
 //        dest.writeTypedList(spans);

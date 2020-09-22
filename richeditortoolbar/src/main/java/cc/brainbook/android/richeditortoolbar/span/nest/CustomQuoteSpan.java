@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
@@ -97,7 +98,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
     }
 
     @Override
-    public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline, int bottom, CharSequence text, int start, int end, boolean first, Layout layout) {
+    public void drawLeadingMargin(@NonNull Canvas c, @NonNull Paint p, int x, int dir, int top, int baseline, int bottom, CharSequence text, int start, int end, boolean first, Layout layout) {
         Paint.Style style = p.getStyle();
         int color = p.getColor();
 
@@ -116,7 +117,8 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
 
     public static final Creator<CustomQuoteSpan> CREATOR = new Creator<CustomQuoteSpan>() {
         @Override
-        public CustomQuoteSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomQuoteSpan createFromParcel(@NonNull Parcel in) {
             final int nestingLevel = in.readInt();
             @ColorInt int color = in.readInt();
             @Px final int stripeWidth = in.readInt();
@@ -126,6 +128,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
         }
 
         @Override
+        @NonNull
         public CustomQuoteSpan[] newArray(int size) {
             return new CustomQuoteSpan[size];
         }
@@ -137,7 +140,7 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
         dest.writeInt(mColor);
         dest.writeInt(mStripeWidth);

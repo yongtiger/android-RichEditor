@@ -3,6 +3,8 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 import android.os.Parcel;
 import android.text.style.UnderlineSpan;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 ///消除EditText输入时自动产生UnderlineSpan
@@ -12,11 +14,13 @@ public class CustomUnderlineSpan extends UnderlineSpan implements ICharacterStyl
 
     public static final Creator<CustomUnderlineSpan> CREATOR = new Creator<CustomUnderlineSpan>() {
         @Override
+        @NonNull
         public CustomUnderlineSpan createFromParcel(Parcel in) {
             return new CustomUnderlineSpan();
         }
 
         @Override
+        @NonNull
         public CustomUnderlineSpan[] newArray(int size) {
             return new CustomUnderlineSpan[size];
         }

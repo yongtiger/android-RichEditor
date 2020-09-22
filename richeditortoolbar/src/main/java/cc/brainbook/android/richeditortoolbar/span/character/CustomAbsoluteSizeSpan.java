@@ -55,7 +55,8 @@ public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan implements ICharact
 
     public static final Creator<CustomAbsoluteSizeSpan> CREATOR = new Creator<CustomAbsoluteSizeSpan>() {
         @Override
-        public CustomAbsoluteSizeSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomAbsoluteSizeSpan createFromParcel(@NonNull Parcel in) {
             final int size = in.readInt();
             final boolean dip = in.readInt() == 1;
 
@@ -63,6 +64,7 @@ public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan implements ICharact
         }
 
         @Override
+        @NonNull
         public CustomAbsoluteSizeSpan[] newArray(int size) {
             return new CustomAbsoluteSizeSpan[size];
         }
@@ -74,7 +76,7 @@ public class CustomAbsoluteSizeSpan extends AbsoluteSizeSpan implements ICharact
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(mSize);
         dest.writeInt(mDip ? 1 : 0);
     }

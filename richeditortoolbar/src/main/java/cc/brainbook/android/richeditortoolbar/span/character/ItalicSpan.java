@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.StyleSpan;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 public class ItalicSpan extends StyleSpan implements Parcelable, ICharacterStyle {
@@ -15,11 +17,13 @@ public class ItalicSpan extends StyleSpan implements Parcelable, ICharacterStyle
 
     public static final Creator<ItalicSpan> CREATOR = new Creator<ItalicSpan>() {
         @Override
+        @NonNull
         public ItalicSpan createFromParcel(Parcel in) {
             return new ItalicSpan();
         }
 
         @Override
+        @NonNull
         public ItalicSpan[] newArray(int size) {
             return new ItalicSpan[size];
         }

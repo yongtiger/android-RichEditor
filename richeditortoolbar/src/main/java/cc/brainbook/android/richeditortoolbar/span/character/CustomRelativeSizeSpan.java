@@ -36,13 +36,15 @@ public class CustomRelativeSizeSpan extends RelativeSizeSpan implements ICharact
 
     public static final Creator<CustomRelativeSizeSpan> CREATOR = new Creator<CustomRelativeSizeSpan>() {
         @Override
-        public CustomRelativeSizeSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomRelativeSizeSpan createFromParcel(@NonNull Parcel in) {
             final float proportion = in.readFloat();
 
             return new CustomRelativeSizeSpan(proportion);
         }
 
         @Override
+        @NonNull
         public CustomRelativeSizeSpan[] newArray(int size) {
             return new CustomRelativeSizeSpan[size];
         }
@@ -54,7 +56,7 @@ public class CustomRelativeSizeSpan extends RelativeSizeSpan implements ICharact
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeFloat(mProportion);
     }
 }

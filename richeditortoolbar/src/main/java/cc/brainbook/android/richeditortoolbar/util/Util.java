@@ -7,6 +7,8 @@ import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public abstract class Util {
@@ -19,7 +21,7 @@ public abstract class Util {
      * views hosted on floating window like dialog and toast will sure return null.
      * @return host activity; or null if not available
      */
-    public static Activity getActivityFromView(View view) {
+    public static Activity getActivityFromView(@NonNull View view) {
         Context context = view.getContext();
         return getActivityFromContext(context);
     }
@@ -35,7 +37,7 @@ public abstract class Util {
 
 
     /* ---------------------- ///test ---------------------- */
-    public static <T> void testOutput(Spanned spanned, Class<T> clazz) {
+    public static <T> void testOutput(@NonNull Spanned spanned, Class<T> clazz) {
         final T[] spans = spanned.getSpans(0, spanned.length(), clazz);
         for (T span : spans) {
             ///忽略getSpans()获取的子类（不是clazz本身）

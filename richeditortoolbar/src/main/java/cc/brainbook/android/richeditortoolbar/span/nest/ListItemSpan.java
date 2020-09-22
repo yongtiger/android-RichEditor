@@ -7,6 +7,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+
 import android.text.Layout;
 import android.text.Spanned;
 import android.text.style.LeadingMarginSpan;
@@ -78,7 +80,7 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagra
         return mListSpan;
     }
 
-    public void setListSpan(ListSpan listSpan) {
+    public void setListSpan(@NonNull ListSpan listSpan) {
         mListSpan = listSpan;
         setNestingLevel(listSpan.getNestingLevel());
     }
@@ -173,7 +175,8 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagra
 
     public static final Creator<ListItemSpan> CREATOR = new Creator<ListItemSpan>() {
         @Override
-        public ListItemSpan createFromParcel(Parcel in) {
+        @NonNull
+        public ListItemSpan createFromParcel(@NonNull Parcel in) {
             final ListSpan listSpan = in.readParcelable(ListSpan.class.getClassLoader());
             final @IntRange(from = 0) int index = in.readInt();
             final @IntRange(from = 0) int indicatorWidth = in.readInt();
@@ -186,6 +189,7 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagra
         }
 
         @Override
+        @NonNull
         public ListItemSpan[] newArray(int size) {
             return new ListItemSpan[size];
         }
@@ -197,7 +201,7 @@ public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagra
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeParcelable(mListSpan, flags);
         dest.writeInt(mIndex);
         dest.writeInt(mIndicatorWidth);

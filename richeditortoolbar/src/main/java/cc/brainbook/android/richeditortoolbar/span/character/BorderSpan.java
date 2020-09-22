@@ -7,6 +7,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 ///https://www.jianshu.com/p/deb28c22852a
@@ -26,14 +28,14 @@ public class BorderSpan  extends ReplacementSpan implements Parcelable, ICharact
 
 
     @Override
-    public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
         //return text with relative to the Paint
         mWidth = (int) paint.measureText(text, start, end);
         return mWidth;
     }
 
     @Override
-    public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         //draw the frame with custom Paint
         canvas.drawRect(x, top, x + mWidth, bottom, mPaint);
         canvas.drawText(text, start, end, x, y, paint);
@@ -42,11 +44,13 @@ public class BorderSpan  extends ReplacementSpan implements Parcelable, ICharact
 
     public static final Creator<BorderSpan> CREATOR = new Creator<BorderSpan>() {
         @Override
+        @NonNull
         public BorderSpan createFromParcel(Parcel in) {
             return new BorderSpan();
         }
 
         @Override
+        @NonNull
         public BorderSpan[] newArray(int size) {
             return new BorderSpan[size];
         }

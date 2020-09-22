@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.ParagraphStyle;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -29,13 +31,15 @@ public class DivSpan implements ParagraphStyle, Parcelable, INestParagraphStyle 
 
 	public static final Creator<DivSpan> CREATOR = new Creator<DivSpan>() {
 		@Override
-		public DivSpan createFromParcel(Parcel in) {
+		@NonNull
+		public DivSpan createFromParcel(@NonNull Parcel in) {
 			final int nestingLevel = in.readInt();
 
 			return new DivSpan(nestingLevel);
 		}
 
 		@Override
+		@NonNull
 		public DivSpan[] newArray(int size) {
 			return new DivSpan[size];
 		}
@@ -47,7 +51,7 @@ public class DivSpan implements ParagraphStyle, Parcelable, INestParagraphStyle 
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
 		dest.writeInt(getNestingLevel());
 	}
 

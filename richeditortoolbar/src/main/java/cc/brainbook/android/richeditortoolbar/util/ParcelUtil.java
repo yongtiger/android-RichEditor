@@ -49,12 +49,12 @@ public abstract class ParcelUtil {
     }
 
     ///https://pastebin.com/rjHnK7Th
-    public static <T extends Parcelable> void parcelableToPreferences (SharedPreferences preferences, String key, @NonNull T object) {
+    public static <T extends Parcelable> void parcelableToPreferences (@NonNull SharedPreferences preferences, String key, @NonNull T object) {
         byte[] objectBytes = marshall(object);
         String valueToSave = Base64.encodeToString(objectBytes, Base64.DEFAULT);
         preferences.edit().putString(key, valueToSave).apply();
     }
-    public static <T extends Parcelable> T parcelableFromPreferences (SharedPreferences preferences, String key, Parcelable.Creator<T> creator) {
+    public static <T extends Parcelable> T parcelableFromPreferences (@NonNull SharedPreferences preferences, String key, Parcelable.Creator<T> creator) {
         String valueToRead = preferences.getString(key, "");
         byte[] objectBytes = Base64.decode(valueToRead, Base64.DEFAULT);
         return unmarshall(objectBytes, creator);

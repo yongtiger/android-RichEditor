@@ -140,7 +140,8 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
 
     public static final Creator<CustomImageSpan> CREATOR = new Creator<CustomImageSpan>() {
         @Override
-        public CustomImageSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomImageSpan createFromParcel(@NonNull Parcel in) {
             final String uri = in.readString();
             final String source = in.readString();
             final int verticalAlignment = in.readInt();

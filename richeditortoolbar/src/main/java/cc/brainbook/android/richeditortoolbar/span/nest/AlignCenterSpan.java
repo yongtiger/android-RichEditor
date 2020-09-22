@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -36,13 +38,15 @@ public class AlignCenterSpan implements AlignmentSpan, Parcelable, INestParagrap
 
 	public static final Creator<AlignCenterSpan> CREATOR = new Creator<AlignCenterSpan>() {
 		@Override
-		public AlignCenterSpan createFromParcel(Parcel in) {
+		@NonNull
+		public AlignCenterSpan createFromParcel(@NonNull Parcel in) {
 			final int nestingLevel = in.readInt();
 
 			return new AlignCenterSpan(nestingLevel);
 		}
 
 		@Override
+		@NonNull
 		public AlignCenterSpan[] newArray(int size) {
 			return new AlignCenterSpan[size];
 		}
@@ -54,7 +58,7 @@ public class AlignCenterSpan implements AlignmentSpan, Parcelable, INestParagrap
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
 		dest.writeInt(getNestingLevel());
 	}
 

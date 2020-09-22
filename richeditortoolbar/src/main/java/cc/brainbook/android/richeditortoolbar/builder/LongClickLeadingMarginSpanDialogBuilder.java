@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +29,7 @@ public class LongClickLeadingMarginSpanDialogBuilder extends BaseDialogBuilder {
 		return this;
 	}
 
-	private void initView(View layout) {
+	private void initView(@NonNull View layout) {
 		mTextViewIndent = (TextView) layout.findViewById(R.id.tv_indent);
 		mSeekBarIndent = (SeekBar) layout.findViewById(R.id.sb_indent);
 		mSeekBarIndent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -45,17 +47,17 @@ public class LongClickLeadingMarginSpanDialogBuilder extends BaseDialogBuilder {
 		});
 	}
 
-	private void setupView(Context context) {
+	private void setupView(@NonNull Context context) {
 		mTextViewIndent.setText(String.format(context.getResources().getString(R.string.leading_margin_span_indent), mIndent));
 		mSeekBarIndent.setProgress(mIndent);
 	}
 
 
-	private LongClickLeadingMarginSpanDialogBuilder(Context context) {
+	private LongClickLeadingMarginSpanDialogBuilder(@NonNull Context context) {
 		this(context, 0);
 	}
 
-	private LongClickLeadingMarginSpanDialogBuilder(Context context, int theme) {
+	private LongClickLeadingMarginSpanDialogBuilder(@NonNull Context context, int theme) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_long_click_leading_margin_span_dialog, null);
 
@@ -66,11 +68,13 @@ public class LongClickLeadingMarginSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 
-	public static LongClickLeadingMarginSpanDialogBuilder with(Context context) {
+	@NonNull
+	public static LongClickLeadingMarginSpanDialogBuilder with(@NonNull Context context) {
 		return new LongClickLeadingMarginSpanDialogBuilder(context);
 	}
 
-	public static LongClickLeadingMarginSpanDialogBuilder with(Context context, int theme) {
+	@NonNull
+	public static LongClickLeadingMarginSpanDialogBuilder with(@NonNull Context context, int theme) {
 		return new LongClickLeadingMarginSpanDialogBuilder(context, theme);
 	}
 

@@ -9,6 +9,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
@@ -28,14 +30,14 @@ public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacter
     }
 
     @Override
-    public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
         padding = paint.measureText("t");
         width = (int) (paint.measureText(text, start, end) + padding * 4);
         return width;
     }
 
     @Override
-    public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
         drawable.setBounds((int) (x + padding), top, (int) (x - padding) + width, bottom);
         drawable.draw(canvas);
         canvas.drawText(text, start, end, x + padding * 2, y, paint);
@@ -44,11 +46,13 @@ public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacter
 
     public static final Creator<BlockSpan> CREATOR = new Creator<BlockSpan>() {
         @Override
+        @NonNull
         public BlockSpan createFromParcel(Parcel in) {
             return new BlockSpan();
         }
 
         @Override
+        @NonNull
         public BlockSpan[] newArray(int size) {
             return new BlockSpan[size];
         }

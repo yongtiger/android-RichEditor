@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.style.LineHeightSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 //////??????[UPGRADE#LineMarginSpanTemp]
@@ -33,7 +35,8 @@ public class LineMarginSpanTemp implements LineHeightSpan, Parcelable {
 
     public static final Creator<LineMarginSpanTemp> CREATOR = new Creator<LineMarginSpanTemp>() {
         @Override
-        public LineMarginSpanTemp createFromParcel(Parcel in) {
+        @NonNull
+        public LineMarginSpanTemp createFromParcel(@NonNull Parcel in) {
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
 
@@ -41,6 +44,7 @@ public class LineMarginSpanTemp implements LineHeightSpan, Parcelable {
         }
 
         @Override
+        @NonNull
         public LineMarginSpanTemp[] newArray(int size) {
             return new LineMarginSpanTemp[size];
         }
@@ -52,7 +56,7 @@ public class LineMarginSpanTemp implements LineHeightSpan, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(mMarginTop);
         dest.writeInt(mMarginBottom);
     }

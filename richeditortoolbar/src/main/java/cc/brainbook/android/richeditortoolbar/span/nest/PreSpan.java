@@ -8,6 +8,8 @@ import android.graphics.Typeface;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+
 import android.text.style.LineBackgroundSpan;
 
 import com.google.gson.annotations.Expose;
@@ -43,7 +45,7 @@ public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphSt
 
     ///https://gist.github.com/tokudu/601320d9edb978bcbc31
     @Override
-    public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline,
+    public void drawBackground(@NonNull Canvas c, @NonNull Paint p, int left, int right, int top, int baseline,
                                int bottom, CharSequence text, int start, int end, int lnum) {
         ///save paint color
         final int paintColor = p.getColor();
@@ -60,7 +62,7 @@ public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphSt
         p.setColor(paintColor);
     }
 
-    private void applyTypeface(Paint p) {
+    private void applyTypeface(@NonNull Paint p) {
         ///save paint typeface
         final Typeface typeface = p.getTypeface();
         p.setTypeface(Typeface.MONOSPACE);
@@ -74,13 +76,15 @@ public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphSt
 
     public static final Creator<PreSpan> CREATOR = new Creator<PreSpan>() {
         @Override
-        public PreSpan createFromParcel(Parcel in) {
+        @NonNull
+        public PreSpan createFromParcel(@NonNull Parcel in) {
             final int nestingLevel = in.readInt();
 
             return new PreSpan(nestingLevel);
         }
 
         @Override
+        @NonNull
         public PreSpan[] newArray(int size) {
             return new PreSpan[size];
         }
@@ -92,7 +96,7 @@ public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphSt
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
     }
 

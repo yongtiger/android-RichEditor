@@ -9,6 +9,9 @@ import android.text.Selection;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
@@ -288,6 +291,7 @@ public class UndoRedoHelper {
         /**
          * Traverses the history backward by one position, returns and item at that position.
          */
+        @Nullable
         private Action previous() {
             if (mPosition <= 0) {
                 return null;
@@ -298,6 +302,7 @@ public class UndoRedoHelper {
         /**
          * Traverses the history forward by one position, returns and item at that position.
          */
+        @Nullable
         private Action next() {
             if (mPosition + 1 >= mHistory.size()) {
                 return null;
@@ -405,6 +410,7 @@ public class UndoRedoHelper {
         }
 
         @Override
+        @NonNull
         public String toString() {
             return "Action{" +
                     "mId=" + mId +

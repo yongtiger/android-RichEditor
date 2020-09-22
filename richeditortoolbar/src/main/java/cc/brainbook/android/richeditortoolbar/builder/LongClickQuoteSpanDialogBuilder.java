@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +38,7 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 		return this;
 	}
 
-	private void initView(View layout) {
+	private void initView(@NonNull View layout) {
 		mTextViewStripWidth = (TextView) layout.findViewById(R.id.tv_strip_width);
 		mSeekBarStripWidth = (SeekBar) layout.findViewById(R.id.sb_strip_width);
 		mTextViewGapWidth = (TextView) layout.findViewById(R.id.tv_gap_width);
@@ -69,7 +71,7 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 		});
 	}
 
-	private void setupView(Context context) {
+	private void setupView(@NonNull Context context) {
 		mTextViewStripWidth.setText(String.format(context.getResources().getString(R.string.quote_span_strip_width), mStripWidth));
 		mSeekBarStripWidth.setProgress(mStripWidth);
 		mTextViewGapWidth.setText(String.format(context.getResources().getString(R.string.quote_span_gap_width), mGapWidth));
@@ -96,11 +98,13 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 	}
 
 
-	public static LongClickQuoteSpanDialogBuilder with(Context context) {
+	@NonNull
+	public static LongClickQuoteSpanDialogBuilder with(@NonNull Context context) {
 		return new LongClickQuoteSpanDialogBuilder(context);
 	}
 
-	public static LongClickQuoteSpanDialogBuilder with(Context context, int theme) {
+	@NonNull
+	public static LongClickQuoteSpanDialogBuilder with(@NonNull Context context, int theme) {
 		return new LongClickQuoteSpanDialogBuilder(context, theme);
 	}
 

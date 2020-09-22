@@ -5,6 +5,8 @@ import android.graphics.Paint;
 import android.os.Parcel;
 import android.os.Parcelable;
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
@@ -108,7 +110,8 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, INestParagraphSt
 
     public static final Creator<ListSpan> CREATOR = new Creator<ListSpan>() {
         @Override
-        public ListSpan createFromParcel(Parcel in) {
+        @NonNull
+        public ListSpan createFromParcel(@NonNull Parcel in) {
             final int nestingLevel = in.readInt();
             final int listType = in.readInt();
             final @IntRange(from = 0) int start = in.readInt();
@@ -119,6 +122,7 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, INestParagraphSt
         }
 
         @Override
+        @NonNull
         public ListSpan[] newArray(int size) {
             return new ListSpan[size];
         }
@@ -130,7 +134,7 @@ public class ListSpan implements LeadingMarginSpan, Parcelable, INestParagraphSt
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
         dest.writeInt(mListType);
         dest.writeInt(mStart);

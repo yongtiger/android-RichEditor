@@ -2454,7 +2454,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
+    private <T> void adjustParagraphStyleSpans(View view, Class<T> clazz, @NonNull Editable editable, int start, int end, boolean isApply) {
         ///注意：必须增加end，要包括下一行到选择区间来，比如选中区间尾部在下一行的开始位置
         if (end < editable.length()) {
             end++;

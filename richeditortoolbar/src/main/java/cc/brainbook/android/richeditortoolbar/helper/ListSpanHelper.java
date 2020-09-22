@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.text.Editable;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
@@ -92,6 +94,7 @@ public class ListSpanHelper {
         return out;
     }
 
+    @NonNull
     public static String getRomanLetterIndicatorTextByIndex(int index) {
         String result;
         result = intToRoman(index);
@@ -103,7 +106,7 @@ public class ListSpanHelper {
      *            - String Roman
      * @return int number
      */
-    private static int romanToInt(String s) {
+    private static int romanToInt(@NonNull String s) {
         if (s.length() < 1)
             return 0;
         int result = 0;
@@ -159,6 +162,7 @@ public class ListSpanHelper {
      *            must start from 1; 1 <= nth <= 4
      * @return String single Roman
      */
+    @NonNull
     private static String singleDigitToRoman(int n, int nth) {
         if (n == 0) {
             return "";
@@ -204,6 +208,7 @@ public class ListSpanHelper {
      *            - input number within range 1 ~ 3999
      * @return String Roman number
      */
+    @NonNull
     private static String intToRoman(int num) {
         if (num < 1 || num > 3999) {
             return "";
@@ -235,7 +240,7 @@ public class ListSpanHelper {
      *
      * 注意：只children！
      */
-    public static void createChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end,
+    public static void createChildrenListItemSpans(@NonNull Editable editable, @NonNull ListSpan listSpan, int start, int end,
                                                    int indicatorWidth,
                                                    int indicatorGapWidth,
                                                    int indicatorColor,
@@ -264,7 +269,7 @@ public class ListSpanHelper {
     /**
      * 更新ListSpan
      */
-    public static void updateListSpans(Editable editable, ArrayList<ListSpan> listSpans) {
+    public static void updateListSpans(@NonNull Editable editable, @NonNull ArrayList<ListSpan> listSpans) {
         for (ListSpan listSpan : listSpans) {
             if (listSpan != null) {
                 ///更新ListSpan包含的儿子一级ListItemSpans（注意：只children！）
@@ -281,7 +286,7 @@ public class ListSpanHelper {
      *
      * 注意：只children！
      */
-    public static void updateChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
+    public static void updateChildrenListItemSpans(@NonNull Editable editable, @NonNull ListSpan listSpan, int start, int end) {
         int index = listSpan.getStart();
 
         final ArrayList<ListItemSpan> spans = SpanUtil.getFilteredSpans(ListItemSpan.class, editable, start, end, true);
@@ -336,7 +341,7 @@ public class ListSpanHelper {
      *
      * 注意：只children！
      */
-    public static void removeChildrenListItemSpans(Editable editable, ListSpan listSpan, int start, int end) {
+    public static void removeChildrenListItemSpans(@NonNull Editable editable, @NonNull ListSpan listSpan, int start, int end) {
         final ListItemSpan[] listItemSpans = editable.getSpans(start, end, ListItemSpan.class);
         for (ListItemSpan listItemSpan : listItemSpans) {
             if (listItemSpan.getListSpan() == listSpan) {

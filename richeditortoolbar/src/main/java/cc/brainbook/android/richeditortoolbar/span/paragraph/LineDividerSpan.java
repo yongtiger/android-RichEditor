@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
@@ -73,7 +75,8 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
 
     public static final Creator<LineDividerSpan> CREATOR = new Creator<LineDividerSpan>() {
         @Override
-        public LineDividerSpan createFromParcel(Parcel in) {
+        @NonNull
+        public LineDividerSpan createFromParcel(@NonNull Parcel in) {
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
 
@@ -81,6 +84,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
         }
 
         @Override
+        @NonNull
         public LineDividerSpan[] newArray(int size) {
             return new LineDividerSpan[size];
         }
@@ -92,7 +96,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(mMarginTop);
         dest.writeInt(mMarginBottom);
     }

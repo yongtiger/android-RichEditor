@@ -3,6 +3,8 @@ package cc.brainbook.android.richeditortoolbar.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 public class SpanBean<T extends Parcelable> implements Parcelable {
@@ -65,7 +67,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         this.spanClassName = spanClassName;
     }
 
-    protected SpanBean(Parcel in) {
+    protected SpanBean(@NonNull Parcel in) {
         spanStart = in.readInt();
         spanEnd = in.readInt();
         spanFlags = in.readInt();
@@ -81,11 +83,13 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
 
     public static final Creator<SpanBean<?>> CREATOR = new Creator<SpanBean<?>>() {
         @Override
+        @NonNull
         public SpanBean<?> createFromParcel(Parcel in) {
             return new SpanBean<>(in);
         }
 
         @Override
+        @NonNull
         public SpanBean<?>[] newArray(int size) {
             return new SpanBean[size];
         }
@@ -97,7 +101,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(spanStart);
         dest.writeInt(spanEnd);
         dest.writeInt(spanFlags);

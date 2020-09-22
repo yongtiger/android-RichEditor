@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +50,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 		return this;
 	}
 
-	private void initView(View layout) {
+	private void initView(@NonNull View layout) {
 		mTextViewIndicatorMargin = (TextView) layout.findViewById(R.id.tv_indicator_margin);
 		mSeekBarIndicatorMargin = (SeekBar) layout.findViewById(R.id.sb_indicator_margin);
 		mTextViewIndicatorWidth = (TextView) layout.findViewById(R.id.tv_indicator_width);
@@ -98,7 +99,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 		});
 	}
 
-	private void setupView(Context context) {
+	private void setupView(@NonNull Context context) {
 		mTextViewIndicatorMargin.setText(String.format(context.getResources().getString(R.string.list_span_indicator_margin), mIndicatorMargin));
 		mSeekBarIndicatorMargin.setProgress(mIndicatorMargin);
 		mTextViewIndicatorWidth.setText(String.format(context.getResources().getString(R.string.list_span_indicator_width), mIndicatorWidth));
@@ -108,11 +109,11 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 	}
 
 
-	private LongClickListSpanDialogBuilder(Context context) {
+	private LongClickListSpanDialogBuilder(@NonNull Context context) {
 		this(context, 0);
 	}
 
-	private LongClickListSpanDialogBuilder(Context context, int theme) {
+	private LongClickListSpanDialogBuilder(@NonNull Context context, int theme) {
 		colorPickerView = new ColorPickerView(context);
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -127,11 +128,13 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 	}
 
 
-	public static LongClickListSpanDialogBuilder with(Context context) {
+	@NonNull
+	public static LongClickListSpanDialogBuilder with(@NonNull Context context) {
 		return new LongClickListSpanDialogBuilder(context);
 	}
 
-	public static LongClickListSpanDialogBuilder with(Context context, int theme) {
+	@NonNull
+	public static LongClickListSpanDialogBuilder with(@NonNull Context context, int theme) {
 		return new LongClickListSpanDialogBuilder(context, theme);
 	}
 

@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +34,7 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
         return this;
     }
 
-    private void initView(View layout) {
+    private void initView(@NonNull View layout) {
         mTextViewMarginTop = (TextView) layout.findViewById(R.id.tv_margin_top);
         mSeekBarMarginTop = (SeekBar) layout.findViewById(R.id.sb_margin_top);
         mSeekBarMarginTop.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -66,7 +68,7 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
         });
     }
 
-    private void setupView(Context context) {
+    private void setupView(@NonNull Context context) {
         mTextViewMarginTop.setText(String.format(context.getResources().getString(R.string.line_divider_span_margin_top), mMarginTop));
         mSeekBarMarginTop.setProgress(mMarginTop);
         mTextViewMarginBottom.setText(String.format(context.getResources().getString(R.string.line_divider_span_margin_bottom), mMarginBottom));
@@ -74,11 +76,11 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
     }
 
 
-    private LongClickLineDividerDialogBuilder(Context context) {
+    private LongClickLineDividerDialogBuilder(@NonNull Context context) {
         this(context, 0);
     }
 
-    private LongClickLineDividerDialogBuilder(Context context, int theme) {
+    private LongClickLineDividerDialogBuilder(@NonNull Context context, int theme) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View layout = inflater.inflate(R.layout.layout_long_click_line_divider_span_dialog, null);
 
@@ -88,11 +90,13 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
         builder.setView(layout);
     }
 
-    public static LongClickLineDividerDialogBuilder with(Context context) {
+    @NonNull
+    public static LongClickLineDividerDialogBuilder with(@NonNull Context context) {
         return new LongClickLineDividerDialogBuilder(context);
     }
 
-    public static LongClickLineDividerDialogBuilder with(Context context, int theme) {
+    @NonNull
+    public static LongClickLineDividerDialogBuilder with(@NonNull Context context, int theme) {
         return new LongClickLineDividerDialogBuilder(context, theme);
     }
 

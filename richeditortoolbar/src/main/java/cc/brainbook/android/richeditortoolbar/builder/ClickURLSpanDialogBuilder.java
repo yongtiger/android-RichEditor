@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.builder;
 
 import android.content.Context;
 import android.content.DialogInterface;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,11 +29,11 @@ public class ClickURLSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 
-	private ClickURLSpanDialogBuilder(Context context) {
+	private ClickURLSpanDialogBuilder(@NonNull Context context) {
 		this(context, 0);
 	}
 
-	private ClickURLSpanDialogBuilder(Context context, int theme) {
+	private ClickURLSpanDialogBuilder(@NonNull Context context, int theme) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.layout_click_url_span_dialog, null);
 		mEditTextText = (EditText) layout.findViewById(R.id.et_text);
@@ -42,11 +44,13 @@ public class ClickURLSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 
-	public static ClickURLSpanDialogBuilder with(Context context) {
+	@NonNull
+	public static ClickURLSpanDialogBuilder with(@NonNull Context context) {
 		return new ClickURLSpanDialogBuilder(context);
 	}
 
-	public static ClickURLSpanDialogBuilder with(Context context, int theme) {
+	@NonNull
+	public static ClickURLSpanDialogBuilder with(@NonNull Context context, int theme) {
 		return new ClickURLSpanDialogBuilder(context, theme);
 	}
 

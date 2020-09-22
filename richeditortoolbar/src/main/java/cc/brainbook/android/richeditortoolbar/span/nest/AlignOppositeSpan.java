@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -36,13 +38,15 @@ public class AlignOppositeSpan implements AlignmentSpan, Parcelable, INestParagr
 
 	public static final Creator<AlignOppositeSpan> CREATOR = new Creator<AlignOppositeSpan>() {
 		@Override
-		public AlignOppositeSpan createFromParcel(Parcel in) {
+		@NonNull
+		public AlignOppositeSpan createFromParcel(@NonNull Parcel in) {
 			final int nestingLevel = in.readInt();
 
 			return new AlignOppositeSpan(nestingLevel);
 		}
 
 		@Override
+		@NonNull
 		public AlignOppositeSpan[] newArray(int size) {
 			return new AlignOppositeSpan[size];
 		}
@@ -54,7 +58,7 @@ public class AlignOppositeSpan implements AlignmentSpan, Parcelable, INestParagr
 	}
 
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
+	public void writeToParcel(@NonNull Parcel dest, int flags) {
 		dest.writeInt(getNestingLevel());
 	}
 

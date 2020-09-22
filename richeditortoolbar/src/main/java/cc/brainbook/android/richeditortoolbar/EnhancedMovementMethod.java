@@ -7,6 +7,8 @@ import android.text.method.MovementMethod;
 import android.view.MotionEvent;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 
 ///处理CustomImageSpan及其子类VideoSpan/AudioSpan的点击事件
@@ -22,7 +24,7 @@ public class EnhancedMovementMethod extends ArrowKeyMovementMethod {
     }
 
     @Override
-    public boolean onTouchEvent(TextView widget, Spannable buffer, MotionEvent event) {
+    public boolean onTouchEvent(TextView widget, Spannable buffer, @NonNull MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             int x = (int) event.getX();
             int y = (int) event.getY();

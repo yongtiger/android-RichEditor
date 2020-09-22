@@ -12,7 +12,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 //public class CodeSpan extends CharacterStyle implements UpdateAppearance, Parcelable, ICharacterStyle {
 public class CodeSpan extends MetricAffectingSpan implements Parcelable, ICharacterStyle {
     @Override
-    public void updateDrawState(TextPaint tp) {
+    public void updateDrawState(@NonNull TextPaint tp) {
         tp.setTypeface(Typeface.MONOSPACE);
     }
 
@@ -24,11 +24,13 @@ public class CodeSpan extends MetricAffectingSpan implements Parcelable, ICharac
 
     public static final Creator<CodeSpan> CREATOR = new Creator<CodeSpan>() {
         @Override
+        @NonNull
         public CodeSpan createFromParcel(Parcel in) {
             return new CodeSpan();
         }
 
         @Override
+        @NonNull
         public CodeSpan[] newArray(int size) {
             return new CodeSpan[size];
         }

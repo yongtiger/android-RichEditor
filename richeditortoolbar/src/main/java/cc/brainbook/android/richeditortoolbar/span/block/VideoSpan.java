@@ -22,7 +22,7 @@ public class VideoSpan extends CustomImageSpan implements IBlockCharacterStyle {
     }
 
     @Override
-    public void onClick(View widget) {
+    public void onClick(@NonNull View widget) {
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         final Uri uri = Uri.parse(getUri());
         intent.setDataAndType(uri, "video/*");
@@ -32,7 +32,8 @@ public class VideoSpan extends CustomImageSpan implements IBlockCharacterStyle {
 
     public static final Creator<VideoSpan> CREATOR = new Creator<VideoSpan>() {
         @Override
-        public VideoSpan createFromParcel(Parcel in) {
+        @NonNull
+        public VideoSpan createFromParcel(@NonNull Parcel in) {
             final String uri = in.readString(); ///media source
             final String source = in.readString();  ///thumbnail
             final int verticalAlignment = in.readInt();
@@ -51,6 +52,7 @@ public class VideoSpan extends CustomImageSpan implements IBlockCharacterStyle {
         }
 
         @Override
+        @NonNull
         public VideoSpan[] newArray(int size) {
             return new VideoSpan[size];
         }

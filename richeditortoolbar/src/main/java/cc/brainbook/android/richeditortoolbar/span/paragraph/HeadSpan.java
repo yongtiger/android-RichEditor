@@ -7,6 +7,8 @@ import android.text.TextPaint;
 import android.text.style.LineHeightSpan;
 import android.text.style.RelativeSizeSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
@@ -55,7 +57,7 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
     }
 
     ///StyleSpan#apply(Paint paint, int style)
-    private static void applyStyle(Paint paint) {
+    private static void applyStyle(@NonNull Paint paint) {
         int style = Typeface.BOLD;
         int oldStyle;
 
@@ -115,7 +117,8 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
 
     public static final Creator<HeadSpan> CREATOR = new Creator<HeadSpan>() {
         @Override
-        public HeadSpan createFromParcel(Parcel in) {
+        @NonNull
+        public HeadSpan createFromParcel(@NonNull Parcel in) {
             final int level = in.readInt();
             final int marginTop = in.readInt();
             final int marginBottom = in.readInt();
@@ -124,6 +127,7 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
         }
 
         @Override
+        @NonNull
         public HeadSpan[] newArray(int size) {
             return new HeadSpan[size];
         }
@@ -135,7 +139,7 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(mLevel);
         dest.writeInt(mMarginTop);
         dest.writeInt(mMarginBottom);

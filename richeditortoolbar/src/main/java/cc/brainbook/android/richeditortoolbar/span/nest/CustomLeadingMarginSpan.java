@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -59,7 +61,8 @@ public class CustomLeadingMarginSpan implements LeadingMarginSpan, Parcelable, I
 
     public static final Creator<CustomLeadingMarginSpan> CREATOR = new Creator<CustomLeadingMarginSpan>() {
         @Override
-        public CustomLeadingMarginSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomLeadingMarginSpan createFromParcel(@NonNull Parcel in) {
             final int nestingLevel = in.readInt();
             final int first = in.readInt();
             final int rest = in.readInt();
@@ -68,6 +71,7 @@ public class CustomLeadingMarginSpan implements LeadingMarginSpan, Parcelable, I
         }
 
         @Override
+        @NonNull
         public CustomLeadingMarginSpan[] newArray(int size) {
             return new CustomLeadingMarginSpan[size];
         }
@@ -79,7 +83,7 @@ public class CustomLeadingMarginSpan implements LeadingMarginSpan, Parcelable, I
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(getNestingLevel());
         dest.writeInt(mFirst);
         dest.writeInt(mRest);

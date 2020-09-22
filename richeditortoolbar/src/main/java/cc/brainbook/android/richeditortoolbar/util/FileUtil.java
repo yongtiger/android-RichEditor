@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.BufferedInputStream;
@@ -20,7 +21,8 @@ import java.io.IOException;
 
 public abstract class FileUtil {
 
-    public static File generateFileByPrefix(File file, String prefix) {
+    @NonNull
+    public static File generateFileByPrefix(@NonNull File file, String prefix) {
         final String path = file.getPath();
         final String name = file.getName();
         return new File(path, prefix + name);
@@ -60,7 +62,7 @@ public abstract class FileUtil {
      * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG
      * @param quality
      */
-    public static void saveBitmapToFile(Bitmap bitmap, File file, Bitmap.CompressFormat format, int quality) {
+    public static void saveBitmapToFile(@NonNull Bitmap bitmap, File file, Bitmap.CompressFormat format, int quality) {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);
@@ -109,10 +111,12 @@ public abstract class FileUtil {
         }
     }
 
-    public static byte[] readFile(File file) throws IOException {
+    @NonNull
+    public static byte[] readFile(@NonNull File file) throws IOException {
         return readFile(file, 4096);
     }
-    public static byte[] readFile(File file, int bufferSize) throws IOException {
+    @NonNull
+    public static byte[] readFile(@NonNull File file, int bufferSize) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = null;
         FileInputStream fileInputStream = null;
         BufferedInputStream bufferedInputStream = null;

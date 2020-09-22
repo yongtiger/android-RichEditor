@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+
 import android.text.style.BackgroundColorSpan;
 
 import com.google.gson.annotations.Expose;
@@ -24,12 +26,14 @@ public class CustomBackgroundColorSpan extends BackgroundColorSpan implements IC
 
     public static final Creator<CustomBackgroundColorSpan> CREATOR = new Creator<CustomBackgroundColorSpan>() {
         @Override
-        public CustomBackgroundColorSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomBackgroundColorSpan createFromParcel(@NonNull Parcel in) {
             @ColorInt final int color = in.readInt();
             return new CustomBackgroundColorSpan(color);
         }
 
         @Override
+        @NonNull
         public CustomBackgroundColorSpan[] newArray(int size) {
             return new CustomBackgroundColorSpan[size];
         }
@@ -41,7 +45,7 @@ public class CustomBackgroundColorSpan extends BackgroundColorSpan implements IC
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeInt(mColor);
     }
 }

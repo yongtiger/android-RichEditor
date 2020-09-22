@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.style.TypefaceSpan;
 
@@ -25,13 +27,15 @@ public class CustomFontFamilySpan extends TypefaceSpan implements Parcelable, IC
 
     public static final Creator<CustomFontFamilySpan> CREATOR = new Creator<CustomFontFamilySpan>() {
         @Override
-        public CustomFontFamilySpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomFontFamilySpan createFromParcel(@NonNull Parcel in) {
             @Nullable String family = in.readString();
 
             return new CustomFontFamilySpan(family);
         }
 
         @Override
+        @NonNull
         public CustomFontFamilySpan[] newArray(int size) {
             return new CustomFontFamilySpan[size];
         }
@@ -43,7 +47,7 @@ public class CustomFontFamilySpan extends TypefaceSpan implements Parcelable, IC
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(mFamily);
     }
 }

@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
 import androidx.annotation.FloatRange;
+import androidx.annotation.NonNull;
+
 import android.text.TextPaint;
 import android.text.style.ScaleXSpan;
 
@@ -23,25 +25,27 @@ public class CustomScaleXSpan extends ScaleXSpan implements ICharacterStyle {
 
 
     @Override
-    public void updateDrawState(TextPaint ds) {
+    public void updateDrawState(@NonNull TextPaint ds) {
         ds.setTextScaleX(ds.getTextScaleX() * mProportion);
     }
 
     @Override
-    public void updateMeasureState(TextPaint ds) {
+    public void updateMeasureState(@NonNull TextPaint ds) {
         ds.setTextScaleX(ds.getTextScaleX() * mProportion);
     }
 
 
     public static final Creator<CustomScaleXSpan> CREATOR = new Creator<CustomScaleXSpan>() {
         @Override
-        public CustomScaleXSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomScaleXSpan createFromParcel(@NonNull Parcel in) {
             final float proportion = in.readFloat();
 
             return new CustomScaleXSpan(proportion);
         }
 
         @Override
+        @NonNull
         public CustomScaleXSpan[] newArray(int size) {
             return new CustomScaleXSpan[size];
         }
@@ -53,7 +57,7 @@ public class CustomScaleXSpan extends ScaleXSpan implements ICharacterStyle {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeFloat(mProportion);
     }
 

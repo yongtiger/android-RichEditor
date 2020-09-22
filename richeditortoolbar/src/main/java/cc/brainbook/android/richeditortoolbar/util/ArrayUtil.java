@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.content.Context;
 import androidx.annotation.ArrayRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public abstract class ArrayUtil {
     public static int getStringIndex(Context context, @ArrayRes int itemsId, String item) {
@@ -17,7 +19,8 @@ public abstract class ArrayUtil {
         return -1;
     }
 
-    public static String getStringItem(Context context, @ArrayRes int itemsId, int index) {
+    @Nullable
+    public static String getStringItem(@NonNull Context context, @ArrayRes int itemsId, int index) {
         final String[] items = context.getResources().getStringArray(itemsId);
         if (index < 0 || index >= items.length) {
             return null;
@@ -26,7 +29,7 @@ public abstract class ArrayUtil {
         }
     }
 
-    public static int getIntIndex(Context context, @ArrayRes int itemsId, int item) {
+    public static int getIntIndex(@NonNull Context context, @ArrayRes int itemsId, int item) {
         final int[] items = context.getResources().getIntArray(itemsId);
         for (int i = 0; i < items.length; i++) {
             if (items[i] == item) {

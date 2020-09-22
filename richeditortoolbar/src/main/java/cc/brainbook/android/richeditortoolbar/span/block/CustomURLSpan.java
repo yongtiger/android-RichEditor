@@ -3,6 +3,8 @@ package cc.brainbook.android.richeditortoolbar.span.block;
 import android.os.Parcel;
 import android.text.style.URLSpan;
 
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
@@ -27,13 +29,15 @@ public class CustomURLSpan extends URLSpan implements IBlockCharacterStyle {
 
     public static final Creator<CustomURLSpan> CREATOR = new Creator<CustomURLSpan>() {
         @Override
-        public CustomURLSpan createFromParcel(Parcel in) {
+        @NonNull
+        public CustomURLSpan createFromParcel(@NonNull Parcel in) {
             final String url = in.readString();
 
             return new CustomURLSpan(url);
         }
 
         @Override
+        @NonNull
         public CustomURLSpan[] newArray(int size) {
             return new CustomURLSpan[size];
         }
@@ -45,7 +49,7 @@ public class CustomURLSpan extends URLSpan implements IBlockCharacterStyle {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(mURL);
     }
 
