@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.text.Editable;
-import android.text.Spanned;
 
 import java.util.ArrayList;
 
@@ -9,6 +8,7 @@ import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
+import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
 import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidParagraph;
 
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html
@@ -251,7 +251,7 @@ public class ListSpanHelper {
             final ListItemSpan newListItemSpan = new ListItemSpan(listSpan, index,
                     indicatorWidth, indicatorGapWidth, indicatorColor, wantColor);
 
-            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            editable.setSpan(newListItemSpan, currentParagraphStart, currentParagraphEnd, getSpanFlags(newListItemSpan));
 
             if (listSpan.isReversed()) {
                 index--;
@@ -309,7 +309,7 @@ public class ListSpanHelper {
                 span.setIndex(index);
 
                 ///注意：必须重新setSpan，否则不会自动更新绘制！
-                editable.setSpan(span, st, en, editable.getSpanFlags(span));
+                editable.setSpan(span, st, en, getSpanFlags(span));
 
                 if (listSpan.isReversed()) {
                     index--;

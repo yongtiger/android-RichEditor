@@ -40,7 +40,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
@@ -94,7 +96,7 @@ public class Html {
     public static boolean isSpanEndAtNewLine = false;   ///for test only if true
 
     ///[UPGRADE#android.text.Html]缺省的屏幕密度
-    ///px in CSS is the equivalance of dip in Android
+    ///px in CSS is the equivalence of dip in Android
     ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
     public static float sDisplayMetricsDensity = 3.0f;
 
@@ -941,27 +943,40 @@ class HtmlToSpannedConverter implements ContentHandler {
         ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
         adjustNewLine(mSpannableStringBuilder);
 
-        ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
-        if (!Html.isSpanEndAtNewLine) {
-            ///[更新ParagraphStyle span的flags、end]
-            Object[] obj = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), ParagraphStyle.class);
-            for (int i = 0; i < obj.length; i++) {
-                int start = mSpannableStringBuilder.getSpanStart(obj[i]);
-                int end = mSpannableStringBuilder.getSpanEnd(obj[i]);
-
-                ///end位置之前为'\n'的位置，需要调整（加一即可）
-                if (end < mSpannableStringBuilder.length()) {
-                    end++;
-                }
-
-                mSpannableStringBuilder.setSpan(obj[i], start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-            }
-        }
+        ///[UPGRADE#更新所有span的flags]
+        updateSpans();
 
         ///[UPGRADE#android.text.Html#更新ListSpan]
         updateListSpans(mSpannableStringBuilder, updateListSpans);
 
         return mSpannableStringBuilder;
+    }
+
+    ///[UPGRADE#更新所有span的flags]
+    private void updateSpans() {
+        final Object[] objects = mSpannableStringBuilder.getSpans(0, mSpannableStringBuilder.length(), Object.class);
+        for (Object obj : objects) {
+            int start = mSpannableStringBuilder.getSpanStart(obj);
+            int end = mSpannableStringBuilder.getSpanEnd(obj);
+            int flags = Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
+
+            if (obj instanceof IParagraphStyle) {
+                if (!Html.isSpanEndAtNewLine) {
+                    ///end位置之前为'\n'的位置，需要调整（加一即可）
+                    if (end < mSpannableStringBuilder.length()) {
+                        end++;
+                    }
+                } else {    ///ParagraphStyle的flags为SPAN_INCLUSIVE_EXCLUSIVE，无需修改
+                    continue;
+                }
+            } else if (obj instanceof IBlockCharacterStyle) {
+                flags = Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+            } else {
+                flags = Spanned.SPAN_EXCLUSIVE_INCLUSIVE;
+            }
+
+            mSpannableStringBuilder.setSpan(obj, start, end, flags);
+        }
     }
 
     private void handleStartTag(String tag, Attributes attributes) {
@@ -1702,7 +1717,7 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     /* ---------------------------------------------------------------------------------- */
     private LinkedList<LL> mLinkedList = new LinkedList<>();
-    class LL {
+    static class LL {
         int where;
         ArrayList<Object> objList = new ArrayList<>();
 
@@ -1728,6 +1743,8 @@ class HtmlToSpannedConverter implements ContentHandler {
     private void setSpanFromMark(Spannable text, int where, Object... spans) {
         int len = text.length();
         for (Object span : spans) {
+            ///[UPGRADE#android.text.Html]注意：必须为SPAN_INCLUSIVE_EXCLUSIVE
+//            text.setSpan(span, where, len, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             text.setSpan(span, where, len, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
         }
     }
@@ -1797,35 +1814,35 @@ class HtmlToSpannedConverter implements ContentHandler {
 
     /* ---------------------------------------------------------------------------------- */
     ///[UPGRADE#android.text.Html#CssStyle]
-    private class BlockCssStyle {
+    private static class BlockCssStyle {
         ArrayList<Object> styles = new ArrayList<>();
     }
-    private class CssStyle {
+    private static class CssStyle {
         ArrayList<Object> styles = new ArrayList<>();
     }
 
-    private class LeadingMargin {
+    private static class LeadingMargin {
         int mIndent;
 
         LeadingMargin(int indent) {
             mIndent = indent;
         }
     }
-    private class Alignment {
+    private static class Alignment {
         Layout.Alignment mAlignment;
 
         Alignment(Layout.Alignment alignment) {
             mAlignment = alignment;
         }
     }
-    private class Foreground {
+    private static class Foreground {
         int mForegroundColor;
 
         Foreground(int foregroundColor) {
             mForegroundColor = foregroundColor;
         }
     }
-    private class Background {
+    private static class Background {
         int mBackgroundColor;
 
         Background(int backgroundColor) {
@@ -1833,8 +1850,8 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private class Div { }
-    private class OrderUnOrderList {
+    private static class Div { }
+    private static class OrderUnOrderList {
         int mListType;
 
         int getListType() {
@@ -1849,12 +1866,12 @@ class HtmlToSpannedConverter implements ContentHandler {
             mListType = listType;
         }
     }
-    private class UnOrderList extends OrderUnOrderList {
+    private static class UnOrderList extends OrderUnOrderList {
         UnOrderList(int listType) {
             super(listType);
         }
     }
-    private class OrderList extends OrderUnOrderList {
+    private static class OrderList extends OrderUnOrderList {
         int mStart;
         boolean isReversed;
 
@@ -1864,47 +1881,47 @@ class HtmlToSpannedConverter implements ContentHandler {
             this.isReversed = isReversed;
         }
     }
-    private class ListItem { }
-    private class Blockquote { }
+    private static class ListItem { }
+    private static class Blockquote { }
 
-    private class Heading {
+    private static class Heading {
         int mLevel;
 
         Heading(int level) {
             mLevel = level;
         }
     }
-    private class Pre { }   ///[PreSpan]
+    private static class Pre { }   ///[PreSpan]
 
-    private class Bold { }
-    private class Italic { }
-    private class Underline { }
-    private class Strikethrough { }
-    private class Super { }
-    private class Sub { }
-    private class Code { }
-    private class Border { }
-    private class Block { }
-    private class Href {
+    private static class Bold { }
+    private static class Italic { }
+    private static class Underline { }
+    private static class Strikethrough { }
+    private static class Super { }
+    private static class Sub { }
+    private static class Code { }
+    private static class Border { }
+    private static class Block { }
+    private static class Href {
         String mHref;
 
         Href(String href) {
             mHref = href;
         }
     }
-    private class Font {
+    private static class Font {
         String mFace;
 
         Font(String face) {
             mFace = face;
         }
     }
-    private class Monospace { }
-    private class Big { }
-    private class Small { }
+    private static class Monospace { }
+    private static class Big { }
+    private static class Small { }
     ///[UPGRADE#android.text.Html#Font增加尺寸size（px、%）]
     ///https://blog.csdn.net/qq_36009027/article/details/84371825
-    private class AbsoluteSize {
+    private static class AbsoluteSize {
         int mSize;
         boolean mDip;
 
@@ -1916,7 +1933,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             mDip = dip;
         }
     }
-    private class RelativeSize {
+    private static class RelativeSize {
         float mProportion;
 
         RelativeSize(float proportion) {

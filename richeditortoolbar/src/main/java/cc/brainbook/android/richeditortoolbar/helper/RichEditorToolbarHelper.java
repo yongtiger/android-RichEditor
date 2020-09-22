@@ -39,7 +39,9 @@ import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignNormalSpan;
@@ -94,8 +96,8 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == ListSpan.class
                 || clazz == ListItemSpan.class
                 || clazz == CustomQuoteSpan.class
-                || clazz == HeadSpan.class
                 || clazz == PreSpan.class
+                || clazz == HeadSpan.class
                 || clazz == LineDividerSpan.class;
     }
     public static <T> boolean isNestParagraphStyle(Class<T> clazz) {
@@ -136,6 +138,15 @@ public abstract class RichEditorToolbarHelper {
                 || clazz == CustomImageSpan.class
                 || clazz == VideoSpan.class
                 || clazz == AudioSpan.class;
+    }
+    public static int getSpanFlags(Object object) {
+        if (object instanceof IParagraphStyle) {
+            return Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
+        } else if (object instanceof IBlockCharacterStyle) {
+            return Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
+        } else {
+            return Spanned.SPAN_EXCLUSIVE_INCLUSIVE;
+        }
     }
 
 
@@ -546,7 +557,7 @@ public abstract class RichEditorToolbarHelper {
         final T leftSpan = getLeftSpan(view, clazz, spannable, spanStart, spanEnd, span);
         if (leftSpan != null) {
             resultStart = spannable.getSpanStart(leftSpan);
-            spannable.setSpan(span, resultStart, spanEnd, spannable.getSpanFlags(span));
+            spannable.setSpan(span, resultStart, spanEnd, getSpanFlags(span));
             spannable.removeSpan(leftSpan);
         }
         return resultStart;
@@ -565,7 +576,7 @@ public abstract class RichEditorToolbarHelper {
         final T rightSpan = getRightSpan(view, clazz, spannable, spanStart, spanEnd, span);
         if (rightSpan != null) {
             resultEnd = spannable.getSpanEnd(rightSpan);
-            spannable.setSpan(span, spanStart, resultEnd, spannable.getSpanFlags(span));
+            spannable.setSpan(span, spanStart, resultEnd, getSpanFlags(span));
             spannable.removeSpan(rightSpan);
         }
 
@@ -705,7 +716,7 @@ public abstract class RichEditorToolbarHelper {
                 clazz.getField("CREATOR");
                 final int spanStart = spannable.getSpanStart(span);
                 final int spanEnd = spannable.getSpanEnd(span);
-                final int spanFlags = spannable.getSpanFlags(span);
+                final int spanFlags = getSpanFlags(span);
                 final int adjustSpanStart = spanStart < start ? 0 : spanStart - start;
                 final int adjustSpanEnd = (Math.min(spanEnd, end)) - start;
                 final SpanBean<T> spanBean = new SpanBean<>(span, span.getClass().getSimpleName(), adjustSpanStart, adjustSpanEnd, spanFlags);
@@ -830,7 +841,7 @@ public abstract class RichEditorToolbarHelper {
                                 final int spanEnd = jsonElemen == null ? -1 : jsonElemen.getAsInt();
                                 jsonElemen = spanBeanJsonObject.get("spanFlags");
                                 final int spanFlags = jsonElemen == null ?
-                                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+                                        getSpanFlags(span)
                                         : jsonElemen.getAsInt();
 
                                 spans.add(new SpanBean<>(span, spanClassName, spanStart, spanEnd, spanFlags));
@@ -1104,7 +1115,7 @@ public abstract class RichEditorToolbarHelper {
                             : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
 
                     (pasteSpannable == null ? spannable : pasteSpannable)
-                            .setSpan(mImagePlaceholderSpan, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
                 }
             }
 
@@ -1123,12 +1134,12 @@ public abstract class RichEditorToolbarHelper {
                     spannable.setSpan(span,
                             pasteSpannable == null ? start : start + pasteOffset,
                             pasteSpannable == null ? end : end + pasteOffset,
-                            Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                            getSpanFlags(span));
                 } else {
                     if (mImagePlaceholderSpan != null) {
                         pasteSpannable.removeSpan(mImagePlaceholderSpan);
                     }
-                    pasteSpannable.setSpan(span, start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+                    pasteSpannable.setSpan(span, start, end, getSpanFlags(span));
                 }
             }
         });
@@ -1148,7 +1159,7 @@ public abstract class RichEditorToolbarHelper {
 
                 ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
 //                spannable.removeSpan(imageSpan);
-                spannable.setSpan(imageSpan, spanStart, spanEnd, spannable.getSpanFlags(imageSpan));
+                spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
             }
         }
     }
