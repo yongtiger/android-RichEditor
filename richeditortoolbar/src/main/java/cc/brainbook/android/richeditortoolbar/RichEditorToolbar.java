@@ -2496,6 +2496,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
+            ///忽略已经editable.removeSpan()删除的span
+            if (spanStart == -1 || spanEnd == -1) {
+                continue;
+            }
+
             if (clazz == LineDividerSpan.class) {
                 ///[FIX#当LineDivider起止位置不正确时，应删除！]
                 if (spanStart + 1 != spanEnd || editable.charAt(spanStart) != '\n') {
@@ -2548,6 +2553,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
         for (T span : spans) {
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
+
+            ///忽略已经editable.removeSpan()删除的span
+            if (spanStart == -1 || spanEnd == -1) {
+                continue;
+            }
 
             ///如果单光标、且位于span的首尾，则忽略
             if (start == end && (spanStart == start || end == spanEnd)) {
@@ -2734,6 +2744,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final int spanStart = editable.getSpanStart(span);
             final int spanEnd = editable.getSpanEnd(span);
 
+            ///忽略已经editable.removeSpan()删除的span
+            if (spanStart == -1 || spanEnd == -1) {
+                continue;
+            }
+
             isSameWithViewParameter = isSameWithViewParameter(view, clazz, span);
 
             ///删除文本或单选点击时start == end
@@ -2763,14 +2778,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final int en = max(end, spanEnd);
                     if (st != spanStart || en != spanEnd) {
                         editable.setSpan(span, st, en, getSpanFlags(span));
-
-                        if (st != spanStart) {  ///左join
-                            findAndJoinLeftSpan(view, clazz, editable, span);
-                        }
-                        if (en != spanEnd) {  ///右join
-                            findAndJoinRightSpan(view, clazz, editable, span);
-                        }
                     }
+
+                    findAndJoinLeftSpan(view, clazz, editable, span);
+                    findAndJoinRightSpan(view, clazz, editable, span);
                 } else {
                     int st = spanStart, en = spanEnd;
                     if (spanStart < start && end < spanEnd) { ///右缩+new
@@ -2818,7 +2829,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final T leftSpan = getLeftSpan(view, clazz, editable, start, end, null);
             if (leftSpan != null) {
                 final int leftSpanStart = editable.getSpanStart(leftSpan);
-                editable.setSpan(leftSpan, leftSpanStart, end, getSpanFlags(leftSpan));
+                final int leftSpanEnd = editable.getSpanEnd(leftSpan);
+                if (leftSpanEnd != end) {
+                    editable.setSpan(leftSpan, leftSpanStart, end, getSpanFlags(leftSpan));
+                }
+
                 final int rightSpanEnd = findAndJoinRightSpan(view, clazz, editable, leftSpan);
 
                 spanSt = leftSpanStart;
@@ -2827,8 +2842,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
             } else {
                 final T rightSpan = getRightSpan(view, clazz, editable, start, end, null);
                 if (rightSpan != null) {
+                    final int rightSpanStart = editable.getSpanStart(rightSpan);
                     final int rightSpanEnd = editable.getSpanEnd(rightSpan);
-                    editable.setSpan(rightSpan, start, rightSpanEnd, getSpanFlags(rightSpan));
+                    if (rightSpanStart != start) {
+                        editable.setSpan(rightSpan, start, rightSpanEnd, getSpanFlags(rightSpan));
+                    }
 
                     spanSt = start;
                     spanEn = rightSpanEnd;

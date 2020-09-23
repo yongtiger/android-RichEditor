@@ -10,6 +10,9 @@ import android.text.TextUtils;
 import android.text.style.ParagraphStyle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,7 +28,8 @@ public abstract class SpanUtil {
     /**
      * 获得排序和过滤后的spans
      */
-    public static <T> ArrayList<T> getFilteredSpans(final Class<T> clazz, final Spannable spannable, int start, int end, boolean isSort) {
+    @NonNull
+    public static <T> ArrayList<T> getFilteredSpans(final Class<T> clazz, @NonNull final Spannable spannable, int start, int end, boolean isSort) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = spannable.getSpans(start, end, clazz);
 
@@ -99,6 +103,7 @@ public abstract class SpanUtil {
     /**
      * 获取光标选择区间的spans
      */
+    @NonNull
     public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, Editable editable) {
         final int selectionStart = Selection.getSelectionStart(editable);
         final int selectionEnd = Selection.getSelectionEnd(editable);
@@ -135,7 +140,7 @@ public abstract class SpanUtil {
 
         return find;
     }
-    public static int getParagraphEnd(CharSequence charSequence, int where) {
+    public static int getParagraphEnd(@NonNull CharSequence charSequence, int where) {
         // seek forward to the end of the paragraph
         int len = charSequence.length();
         int look = TextUtils.indexOf(charSequence, '\n', where);
@@ -168,7 +173,7 @@ public abstract class SpanUtil {
     /**
      * 清除所有spans
      */
-    public static void clearAllSpans(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable) {
+    public static void clearAllSpans(@NonNull LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable) {
         for (Class<?> clazz : classHashMap.keySet()) {
             removeSpans(clazz, spannable, 0, spannable.length());
         }
@@ -177,6 +182,7 @@ public abstract class SpanUtil {
     /**
      * 通过Drawable获取ImageSpan
      */
+    @Nullable
     public static CustomImageSpan getImageSpanByDrawable(Spanned spanned, Drawable drawable) {
         if (!TextUtils.isEmpty(spanned)) {
             final CustomImageSpan[] spans = spanned.getSpans(0, spanned.length(), CustomImageSpan.class);

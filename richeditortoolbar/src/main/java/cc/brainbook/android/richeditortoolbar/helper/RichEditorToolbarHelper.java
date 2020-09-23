@@ -550,7 +550,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> int findAndJoinLeftSpan(View view, Class<T> clazz, Spannable spannable, T span) {
+    public static <T> int findAndJoinLeftSpan(View view, Class<T> clazz, @NonNull Spannable spannable, T span) {
         final int spanStart = spannable.getSpanStart(span);
         final int spanEnd = spannable.getSpanEnd(span);
 
@@ -569,7 +569,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
-    public static <T> int findAndJoinRightSpan(View view, Class<T> clazz, Spannable spannable, T span) {
+    public static <T> int findAndJoinRightSpan(View view, Class<T> clazz, @NonNull Spannable spannable, T span) {
         final int spanStart = spannable.getSpanStart(span);
         final int spanEnd = spannable.getSpanEnd(span);
 
@@ -589,6 +589,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
+    @Nullable
     public static <T> T getLeftSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, start, true);
         for (T span : spans) {
@@ -606,6 +607,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 注意：要包含交叉的情况！而不仅仅是首尾相连
      */
+    @Nullable
     public static <T> T getRightSpan(View view, Class<T> clazz, Spannable spannable, int start, int end, T compareSpan) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, end, end, true);
         for (T span : spans) {
@@ -624,6 +626,7 @@ public abstract class RichEditorToolbarHelper {
      *
      * 比如：ListItemSpan和ListSpan的父span是ListSpan
      */
+    @Nullable
     public static <T> T getParentSpan(View view, Class<T> clazz, Spannable spannable, int start, int end,
                                       T compareSpan, boolean isIncludeSameRange, int nestingLevel) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, true);
@@ -651,7 +654,7 @@ public abstract class RichEditorToolbarHelper {
     /**
      * 更新区间内所有NestSpan的nesting level，偏移量为offset
      */
-    public static <T> void updateDescendantNestingLevel(Class<T> clazz, Spannable spannable, int start, int end, int offset) {
+    public static <T> void updateDescendantNestingLevel(@NonNull Class<T> clazz, Spannable spannable, int start, int end, int offset) {
         if (!clazz.equals(INestParagraphStyle.class)) {
             return;
         }
@@ -671,6 +674,7 @@ public abstract class RichEditorToolbarHelper {
 
 
     /* --------------------------------------------------------------------------------------- */
+    @NonNull
     public static TextBean saveSpans(LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = new TextBean();
         if (isSetText) {
@@ -728,6 +732,7 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
+    @NonNull
     public static ArrayList<Object> fromSpanBeans(List<SpanBean<?>> spanBeans, Spannable spannable) {
         final ArrayList<Object> resultSpanList = new ArrayList<>();
         if (spanBeans != null) {
@@ -786,6 +791,7 @@ public abstract class RichEditorToolbarHelper {
         return loadSpans(editable, textBean);
     }
 
+    @NonNull
     public static Spannable fromJson(String src) {
         final TextBean textBean = getTextBeanFromJson(src);
 
@@ -860,7 +866,8 @@ public abstract class RichEditorToolbarHelper {
         return gson.fromJson(src, TextBean.class);
     }
 
-    private static Parcelable newSpan(String spanClassName, JsonObject spanJsonObject) {
+    @Nullable
+    private static Parcelable newSpan(String spanClassName, @NonNull JsonObject spanJsonObject) {
         JsonElement jsonElement;
 
         jsonElement = spanJsonObject.get("mNestingLevel");
@@ -1034,6 +1041,7 @@ public abstract class RichEditorToolbarHelper {
 
     @DrawableRes
     public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;
+    @NonNull
     private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
         @SuppressLint("UseCompatLoadingForDrawables")
         final Drawable d = Resources.getSystem().getDrawable(sPlaceHolderDrawable);
