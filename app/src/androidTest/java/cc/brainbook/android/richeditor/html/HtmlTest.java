@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditor;
+package cc.brainbook.android.richeditor.html;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 
 import java.util.LinkedHashMap;
 
+import cc.brainbook.android.richeditor.EditorActivity;
+import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
@@ -27,10 +29,10 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(AndroidJUnit4.class)
 public class HtmlTest {
-    private Editable editable;
-
     private RichEditorToolbar mRichEditorToolbar;
     private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap;
+    private Editable mEditable;
+
 
     @Rule
     public ActivityTestRule<EditorActivity> mActivityRule = new ActivityTestRule<>(
@@ -49,14 +51,14 @@ public class HtmlTest {
     }
 
     private void check(String srcString, String expectJsonString, String expectHtmlConsecutiveString, String expectHtmlIndividualString) {
-        editable = (Editable) Html.fromHtml(srcString);
-        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
+        mEditable = (Editable) Html.fromHtml(srcString);
+        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, mEditable, 0, mEditable.length(), true);
         assertEquals(expectJsonString, jsonString);
 
-        String htmlConsecutiveString = Html.toHtml(editable);
+        String htmlConsecutiveString = Html.toHtml(mEditable);
         assertEquals(expectHtmlConsecutiveString, htmlConsecutiveString);
 
-        String htmlIndividualString = Html.toHtml(editable, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
+        String htmlIndividualString = Html.toHtml(mEditable, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL);
         assertEquals(expectHtmlIndividualString, htmlIndividualString);
     }
 

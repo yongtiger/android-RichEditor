@@ -8,6 +8,7 @@ import androidx.annotation.CheckResult;
 import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -15,6 +16,8 @@ import android.util.AttributeSet;
 import android.widget.Toast;
 
 public class RichEditText extends AppCompatEditText {
+    private boolean enableSelectionChange = true;
+
     private OnSelectionChanged mOnSelectionChanged;
     public interface OnSelectionChanged {
         void selectionChanged(int selectionStart, int selectionEnd);
@@ -41,7 +44,7 @@ public class RichEditText extends AppCompatEditText {
     protected void onSelectionChanged(int selectionStart, int selectionEnd) {
         super.onSelectionChanged(selectionStart, selectionEnd);
 
-        if (mOnSelectionChanged != null) {
+        if (mOnSelectionChanged != null && enableSelectionChange && selectionStart >= 0 && selectionEnd >= 0) {
             mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
         }
     }
@@ -68,7 +71,6 @@ public class RichEditText extends AppCompatEditText {
     }
 
     ///参考TextView#onTextContextMenuItem(int id)
-    ///注意：一个App可含有多个RichEditor，多个App的所有RichEditor共享剪切板的存储空间！所以可以实现跨进程复制粘贴
     @Override
     public boolean onTextContextMenuItem(int id) {
         final Editable editable = getText();
@@ -112,7 +114,7 @@ public class RichEditText extends AppCompatEditText {
                 final int selEnd = getSelectionEnd();
                 min = Math.max(0, Math.min(selStart, selEnd));
                 max = Math.max(0, Math.max(selStart, selEnd));
-                ///注意：必须editable.subSequence(min, max).toString()！否则editable.subSequence(min, max)在api 23以下无法获得剪切板内容
+                ///注意：editable.subSequence(min, max)必须后跟toString()！否则editable.subSequence(min, max)在api 23以下无法获得剪切板内容
                 final ClipData copyData = ClipData.newPlainText(getContext().getPackageName(), editable.subSequence(min, max).toString());
                 if (setPrimaryClip(copyData)) {
 
@@ -190,10 +192,8 @@ public class RichEditText extends AppCompatEditText {
 //                            }
                         }
 
-                        ///注意：必须加入Selection.setSelection()，否则，在API 28会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
-                        Selection.setSelection(editable, max);
+                        replace(editable, min, max, paste);
 
-                        editable.replace(min, max, paste);
                         didFirst = true;
                     } else {
                         editable.insert(getSelectionEnd(), "\n");
@@ -215,4 +215,25 @@ public class RichEditText extends AppCompatEditText {
         return true;
     }
 
+
+    public void replace(Editable editable, int min, int max, Spannable paste) {
+        ///停止SelectionChange
+        enableSelectionChange = false;
+
+        ///[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：
+        ///java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
+        ///IndexOutOfBoundsException
+        ///比如：aa[a{a]aa[aa]aa} replace with [a]aa[a]
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Selection.setSelection(editable, max);
+        }
+
+        editable.replace(min, max, paste);
+
+        ///恢复SelectionChange
+        enableSelectionChange = true;
+
+        ///调整Selection起止位置
+        Selection.setSelection(editable, min, min + paste.length());
+    }
 }

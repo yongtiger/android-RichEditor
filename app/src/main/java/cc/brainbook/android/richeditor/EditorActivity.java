@@ -63,7 +63,7 @@ public class EditorActivity extends AppCompatActivity {
 //        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);    ///test
 
         ///（必选）RichEditorToolbar设置编辑器
-        mRichEditorToolbar.setEditText(mRichEditText);
+        mRichEditorToolbar.setRichEditText(mRichEditText);
 
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreview(mTextViewPreview);

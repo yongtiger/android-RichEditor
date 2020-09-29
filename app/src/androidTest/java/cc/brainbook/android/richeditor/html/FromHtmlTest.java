@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditor;
+package cc.brainbook.android.richeditor.html;
 
 import android.os.Parcelable;
 import android.text.Editable;
@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 
 import java.util.LinkedHashMap;
 
+import cc.brainbook.android.richeditor.EditorActivity;
+import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
@@ -27,10 +29,10 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class FromHtmlTest {
-    private Editable editable;
-
     private RichEditorToolbar mRichEditorToolbar;
     private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap;
+    private Editable mEditable;
+
 
     @Rule
     public ActivityTestRule<EditorActivity> mActivityRule = new ActivityTestRule<>(
@@ -49,8 +51,8 @@ public class FromHtmlTest {
     }
 
     private void check(String srcString, String expectJsonString) {
-        editable = (Editable) Html.fromHtml(srcString);
-        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
+        mEditable = (Editable) Html.fromHtml(srcString);
+        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, mEditable, 0, mEditable.length(), true);
         assertEquals(expectJsonString, jsonString);
     }
 

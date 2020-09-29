@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditor;
+package cc.brainbook.android.richeditor.json;
 
 import android.os.Parcelable;
 import android.text.Spannable;
@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 
 import java.util.LinkedHashMap;
 
+import cc.brainbook.android.richeditor.EditorActivity;
+import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 

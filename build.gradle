@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.3.2",   ///v1.3.2#fix#adjustCharacterStyleSpans()
-                versionCode: 10302
+                versionName: "1.4.1",   ///v1.4.1#[Espresso UI测试#characterstyle#BoldSpanTest]
+                versionCode: 10401
         ]
     }
 

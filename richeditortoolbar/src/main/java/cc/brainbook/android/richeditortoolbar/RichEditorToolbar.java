@@ -141,7 +141,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public RichEditText getRichEditText() {
         return mRichEditText;
     }
-    public void setEditText(RichEditText richEditText) {
+    public void setRichEditText(RichEditText richEditText) {
         mRichEditText = richEditText;
     }
 
@@ -2071,6 +2071,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///test
             if (DEBUG && editable != null) Util.testOutput(editable, clazz);
         }
+
+        final String jsonString = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
+        if (DEBUG) Log.d("TAG", jsonString);
     }
 
 
