@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.4.1",   ///v1.4.1#[Espresso UI测试#characterstyle#BoldSpanTest]
-                versionCode: 10401
+                versionName: "1.5.0",   ///v1.5.0#[ClickableMovementMethod]
+                versionCode: 10500
         ]
     }
 

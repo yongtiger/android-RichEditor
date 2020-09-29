@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import cc.brainbook.android.richeditortoolbar.EnhancedMovementMethod;
+import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
@@ -44,7 +44,7 @@ public class EditorActivity extends AppCompatActivity {
 //        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
         ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
 //        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
-        mTextViewPreview.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
+        mTextViewPreview.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
 
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */

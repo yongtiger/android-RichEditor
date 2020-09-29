@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-import cc.brainbook.android.richeditortoolbar.EnhancedMovementMethod;
+import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements
 //        mTextView.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
         ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
 //        mTextView.setMovementMethod(LinkMovementMethod.getInstance());
-        mTextView.setMovementMethod(EnhancedMovementMethod.getInstance());   ///http://stackoverflow.com/a/23566268/569430
+        mTextView.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
 
         ///设置初始文本
         final Spanned spanned = Html.fromHtml(mHtmlText);

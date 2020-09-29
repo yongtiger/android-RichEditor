@@ -161,6 +161,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
         }
 
         @Override
+        @NonNull
         public CustomImageSpan[] newArray(int size) {
             return new CustomImageSpan[size];
         }
@@ -172,7 +173,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(mUri);
         dest.writeString(mSource);
         dest.writeInt(mVerticalAlignment);
