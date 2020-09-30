@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.5.0",   ///v1.5.0#[ClickableMovementMethod]
-                versionCode: 10500
+                versionName: "1.5.1",   ///v1.5.1#[CustomImageSpan.OnClickListener]TextView点击事件：URL点击；图片点击显示全图；video/audio点击开始播放
+                versionCode: 10501
         ]
     }
 

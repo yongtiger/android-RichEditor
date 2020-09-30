@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
+import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
 
 ///https://www.cnblogs.com/luction/p/3645210.html
 public class ClickableMovementMethod extends LinkMovementMethod {

@@ -170,6 +170,12 @@
         style="@style/ImageView" />
 
     <ImageView
+        android:id="@+id/iv_image"
+        app:tint="@color/color_state_view"
+        app:srcCompat="@drawable/icon_image"
+        style="@style/ImageView" />
+
+    <ImageView
         android:id="@+id/iv_video"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_video"
@@ -179,12 +185,6 @@
         android:id="@+id/iv_audio"
         app:tint="@color/color_state_view"
         app:srcCompat="@drawable/icon_audio"
-        style="@style/ImageView" />
-
-    <ImageView
-        android:id="@+id/iv_image"
-        app:tint="@color/color_state_view"
-        app:srcCompat="@drawable/icon_image"
         style="@style/ImageView" />
 
     <View

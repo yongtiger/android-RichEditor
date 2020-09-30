@@ -1,6 +1,8 @@
 package cc.brainbook.android.richeditor;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -22,21 +25,32 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
+import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
+import cc.brainbook.android.richeditortoolbar.util.FileUtil;
+import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity implements
-        LineDividerSpan.DrawBackgroundCallback,
-        Drawable.Callback {
+        Drawable.Callback,
+        CustomImageSpan.OnClickListener,
+        LineDividerSpan.DrawBackgroundCallback {
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
 
@@ -104,24 +118,43 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void drawBackground(@NotNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
-    }
-
-    ///[ImageSpan#Glide#GifDrawable]
+    ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
     @Override
     public void invalidateDrawable(@NonNull Drawable drawable) {
         final Spannable spannable = ((Spannable) mTextView.getText());
         RichEditorToolbarHelper.setImageSpan(spannable, drawable);
     }
-
     @Override
     public void scheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable, long l) {}
-
     @Override
     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
+
+    ///[CustomImageSpan.OnClickListener]TextView点击事件：URL点击；图片点击显示全图；video/audio点击开始播放
+    @Override
+    public void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
+        final Context context = widget.getContext();
+
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
+        final Uri mediaUri = getMediaUri(clickable, uriString, source);
+        intent.setDataAndType(mediaUri, mediaType);
+
+        ///注意：需要额外增加一行权限代码
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    ///[LineDividerSpan.DrawBackgroundCallback]
+    @Override
+    public void drawBackground(@NotNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+        c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
+    }
 
 
     ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
@@ -130,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         RichEditorToolbarHelper.postLoadSpans(this, textSpanned, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1, this, this);
+                new ColorDrawable(Color.LTGRAY), -1,this,  this, this);
     }
 
     public void btnClickEdit(View view) {
@@ -138,6 +171,27 @@ public class MainActivity extends AppCompatActivity implements
         final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
         intent.putExtra("html_text", mHtmlText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
+    }
+
+
+    private Uri getMediaUri(Clickable clickable, String uriString, String source) {
+        final Uri mediaUri;
+
+        if (clickable instanceof AudioSpan || clickable instanceof VideoSpan) {
+            if (StringUtil.isUrl(uriString)) {
+                mediaUri = Uri.parse(uriString);
+            } else {
+                mediaUri = FileUtil.getUriFromFile(this, new File(uriString), getPackageName() + PROVIDER_AUTHORITIES);
+            }
+        } else {
+            if (StringUtil.isUrl(source)) {
+                mediaUri = Uri.parse(source);
+            } else {
+                mediaUri = FileUtil.getUriFromFile(this, new File(source), getPackageName() + PROVIDER_AUTHORITIES);
+            }
+        }
+
+        return mediaUri;
     }
 
 }

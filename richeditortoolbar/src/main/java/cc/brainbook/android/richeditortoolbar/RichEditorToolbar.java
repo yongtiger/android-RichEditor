@@ -341,7 +341,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes),
                     pasteEditable, pasteOffset,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
+                    mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
         } catch (IOException e) {
             if (DEBUG) Log.e("TAG", "Error: Cannot read Clipboard file");
             e.printStackTrace();
@@ -390,7 +390,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
                     null, -1,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
+                    mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
         }
     }
 
@@ -877,7 +877,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         RichEditorToolbarHelper.postLoadSpans(mContext, editable,
                                 RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
                                 null, -1,
-                                mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, mDrawBackgroundCallback);
+                                mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, null, mDrawBackgroundCallback);
 
                         ///[Preview]
                         updatePreview();
@@ -1054,7 +1054,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditorToolbarHelper.postLoadSpans(mContext, editable,
                 RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
                 null, -1,
-                mPlaceholderDrawable, mPlaceholderResourceId, this, mDrawBackgroundCallback);
+                mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
     }
 
     private int getActionId(View view) {
@@ -2627,7 +2627,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                             ///[ImageSpan#Glide#GifDrawable]
                             RichEditorToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                    viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this);
+                                    viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this, null);
                         }
                     }
                 }
@@ -2698,7 +2698,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     if (!TextUtils.isEmpty(viewTagSrc) && start < end) {
                         ///[ImageSpan#Glide#GifDrawable]
                         RichEditorToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this);
+                                viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this, null);
                     }
                 }
             }

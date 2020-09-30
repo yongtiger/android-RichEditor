@@ -1059,6 +1059,7 @@ public abstract class RichEditorToolbarHelper {
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
+                                     CustomImageSpan.OnClickListener onClickListener,
                                      LineDividerSpan.DrawBackgroundCallback drawBackgroundCallback
     ) {
         if (spans == null || spans.isEmpty()) {
@@ -1082,18 +1083,19 @@ public abstract class RichEditorToolbarHelper {
 
                 ///[ImageSpan#Glide#GifDrawable]
                 loadImage(context, span.getClass(), spannable, spanStart, spanEnd, pasteSpannable, pasteOffset,
-                        uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback);
+                        uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback, onClickListener);
             }
         }
     }
 
-    public static <T> void loadImage(Context context, final Class<T> clazz, final Spannable spannable, final int start, final int end,
+    public static <T> void loadImage(final Context context, final Class<T> clazz, final Spannable spannable, final int start, final int end,
                                      final Spannable pasteSpannable, final int pasteOffset,
                                      final String viewTagUri, final String viewTagSrc,
                                      final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
-                                     Drawable.Callback drawableCallback) {
+                                     Drawable.Callback drawableCallback,
+                                     final CustomImageSpan.OnClickListener onClickListener) {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
@@ -1132,7 +1134,7 @@ public abstract class RichEditorToolbarHelper {
             public void onResourceReady(@NonNull Drawable drawable) {
                 drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
 
-                final Object span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                final CustomImageSpan span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                         : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                         : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
 
@@ -1150,6 +1152,9 @@ public abstract class RichEditorToolbarHelper {
                     }
                     pasteSpannable.setSpan(span, start, end, getSpanFlags(span));
                 }
+
+                ///[CustomImageSpan.OnClickListener]
+                span.setOnClickListener(onClickListener);
             }
         });
 

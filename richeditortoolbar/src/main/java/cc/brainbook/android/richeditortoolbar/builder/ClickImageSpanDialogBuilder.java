@@ -374,13 +374,18 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final String dateFormatString = StringUtil.getDateFormat(new Date());
 				final String imageFileName = dateFormatString + IMAGE_FILE_SUFFIX;
 				final String destinationFileName = "crop_" + dateFormatString + IMAGE_FILE_SUFFIX;
+
+				final File file;
 				if (StringUtil.isUrl(src)) {
 					mTempImageFile = new File(mImageFileDir, imageFileName);
 					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mTempImageFile, Bitmap.CompressFormat.JPEG, 100);
-					source = FileUtil.getUriFromFile(mContext, mTempImageFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+					file = mTempImageFile;
 				} else {
-					source = Uri.parse("file://" + src);///[FIX#startCrop()#src]加前缀"file://"
+					///[FIX#startCrop()#src]加前缀"file://"
+//					source = Uri.parse("file://" + src);
+					file = new File(src);
 				}
+				source = FileUtil.getUriFromFile(mContext, file, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 
 				mTempDestinationFile = new File(mImageFileDir, destinationFileName);
 				startCrop((Activity) mContext, source, Uri.fromFile(mTempDestinationFile));

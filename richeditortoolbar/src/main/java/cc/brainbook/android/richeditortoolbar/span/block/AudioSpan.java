@@ -1,13 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.span.block;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Parcel;
 import androidx.annotation.NonNull;
-import android.view.View;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 
@@ -19,14 +16,6 @@ public class AudioSpan extends CustomImageSpan implements IBlockCharacterStyle {
 
     public AudioSpan(@NonNull Drawable drawable, @NonNull String uri, @NonNull String source, int verticalAlignment) {
         super(drawable, uri, source, verticalAlignment);
-    }
-
-    @Override
-    public void onClick(@NonNull View widget) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        final Uri uri = Uri.parse(getUri());
-        intent.setDataAndType(uri, "audio/*");
-        widget.getContext().startActivity(intent);
     }
 
 
