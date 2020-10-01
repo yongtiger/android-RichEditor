@@ -1868,7 +1868,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aa\\naaa\"}",
-                1, 2, false);
+                2, 3, false);
 
         /* ----------------------- replace with:[a] ------------------------ */
         check(mReplaceJsonString3,

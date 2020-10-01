@@ -2110,7 +2110,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     public boolean isSkipTextWatcher = false;
     public boolean isSkipUndoRedo = false;
-    private final class RichTextWatcher implements TextWatcher, SpanWatcher {
+    private final class RichTextWatcher implements TextWatcher {
         ///[Undo/Redo]
         private int mStart;
         private String mBeforeChange;
@@ -2280,21 +2280,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.addHistory(UndoRedoHelper.CHANGE_TEXT_ACTION, mStart, mBeforeChange, mAfterChange,
                         RichEditorToolbarHelper.toByteArray(mClassMap, s, 0, s.length(), false));
             }
-        }
-
-        @Override
-        public void onSpanAdded(Spannable text, Object what, int start, int end) {
-
-        }
-
-        @Override
-        public void onSpanRemoved(Spannable text, Object what, int start, int end) {
-
-        }
-
-        @Override
-        public void onSpanChanged(Spannable text, Object what, int ostart, int oend, int nstart, int nend) {
-
         }
     }
 
