@@ -18,6 +18,8 @@ import androidx.appcompat.app.AlertDialog;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.SpanWatcher;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
@@ -56,6 +58,7 @@ import cc.brainbook.android.richeditortoolbar.builder.ClickURLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
+import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.AlignCenterSpan;
@@ -2050,14 +2053,39 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ----------------- ///[selectionChanged]根据selection更新工具条按钮 ------------------ */
     @Override
     public void selectionChanged(int selectionStart, int selectionEnd) {
-        if (DEBUG) Log.d("TAG", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
+        final Editable editable = mRichEditText.getText();
+        if (editable == null) {
+            return;
+        }
+
+        ///[BlockCharacterStyle#调整选择区间起止位置]注意：CustomURLSpan除外！
+        int st = selectionStart, ed = selectionEnd;
+        final IBlockCharacterStyle[] spans = editable.getSpans(st, ed, IBlockCharacterStyle.class);
+        for (IBlockCharacterStyle span : spans) {
+            if (span instanceof CustomURLSpan) {
+                continue;
+            }
+
+            final int spanStart = editable.getSpanStart(span);
+            final int spanEnd = editable.getSpanEnd(span);
+            if (spanEnd <= st || ed <= spanStart) {
+                continue;
+            }
+
+            st = min(spanStart, st);
+            ed = max(spanEnd, ed);
+        }
+        if (st != selectionStart || ed != selectionEnd) {
+            Selection.setSelection(editable, st, ed);
+            return;
+        }
 
         ///[enableSelectionChange]禁止onSelectionChanged()
         if (!enableSelectionChange || isSkipTextWatcher || isSkipUndoRedo) {
             return;
         }
 
-        final Editable editable = mRichEditText.getText();
+        if (DEBUG) Log.d("TAG", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
 
         for (Class<?> clazz : mClassMap.keySet()) {
             if (mClassMap.get(clazz) != null) {
@@ -2069,11 +2097,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///test
-            if (DEBUG && editable != null) Util.testOutput(editable, clazz);
+            if (DEBUG) Util.testOutput(editable, clazz);
         }
 
-        final String jsonString = RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true);
-        if (DEBUG) Log.d("TAG", jsonString);
+        if (DEBUG) Log.d("TAG", RichEditorToolbarHelper.toJson(mClassMap, editable, 0, editable.length(), true));
     }
 
 
@@ -2083,14 +2110,22 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     public boolean isSkipTextWatcher = false;
     public boolean isSkipUndoRedo = false;
-    private final class RichTextWatcher implements TextWatcher {
+    private final class RichTextWatcher implements TextWatcher, SpanWatcher {
         ///[Undo/Redo]
         private int mStart;
         private String mBeforeChange;
         private String mAfterChange;
 
+        ///[BlockCharacterStyle#删除选择区间内的BlockCharacterStyle，如果选择其局部，则整体删除]注意：CustomURLSpan除外！
+        private ArrayList<IBlockCharacterStyle> mBlockCharacterStyleSpans;
+
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            final Editable editable = (Editable) s;
+            if (editable == null) {
+                return;
+            }
+
             ///忽略TextWatcher
             if (isSkipTextWatcher) {
                 return;
@@ -2101,17 +2136,30 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mBeforeChange = s.subSequence(start, start + count).toString();
             }
 
+            mBlockCharacterStyleSpans = new ArrayList<>();
             if (count > 0) {
                 for (Class<? extends Parcelable> clazz : mClassMap.keySet()) {
                     ///清除掉已经被删除的span，否则将会产生多余的无效span！
-                    SpanUtil.removeSpans(clazz, mRichEditText.getText(), start, start + count);
+                    SpanUtil.removeSpans(clazz, editable, start, start + count);
 
                     ///[FIX#当两行span不同时（如h1和h6），选择第二行行首后回退删除'\n'，此时View仍然在第二行，应该更新为第一行！]
-                    final Editable editable = mRichEditText.getText();
-                    assert editable != null;
                     if (count == 1 && isParagraphStyle(clazz) && mClassMap.get(clazz) != null
                             && editable.charAt(start) == '\n') { ///如果含换行
                         updateParagraphView(mContext, mClassMap.get(clazz), clazz, editable, start, start);
+                    }
+                }
+
+                ///[BlockCharacterStyle#删除选择区间内的BlockCharacterStyle，如果选择其局部，则整体删除]注意：CustomURLSpan除外！
+                final IBlockCharacterStyle[] spans = editable.getSpans(start, start + count, IBlockCharacterStyle.class);
+                for (IBlockCharacterStyle span : spans) {
+                    if (span instanceof CustomURLSpan) {
+                        continue;
+                    }
+
+                    final int spanStart = editable.getSpanStart(span);
+                    final int spanEnd = editable.getSpanEnd(span);
+                    if (spanStart < start + count && start < spanEnd) {
+                        mBlockCharacterStyleSpans.add(span);
                     }
                 }
             }
@@ -2119,6 +2167,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            final Editable editable = (Editable) s;
+            if (editable == null) {
+                return;
+            }
+
             ///忽略TextWatcher
             if (isSkipTextWatcher) {
                 return;
@@ -2130,10 +2183,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mStart = start;
             }
 
-            final Editable editable = mRichEditText.getText();
-            if (editable == null) {
-                return;
-            }
             final int selectionStart = start;
             final int selectionEnd = start + count;
 
@@ -2142,7 +2191,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             for (Class<? extends Parcelable> clazz : mClassMap.keySet()) {
                 if (isParagraphStyle(clazz)) {
-                    final int currentParagraphStart = SpanUtil.getParagraphStart(editable, selectionStart);
+                    final int currentParagraphStart = SpanUtil.getParagraphStart(s, selectionStart);
                     ///[FIX#在行首换行时，上面产生的空行应该不被选中！]
                     if (count > 0 && mClassMap.get(clazz) != null
                             && start == currentParagraphStart && editable.charAt(start) != '\n'
@@ -2192,6 +2241,37 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 s.removeSpan(span);
             }
 
+            ///[BlockCharacterStyle#删除选择区间内的BlockCharacterStyle，如果选择其局部，则整体删除]注意：CustomURLSpan除外！
+            if (mBlockCharacterStyleSpans != null) {
+                for (IBlockCharacterStyle span : mBlockCharacterStyleSpans) {
+                    if (span == null || span instanceof CustomURLSpan) {
+                        continue;
+                    }
+
+                    final int spanStart = s.getSpanStart(span);
+                    final int spanEnd = s.getSpanEnd(span);
+
+                    ///[Undo/Redo]
+                    if (!isSkipUndoRedo) {
+                        if (mStart + mAfterChange.length() < spanEnd) {
+                            final String diff = s.subSequence(mStart + mAfterChange.length(), spanEnd).toString();
+                            mBeforeChange = mBeforeChange.concat(diff);
+                        }
+                        if (spanStart < mStart) {
+                            final String diff = s.subSequence(spanStart, mStart).toString();
+                            mBeforeChange = diff.concat(mBeforeChange);
+                            mStart = spanStart;
+                        }
+                    }
+
+                    ///忽略TextWatcher
+                    isSkipTextWatcher = true;
+                    s.delete(spanStart, spanEnd);
+                    Selection.setSelection(s, mStart, mStart + mAfterChange.length());
+                    isSkipTextWatcher = false;
+                }
+            }
+
             ///[Preview]
             updatePreview();
 
@@ -2200,6 +2280,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.addHistory(UndoRedoHelper.CHANGE_TEXT_ACTION, mStart, mBeforeChange, mAfterChange,
                         RichEditorToolbarHelper.toByteArray(mClassMap, s, 0, s.length(), false));
             }
+        }
+
+        @Override
+        public void onSpanAdded(Spannable text, Object what, int start, int end) {
+
+        }
+
+        @Override
+        public void onSpanRemoved(Spannable text, Object what, int start, int end) {
+
+        }
+
+        @Override
+        public void onSpanChanged(Spannable text, Object what, int ostart, int oend, int nstart, int nend) {
+
         }
     }
 
@@ -2480,7 +2575,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private <T> void innerAdjustParagraphStyleSpans(View view, Class<T> clazz, Editable editable, int start, int end, boolean isApply) {
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, editable, start, end, false);
         if (spans.size() == 0) {
-            if (view != null && view.isSelected()) {
+            if (isApply && view != null && view.isSelected()) {
                 createNewSpan(view, clazz, editable, start, end, null, null);
             }
 

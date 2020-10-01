@@ -116,7 +116,7 @@ public abstract class SpanUtil {
         for (T filteredSpan : filteredSpans) {
             final int spanStart = editable.getSpanStart(filteredSpan);
             final int spanEnd = editable.getSpanEnd(filteredSpan);
-            if (spanStart < selectionEnd && selectionStart < spanEnd) {
+            if (spanStart <= selectionEnd && selectionStart <= spanEnd) {
                 resultSpans.add(filteredSpan);
             }
         }

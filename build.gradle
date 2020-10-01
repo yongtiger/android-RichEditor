@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.5.1",   ///v1.5.1#[CustomImageSpan.OnClickListener]TextView点击事件：URL点击；图片点击显示全图；video/audio点击开始播放
-                versionCode: 10501
+                versionName: "1.6.1",   ///v1.6.1#[BlockCharacterStyle#删除选择区间内的BlockCharacterStyle，如果选择其局部，则整体删除]注意：CustomURLSpan除外！
+                versionCode: 10601
         ]
     }
 
