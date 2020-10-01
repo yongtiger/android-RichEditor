@@ -217,9 +217,6 @@ public class RichEditText extends AppCompatEditText {
 
 
     public void replace(Editable editable, int min, int max, Spannable paste) {
-        ///停止SelectionChange
-        enableSelectionChange = false;
-
         ///[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：
         ///java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
         ///IndexOutOfBoundsException
@@ -229,9 +226,6 @@ public class RichEditText extends AppCompatEditText {
         }
 
         editable.replace(min, max, paste);
-
-        ///恢复SelectionChange
-        enableSelectionChange = true;
 
         ///调整Selection起止位置
         Selection.setSelection(editable, min, min + paste.length());

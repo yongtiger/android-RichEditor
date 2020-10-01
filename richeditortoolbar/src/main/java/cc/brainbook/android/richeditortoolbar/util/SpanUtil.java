@@ -107,7 +107,7 @@ public abstract class SpanUtil {
     public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, Editable editable) {
         final int selectionStart = Selection.getSelectionStart(editable);
         final int selectionEnd = Selection.getSelectionEnd(editable);
-        if (selectionStart == -1 || selectionEnd == -1) { ///-1 if there is no selection or cursor
+        if (selectionStart == -1 || selectionEnd == -1 || selectionStart == selectionEnd) { ///-1 if there is no selection or cursor
             return new ArrayList<>();
         }
 

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.6.1",   ///v1.6.1#[BlockCharacterStyle#删除选择区间内的BlockCharacterStyle，如果选择其局部，则整体删除]注意：CustomURLSpan除外！
-                versionCode: 10601
+                versionName: "1.6.2",   ///v1.6.2#[FIX#RichEditText#replace(), SpanUtil#getSelectedSpans()]
+                versionCode: 10602
         ]
     }
 
