@@ -51,17 +51,17 @@
     <string name="message_image_select_failed">Image select failed</string>
     <string name="message_image_capture_cancelled">Image capture cancelled</string>
     <string name="message_image_capture_failed">Image capture failed</string>
-    <string name="message_cannot_retrieve_selected_image">Cannot retrieve selected image</string>
+    <string name="message_cannot_retrieve_image">Cannot retrieve image</string>
     <string name="message_video_select_cancelled">Video select cancelled</string>
     <string name="message_video_select_failed">Video select failed</string>
     <string name="message_video_capture_cancelled">Video capture cancelled</string>
     <string name="message_video_capture_failed">Video capture failed</string>
-    <string name="message_cannot_retrieve_selected_video">Cannot retrieve selected video</string>
+    <string name="message_cannot_retrieve_video">Cannot retrieve video</string>
     <string name="message_audio_select_cancelled">Audio select cancelled</string>
     <string name="message_audio_select_failed">Audio select failed</string>
     <string name="message_audio_capture_cancelled">Audio capture cancelled</string>
     <string name="message_audio_capture_failed">Audio capture failed</string>
-    <string name="message_cannot_retrieve_selected_audio">Cannot retrieve selected audio</string>
+    <string name="message_cannot_retrieve_audio">Cannot retrieve audio</string>
 
     <string name="message_image_draw_failed">Image draw failed</string>
     <string name="failed_to_copy_to_clipboard">Failed to copy to clipboard</string>

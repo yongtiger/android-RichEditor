@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -19,6 +18,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +36,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yalantis.ucrop.UCrop;
-import com.yalantis.ucrop.util.FileUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -44,15 +43,20 @@ import java.util.Date;
 import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 import cn.hzw.doodle.DoodleActivity;
 import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
+import static cc.brainbook.android.richeditortoolbar.util.FileUtil.generateVideoCover;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final String IMAGE_FILE_SUFFIX = ".jpg";
+	private static final String VIDEO_FILE_SUFFIX = ".mp4";
+	private static final String AUDIO_FILE_SUFFIX = ".3gp";
 
 	public static final int ALIGN_BOTTOM = 0;
 	public static final int ALIGN_BASELINE = 1;
@@ -80,11 +84,23 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		return this;
 	}
+	private File mVideoFileDir;	///完整的视频绝对目录（绝对路径）
+	public ClickImageSpanDialogBuilder setVideoFileDir(File videoFileDir) {
+		mVideoFileDir = videoFileDir;
 
-	private File mOriginalImageFile;	///原图文件，注意：不应删除！因为有可能被其它使用了
-	private File mTempOldImageFile;		///原图文件的临时保存文件，注意：如果与原图文件相同则不应删除！否则应在关闭对话框后删除
-	private File mTempImageFile;		///相机拍照、图片Crop、Draw生成的临时图片文件
-	private File mTempDestinationFile;	///图片Crop、Draw生成的临时目标文件
+		return this;
+	}
+	private File mAudioFileDir;	///完整的音频绝对目录（绝对路径）
+	public ClickImageSpanDialogBuilder setAudioFileDir(File audioFileDir) {
+		mAudioFileDir = audioFileDir;
+
+		return this;
+	}
+
+	private File mTempImageFile;
+
+	private String mInitialUri;	///初始化时的uri
+	private String mInitialSrc;	///初始化时的src
 
 	private int mVerticalAlignment;
 
@@ -120,19 +136,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	private boolean isInitializing;
-	public ClickImageSpanDialogBuilder initial(String uri, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
+	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
 		isInitializing = true;
 		mImageOverrideWidth = imageOverrideWidth;
 		mImageOverrideHeight = imageOverrideHeight;
 
-		mEditTextUri.setText(uri);
+		mEditTextUri.setText(uriString);
 
-		if (!TextUtils.isEmpty(src) && !StringUtil.isUrl(src)) {
-			final File srcFile = new File(src);
-			if (mImageFileDir.equals(srcFile.getParentFile())) {
-				mOriginalImageFile = srcFile;
-			}
-		}
+		///保存初始uri、src
+		mInitialUri = uriString;
+		mInitialSrc = src;
 
 		///设置缺省的音频/视频封面图片
 		if (TextUtils.isEmpty(src) && mMediaType != 0) {
@@ -175,6 +188,20 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		});
 
 		mEditTextUri = (EditText) layout.findViewById(R.id.et_uri);
+		mEditTextUri.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				deleteOldUriFile();
+				enableDeleteOldUriFile = false;
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
 
 		mButtonPickFromMedia.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
 		mButtonPickFromRecorder.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
@@ -199,25 +226,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mEditTextSrc = (EditText) layout.findViewById(R.id.et_src);
 		mEditTextSrc.addTextChangedListener(new TextWatcher() {
 			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				deleteOldSrcFile();
+				enableDeleteOldSrcFile = false;
+			}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				final String src = s.toString();
-
-				if (mTempOldImageFile != null && !mTempOldImageFile.equals(mOriginalImageFile)) {
-					mTempOldImageFile.delete();
-				}
-				if (!TextUtils.isEmpty(src) && !StringUtil.isUrl(src)) {
-					final File srcFile = new File(src);
-					if (mImageFileDir.equals(srcFile.getParentFile())) {
-						mTempOldImageFile = srcFile;
-					} else {
-						mTempOldImageFile = null;
-					}
-				} else {
-					mTempOldImageFile = null;
-				}
 
 				///Glide下载图片（使用已经缓存的图片）给imageView
 				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
@@ -369,26 +385,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonCrop.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				final Uri source;
 				final String src = mEditTextSrc.getText().toString();
-				final String dateFormatString = StringUtil.getDateFormat(new Date());
-				final String imageFileName = dateFormatString + IMAGE_FILE_SUFFIX;
-				final String destinationFileName = "crop_" + dateFormatString + IMAGE_FILE_SUFFIX;
+				final Uri source = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 
-				final File file;
-				if (StringUtil.isUrl(src)) {
-					mTempImageFile = new File(mImageFileDir, imageFileName);
-					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mTempImageFile, Bitmap.CompressFormat.JPEG, 100);
-					file = mTempImageFile;
-				} else {
-					///[FIX#startCrop()#src]加前缀"file://"
-//					source = Uri.parse("file://" + src);
-					file = new File(src);
-				}
-				source = FileUtil.getUriFromFile(mContext, file, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+				final File destinationFile = new File(mImageFileDir, "crop_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+				final Uri destination = Uri.fromFile(destinationFile); 	//////??????只接受文件路径的字符串，如file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/crop_20201002035528.jpg
 
-				mTempDestinationFile = new File(mImageFileDir, destinationFileName);
-				startCrop((Activity) mContext, source, Uri.fromFile(mTempDestinationFile));
+				startCrop((Activity) mContext, source, destination);
 			}
 		});
 
@@ -396,21 +399,23 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonDraw.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				final String imagePath;
 				final String src = mEditTextSrc.getText().toString();
-				final String dateFormatString = StringUtil.getDateFormat(new Date());
-				final String imageFileName = dateFormatString + IMAGE_FILE_SUFFIX;
-				final String destinationFileName = "draw_" + dateFormatString + IMAGE_FILE_SUFFIX;
-				if (StringUtil.isUrl(src)) {
-					mTempImageFile = new File(mImageFileDir, imageFileName);
+				final Uri uri = Uri.parse(src);
+
+				//////??????只接受文件路径的字符串，如file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/crop_20201002035528.jpg
+				String imagePath;
+				if ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme())) {
+					//////??????因为DoodleDraw不能处理网络图片（http://等），所以只能先下载后再处理
+					mTempImageFile = new File(mImageFileDir, "tmp_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
 					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mTempImageFile, Bitmap.CompressFormat.JPEG, 100);
 					imagePath = mTempImageFile.getAbsolutePath();
 				} else {
-					imagePath = src;
+					imagePath = UriUtil.getFilePathFromUri(mContext, uri);
 				}
 
-				mTempDestinationFile = new File(mImageFileDir, destinationFileName);
-				startDraw((Activity) mContext, imagePath, mTempDestinationFile.getAbsolutePath());
+				final File destinationFile = new File(mImageFileDir, "draw_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+
+				startDraw((Activity) mContext, imagePath, destinationFile.getAbsolutePath());
 			}
 		});
 
@@ -543,14 +548,12 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				mVerticalAlignment);
 	}
 	public void doNegativeAction(@NonNull OnClickListener onClickListener, DialogInterface dialog) {
-		if (mTempOldImageFile != null && !mTempOldImageFile.equals(mOriginalImageFile)) {
-			mTempOldImageFile.delete();
-		}
+		deleteOldUriFile();
+		deleteOldSrcFile();
 	}
 	public void doNeutralAction(@NonNull OnClickListener onClickListener, DialogInterface dialog) {
-		if (mTempOldImageFile != null && !mTempOldImageFile.equals(mOriginalImageFile)) {
-			mTempOldImageFile.delete();
-		}
+		deleteOldUriFile();
+		deleteOldSrcFile();
 
 		onClickListener.onClick(dialog, null, null,0,0,0);
 	}
@@ -575,8 +578,25 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private void pickFromRecorder() {
 		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
+		///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
+		final File mediaFile = new File(mMediaType == 1 ? mVideoFileDir : mAudioFileDir,
+				StringUtil.getDateFormat(new Date()) + (mMediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
+		final Uri mediaUri = UriUtil.getFileProviderUriFromFile(mContext, mediaFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
+
+		//////??????如果是视频，还可以设置其它值：
+		///MediaStore.EXTRA_VIDEO_QUALITY：设置视频录制的质量，0为低质量，1为高质量。
+		///MediaStore.EXTRA_DURATION_LIMIT：设置视频最大允许录制的时长，单位为毫秒。
+		///MediaStore.EXTRA_SIZE_LIMIT：指定视频最大允许的尺寸，单位为byte。
+
+		///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+		}
+
 		try {
-			((Activity) mContext).startActivityForResult(intent, mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
+			((Activity) mContext).startActivityForResult(intent,
+					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 		} catch (ActivityNotFoundException e) {
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
@@ -603,6 +623,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	///[图片选择器#相机拍照]
+	private File mCameraResultFile;
 	private void pickFromCamera() {
 		// create Intent to take a picture and return control to the calling application
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -618,12 +639,20 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			}
 		}
 
-		mTempImageFile = new File(mImageFileDir, StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
-		final Uri imageUri = FileUtil.getUriFromFile(mContext, mTempImageFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
-		// MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
-		// 返回图片在onActivityResult中通过以下代码获取
-		// Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+		///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
+		///如果指定了保存路径，则照片保存到指定文件（此时，Intent返回null）
+		///另外，不建议用uri！这种FileProvider内容提供者的uri很难获得File文件目录进行文件操作！
+		///指定拍照路径时，先检查路径中的文件夹是否都存在，不存在时先创建文件夹再调用相机拍照；照片的命名中不要包含空格等特殊符号
+		///https://www.jianshu.com/p/c1c2555e287c
+		mCameraResultFile = new File(mImageFileDir, StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+		final Uri cameraResultUri = UriUtil.getFileProviderUriFromFile(mContext, mCameraResultFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+		intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraResultUri);
+
+		///因为没有使用cameraResultUri传递拍照结果图片目录，所以注释掉以下：
+//		///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//		}
 
 		try {
 			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
@@ -645,9 +674,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 	private void startDraw(Activity activity, String imagePath, String savePath) {
-        final DoodleParams params = new DoodleParams(); // 涂鸦参数
-		params.mImagePath = imagePath; // the file path of image
+        final DoodleParams params = new DoodleParams();
+		params.mImagePath = imagePath;
 		params.mSavePath = savePath;
+
 		try {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
 		} catch (ActivityNotFoundException e) {
@@ -663,18 +693,20 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				if (data != null) {
 					final Uri selectedUri = data.getData();
 					if (selectedUri != null) {
-						mEditTextUri.setText(FileUtils.getPath(mContext, selectedUri));
+						mEditTextUri.setText(selectedUri.toString());
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							///生成视频的第一帧图片
-							final File thumbnailFile = generateThumbnail(selectedUri);
-							mEditTextSrc.setText(thumbnailFile == null ? null : thumbnailFile.getAbsolutePath());
-						}
+							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
+							final File videoCoverFile = new File(mImageFileDir, videoCoverFileName);
+							generateVideoCover(mContext, selectedUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
 
-						return;
+							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+							enableDeleteOldSrcFile = true;
+						}
 					} else {
 						Toast.makeText(mContext.getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_selected_video : R.string.message_cannot_retrieve_selected_audio,
+								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
@@ -692,30 +724,33 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		else if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_RECORDER) {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
-					final Uri selectedUri = data.getData();
-					if (selectedUri != null) {
-						mEditTextUri.setText(FileUtils.getPath(mContext, selectedUri));
+					final Uri resultUri = data.getData();
+					if (resultUri != null) {
+						mEditTextUri.setText(resultUri.toString());
+						enableDeleteOldUriFile = true;
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
 							///生成视频的第一帧图片
-							final File thumbnailFile = generateThumbnail(selectedUri);
-							mEditTextSrc.setText(thumbnailFile == null ? null : thumbnailFile.getAbsolutePath());
-						}
+							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
+							final File videoCoverFile = new File(mImageFileDir, videoCoverFileName);
+							generateVideoCover(mContext, resultUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
 
-						return;
+							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+							enableDeleteOldSrcFile = true;
+						}
 					} else {
 						Toast.makeText(mContext.getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_selected_video : R.string.message_cannot_retrieve_selected_audio,
+								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
+						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
+						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -724,11 +759,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
 					final Uri selectedUri = data.getData();
-					if (selectedUri != null) {
-						mEditTextSrc.setText(FileUtils.getPath(mContext, selectedUri));
-						return;
+					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
+						mEditTextSrc.setText(selectedUri.toString());
 					} else {
-						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_selected_image, Toast.LENGTH_SHORT).show();
+						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
@@ -741,9 +775,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		///[图片选择器#相机拍照]
         else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
 			if (resultCode == RESULT_OK) {
-				if (mTempImageFile != null) {
-					mEditTextSrc.setText(mTempImageFile.getAbsolutePath());
-					return;
+				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
+					mEditTextSrc.setText(mCameraResultFile.getAbsolutePath());
+					enableDeleteOldSrcFile = true;
 				}
             } else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
@@ -756,13 +790,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
         else if (requestCode == UCrop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
                 final Uri resultUri = UCrop.getOutput(data);
-                if (resultUri != null) {
-                    mEditTextSrc.setText(FileUtils.getPath(mContext, resultUri));
-					if (mTempImageFile != null) {
-						mTempImageFile.delete();
-						mTempImageFile = null;
-					}
-                    return;
+                if (resultUri != null && !TextUtils.equals(resultUri.toString(), mEditTextSrc.getText())) {
+					mEditTextSrc.setText(resultUri.toString());
+					enableDeleteOldSrcFile = true;
                 }
             } else if (resultCode == UCrop.RESULT_ERROR) {
                 final Throwable cropError = UCrop.getError(data);
@@ -776,45 +806,46 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
         else if (requestCode == REQUEST_CODE_DRAW) {
             if (data != null) {
 				if (resultCode == DoodleActivity.RESULT_OK) {
-					mEditTextSrc.setText(data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH));
-					if (mTempImageFile != null) {
-						mTempImageFile.delete();
-						mTempImageFile = null;
+					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
+					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+						mEditTextSrc.setText(resultString);
+						enableDeleteOldSrcFile = true;
 					}
-					return;
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
 					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
 				}
             }
         }
-
-		if (mTempDestinationFile != null) {
-			mTempDestinationFile.delete();
-			mTempDestinationFile = null;
-		}
-		if (mTempImageFile != null) {
-			mTempImageFile.delete();
-			mTempImageFile = null;
-		}
 	}
 
-	///生成视频的第一帧图片
-	@Nullable
-	private File generateThumbnail(@NonNull Uri videoUri) {
-		final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-		mmr.setDataSource(mContext, videoUri);
-		final Bitmap bitmap = mmr.getFrameAtTime();
-		mmr.release();//释放资源
-
-		if (bitmap == null) {
-			return null;
+	///删除与原始uri/src不同的文件
+	private boolean enableDeleteOldUriFile = false;
+	private boolean enableDeleteOldSrcFile = false;
+	private void deleteOldUriFile() {
+		if (enableDeleteOldUriFile && !TextUtils.isEmpty(mEditTextUri.getText()) && !TextUtils.equals(mInitialUri, mEditTextUri.getText())) {
+			final Uri uri = Uri.parse(mEditTextUri.getText().toString());
+			final String filePath = UriUtil.getFilePathFromUri(mContext, uri);
+			deleteFile(filePath);
+		}
+	}
+	private void deleteOldSrcFile() {
+		if (enableDeleteOldSrcFile && !TextUtils.isEmpty(mEditTextSrc.getText()) && !TextUtils.equals(mInitialSrc, mEditTextSrc.getText())) {
+			final Uri uri = Uri.parse(mEditTextSrc.getText().toString());
+			final String filePath = UriUtil.getFilePathFromUri(mContext, uri);
+			deleteFile(filePath);
+		}
+	}
+	private void deleteFile(String filePath) {
+		if (TextUtils.isEmpty(filePath)) {
+			return;
 		}
 
-		final String imageFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
-		final File file = new File(mImageFileDir, imageFileName);
-		FileUtil.saveBitmapToFile(bitmap, file, Bitmap.CompressFormat.JPEG, 90);
-
-		return file;
+		final File file = new File(filePath);
+		if (file.isFile() && file.exists()) {
+			if (!file.delete()) {
+				if (DEBUG) Log.w("TAG", "Fail to delete file: " + file.getAbsolutePath());
+			}
+		}
 	}
 
 }

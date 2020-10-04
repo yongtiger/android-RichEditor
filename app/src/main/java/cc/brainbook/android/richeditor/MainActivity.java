@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,8 +40,7 @@ import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.util.FileUtil;
-import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
@@ -137,11 +135,15 @@ public class MainActivity extends AppCompatActivity implements
 
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-        final Uri mediaUri = getMediaUri(clickable, uriString, source);
-        intent.setDataAndType(mediaUri, mediaType);
+        final Uri mediaUri = UriUtil.parseToUri(this, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
+                getPackageName() + PROVIDER_AUTHORITIES);
 
-        ///注意：需要额外增加一行权限代码
-        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        intent.setDataAndType(mediaUri, mediaType);
 
         try {
             context.startActivity(intent);
@@ -171,27 +173,6 @@ public class MainActivity extends AppCompatActivity implements
         final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
         intent.putExtra("html_text", mHtmlText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
-    }
-
-
-    private Uri getMediaUri(Clickable clickable, String uriString, String source) {
-        final Uri mediaUri;
-
-        if (clickable instanceof AudioSpan || clickable instanceof VideoSpan) {
-            if (StringUtil.isUrl(uriString)) {
-                mediaUri = Uri.parse(uriString);
-            } else {
-                mediaUri = FileUtil.getUriFromFile(this, new File(uriString), getPackageName() + PROVIDER_AUTHORITIES);
-            }
-        } else {
-            if (StringUtil.isUrl(source)) {
-                mediaUri = Uri.parse(source);
-            } else {
-                mediaUri = FileUtil.getUriFromFile(this, new File(source), getPackageName() + PROVIDER_AUTHORITIES);
-            }
-        }
-
-        return mediaUri;
     }
 
 }

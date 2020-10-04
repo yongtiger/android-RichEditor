@@ -1,13 +1,21 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.BufferedInputStream;
@@ -18,6 +26,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 public abstract class FileUtil {
 
@@ -29,34 +42,31 @@ public abstract class FileUtil {
     }
 
     /**
-     * 获取文件的Uri（适应Android 7.0）
-     *
-     * 在Android 7.0以上的系统中，尝试传递 file://URI可能会触发FileUriExposedException
-     *
-     * <root-path/> 代表设备的根目录new File("/");
-     * <files-path/> 代表context.getFilesDir()
-     * <cache-path/> 代表context.getCacheDir()
-     * <external-path/> 代表Environment.getExternalStorageDirectory()
-     * <external-files-path>代表context.getExternalFilesDirs()
-     * <external-cache-path>代表getExternalCacheDirs()
-     *
-     * https://blog.csdn.net/lmj623565791/article/details/72859156
+     * 生成视频的第一帧图片
      *
      * @param context
-     * @param file
-     * @param authorities
-     * @return
+     * @param videoUri
+     * @param videoCoverFile
+     * @param format
+     * @param quality
      */
-    public static Uri getUriFromFile(@NonNull Context context, @NonNull File file, String authorities) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context, authorities, file);
-        } else {
-            return Uri.fromFile(file);
+    public static void generateVideoCover(@NonNull Context context, @NonNull Uri videoUri, File videoCoverFile,
+                                    Bitmap.CompressFormat format, int quality) {
+        final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(context, videoUri);
+        final Bitmap bitmap = mmr.getFrameAtTime(); ///第一帧图片
+        mmr.release();
+
+        if (bitmap == null) {
+            return;
         }
+
+        FileUtil.saveBitmapToFile(bitmap, videoCoverFile, format, quality);
     }
 
     /**
      * Saves Bitmap to File
+     *
      * @param bitmap
      * @param file
      * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG
@@ -85,6 +95,7 @@ public abstract class FileUtil {
 
     /**
      * Saves Drawable to File
+     *
      * @param drawable
      * @param file
      * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG

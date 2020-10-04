@@ -303,6 +303,7 @@ public class Html {
 
         sRemovedSpans.clear();
         handleHtml(out, text, null, option);
+        sRemovedSpans.clear();
 
         return out.toString();
     }

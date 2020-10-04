@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.6.2",   ///v1.6.2#[FIX#RichEditText#replace(), SpanUtil#getSelectedSpans()]
-                versionCode: 10602
+                versionName: "1.7.0",   ///v1.7.0#重构ClickImageSpanDialogBuilder，增加UriUtil
+                versionCode: 10700
         ]
     }
 
