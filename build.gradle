@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.7.0",   ///v1.7.0#重构ClickImageSpanDialogBuilder，增加UriUtil
-                versionCode: 10700
+                versionName: "1.7.1",   ///v1.7.1#[因为DoodleDraw不能处理网络图片（http://等），所以只能先下载到应用缓存目录]
+                versionCode: 10701
         ]
     }
 

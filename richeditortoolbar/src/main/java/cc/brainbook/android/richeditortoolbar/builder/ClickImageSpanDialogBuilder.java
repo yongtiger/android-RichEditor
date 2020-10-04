@@ -97,8 +97,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		return this;
 	}
 
-	private File mTempImageFile;
-
 	private String mInitialUri;	///初始化时的uri
 	private String mInitialSrc;	///初始化时的src
 
@@ -405,10 +403,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				//////??????只接受文件路径的字符串，如file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/crop_20201002035528.jpg
 				String imagePath;
 				if ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme())) {
-					//////??????因为DoodleDraw不能处理网络图片（http://等），所以只能先下载后再处理
-					mTempImageFile = new File(mImageFileDir, "tmp_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
-					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), mTempImageFile, Bitmap.CompressFormat.JPEG, 100);
-					imagePath = mTempImageFile.getAbsolutePath();
+					//////??????因为DoodleDraw不能处理网络图片（http://等），所以只能先下载到应用缓存目录
+					final File tmpImageFile = new File(mContext.getCacheDir(), "tmp_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), tmpImageFile, Bitmap.CompressFormat.JPEG, 100);
+					imagePath = tmpImageFile.getAbsolutePath();
 				} else {
 					imagePath = UriUtil.getFilePathFromUri(mContext, uri);
 				}
