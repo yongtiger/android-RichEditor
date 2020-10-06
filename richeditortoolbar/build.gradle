@@ -40,18 +40,16 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
-    ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
-//    implementation 'com.github.yalantis:ucrop:2.2.6' ///lightweight general solution
-//    implementation 'com.github.yalantis:ucrop:2.2.6-native' ///get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
-    implementation 'com.github.yongtiger:android-uCrop:v12.2.6'
-
     implementation "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 //    implementation "org.jsoup:jsoup:1.11.3"
 
-    /* --------------- AndroidX#legcy support --------------- */
+    ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
+//    implementation 'com.github.yalantis:ucrop:2.2.6' ///lightweight general solution
+//    implementation 'com.github.yalantis:ucrop:2.2.6-native' ///get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
+    implementation 'com.github.yongtiger:android-uCrop:v13.0.2'
+
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 //    implementation 'com.github.1993hzw:Doodle:5.5.4'
-    ///[FIX#Doodle#在文件浏览器中出现无效的图片！应注释掉DoodleActivity中ImageUtils.addImage()]
-    implementation 'com.github.yongtiger:android-project-Doodle:v15.5.6'
+    implementation 'com.github.yongtiger:android-DoodleDraw:v16.1.1'
 
 }

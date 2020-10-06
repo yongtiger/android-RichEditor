@@ -384,12 +384,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(View view) {
 				final String src = mEditTextSrc.getText().toString();
+
 				final Uri source = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+				if (source == null) {
+					return;
+				}
 
 				final File destinationFile = new File(mImageFileDir, "crop_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
-				final Uri destination = Uri.fromFile(destinationFile); 	//////??????只接受文件路径的字符串，如file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/crop_20201002035528.jpg
 
-				startCrop((Activity) mContext, source, destination);
+				startCrop((Activity) mContext, source, destinationFile.getAbsolutePath());
 			}
 		});
 
@@ -398,22 +401,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(View view) {
 				final String src = mEditTextSrc.getText().toString();
-				final Uri uri = Uri.parse(src);
 
-				//////??????只接受文件路径的字符串，如file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/crop_20201002035528.jpg
-				String imagePath;
-				if ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme())) {
-					//////??????因为DoodleDraw不能处理网络图片（http://等），所以只能先下载到应用缓存目录
-					final File tmpImageFile = new File(mContext.getCacheDir(), "tmp_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
-					FileUtil.saveDrawableToFile(mImageViewPreview.getDrawable(), tmpImageFile, Bitmap.CompressFormat.JPEG, 100);
-					imagePath = tmpImageFile.getAbsolutePath();
-				} else {
-					imagePath = UriUtil.getFilePathFromUri(mContext, uri);
+				final Uri imageUri = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
+				if (imageUri == null) {
+					return;
 				}
 
 				final File destinationFile = new File(mImageFileDir, "draw_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
 
-				startDraw((Activity) mContext, imagePath, destinationFile.getAbsolutePath());
+				startDraw((Activity) mContext, imageUri, destinationFile.getAbsolutePath());
 			}
 		});
 
@@ -660,7 +656,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
-    private void startCrop(Activity activity, @NonNull Uri source, @NonNull Uri destination) {
+    private void startCrop(@NonNull Activity activity, @NonNull Uri source, @NonNull String destination) {
 		///[FIX#NotFoundException: File res/drawable/ucrop_ic_cross.xml from drawable resource ID]
 		///https://github.com/Yalantis/uCrop/issues/529
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -671,9 +667,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
     }
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
-	private void startDraw(Activity activity, String imagePath, String savePath) {
+	private void startDraw(@NonNull Activity activity, @NonNull Uri imageUri, String savePath) {
         final DoodleParams params = new DoodleParams();
-		params.mImagePath = imagePath;
+		params.mImageUri = imageUri;
 		params.mSavePath = savePath;
 
 		try {
@@ -787,9 +783,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
         ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
         else if (requestCode == UCrop.REQUEST_CROP) {
             if (resultCode == RESULT_OK) {
-                final Uri resultUri = UCrop.getOutput(data);
-                if (resultUri != null && !TextUtils.equals(resultUri.toString(), mEditTextSrc.getText())) {
-					mEditTextSrc.setText(resultUri.toString());
+                final String resultString = UCrop.getOutput(data);
+                if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+					mEditTextSrc.setText(resultString);
 					enableDeleteOldSrcFile = true;
                 }
             } else if (resultCode == UCrop.RESULT_ERROR) {
