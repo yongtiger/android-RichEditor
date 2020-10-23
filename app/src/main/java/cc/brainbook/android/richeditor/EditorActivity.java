@@ -101,6 +101,9 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setVideoFileDir(videoFileDir);
         mRichEditorToolbar.setAudioFileDir(audioFileDir);
 
+        ///（可选，缺省为richeditortoolbar\src\main\res\layout\layout_toolbar.xml）
+        mRichEditorToolbar.setLayoutRes(R.layout.layout_toolbar_1);
+
         ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
 //        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
 

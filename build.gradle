@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.7.5",   ///v1.7.5#typo
-                versionCode: 10705
+                versionName: "1.7.6",   ///v1.7.6#mRichEditorToolbar.setLayoutRes(R.layout.layout_toolbar_1)
+                versionCode: 10706
         ]
     }
 

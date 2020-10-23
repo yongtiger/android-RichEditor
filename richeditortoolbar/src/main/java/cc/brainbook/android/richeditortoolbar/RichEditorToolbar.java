@@ -11,6 +11,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -18,8 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Selection;
-import android.text.SpanWatcher;
-import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
@@ -138,6 +137,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap = new LinkedHashMap<>();
     public LinkedHashMap<Class<? extends Parcelable>, View> getClassMap() {
         return mClassMap;
+    }
+
+    private @LayoutRes int mLayoutRes = -1;
+    public @LayoutRes int getLayoutRes() {
+        return mLayoutRes;
+    }
+    public void setLayoutRes(@LayoutRes int layoutRes) {
+        mLayoutRes = layoutRes;
     }
 
     private RichEditText mRichEditText;
@@ -475,7 +482,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
-        LayoutInflater.from(mContext).inflate(R.layout.layout_tool_bar, this, true);
+        LayoutInflater.from(mContext).inflate(mLayoutRes == -1 ? R.layout.layout_toolbar : mLayoutRes, this, true);
 
 
         /* -------------- ///段落span：Div --------------- */
