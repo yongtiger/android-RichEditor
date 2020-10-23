@@ -258,8 +258,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 ///[HtmlEditor#onActivityResult]
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
-                    CharSequence htmlResult;
-
                     if (data != null) {
                         final String htmlText = data.getStringExtra("html_result");
                         if (htmlText != null) {
