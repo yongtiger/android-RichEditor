@@ -464,7 +464,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         a.recycle();
     }
 
-    public void init(Context context, TypedArray a) {
+    public void init(Context context, @NonNull TypedArray a) {
         mContext = context;
 
         ///[clipboard]设置存放剪切板的文件目录

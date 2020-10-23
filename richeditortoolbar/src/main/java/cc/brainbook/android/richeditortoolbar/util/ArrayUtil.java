@@ -39,7 +39,7 @@ public abstract class ArrayUtil {
         return -1;
     }
 
-    public static int getIntItem(Context context, @ArrayRes int itemsId, int index) {
+    public static int getIntItem(@NonNull Context context, @ArrayRes int itemsId, int index) {
         final int[] items = context.getResources().getIntArray(itemsId);
         if (index < 0 || index >= items.length) {
             return Integer.MIN_VALUE;
