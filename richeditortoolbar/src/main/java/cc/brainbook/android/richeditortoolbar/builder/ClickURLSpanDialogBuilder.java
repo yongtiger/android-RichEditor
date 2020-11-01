@@ -35,7 +35,7 @@ public class ClickURLSpanDialogBuilder extends BaseDialogBuilder {
 
 	private ClickURLSpanDialogBuilder(@NonNull Context context, int theme) {
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View layout = inflater.inflate(R.layout.layout_click_url_span_dialog, null);
+		final View layout = inflater.inflate(R.layout.click_url_span_dialog, null);
 		mEditTextText = (EditText) layout.findViewById(R.id.et_text);
 		mEditTextUrl = (EditText) layout.findViewById(R.id.et_url);
 

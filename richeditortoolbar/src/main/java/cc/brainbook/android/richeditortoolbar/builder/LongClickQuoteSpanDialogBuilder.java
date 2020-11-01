@@ -87,7 +87,7 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 		colorPickerView = new ColorPickerView(context);
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View layout = inflater.inflate(R.layout.layout_long_click_quote_span_dialog, null);
+		final View layout = inflater.inflate(R.layout.long_click_quote_span_dialog, null);
 		pickerContainer = (LinearLayout) layout.findViewById(R.id.picker_container);
 		pickerContainer.addView(colorPickerView);
 

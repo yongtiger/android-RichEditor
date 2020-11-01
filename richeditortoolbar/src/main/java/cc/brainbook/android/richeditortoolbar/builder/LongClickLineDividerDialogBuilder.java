@@ -82,7 +82,7 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
 
     private LongClickLineDividerDialogBuilder(@NonNull Context context, int theme) {
         final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View layout = inflater.inflate(R.layout.layout_long_click_line_divider_span_dialog, null);
+        final View layout = inflater.inflate(R.layout.long_click_line_divider_span_dialog, null);
 
         initView(layout);
 

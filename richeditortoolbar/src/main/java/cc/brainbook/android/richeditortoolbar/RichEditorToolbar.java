@@ -482,7 +482,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
-        LayoutInflater.from(mContext).inflate(mLayoutRes == -1 ? R.layout.layout_toolbar : mLayoutRes, this, true);
+        LayoutInflater.from(mContext).inflate(mLayoutRes == -1 ? R.layout.toolbar : mLayoutRes, this, true);
 
 
         /* -------------- ///段落span：Div --------------- */
@@ -1239,7 +1239,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 ///[FIX#自定义单选或多选AlertDialog中含有其它控件时，ListView太长导致无法滚动显示完整]
                 ///不能用setView()！改为ListView.addFooterView()
-                final View listSpanDialogView = LayoutInflater.from(mContext).inflate(R.layout.layout_click_list_span_dialog, null);
+                final View listSpanDialogView = LayoutInflater.from(mContext).inflate(R.layout.click_list_span_dialog, null);
                 final ListView listView = listSpanAlertDialog.getListView();
                 listView.addFooterView(listSpanDialogView);
 

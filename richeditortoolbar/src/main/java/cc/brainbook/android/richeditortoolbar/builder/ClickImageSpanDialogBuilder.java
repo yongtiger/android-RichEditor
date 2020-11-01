@@ -41,7 +41,6 @@ import java.io.File;
 import java.util.Date;
 
 import cc.brainbook.android.richeditortoolbar.R;
-import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 import cn.hzw.doodle.DoodleActivity;
@@ -446,7 +445,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View layout = inflater.inflate(R.layout.layout_click_image_span_dialog, null);
+		final View layout = inflater.inflate(R.layout.click_image_span_dialog, null);
 
 		initView(layout);
 
