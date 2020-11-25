@@ -27,8 +27,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -154,13 +152,13 @@ public class MainActivity extends AppCompatActivity implements
 
     ///[LineDividerSpan.DrawBackgroundCallback]
     @Override
-    public void drawBackground(@NotNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+    public void drawBackground(@NonNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
         c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
     }
 
 
     ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-    public void postSetText(@NotNull Spannable textSpanned) {
+    public void postSetText(@NonNull Spannable textSpanned) {
         final Object[] spans = textSpanned.getSpans(0, textSpanned.length(), Object.class);
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
