@@ -457,6 +457,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
     ///注意：不包括block span（如URLSpan、ImageSpan）
+    @NonNull
     public static <T> T filterSpanByCompareSpanOrViewParameter(View view, Class<T> clazz, T span, T compareSpan) {
         ///字符span（带参数）：ForegroundColor、BackgroundColor
         if (clazz == CustomForegroundColorSpan.class) {
