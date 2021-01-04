@@ -24,6 +24,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -82,12 +83,28 @@ public class MainActivity extends AppCompatActivity implements
 //        mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         mTextView.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
 
+        ///[FIX#点击 ClickableSpan 的文本之外的文本时，TextView 会消费该事件，而不会传递给父View]
+        ///https://blog.csdn.net/zhuhai__yizhi/article/details/53760663
+        mTextView.setFocusable(false);
+        mTextView.setClickable(false);
+        mTextView.setLongClickable(false);
+        ///test
+        LinearLayout ll = (LinearLayout)findViewById(R.id.ll_linear_layout);
+        ll.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                int i = 0;
+            }
+        });
+
         ///设置初始文本
         final Spanned spanned = Html.fromHtml(mHtmlText);
         mTextView.setText(spanned);
         ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
         final Spannable textSpanned = ((Spannable) mTextView.getText());
         postSetText(textSpanned);
+
+
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
