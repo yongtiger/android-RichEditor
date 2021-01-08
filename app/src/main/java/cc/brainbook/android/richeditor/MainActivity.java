@@ -175,11 +175,11 @@ public class MainActivity extends AppCompatActivity implements
 
 
     ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-    public void postSetText(@NonNull Spannable textSpanned) {
-        final Object[] spans = textSpanned.getSpans(0, textSpanned.length(), Object.class);
+    public void postSetText(@NonNull Spannable textSpannable) {
+        final Object[] spans = textSpannable.getSpans(0, textSpannable.length(), Object.class);
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
-        RichEditorToolbarHelper.postLoadSpans(this, textSpanned, spanList, null, -1,
+        RichEditorToolbarHelper.postLoadSpans(this, textSpannable, spanList, null, -1,
                 new ColorDrawable(Color.LTGRAY), -1,this,  this, this);
     }
 
