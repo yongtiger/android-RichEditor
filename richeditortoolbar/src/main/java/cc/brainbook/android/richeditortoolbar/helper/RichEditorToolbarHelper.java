@@ -1,11 +1,15 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -19,6 +23,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,6 +44,7 @@ import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
@@ -75,6 +81,9 @@ import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+import cc.brainbook.android.richeditortoolbar.util.UriUtil;
+
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
 public abstract class RichEditorToolbarHelper {
     @Nullable
@@ -1178,4 +1187,27 @@ public abstract class RichEditorToolbarHelper {
             }
         }
     }
+
+    public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
+        final Context context = widget.getContext();
+
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
+        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
+                context.getPackageName() + PROVIDER_AUTHORITIES);
+
+        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        intent.setDataAndType(mediaUri, mediaType);
+
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context.getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "1.7.9",   ///v1.7.9#typo
-                versionCode: 10709
+                versionName: "1.7.10",   ///v1.7.10#RichEditorToolbarHelper#public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source)
+                versionCode: 10710
         ]
     }
 
