@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements
         final Spanned spanned = Html.fromHtml(mHtmlText);
         mTextView.setText(spanned);
         ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-        final Spannable textSpanned = ((Spannable) mTextView.getText());
-        postSetText(textSpanned);
+        final Spannable textSpannable = ((Spannable) mTextView.getText());
+        postSetText(textSpannable);
 
 
     }
