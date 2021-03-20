@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 
+import java.lang.ref.WeakReference;
+
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 ///[UPGRADE#LineDividerSpan]
@@ -23,10 +25,10 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     @Expose
     private final int mMarginTop, mMarginBottom;
 
-    ///[implements LineBackgroundSpan]
-    private DrawBackgroundCallback mDrawBackgroundCallback;
+    ///[FIX#assiststructure memory leak]解决：使用WeakReference
+    private WeakReference<DrawBackgroundCallback> mDrawBackgroundCallback;
     public void setDrawBackgroundCallback(DrawBackgroundCallback drawBackgroundCallback) {
-        mDrawBackgroundCallback = drawBackgroundCallback;
+        mDrawBackgroundCallback = new WeakReference<DrawBackgroundCallback>(drawBackgroundCallback);
     }
 
 
@@ -42,7 +44,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     public LineDividerSpan(int marginTop, int marginBottom, DrawBackgroundCallback drawBackgroundCallback) {
         this(marginTop, marginBottom);
 
-        mDrawBackgroundCallback = drawBackgroundCallback;
+        setDrawBackgroundCallback(drawBackgroundCallback);
     }
 
 
@@ -63,8 +65,8 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     ///https://stackoverflow.com/questions/43611613/linebackgroundspan-drawbackground-called-repeatedly
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        if (mDrawBackgroundCallback != null && start + 1 == end && text.charAt(start) == '\n') {
-            mDrawBackgroundCallback.drawBackground(c, p, left, right, top, baseline, bottom, text, start, end, lnum);
+        if (mDrawBackgroundCallback.get() != null && start + 1 == end && text.charAt(start) == '\n') {
+            mDrawBackgroundCallback.get().drawBackground(c, p, left, right, top, baseline, bottom, text, start, end, lnum);
         }
     }
 

@@ -1,21 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths xmlns:android="http://schemas.android.com/apk/res/android">
+<paths>
 
     <!--///适应Android 7.0-->
-<!--    <root-path/> 代表设备的根目录new File("/");-->
-<!--    <files-path/> 代表context.getFilesDir()-->
-<!--    <cache-path/> 代表context.getCacheDir()-->
-<!--    <external-path/> 代表Environment.getExternalStorageDirectory()-->
-<!--    <external-files-path>代表context.getExternalFilesDirs()-->
-<!--    <external-cache-path>代表getExternalCacheDirs()-->
-<!--    https://blog.csdn.net/lmj623565791/article/details/72859156-->
+    <!--    <root-path/> 代表设备的根目录new File("/");-->
+    <!--    <files-path/> 代表context.getFilesDir()-->
+    <!--    <cache-path/> 代表context.getCacheDir()-->
+    <!--    <external-path/> 代表Environment.getExternalStorageDirectory()-->
+    <!--    <external-files-path>代表context.getExternalFilesDirs()-->
+    <!--    <external-cache-path>代表getExternalCacheDirs()-->
+    <!--    https://blog.csdn.net/lmj623565791/article/details/72859156-->
     <!--https://developer.android.com/reference/android/support/v4/content/FileProvider.html#SpecifyFiles-->
 
-    <cache-path name="cache_path" path="./" />
-    <files-path name="files_path" path="./" />
-    <external-cache-path name="external_cache_path" path="./" />
-    <external-files-path name="external_files_path" path="./" />
-    <external-path name="external_path" path="./" />
-    <external-media-path name="external_media_path" path="./" />
+    <files-path
+        name="file_path"
+        path="." />
+
+    <cache-path
+        name="cache_path"
+        path="." />
+
+    <external-path
+        name="external_path"
+        path="." />
+
+    <external-files-path
+        name="external_files_path"
+        path="." />
+
+    <external-cache-path
+        name="external_cache_path"
+        path="." />
+
+    <external-media-path
+        name="external_media_path"
+        path="." />
 
 </paths>

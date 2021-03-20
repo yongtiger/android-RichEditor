@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--///[MaterialColor]-->
+<resources>
+
+    <!--///https://material.io/resources/color-->
+    <!--///https://material.io/design/color/the-color-system.html#color-usage-and-palettes-->
+    <color name="purple_200">#BB86FC</color> <!--Color primary (dark)-->
+    <color name="purple_500">#6200EE</color> <!--Color primary (light)-->
+    <color name="purple_600">#4B01D0</color> <!--Color primary variant (dark)-->
+    <color name="purple_700">#3700B3</color> <!--Color primary variant (light)-->
+
+    <color name="teal_200">#03DAC5</color> <!--Color secondary-->
+    <color name="teal_700">#018786</color> <!--Color secondary variant-->
+
+    <color name="red_200">#CF6679</color> <!--Color error (dark)-->
+    <color name="red_600">#B00020</color> <!--Color error (light)-->
+
+    <color name="white_50">#FFFFFF</color>
+    <color name="black_800">#121212</color> <!--Color surface (dark)-->
+    <color name="black_900">#000000</color>
+
+</resources>

@@ -4,20 +4,20 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white_50</item>
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_600</item>
+        <item name="colorOnPrimary">@color/black_900</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black_900</item>
+        <item name="colorSecondary">@color/teal_700</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/white_50</item>
 
-        <item name="colorSurface">@color/white_50</item>
-        <item name="colorOnSurface">@color/black_900</item>
-        <item name="colorOnError">@color/white_50</item>
-        <item name="colorError">@color/red_600</item>
-        <item name="android:colorBackground">@color/white_50</item>
-        <item name="colorOnBackground">@color/black_900</item>
+        <item name="colorSurface">@color/black_800</item>
+        <item name="colorOnSurface">@color/white_50</item>
+        <item name="colorOnError">@color/black_900</item>
+        <item name="colorError">@color/red_200</item>
+        <item name="android:colorBackground">@color/black_800</item>
+        <item name="colorOnBackground">@color/white_50</item>
         <item name="colorPrimaryDark">?attr/colorPrimaryVariant</item>
 
 <!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
@@ -36,7 +36,8 @@
         ///[MaterialColor#Toolbar]For some reason it uses colorSurface for toolbar color instead of colorPrimary in DayNight theme.
         So to fix it, you have to add this in your AppTheme: <item name="colorSurface">?attr/colorPrimary</item>-->
         <!--///设置AppBarLayout背景颜色为"?attr/colorPrimary"，否则使用系统缺省（Dark 为colorSurface，Light为colorPrimary）-->
-        <item name="contentScrim">?attr/colorPrimary</item>
+        <!--        <item name="contentScrim">?attr/colorPrimary</item>-->
+        <item name="contentScrim">?attr/colorSurface</item>
 
         <!--///[ActionMode覆盖Toolbar]-->
         <!--///https://www.jianshu.com/p/94050aac2eee-->
@@ -52,14 +53,14 @@
     </style>
 
     <!--///[MaterialColor#Toolbar#Light时也使用Dark#Menu]-->
-    <style name="AppTheme.ThemeOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+    <style name="AppTheme.ThemeOverlay" parent="ThemeOverlay.MaterialComponents.Dark" />
 
     <!--///设置Snackbar背景、边距-->
-<!--    <style name="snackbarStyle" parent="Widget.MaterialComponents.Snackbar" />  ///注意：Snackbar有边距！-->
-<!--    <style name="snackbarStyle" parent="Widget.MaterialComponents.Snackbar"> ///去掉Snackbar边距和倒角（必须同时都设置才能完全去掉四周倒角！）-->
-<!--        <item name="android:layout_margin">0dp</item>-->
-<!--        <item name="android:background">@color/Red</item>-->
-<!--    </style>-->
-<!--    <style name="snackbarStyle" parent="Base.Widget.MaterialComponents.Snackbar" />  &lt;!&ndash;///Snackbar无边距无倒角&ndash;&gt;-->
+    <!--    <style name="snackbarStyle" parent="Widget.MaterialComponents.Snackbar" />  ///注意：Snackbar有边距！-->
+    <!--    <style name="snackbarStyle" parent="Widget.MaterialComponents.Snackbar"> ///去掉Snackbar边距和倒角（必须同时都设置才能完全去掉四周倒角！）-->
+    <!--        <item name="android:layout_margin">0dp</item>-->
+    <!--        <item name="android:background">@color/Red</item>-->
+    <!--    </style>-->
+    <!--    <style name="snackbarStyle" parent="Base.Widget.MaterialComponents.Snackbar" />  &lt;!&ndash;///Snackbar无边距无倒角&ndash;&gt;-->
 
 </resources>
