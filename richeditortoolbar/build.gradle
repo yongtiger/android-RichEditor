@@ -10,9 +10,10 @@ android {
         versionCode release.versionCode
         versionName release.versionName
 
-        consumerProguardFiles 'consumer-rules.pro'
+        multiDexEnabled true
+        consumerProguardFiles "consumer-rules.pro"
 
-        android.defaultConfig.vectorDrawables.useSupportLibrary = true
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -25,31 +26,28 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation 'androidx.appcompat:appcompat:1.2.0'
 
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0
-    ///注意：因为app中的RichEditorToolbar也要依赖flexbox，所以使用api、而不是implementation！
-    api 'com.google.android:flexbox:2.0.1'
+    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation 'com.google.code.gson:gson:2.8.6'
 
-    implementation 'com.github.yongtiger:android-ColorPicker:v1.0.1'
-
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
     implementation "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 //    implementation "org.jsoup:jsoup:1.11.3"
 
+    implementation 'com.github.yongtiger:android-ColorPicker:v1.0.4'
+
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
 //    implementation 'com.github.yalantis:ucrop:2.2.6' ///lightweight general solution
 //    implementation 'com.github.yalantis:ucrop:2.2.6-native' ///get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
-    implementation 'com.github.yongtiger:android-uCrop:v13.0.2'
+    implementation 'com.github.yongtiger:android-uCrop:v13.0.4'
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 //    implementation 'com.github.1993hzw:Doodle:5.5.4'
-    implementation 'com.github.yongtiger:android-DoodleDraw:v16.1.2'
+    implementation 'com.github.yongtiger:android-DoodleDraw:v16.1.3'
 
 }

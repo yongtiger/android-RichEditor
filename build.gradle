@@ -4,14 +4,14 @@ buildscript {
     ext {
         setup = [
                 compileSdk : 30,
-                buildTools : "30.0.0",
+                buildTools : "30.0.3",
                 minSdk     : 15,
                 targetSdk  : 30
         ]
 
         release = [
-                versionName: "1.7.10",   ///v1.7.10#RichEditorToolbarHelper#public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source)
-                versionCode: 10710
+                versionName: "2.0.0",   ///v2.0.0
+                versionCode: 20000
         ]
     }
 
@@ -21,7 +21,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.1'
+        classpath 'com.android.tools.build:gradle:4.1.2'
         
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
