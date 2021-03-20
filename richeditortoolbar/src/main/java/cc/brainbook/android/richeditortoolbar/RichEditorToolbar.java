@@ -49,10 +49,6 @@ import cc.brainbook.android.colorpicker.builder.ColorPickerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.builder.LongClickLeadingMarginSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.builder.LongClickLineDividerDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.builder.LongClickListSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.builder.LongClickQuoteSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.ClickURLSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
@@ -122,7 +118,8 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class RichEditorToolbar extends FlexboxLayout implements
-        Drawable.Callback, View.OnClickListener, View.OnLongClickListener,
+        Drawable.Callback, View.OnClickListener,
+//        View.OnLongClickListener,//////??????注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
@@ -311,7 +308,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /* ---------------- ///[清除样式] ---------------- */
-    private ImageView mImageViewClearSpans;
+    private ImageView mImageViewClearStyles;
 
     /* ---------------- ///[草稿Draft] ---------------- */
     private ImageView mImageViewSaveDraft;
@@ -396,7 +393,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         if (isSetSpans && action != null) {
             ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
             ///注意：必须保证selectionChanged()不被执行！否则死循环！
-//            mRichEditText.getIndicatorText().clearSpans(); ///[FIX#误删除了其它有用的spans！]
+//            mRichEditText.getIndicatorText().clearStyles(); ///[FIX#误删除了其它有用的spans！]
             SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
 
             ///执行postLoadSpans及后处理
@@ -492,7 +489,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
         if (a.getBoolean(R.styleable.RichEditorToolbar_enable_leading_margin, true)) {
             mImageViewLeadingMargin.setOnClickListener(this);
-            mImageViewLeadingMargin.setOnLongClickListener(this);
+//            mImageViewLeadingMargin.setOnLongClickListener(this);//////??????注意：若开启LongClick，则android:tooltipText会不显示
             mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
         } else {
             mImageViewLeadingMargin.setVisibility(GONE);
@@ -531,7 +528,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
         if (a.getBoolean(R.styleable.RichEditorToolbar_enable_list, true)) {
             mImageViewList.setOnClickListener(this);
-            mImageViewList.setOnLongClickListener(this);
+//            mImageViewList.setOnLongClickListener(this);//////??????注意：若开启LongClick，则android:tooltipText会不显示
             mClassMap.put(ListSpan.class, mImageViewList);
             ///注意：ListItemSpan也要注册！否则不能保存到草稿等！
             ///而且必须在ListSpan之后！否则loadSpansFromSpanBeans()中的getParentNestSpan()将返回null
@@ -545,7 +542,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
         if (a.getBoolean(R.styleable.RichEditorToolbar_enable_quote, true)) {
             mImageViewQuote.setOnClickListener(this);
-            mImageViewQuote.setOnLongClickListener(this);
+//            mImageViewQuote.setOnLongClickListener(this);//////??????注意：若开启LongClick，则android:tooltipText会不显示
             mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
         } else {
             mImageViewQuote.setVisibility(GONE);
@@ -576,7 +573,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
         if (a.getBoolean(R.styleable.RichEditorToolbar_enable_line_divider, true)) {
             mImageViewLineDivider.setOnClickListener(this);
-            mImageViewLineDivider.setOnLongClickListener(this);
+//            mImageViewLineDivider.setOnLongClickListener(this);//////??????注意：若开启LongClick，则android:tooltipText会不显示
             mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
         } else {
             mImageViewLineDivider.setVisibility(GONE);
@@ -767,10 +764,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
 
         /* -------------- ///[清除样式] --------------- */
-        mImageViewClearSpans = (ImageView) findViewById(R.id.iv_clear_spans);
+        mImageViewClearStyles = (ImageView) findViewById(R.id.iv_clear_styles);
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
-        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_clear_spans, true)) {
-            mImageViewClearSpans.setOnClickListener(new OnClickListener() {
+        if (a.getBoolean(R.styleable.RichEditorToolbar_enable_clear_styles, true)) {
+            mImageViewClearStyles.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final Editable editable = mRichEditText.getText();
@@ -817,12 +814,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     updatePreview();
 
                     ///[Undo/Redo]
-                    mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_SPANS_ACTION, selectionStart, null, null,
+                    mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_STYLES_ACTION, selectionStart, null, null,
                             RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
                 }
             });
         } else {
-            mImageViewClearSpans.setVisibility(GONE);
+            mImageViewClearStyles.setVisibility(GONE);
         }
 
         /* -------------- ///[草稿Draft] --------------- */
@@ -1891,85 +1888,85 @@ public class RichEditorToolbar extends FlexboxLayout implements
         updatePreview();
     }
 
-    @Override
-    public boolean onLongClick(final View view) {
-
-        ///段落span（带初始化参数）：LeadingMargin
-        if (view == mImageViewLeadingMargin) {
-            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int indent) {
-                            mLeadingMarginSpanIndent = indent;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mLeadingMarginSpanIndent)
-                    .build().show();
-
-            return true;
-        }
-
-        ///段落span（带初始化参数）：List
-        else if (view == mImageViewList) {
-            ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickListSpanDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int indicatorMargin, int indicatorWidth, int indicatorGapWidth, int indicatorColor, Integer[] allColors) {
-                            mIndicatorMargin = indicatorMargin;
-                            mIndicatorWidth = indicatorWidth;
-                            mIndicatorGapWidth = indicatorGapWidth;
-                            mIndicatorColor = indicatorColor;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor)
-                    .build().show();
-
-            return true;
-        }
-
-        ///段落span（带初始化参数）：Quote
-        else if (view == mImageViewQuote) {
-            ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
-                            mQuoteSpanColor = selectedColor;
-                            mQuoteSpanStripWidth = stripWidth;
-                            mQuoteSpanGapWidth = gapWidth;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
-                    .build().show();
-
-            return true;
-        }
-
-        ///段落span（带初始化参数）：LineDivider
-        else if (view == mImageViewLineDivider) {
-            ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
-                    .with(mContext)
-                    .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int marginTop, int marginBottom) {
-                            mLineDividerSpanMarginTop = marginTop;
-                            mLineDividerSpanMarginBottom = marginBottom;
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null))
-                    .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
-                    .build().show();
-
-            return true;
-        }
-
-        return false;
-    }
+    //////??????注意：若开启LongClick，则android:tooltipText会不显示
+//    @Override
+//    public boolean onLongClick(final View view) {
+//        ///段落span（带初始化参数）：LeadingMargin
+//        if (view == mImageViewLeadingMargin) {
+//            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
+//                    .with(mContext)
+//                    .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int indent) {
+//                            mLeadingMarginSpanIndent = indent;
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.cancel, null))
+//                    .initial(mLeadingMarginSpanIndent)
+//                    .build().show();
+//
+//            return true;
+//        }
+//
+//        ///段落span（带初始化参数）：List
+//        else if (view == mImageViewList) {
+//            ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
+//                    .with(mContext)
+//                    .setPositiveButton(android.R.string.ok, new LongClickListSpanDialogBuilder.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int indicatorMargin, int indicatorWidth, int indicatorGapWidth, int indicatorColor, Integer[] allColors) {
+//                            mIndicatorMargin = indicatorMargin;
+//                            mIndicatorWidth = indicatorWidth;
+//                            mIndicatorGapWidth = indicatorGapWidth;
+//                            mIndicatorColor = indicatorColor;
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.cancel, null))
+//                    .initial(mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor)
+//                    .build().show();
+//
+//            return true;
+//        }
+//
+//        ///段落span（带初始化参数）：Quote
+//        else if (view == mImageViewQuote) {
+//            ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
+//                    .with(mContext)
+//                    .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors, int stripWidth, int gapWidth) {
+//                            mQuoteSpanColor = selectedColor;
+//                            mQuoteSpanStripWidth = stripWidth;
+//                            mQuoteSpanGapWidth = gapWidth;
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.cancel, null))
+//                    .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
+//                    .build().show();
+//
+//            return true;
+//        }
+//
+//        ///段落span（带初始化参数）：LineDivider
+//        else if (view == mImageViewLineDivider) {
+//            ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
+//                    .with(mContext)
+//                    .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int marginTop, int marginBottom) {
+//                            mLineDividerSpanMarginTop = marginTop;
+//                            mLineDividerSpanMarginBottom = marginBottom;
+//                        }
+//                    })
+//                    .setNegativeButton(android.R.string.cancel, null))
+//                    .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
+//                    .build().show();
+//
+//            return true;
+//        }
+//
+//        return false;
+//    }
 
     private void applyParagraphStyleSpans(View view, Editable editable) {
         final int selectionStart = Selection.getSelectionStart(editable);

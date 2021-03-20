@@ -19,63 +19,60 @@
     <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
 
 
-    <!--///注意：当android:longClickable="true"时，android:tooltipText会不显示！-->
+    <!--//////??????android:longClickable不起作用！-->
 
     <ImageView
         android:id="@+id/iv_leading_margin"
-        android:longClickable="true"
-        android:contentDescription="Leading margin"
-        android:tooltipText="Leading margin"
+        android:contentDescription="@string/tool_tip_leading_margin"
+        android:tooltipText="@string/tool_tip_leading_margin"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_leading_margin"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_normal"
-        android:contentDescription="Align normal"
-        android:tooltipText="Align normal"
+        android:contentDescription="@string/tool_tip_align_normal"
+        android:tooltipText="@string/tool_tip_align_normal"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_align_normal"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_center"
-        android:contentDescription="Align center"
-        android:tooltipText="Align center"
+        android:contentDescription="@string/tool_tip_align_center"
+        android:tooltipText="@string/tool_tip_align_center"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_align_center"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_align_opposite"
-        android:contentDescription="Align opposite"
-        android:tooltipText="Align opposite"
+        android:contentDescription="@string/tool_tip_align_opposite"
+        android:tooltipText="@string/tool_tip_align_opposite"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_align_opposite"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_list"
-        android:longClickable="true"
-        android:contentDescription="List"
-        android:tooltipText="List"
+        android:contentDescription="@string/tool_tip_list"
+        android:tooltipText="@string/tool_tip_list"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_list"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_quote"
-        android:longClickable="true"
-        android:contentDescription="Quote"
-        android:tooltipText="Quote"
+        android:contentDescription="@string/tool_tip_quote"
+        android:tooltipText="@string/tool_tip_quote"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_quote"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_pre"
-        android:contentDescription="Pre"
-        android:tooltipText="Pre"
+        android:contentDescription="@string/tool_tip_pre"
+        android:tooltipText="@string/tool_tip_pre"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_pre"
         style="@style/ImageView" />
@@ -83,31 +80,30 @@
     <TextView
         android:id="@+id/tv_head"
         android:text="@string/head"
-        android:contentDescription="Head"
-        android:tooltipText="Head"
+        android:contentDescription="@string/tool_tip_head"
+        android:tooltipText="@string/tool_tip_head"
         style="@style/TextView"/>
 
     <ImageView
         android:id="@+id/iv_line_divider"
-        android:longClickable="true"
-        android:contentDescription="Line divider"
-        android:tooltipText="Line divider"
+        android:contentDescription="@string/tool_tip_line_divider"
+        android:tooltipText="@string/tool_tip_line_divider"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_line_divider"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_bold"
-        android:contentDescription="Bold"
-        android:tooltipText="Bold"
+        android:contentDescription="@string/tool_tip_bold"
+        android:tooltipText="@string/tool_tip_bold"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_bold"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_italic"
-        android:contentDescription="Italic"
-        android:tooltipText="Italic"
+        android:contentDescription="@string/tool_tip_italic"
+        android:tooltipText="@string/tool_tip_italic"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_italic"
         style="@style/ImageView" />
@@ -115,48 +111,48 @@
     <!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
     <ImageView
         android:id="@+id/iv_underline"
-        android:contentDescription="Underline"
-        android:tooltipText="Underline"
+        android:contentDescription="@string/tool_tip_underline"
+        android:tooltipText="@string/tool_tip_underline"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_underline"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_strikethrough"
-        android:contentDescription="Strike through"
-        android:tooltipText="Strike through"
+        android:contentDescription="@string/tool_tip_strike_through"
+        android:tooltipText="@string/tool_tip_strike_through"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_strikethrough"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_subscript"
-        android:contentDescription="Subscript"
-        android:tooltipText="Subscript"
+        android:contentDescription="@string/tool_tip_subscript"
+        android:tooltipText="@string/tool_tip_subscript"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_subscript"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_superscript"
-        android:contentDescription="Superscript"
-        android:tooltipText="Superscript"
+        android:contentDescription="@string/tool_tip_superscript"
+        android:tooltipText="@string/tool_tip_superscript"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_superscript"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_foreground_color"
-        android:contentDescription="Foreground color"
-        android:tooltipText="Foreground color"
+        android:contentDescription="@string/tool_tip_foreground_color"
+        android:tooltipText="@string/tool_tip_foreground_color"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_foreground_color"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_background_color"
-        android:contentDescription="Background color"
-        android:tooltipText="Background color"
+        android:contentDescription="@string/tool_tip_background_color"
+        android:tooltipText="@string/tool_tip_background_color"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_background_color"
         style="@style/ImageView" />
@@ -164,83 +160,83 @@
     <TextView
         android:id="@+id/tv_font_family"
         android:text="@string/font_family"
-        android:contentDescription="Font family"
-        android:tooltipText="Font family"
+        android:contentDescription="@string/tool_tip_font_family"
+        android:tooltipText="@string/tool_tip_font_family"
         style="@style/TextView"/>
 
     <TextView
         android:id="@+id/tv_absolute_size"
         android:text="@string/absolute_size"
-        android:contentDescription="Absolute size"
-        android:tooltipText="Absolute size"
+        android:contentDescription="@string/tool_tip_absolute_size"
+        android:tooltipText="@string/tool_tip_absolute_size"
         style="@style/TextView"/>
 
     <TextView
         android:id="@+id/tv_relative_size"
-        android:contentDescription="Relative size"
-        android:tooltipText="Relative size"
+        android:contentDescription="@string/tool_tip_relative_size"
+        android:tooltipText="@string/tool_tip_relative_size"
         android:text="@string/relative_size"
         style="@style/TextView"/>
 
     <TextView
         android:id="@+id/tv_scale_x"
         android:text="@string/scale_x"
-        android:contentDescription="Scale x"
-        android:tooltipText="Scale x"
+        android:contentDescription="@string/tool_tip_scale_x"
+        android:tooltipText="@string/tool_tip_scale_x"
         style="@style/TextView"/>
 
     <ImageView
         android:id="@+id/iv_code"
-        android:contentDescription="Code"
-        android:tooltipText="Code"
+        android:contentDescription="@string/tool_tip_code"
+        android:tooltipText="@string/tool_tip_code"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_code"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_block"
-        android:contentDescription="Block"
-        android:tooltipText="Block"
+        android:contentDescription="@string/tool_tip_block"
+        android:tooltipText="@string/tool_tip_block"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_block"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_border"
-        android:contentDescription="Border"
-        android:tooltipText="Border"
+        android:contentDescription="@string/tool_tip_border"
+        android:tooltipText="@string/tool_tip_border"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_border"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_url"
-        android:contentDescription="Url"
-        android:tooltipText="Url"
+        android:contentDescription="@string/tool_tip_url"
+        android:tooltipText="@string/tool_tip_url"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_url"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_image"
-        android:contentDescription="Image"
-        android:tooltipText="Image"
+        android:contentDescription="@string/tool_tip_image"
+        android:tooltipText="@string/tool_tip_image"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_image"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_video"
-        android:contentDescription="Video"
-        android:tooltipText="Video"
+        android:contentDescription="@string/tool_tip_video"
+        android:tooltipText="@string/tool_tip_video"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_video"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_audio"
-        android:contentDescription="Audio"
-        android:tooltipText="Audio"
+        android:contentDescription="@string/tool_tip_audio"
+        android:tooltipText="@string/tool_tip_audio"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_audio"
         style="@style/ImageView" />
@@ -250,78 +246,77 @@
         android:layout_height="@dimen/global_dimen_2"
         android:layout_marginTop="@dimen/global_dimen"
         android:layout_marginBottom="@dimen/global_dimen"
-        android:layout_gravity="center"
-        android:background="@android:color/darker_gray" />
+        android:layout_centerVertical="true"
+        android:background="?android:attr/dividerVertical" />
 
     <ImageView
-        android:id="@+id/iv_clear_spans"
-        android:contentDescription="Clear spans"
-        android:tooltipText="Clear spans"
+        android:id="@+id/iv_clear_styles"
+        android:contentDescription="@string/tool_tip_clear_styles"
+        android:tooltipText="@string/tool_tip_clear_styles"
         app:tint="@color/selector_view"
-        app:srcCompat="@drawable/icon_clear_spans"
+        app:srcCompat="@drawable/icon_clear_styles"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_save_draft"
-        android:contentDescription="Save draft"
-        android:tooltipText="Save draft"
+        android:contentDescription="@string/tool_tip_save_draft"
+        android:tooltipText="@string/tool_tip_save_draft"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_save_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_restore_draft"
-        android:contentDescription="Restore draft"
-        android:tooltipText="Restore draft"
+        android:contentDescription="@string/tool_tip_restore_draft"
+        android:tooltipText="@string/tool_tip_restore_draft"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_restore_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_clear_draft"
-        android:contentDescription="Clear draft"
-        android:tooltipText="Clear draft"
+        android:contentDescription="@string/tool_tip_clear_draft"
+        android:tooltipText="@string/tool_tip_clear_draft"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_clear_draft"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_undo"
-        android:contentDescription="Undo"
-        android:tooltipText="Undo"
+        android:contentDescription="@string/tool_tip_undo"
+        android:tooltipText="@string/tool_tip_undo"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_undo"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_redo"
-        android:contentDescription="Redo"
-        android:tooltipText="Redo"
+        android:contentDescription="@string/tool_tip_redo"
+        android:tooltipText="@string/tool_tip_redo"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_redo"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_save"
-        android:contentDescription="Save"
-        android:tooltipText="Save"
+        android:contentDescription="@string/tool_tip_save"
+        android:tooltipText="@string/tool_tip_save"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_save"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_preview"
-        android:contentDescription="Preview"
-        android:tooltipText="Preview"
+        android:contentDescription="@string/tool_tip_preview"
+        android:tooltipText="@string/tool_tip_preview"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_preview"
         style="@style/ImageView" />
 
     <ImageView
         android:id="@+id/iv_html"
-        android:longClickable="true"
-        android:contentDescription="Html"
-        android:tooltipText="Html"
+        android:contentDescription="@string/tool_tip_html"
+        android:tooltipText="@string/tool_tip_html"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_html"
         style="@style/ImageView" />

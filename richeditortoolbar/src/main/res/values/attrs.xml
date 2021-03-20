@@ -30,7 +30,7 @@
         <attr name="enable_video" format="boolean" />
         <attr name="enable_audio" format="boolean" />
         <attr name="enable_image" format="boolean" />
-        <attr name="enable_clear_spans" format="boolean" />
+        <attr name="enable_clear_styles" format="boolean" />
         <attr name="enable_save_draft" format="boolean" />
         <attr name="enable_restore_draft" format="boolean" />
         <attr name="enable_clear_draft" format="boolean" />

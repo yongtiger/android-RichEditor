@@ -21,7 +21,7 @@ public class UndoRedoHelper {
     public static final int INIT_ACTION = 0;
     public static final int CHANGE_TEXT_ACTION = 1;
     public static final int RESTORE_DRAFT_ACTION = 2;
-    public static final int CLEAR_SPANS_ACTION = 3;
+    public static final int CLEAR_STYLES_ACTION = 3;
 
     public static final int CHANGE_ALIGN_NORMAL_SPAN_ACTION = 11;
     public static final int CHANGE_ALIGN_CENTER_SPAN_ACTION = 12;
@@ -77,7 +77,7 @@ public class UndoRedoHelper {
         return mHistory.mSavedPosition == mHistory.mPosition;
     }
 
-    ///Label
+    ///Label//////////////////////////////////i18n
     public String getLabel(int id) {
         switch (id) {
             case INIT_ACTION:
@@ -86,8 +86,8 @@ public class UndoRedoHelper {
                 return "change text";
             case RESTORE_DRAFT_ACTION:
                 return "restore draft";
-            case CLEAR_SPANS_ACTION:
-                return "clear spans";
+            case CLEAR_STYLES_ACTION:
+                return "clear styles";
 
             case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
                 return "change align normal span";
@@ -210,7 +210,7 @@ public class UndoRedoHelper {
         }
 
         replace(currentAction, currentAction.mAfter, currentAction.mBefore);
-
+//////////////////////////////////i18n
         Toast.makeText(mContext.getApplicationContext(), "Undo: " + getLabel(currentAction.getId()), Toast.LENGTH_SHORT).show();
     }
 
@@ -225,7 +225,7 @@ public class UndoRedoHelper {
         }
 
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
-
+//////////////////////////////////i18n
         Toast.makeText(mContext.getApplicationContext(), "Redo: " + getLabel(nextAction.getId()), Toast.LENGTH_SHORT).show();
     }
 
