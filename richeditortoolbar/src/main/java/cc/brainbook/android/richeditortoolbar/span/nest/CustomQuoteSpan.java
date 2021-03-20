@@ -23,17 +23,17 @@ public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestPara
      * Default color for the quote stripe.
      */
     @ColorInt
-    public static final int STANDARD_COLOR = Color.GRAY;
+    public static final int STANDARD_COLOR = Color.GRAY;//////////////////
 
     /**
      * Default stripe width in pixels.
      */
-    public static final int STANDARD_STRIPE_WIDTH_PX = 16;
+    public static final int STANDARD_STRIPE_WIDTH_PX = 16;//////////////////
 
     /**
      * Default gap width in pixels.
      */
-    public static final int STANDARD_GAP_WIDTH_PX = 40;
+    public static final int STANDARD_GAP_WIDTH_PX = 40;//////////////////
 
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]

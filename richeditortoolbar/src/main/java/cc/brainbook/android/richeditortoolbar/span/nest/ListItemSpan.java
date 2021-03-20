@@ -21,9 +21,9 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIn
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
 public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;
-    @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");
+    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;//////////////////
+    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;//////////////////
+    @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");//////////////////
 
 
     @Expose

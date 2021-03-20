@@ -19,13 +19,13 @@
             android:id="@+id/tv_strip_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin" />
+            android:layout_margin="@dimen/global_dimen" />
 
         <SeekBar
             android:id="@+id/sb_strip_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin"
+            android:layout_margin="@dimen/global_dimen"
             android:max="50"
             android:progress="0" />
 
@@ -33,13 +33,13 @@
             android:id="@+id/tv_gap_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin" />
+            android:layout_margin="@dimen/global_dimen" />
 
         <SeekBar
             android:id="@+id/sb_gap_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin"
+            android:layout_margin="@dimen/global_dimen"
             android:max="100"
             android:progress="0" />
 

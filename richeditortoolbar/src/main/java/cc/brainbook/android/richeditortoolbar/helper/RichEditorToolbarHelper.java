@@ -238,7 +238,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：URL
                 if (clazz == CustomURLSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);//////////////////
                         final String url = ((CustomURLSpan) span).getURL();
                         view.setTag(R.id.url_text, text);
                         view.setTag(R.id.url_url, url);
@@ -251,7 +251,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：Image
                 else if (clazz == CustomImageSpan.class || clazz == VideoSpan.class || clazz == AudioSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);//////////////////
 
                         final String uri = clazz == CustomImageSpan.class ? null :
                                 clazz == VideoSpan.class ? ((VideoSpan) span).getUri() : ((AudioSpan) span).getUri();
@@ -1053,7 +1053,7 @@ public abstract class RichEditorToolbarHelper {
     public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;
     @NonNull
     private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
-        @SuppressLint("UseCompatLoadingForDrawables")
+        @SuppressLint("UseCompatLoadingForDrawables")//////////////////
         final Drawable d = Resources.getSystem().getDrawable(sPlaceHolderDrawable);
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
@@ -1206,6 +1206,7 @@ public abstract class RichEditorToolbarHelper {
         try {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
             Toast.makeText(context.getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
         }
     }

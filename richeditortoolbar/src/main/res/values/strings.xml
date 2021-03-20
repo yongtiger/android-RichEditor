@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">RichEditorToolBar</string>
 
     <string name="save_draft_successful">Save draft successful</string>
     <string name="save_draft_failed">Save draft failed</string>

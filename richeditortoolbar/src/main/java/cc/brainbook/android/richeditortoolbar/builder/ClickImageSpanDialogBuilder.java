@@ -55,7 +55,7 @@ import static cc.brainbook.android.richeditortoolbar.util.FileUtil.generateVideo
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final String IMAGE_FILE_SUFFIX = ".jpg";
 	private static final String VIDEO_FILE_SUFFIX = ".mp4";
-	private static final String AUDIO_FILE_SUFFIX = ".3gp";
+	private static final String AUDIO_FILE_SUFFIX = ".3gp";//////////////////
 
 	public static final int ALIGN_BOTTOM = 0;
 	public static final int ALIGN_BASELINE = 1;
@@ -71,7 +71,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final int REQUEST_CODE_DRAW = 10;
 
 
-	private int mImageOverrideWidth = 200;
+	private int mImageOverrideWidth = 200;//////////////////
 	private int mImageOverrideHeight = 200;
 
 	private int mMediaType;	///0: image; 1: video; 2: audio
@@ -234,9 +234,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				///Glide下载图片（使用已经缓存的图片）给imageView
 				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
+				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）//////////////////
 				final RequestOptions options = new RequestOptions()
-						.placeholder(R.drawable.ic_image_black_24dp); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
+						.placeholder(R.drawable.placeholder); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
 
 				///获取图片真正的宽高
 				///https://www.jianshu.com/p/299b637afe7c
@@ -389,7 +389,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				final File destinationFile = new File(mImageFileDir, "crop_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+				final File destinationFile = new File(mImageFileDir, "crop_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);//////////////////
 
 				startCrop((Activity) mContext, source, destinationFile.getAbsolutePath());
 			}
@@ -406,7 +406,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				final File destinationFile = new File(mImageFileDir, "draw_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+				final File destinationFile = new File(mImageFileDir, "draw_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);//////////////////
 
 				startDraw((Activity) mContext, imageUri, destinationFile.getAbsolutePath());
 			}
@@ -441,7 +441,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mMediaType = mediaType;
 
 		if (mMediaType != 0) {
-			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");
+			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");//////////////////
 		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -563,6 +563,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					Intent.createChooser(intent, mContext.getString(mMediaType == 1 ? R.string.label_select_video : R.string.label_select_audio)),
 					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
 		} catch (ActivityNotFoundException e) {
+			e.printStackTrace();
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -591,6 +592,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			((Activity) mContext).startActivityForResult(intent,
 					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 		} catch (ActivityNotFoundException e) {
+			e.printStackTrace();
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -611,6 +613,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			((Activity) mContext).startActivityForResult(Intent.createChooser(intent, mContext.getString(R.string.label_select_picture)),
 					REQUEST_CODE_PICK_FROM_GALLERY);
 		} catch (ActivityNotFoundException e) {
+			e.printStackTrace();
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -626,7 +629,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		///https://juejin.im/post/6860370635664261128
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
 			// Ensure that there's a camera activity to handle the intent
-			if (intent.resolveActivity(mContext.getPackageManager()) == null) {
+			if (intent.resolveActivity(mContext.getPackageManager()) == null) {//////////////////
 				Toast.makeText(mContext.getApplicationContext(), R.string.error_system_camera_not_available, Toast.LENGTH_SHORT).show();
 				return;
 			}
@@ -650,6 +653,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		try {
 			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 		} catch (ActivityNotFoundException e) {
+			e.printStackTrace();
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -674,6 +678,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		try {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
 		} catch (ActivityNotFoundException e) {
+			e.printStackTrace();
 			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -698,6 +703,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							enableDeleteOldSrcFile = true;
 						}
 					} else {
+						//////////////////Log.e
 						Toast.makeText(mContext.getApplicationContext(),
 								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
@@ -708,6 +714,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
+				//////////////////Log.e
 				Toast.makeText(mContext.getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
 			}
@@ -732,6 +739,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							enableDeleteOldSrcFile = true;
 						}
 					} else {
+						//////////////////Log.e
 						Toast.makeText(mContext.getApplicationContext(),
 								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
@@ -742,6 +750,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
+				//////////////////Log.e
 				Toast.makeText(mContext.getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
 			}
@@ -755,12 +764,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
 						mEditTextSrc.setText(selectedUri.toString());
 					} else {
+						//////////////////Log.e
 						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
             } else {
+				//////////////////Log.e
                 Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
             }
         }
@@ -775,6 +786,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
             } else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
 			} else {
+				//////////////////Log.e
 				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -790,6 +802,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
             } else if (resultCode == UCrop.RESULT_ERROR) {
                 final Throwable cropError = UCrop.getError(data);
                 if (cropError != null) {
+					//////////////////Log.e
                     Toast.makeText(mContext.getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -805,6 +818,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						enableDeleteOldSrcFile = true;
 					}
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
+					//////////////////Log.e
 					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
 				}
             }

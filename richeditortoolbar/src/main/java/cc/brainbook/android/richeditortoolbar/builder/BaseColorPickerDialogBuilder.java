@@ -126,7 +126,7 @@ public class BaseColorPickerDialogBuilder extends BaseDialogBuilder {
 
     public BaseColorPickerDialogBuilder setPickerCount(int pickerCount) throws IndexOutOfBoundsException {
         if (pickerCount < 1 || pickerCount > 5)
-            throw new IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors");
+            throw new IndexOutOfBoundsException("Picker Can Only Support 1-5 Colors");//////////////////
         this.pickerCount = pickerCount;
         if (this.pickerCount > 1)
             this.isPreviewEnabled = true;
@@ -215,8 +215,8 @@ public class BaseColorPickerDialogBuilder extends BaseDialogBuilder {
 
     }
 
-    private Integer getStartOffset(@NonNull Integer[] colors) {
-        Integer start = 0;
+    private int getStartOffset(@NonNull Integer[] colors) {
+        int start = 0;
         for (int i = 0; i < colors.length; i++) {
             if (colors[i] == null) {
                 return start;

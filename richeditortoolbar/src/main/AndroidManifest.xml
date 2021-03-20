@@ -3,7 +3,7 @@
     package="cc.brainbook.android.richeditortoolbar">
 
     <application>
-
+        <!--//////////////////-->
         <!--///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop-->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

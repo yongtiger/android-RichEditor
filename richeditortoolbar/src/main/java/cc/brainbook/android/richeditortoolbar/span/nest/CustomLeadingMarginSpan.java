@@ -14,7 +14,7 @@ import com.google.gson.annotations.Expose;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public class CustomLeadingMarginSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
-    public static final int DEFAULT_INDENT = 40;
+    public static final int DEFAULT_INDENT = 40;//////////////////
 
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]

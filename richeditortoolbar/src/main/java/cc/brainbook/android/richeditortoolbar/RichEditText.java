@@ -16,7 +16,7 @@ import android.util.AttributeSet;
 import android.widget.Toast;
 
 public class RichEditText extends AppCompatEditText {
-    private boolean enableSelectionChange = true;
+    private final boolean enableSelectionChange = true;
 
     private OnSelectionChanged mOnSelectionChanged;
     public interface OnSelectionChanged {
@@ -102,6 +102,7 @@ public class RichEditText extends AppCompatEditText {
 
                     editable.delete(min, max);
                 } else {
+                    //////////////////Log.e
                     Toast.makeText(getContext(),
                             R.string.failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();
@@ -126,6 +127,7 @@ public class RichEditText extends AppCompatEditText {
                     //////??????如何关闭TextContextMenuItem
 
                 } else {
+                    //////////////////Log.e
                     Toast.makeText(getContext(),
                             R.string.failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();

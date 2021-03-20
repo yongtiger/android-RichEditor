@@ -21,8 +21,8 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
     };
     public static final String[] HEADING_LABELS = {"H1", "H2", "H3", "H4", "H5", "H6"};
 
-    private static final int[] DEFAULT_MARGIN_TOP = {60, 50, 40, 30, 20, 10};
-    private static final int[] DEFAULT_MARGIN_BOTTOM = {60, 50, 40, 30, 20, 10};
+    private static final int[] DEFAULT_MARGIN_TOP = {60, 50, 40, 30, 20, 10};//////////////////
+    private static final int[] DEFAULT_MARGIN_BOTTOM = {60, 50, 40, 30, 20, 10};//////////////////
 
 
     @Expose

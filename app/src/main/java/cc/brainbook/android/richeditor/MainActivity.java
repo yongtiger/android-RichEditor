@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements
         ll.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                int i = 0;
             }
         });
 
@@ -103,8 +102,6 @@ public class MainActivity extends AppCompatActivity implements
         ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
         final Spannable textSpannable = ((Spannable) mTextView.getText());
         postSetText(textSpannable);
-
-
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -115,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements
         if (REQUEST_CODE_RICH_EDITOR == requestCode) {
             if (RESULT_OK == resultCode) {
                 if (data != null) {
-                    mHtmlText = data.getStringExtra("html_result");
+                    mHtmlText = data.getStringExtra("html_result");////////////////////
                     if (TextUtils.isEmpty(mHtmlText)) {
                         mTextView.setText(null);
                     } else {
@@ -131,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
+    ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]//////////////////缺省化！
     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
     @Override
     public void invalidateDrawable(@NonNull Drawable drawable) {
@@ -144,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
 
     ///[CustomImageSpan.OnClickListener]TextView点击事件：URL点击；图片点击显示全图；video/audio点击开始播放
-    @Override
+    @Override//////////////////缺省化！
     public void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
         final Context context = widget.getContext();
 
@@ -168,14 +165,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     ///[LineDividerSpan.DrawBackgroundCallback]
-    @Override
+    @Override//////////////////缺省化！
     public void drawBackground(@NonNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
+        c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线////////////////////
     }
 
 
-    ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-    public void postSetText(@NonNull Spannable textSpannable) {
+    ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]//////////////////TextViewHelper
+    private void postSetText(@NonNull Spannable textSpannable) {
         final Object[] spans = textSpannable.getSpans(0, textSpannable.length(), Object.class);
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
@@ -186,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
         final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        intent.putExtra("html_text", mHtmlText);
+        intent.putExtra("html_text", mHtmlText);////////////////////
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
     }
 

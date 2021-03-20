@@ -50,7 +50,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
 
     @Override
     public void chooseHeight(CharSequence text, int start, int end,
-                             int spanstartv, int lineHeight, Paint.FontMetricsInt fontMetricsInt) {
+                             int v, int lineHeight, Paint.FontMetricsInt fontMetricsInt) {
         if (start + 1 == end && text.charAt(start) == '\n') {
             fontMetricsInt.top -= mMarginTop;
             fontMetricsInt.ascent -= mMarginTop;

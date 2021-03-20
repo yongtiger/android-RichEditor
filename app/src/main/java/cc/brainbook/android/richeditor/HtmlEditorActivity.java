@@ -20,7 +20,7 @@ public class HtmlEditorActivity extends AppCompatActivity {
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
         final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra("html_text");
+        final String htmlTextString = intent.getStringExtra("html_text");//////////////////
         if (htmlTextString != null) {
             mEditText.setText(htmlTextString);
         }
@@ -32,7 +32,7 @@ public class HtmlEditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-        intent.putExtra("html_result", mEditText.getText().toString());
+        intent.putExtra("html_result", mEditText.getText().toString());//////////////////
 
         setResult(RESULT_OK, intent);
 

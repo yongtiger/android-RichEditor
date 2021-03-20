@@ -49,7 +49,7 @@ public class EditorActivity extends AppCompatActivity {
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
         final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra("html_text");
+        final String htmlTextString = intent.getStringExtra("html_text");//////////////////
         if (!TextUtils.isEmpty(htmlTextString)) {
             final Spanned htmlTextSpanned = Html.fromHtml(htmlTextString);
             mRichEditText.setText(htmlTextSpanned);
@@ -72,7 +72,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
             @Override
             public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-                c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线
+                c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线//////////////////
             }
         });
 
@@ -80,7 +80,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.ic_image_black_24dp);
 
-        ///设置存放ImageSpan图片的文件目录
+        ///设置存放ImageSpan图片的文件目录//////////////////
         ///（必选）RichEditorToolbar设置RichEditor中的ImageSpan存放图片文件的目录（必须非null、且存在、且可写入）
         File imageFileDir, videoFileDir, audioFileDir;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
@@ -102,7 +102,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setAudioFileDir(audioFileDir);
 
         ///（可选，缺省为richeditortoolbar\src\main\res\layout\layout_toolbar.xml）
-        mRichEditorToolbar.setLayoutRes(R.layout.toolbar_1);
+        mRichEditorToolbar.setLayoutRes(R.layout.editor_toolbar);
 
         ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
 //        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
@@ -116,7 +116,7 @@ public class EditorActivity extends AppCompatActivity {
             public void startHtmlEditorActivity(String htmlString) {
                 ///[HtmlEditor#启动HtmlEditorActivity]
                 final Intent intent = new Intent(EditorActivity.this, HtmlEditorActivity.class);
-                intent.putExtra("html_text", htmlString);
+                intent.putExtra("html_text", htmlString);//////////////////
 
                 startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
             }
@@ -141,7 +141,7 @@ public class EditorActivity extends AppCompatActivity {
         final Intent intent = new Intent();
 
         final String htmlResult = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-        intent.putExtra("html_result", htmlResult);
+        intent.putExtra("html_result", htmlResult);//////////////////
 
         setResult(RESULT_OK, intent);
 

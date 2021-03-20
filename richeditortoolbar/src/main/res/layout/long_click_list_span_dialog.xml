@@ -19,13 +19,13 @@
             android:id="@+id/tv_indicator_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin" />
+            android:layout_margin="@dimen/global_dimen" />
 
         <SeekBar
             android:id="@+id/sb_indicator_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin"
+            android:layout_margin="@dimen/global_dimen"
             android:max="320"
             android:progress="0" />
 
@@ -33,13 +33,13 @@
             android:id="@+id/tv_indicator_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin" />
+            android:layout_margin="@dimen/global_dimen" />
 
         <SeekBar
             android:id="@+id/sb_indicator_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin"
+            android:layout_margin="@dimen/global_dimen"
             android:max="80"
             android:progress="0" />
 
@@ -47,13 +47,13 @@
             android:id="@+id/tv_indicator_gap_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin" />
+            android:layout_margin="@dimen/global_dimen" />
 
         <SeekBar
             android:id="@+id/sb_indicator_gap_width"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dialog_layout_margin"
+            android:layout_margin="@dimen/global_dimen"
             android:max="80"
             android:progress="0" />
 

@@ -18,7 +18,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphStyle {
     @ColorInt
-    public static final int BACKGROUND_COLOR = Color.GRAY;
+    public static final int BACKGROUND_COLOR = Color.GRAY;//////////////////
     public static final int PADDING = 0;
 
     private Rect mBgRect;

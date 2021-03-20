@@ -126,11 +126,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
+
     public static final String SHARED_PREFERENCES_NAME_DRAFT = "rich_editor_shared_preferences_name_draft";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file_name";
     public static final int REQUEST_CODE_HTML_EDITOR = 101;
-    public static final String PROVIDER_AUTHORITIES = ".android7.fileprovider";
+    public static final String PROVIDER_AUTHORITIES = ".file.path.share";
 
 
     ///使用LinkedHashMap是为了保证顺序（ListItemSpan必须在ListSpan之后注册）
@@ -139,7 +140,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         return mClassMap;
     }
 
-    private @LayoutRes int mLayoutRes = -1;
+    private @LayoutRes int mLayoutRes = 0;
     public @LayoutRes int getLayoutRes() {
         return mLayoutRes;
     }
@@ -236,7 +237,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewAudio;
     private ImageView mImageViewImage;
     private ClickImageSpanDialogBuilder mClickImageSpanDialogBuilder;
-
+    //////////////////
     private File mImageFileDir;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
     public void setImageFileDir(File imageFilePath) {
         mImageFileDir = imageFilePath;
@@ -250,7 +251,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mAudioFileDir = audioFilePath;
     }
 
-    private int mImageOverrideWidth = 200;
+    private int mImageOverrideWidth = 200;//////////////////
     private int mImageOverrideHeight = 200;
     public void setImageOverrideWidth(int imageOverrideWidth) {
         mImageOverrideWidth = imageOverrideWidth;
@@ -266,7 +267,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
                     if (data != null) {
-                        final String htmlText = data.getStringExtra("html_result");
+                        final String htmlText = data.getStringExtra("html_result");//////////////////
                         if (htmlText != null) {
                             editable.replace(0, editable.length(), Html.fromHtml(htmlText));
 
@@ -338,7 +339,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, selectionStart, selectionEnd, true);
             FileUtil.writeFile(mClipboardFile, bytes);
         } catch (IOException e) {
-            if (DEBUG) Log.e("TAG", "Error: Cannot write Clipboard file");
             e.printStackTrace();
         }
     }
@@ -357,7 +357,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     pasteEditable, pasteOffset,
                     mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
         } catch (IOException e) {
-            if (DEBUG) Log.e("TAG", "Error: Cannot read Clipboard file");
             e.printStackTrace();
         }
     }
@@ -475,14 +474,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[clipboard]设置存放剪切板的文件目录
         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
         ///注意：建议使用应用的cache目录
-        mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);
+        mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);//////////////////getCacheDir
 
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
 
         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
-        LayoutInflater.from(mContext).inflate(mLayoutRes == -1 ? R.layout.toolbar : mLayoutRes, this, true);
+        LayoutInflater.from(mContext).inflate(mLayoutRes == 0 ? R.layout.toolbar : mLayoutRes, this, true);
 
 
         /* -------------- ///段落span：Div --------------- */
@@ -1005,7 +1004,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             mImageViewPreview.setVisibility(GONE);
         }
 
-        /* -------------- ///[Html] --------------- */
+        /* -------------- ///[Html] --------------- *///////////////////
         mImageViewHtml = (ImageView) findViewById(R.id.iv_html);
         ///[RichEditorToolbar是否显示某按钮（app:enable_XXX）]
         if (a.getBoolean(R.styleable.RichEditorToolbar_enable_html, true)) {
@@ -1167,7 +1166,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final int listType = ArrayUtil.getIntItem(mContext, R.array.list_type_ids, which);
                                 final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
-                                @SuppressLint("UseSwitchCompatOrMaterialCode")
+                                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
                                 final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
                                 assert editTextStart != null;
                                 editTextStart.setEnabled(isListTypeOrdered(listType));
@@ -1211,7 +1210,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
                                 assert editTextStart != null;
                                 final int start = Integer.parseInt(editTextStart.getText().toString());
-                                @SuppressLint("UseSwitchCompatOrMaterialCode")
+                                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
                                 final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
                                 assert switchIsReversed != null;
                                 final boolean isReversed = switchIsReversed.isChecked();
@@ -1250,7 +1249,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 editTextStart.setEnabled(isEnabled);
                 final int start = view.getTag(R.id.list_start) == null ? 1 :  (int) view.getTag(R.id.list_start);
                 editTextStart.setText(String.valueOf(start));
-                @SuppressLint("UseSwitchCompatOrMaterialCode")
+                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
                 final Switch switchIsReversed = (Switch) listSpanAlertDialog.findViewById(R.id.switch_is_reversed);
                 assert switchIsReversed != null;
                 switchIsReversed.setEnabled(isEnabled);
@@ -2780,7 +2779,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int viewTagWidth = view.getTag(R.id.image_width) == null ? 0 : (int) view.getTag(R.id.image_width);
                 final int viewTagHeight = view.getTag(R.id.image_height) == null ? 0 : (int) view.getTag(R.id.image_height);
                 final int viewTagAlign = view.getTag(R.id.image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.image_align);
-                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
+                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);//////////////////
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
                     ///忽略TextWatcher的UndoRedo
                     isSkipUndoRedo = true;
@@ -2956,7 +2955,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    ///注意：当右缩+new时需要compareSpan
+    ///注意：当右缩+new时需要compareSpan//////////////////
     private <T> Object createNewSpan(View view, Class<T> clazz, Editable editable, int start, int end, T compareSpan, T parentSpan) {
         ///添加新span
         Object newSpan = null;
@@ -3134,7 +3133,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /**
      * 按照'\n'来分割span
      */
-    public <T> void splitCharacterStyleSpan(View view, Class<T> clazz, Editable editable, int start, int end, T span) {
+    private <T> void splitCharacterStyleSpan(View view, Class<T> clazz, Editable editable, int start, int end, T span) {
         boolean flag = false;
         int next;
         for (int i = start; i < end; i = next + 1) {

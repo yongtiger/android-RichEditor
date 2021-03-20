@@ -21,7 +21,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-
+////////////////////
 /**
  * 适应Android 7.0及以上
  *
@@ -41,7 +41,7 @@ import java.util.List;
  *          /storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/20201003050111.jpg
  *
  * FileProviderUri:
- *          Android N及以上：content://cc.brainbook.android.richeditor.android7.fileprovider/external_files_path/Movies/20201003185042.mp4
+ *          Android N及以上：content://cc.brainbook.android.richeditor.file.path.share/external_files_path/Movies/20201003185042.mp4
  *          Android N以下：file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/20201003050111.jpg
  *
  */
@@ -266,7 +266,7 @@ public abstract class UriUtil {
 
             String path = getDataColumn(context, uri, null, null);
             if (path == null) { //如果getDataColumn()返回null，则尝试获取FileProvider Uri的path
-                ///例如：content://cc.brainbook.android.richeditor.android7.fileprovider/external_files_path/Movies/20201003185042.mp4
+                ///例如：content://cc.brainbook.android.richeditor.file.path.share/external_files_path/Movies/20201003185042.mp4
                 path = getFilePathFromFileProviderUri(context, uri);
             }
             return path;

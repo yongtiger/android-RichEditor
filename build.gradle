@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.1",   ///v2.0.1#[FIX#assiststructure memory leak]解决：使用WeakReference
-                versionCode: 20001
+                versionName: "2.0.2",   ///v2.0.2#toolbar.xml
+                versionCode: 20002
         ]
     }
 
