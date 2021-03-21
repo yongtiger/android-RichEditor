@@ -104,7 +104,7 @@ public class RichEditText extends AppCompatEditText {
                 } else {
                     //////////////////Log.e
                     Toast.makeText(getContext(),
-                            R.string.failed_to_copy_to_clipboard,
+                            R.string.message_failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -129,7 +129,7 @@ public class RichEditText extends AppCompatEditText {
                 } else {
                     //////////////////Log.e
                     Toast.makeText(getContext(),
-                            R.string.failed_to_copy_to_clipboard,
+                            R.string.message_failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -143,13 +143,13 @@ public class RichEditText extends AppCompatEditText {
             case android.R.id.undo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.please_try_undo_redo_in_toolbar,
+                        R.string.message_please_try_undo_redo_in_toolbar,
                         Toast.LENGTH_SHORT).show();
                 return true;
             case android.R.id.redo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.please_try_undo_redo_in_toolbar,
+                        R.string.message_please_try_undo_redo_in_toolbar,
                         Toast.LENGTH_SHORT).show();
                 return true;
             default:

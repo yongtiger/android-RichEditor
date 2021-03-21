@@ -264,6 +264,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 								mEditTextDisplayWidth.setEnabled(false);
 								mEditTextDisplayHeight.setEnabled(false);
+								mCheckBoxDisplayConstrain.setEnabled(false);
 								mButtonDisplayRestore.setEnabled(false);
 
 								///先设置Crop和Draw为false
@@ -285,6 +286,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 								mEditTextDisplayWidth.setEnabled(true);
 								mEditTextDisplayHeight.setEnabled(true);
+								mCheckBoxDisplayConstrain.setEnabled(true);
 								mButtonDisplayRestore.setEnabled(true);
 
 								mImageViewPreview.setImageDrawable(resource);
@@ -475,9 +477,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doPositiveAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -488,9 +487,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doPositiveAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -501,9 +497,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNegativeAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -514,9 +507,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNegativeAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -527,9 +517,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -539,9 +526,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
-
-				///避免内存泄漏
-				clear();
 			}
 		});
 		return this;
@@ -582,7 +566,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -611,7 +595,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -632,7 +616,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					REQUEST_CODE_PICK_FROM_GALLERY);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -648,7 +632,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
 			// Ensure that there's a camera activity to handle the intent
 			if (intent.resolveActivity(mContext.getPackageManager()) == null) {//////////////////
-				Toast.makeText(mContext.getApplicationContext(), R.string.error_system_camera_not_available, Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_system_camera_not_available, Toast.LENGTH_SHORT).show();
 				return;
 			}
 		}
@@ -672,7 +656,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -697,7 +681,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.error_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 

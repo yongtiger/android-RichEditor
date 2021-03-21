@@ -838,9 +838,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME_DRAFT, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
                     if (checkDraft()) {
-                        Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_successful, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_successful, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(mContext.getApplicationContext(), R.string.save_draft_failed, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -897,7 +897,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
                                 RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), false));
 
-                        Toast.makeText(mContext.getApplicationContext(), R.string.restore_draft_successful, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), R.string.message_restore_draft_successful, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -914,9 +914,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME_DRAFT);
 
                     if (!checkDraft()) {
-                        Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_successful, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), R.string.message_clear_draft_successful, Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(mContext.getApplicationContext(), R.string.clear_draft_failed, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext.getApplicationContext(), R.string.message_clear_draft_failed, Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -926,7 +926,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///初始化时检查有无草稿Draft
         if (checkDraft()) {
-            Toast.makeText(mContext.getApplicationContext(), R.string.has_draft, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext.getApplicationContext(), R.string.message_has_draft, Toast.LENGTH_SHORT).show();
         }
 
         /* ------------------- ///[Undo/Redo/Save] ------------------- */
@@ -1808,6 +1808,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setPositiveButton(android.R.string.ok, new ClickImageSpanDialogBuilder.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
+                                ///避免内存泄漏
+                                mClickImageSpanDialogBuilder.clear();
+
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理n
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
                                 if (view != mImageViewImage && uri.length() == 0 || src.length() == 0 || width == 0 || height == 0) {
@@ -1844,6 +1847,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///避免内存泄漏
+                                mClickImageSpanDialogBuilder.clear();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1866,7 +1872,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
-                        .setNegativeButton(android.R.string.cancel, null);
+//                        .setNegativeButton(android.R.string.cancel, null)
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///避免内存泄漏
+                                mClickImageSpanDialogBuilder.clear();
+                            }
+                        });
 
                 final String uri = (String) view.getTag(R.id.image_uri);
                 final String src = (String) view.getTag(R.id.image_src);

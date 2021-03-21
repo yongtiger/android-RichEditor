@@ -14,9 +14,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:maxLines="1"
+            android:autofillHints="@string/url_span_text"
+            android:hint="@string/url_span_text"
             android:inputType="text"
-            android:hint="@string/url_span_text" />
+            android:maxLines="1"
+            android:singleLine="true" />
 
         <EditText
             android:id="@+id/et_url"
