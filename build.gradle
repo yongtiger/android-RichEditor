@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.3",   ///v2.0.3#用AI制作SVG（vector path）以便生成Vector drawable
-                versionCode: 20003
+                versionName: "2.0.4",   ///v2.0.4#避免内存泄漏#BaseDialogBuilder#clear()
+                versionCode: 20004
         ]
     }
 

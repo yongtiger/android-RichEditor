@@ -50,4 +50,9 @@ public class BaseDialogBuilder {
         return this;
     }
 
+    ///避免内存泄漏
+    public void clear() {
+        builder = null;
+    }
+
 }

@@ -32,10 +32,12 @@
     <string name="image_span_recorder">Recorder</string>
     <string name="image_span_gallery">Gallery</string>
     <string name="image_span_camera">Camera</string>
+    <string name="image_span_uri_hint">Audio/Video source (local or network address)</string>
+    <string name="image_span_src_hint">Image source (local or network address)</string>
     <string name="image_span_text">[img src="%1$s" width=%2$d height=%3$d align=%4$d]</string>
     <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$d height=%4$d align=%5$d]</string>
-    <string name="image_span_display_width">Width: </string>
-    <string name="image_span_display_height">Height: </string>
+    <string name="image_span_hint_display_width">width</string>
+    <string name="image_span_hint_display_height">height</string>
     <string name="image_span_constrain">Constrain</string>
     <string name="image_span_crop">Crop</string>
     <string name="image_span_draw">Draw</string>
@@ -68,43 +70,5 @@
 
     <string name="error_activity_not_found">Error: Activity not found</string>
     <string name="error_system_camera_not_available">Error: System camera not available</string>
-
-    <string name="tool_tip_leading_margin">Leading margin</string>
-    <string name="tool_tip_align_normal">Align normal</string>
-    <string name="tool_tip_align_center">Align center</string>
-    <string name="tool_tip_align_opposite">Align opposite</string>
-    <string name="tool_tip_list">List</string>
-    <string name="tool_tip_quote">Quote</string>
-    <string name="tool_tip_pre">Pre</string>
-    <string name="tool_tip_head">Head</string>
-    <string name="tool_tip_line_divider">Line divider</string>
-    <string name="tool_tip_bold">Bold</string>
-    <string name="tool_tip_italic">Italic</string>
-    <string name="tool_tip_underline">Underline</string>
-    <string name="tool_tip_strike_through">Strike through</string>
-    <string name="tool_tip_subscript">Subscript</string>
-    <string name="tool_tip_superscript">Superscript</string>
-    <string name="tool_tip_foreground_color">Foreground color</string>
-    <string name="tool_tip_background_color">Background color</string>
-    <string name="tool_tip_font_family">Font family</string>
-    <string name="tool_tip_absolute_size">Absolute size</string>
-    <string name="tool_tip_relative_size">Relative size</string>
-    <string name="tool_tip_scale_x">Scale x</string>
-    <string name="tool_tip_code">Code</string>
-    <string name="tool_tip_block">Block</string>
-    <string name="tool_tip_border">Border</string>
-    <string name="tool_tip_url">Url</string>
-    <string name="tool_tip_image">Image</string>
-    <string name="tool_tip_video">Video</string>
-    <string name="tool_tip_audio">Audio</string>
-    <string name="tool_tip_clear_styles">Clear styles</string>
-    <string name="tool_tip_save_draft">Save draft</string>
-    <string name="tool_tip_restore_draft">Restore draft</string>
-    <string name="tool_tip_clear_draft">Clear draft</string>
-    <string name="tool_tip_undo">Undo</string>
-    <string name="tool_tip_redo">Redo</string>
-    <string name="tool_tip_save">Save</string>
-    <string name="tool_tip_preview">Preview</string>
-    <string name="tool_tip_html">Html</string>
 
 </resources>

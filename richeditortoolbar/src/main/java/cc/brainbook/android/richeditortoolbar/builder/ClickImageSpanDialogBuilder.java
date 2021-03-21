@@ -475,6 +475,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doPositiveAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -485,6 +488,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doPositiveAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -495,6 +501,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNegativeAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -505,6 +514,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNegativeAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -515,6 +527,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -524,6 +539,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
+
+				///避免内存泄漏
+				clear();
 			}
 		});
 		return this;
@@ -853,6 +871,29 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				if (DEBUG) Log.w("TAG", "Fail to delete file: " + file.getAbsolutePath());
 			}
 		}
+	}
+
+	///避免内存泄漏
+	public void clear() {
+		super.clear();
+
+		mButtonCrop = null;
+		mButtonDraw = null;
+		mButtonDisplayRestore = null;
+		mButtonPickFromCamera = null;
+		mButtonPickFromGallery = null;
+		mButtonPickFromRecorder = null;
+		mButtonPickFromMedia = null;
+		mCheckBoxDisplayConstrain = null;
+		mEditTextDisplayHeight = null;
+		mEditTextDisplayWidth = null;
+		mEditTextSrc = null;
+		mEditTextUri = null;
+		mImageViewPreview = null;
+		mRadioGroup = null;
+		mRadioButtonAlignBottom = null;
+		mRadioButtonAlignBaseline = null;
+		mRadioButtonAlignCenter = null;
 	}
 
 }

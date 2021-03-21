@@ -8,6 +8,9 @@
     <dimen name="global_dimen_3">24dp</dimen>
     <dimen name="global_dimen_4">32dp</dimen>
     <dimen name="global_dimen_5">40dp</dimen>
+    <dimen name="global_dimen_6">48dp</dimen>
+    <dimen name="global_dimen_7">56dp</dimen>
+    <dimen name="global_dimen_8">64dp</dimen>
     <dimen name="global_dimen_10">80dp</dimen>
     <dimen name="global_dimen_20">160dp</dimen>
 

@@ -1841,9 +1841,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new ClickImageSpanDialogBuilder.OnClickListener() {
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1866,7 +1866,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
-                        .setNegativeButton(android.R.string.cancel, (ClickImageSpanDialogBuilder.OnClickListener) null);
+                        .setNegativeButton(android.R.string.cancel, null);
 
                 final String uri = (String) view.getTag(R.id.image_uri);
                 final String src = (String) view.getTag(R.id.image_src);
