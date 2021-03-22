@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
+
 public class HtmlEditorActivity extends AppCompatActivity {
+
     private EditText mEditText;
 
     @Override
@@ -20,11 +24,10 @@ public class HtmlEditorActivity extends AppCompatActivity {
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
         final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra("html_text");//////////////////
+        final String htmlTextString = intent.getStringExtra(KEY_HTML_TEXT);
         if (htmlTextString != null) {
             mEditText.setText(htmlTextString);
         }
-
     }
 
 
@@ -32,7 +35,7 @@ public class HtmlEditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-        intent.putExtra("html_result", mEditText.getText().toString());//////////////////
+        intent.putExtra(KEY_HTML_RESULT, mEditText.getText().toString());
 
         setResult(RESULT_OK, intent);
 

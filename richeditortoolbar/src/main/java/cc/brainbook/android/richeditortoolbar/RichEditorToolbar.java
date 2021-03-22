@@ -124,6 +124,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
+    public static final String KEY_HTML_TEXT = "key_html_text";
+    public static final String KEY_HTML_RESULT = "key_html_result";
 
     public static final String SHARED_PREFERENCES_NAME_DRAFT = "rich_editor_shared_preferences_name_draft";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
@@ -265,7 +267,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
                     if (data != null) {
-                        final String htmlText = data.getStringExtra("html_result");//////////////////
+                        final String htmlText = data.getStringExtra(KEY_HTML_RESULT);
                         if (htmlText != null) {
                             editable.replace(0, editable.length(), Html.fromHtml(htmlText));
 
@@ -353,7 +355,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     RichEditorToolbarHelper.fromByteArray(pasteEditable, bytes),
                     pasteEditable, pasteOffset,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
+                    mPlaceholderDrawable, mPlaceholderResourceId, this, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -401,7 +403,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     RichEditorToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
                     null, -1,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
+                    mPlaceholderDrawable, mPlaceholderResourceId, this, null);
         }
     }
 
@@ -888,7 +890,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         RichEditorToolbarHelper.postLoadSpans(mContext, editable,
                                 RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
                                 null, -1,
-                                mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, null, mDrawBackgroundCallback);
+                                mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, null);
 
                         ///[Preview]
                         updatePreview();
@@ -1065,7 +1067,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditorToolbarHelper.postLoadSpans(mContext, editable,
                 RichEditorToolbarHelper.fromSpanBeans(spanBeans, editable),
                 null, -1,
-                mPlaceholderDrawable, mPlaceholderResourceId, this, null, mDrawBackgroundCallback);
+                mPlaceholderDrawable, mPlaceholderResourceId, this, null);
     }
 
     private int getActionId(View view) {
@@ -3094,7 +3096,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///段落span：LineDivider
         else if (clazz == LineDividerSpan.class) {
-            newSpan = new LineDividerSpan(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom, mDrawBackgroundCallback);
+            newSpan = new LineDividerSpan(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom);
         }
 
         ///字符span（带参数）：ForegroundColor、BackgroundColor

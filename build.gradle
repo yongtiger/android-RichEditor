@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.6",   ///v2.0.6#listSpanAlertDialog
-                versionCode: 20006
+                versionName: "2.0.7",   ///v2.0.7#LineDividerSpan#DrawBackgroundCallback缺省实现
+                versionCode: 20007
         ]
     }
 

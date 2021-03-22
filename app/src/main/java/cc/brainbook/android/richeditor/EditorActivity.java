@@ -3,9 +3,7 @@ package cc.brainbook.android.richeditor;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -20,8 +18,9 @@ import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
-import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
 
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.REQUEST_CODE_HTML_EDITOR;
 
 public class EditorActivity extends AppCompatActivity {
@@ -49,7 +48,7 @@ public class EditorActivity extends AppCompatActivity {
 
         /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
         final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra("html_text");//////////////////
+        final String htmlTextString = intent.getStringExtra(KEY_HTML_TEXT);
         if (!TextUtils.isEmpty(htmlTextString)) {
             final Spanned htmlTextSpanned = Html.fromHtml(htmlTextString);
             mRichEditText.setText(htmlTextSpanned);
@@ -68,13 +67,13 @@ public class EditorActivity extends AppCompatActivity {
         ///（必选）RichEditorToolbar设置Preview
         mRichEditorToolbar.setPreview(mTextViewPreview);
 
-        ///（必选）RichEditorToolbar设置LineDividerSpan.DrawBackgroundCallback
-        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
-            @Override
-            public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-                c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线//////////////////
-            }
-        });
+//        ///（可选）RichEditorToolbar设置LineDividerSpan.DrawBackgroundCallback
+//        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
+//            @Override
+//            public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+//                c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
+//            }
+//        });
 
         ///（必选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
@@ -116,7 +115,7 @@ public class EditorActivity extends AppCompatActivity {
             public void startHtmlEditorActivity(String htmlString) {
                 ///[HtmlEditor#启动HtmlEditorActivity]
                 final Intent intent = new Intent(EditorActivity.this, HtmlEditorActivity.class);
-                intent.putExtra("html_text", htmlString);//////////////////
+                intent.putExtra(KEY_HTML_TEXT, htmlString);
 
                 startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
             }
@@ -141,7 +140,7 @@ public class EditorActivity extends AppCompatActivity {
         final Intent intent = new Intent();
 
         final String htmlResult = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-        intent.putExtra("html_result", htmlResult);//////////////////
+        intent.putExtra(KEY_HTML_RESULT, htmlResult);
 
         setResult(RESULT_OK, intent);
 

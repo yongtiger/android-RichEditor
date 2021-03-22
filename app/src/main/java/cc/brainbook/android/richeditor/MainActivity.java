@@ -5,9 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -17,7 +15,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -42,13 +39,14 @@ import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity implements
         Drawable.Callback,
-        CustomImageSpan.OnClickListener,
-        LineDividerSpan.DrawBackgroundCallback {
+        CustomImageSpan.OnClickListener {
 
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements
         if (REQUEST_CODE_RICH_EDITOR == requestCode) {
             if (RESULT_OK == resultCode) {
                 if (data != null) {
-                    mHtmlText = data.getStringExtra("html_result");////////////////////
+                    mHtmlText = data.getStringExtra(KEY_HTML_RESULT);
                     if (TextUtils.isEmpty(mHtmlText)) {
                         mTextView.setText(null);
                     } else {
@@ -166,12 +164,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    ///[LineDividerSpan.DrawBackgroundCallback]
-    @Override//////////////////缺省化！
-    public void drawBackground(@NonNull Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        c.drawLine(left, (top + bottom) / 2, right, (top + bottom) / 2, p);    ///画直线////////////////////
-    }
-
 
     ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]//////////////////TextViewHelper
     private void postSetText(@NonNull Spannable textSpannable) {
@@ -179,13 +171,13 @@ public class MainActivity extends AppCompatActivity implements
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         RichEditorToolbarHelper.postLoadSpans(this, textSpannable, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1,this,  this, this);
+                new ColorDrawable(Color.LTGRAY), -1,this,  this);
     }
 
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
         final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        intent.putExtra("html_text", mHtmlText);////////////////////
+        intent.putExtra(KEY_HTML_TEXT, mHtmlText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
     }
 

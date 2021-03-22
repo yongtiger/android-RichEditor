@@ -26,9 +26,14 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     private final int mMarginTop, mMarginBottom;
 
     ///[FIX#assiststructure memory leak]解决：使用WeakReference
-    private WeakReference<DrawBackgroundCallback> mDrawBackgroundCallback;
+    private WeakReference<DrawBackgroundCallback> mDrawBackgroundCallback = new WeakReference<DrawBackgroundCallback>(new LineDividerSpan.DrawBackgroundCallback() {
+        @Override
+        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+            c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
+        }
+    });
     public void setDrawBackgroundCallback(DrawBackgroundCallback drawBackgroundCallback) {
-        mDrawBackgroundCallback = new WeakReference<DrawBackgroundCallback>(drawBackgroundCallback);
+        mDrawBackgroundCallback = new WeakReference<>(drawBackgroundCallback);
     }
 
 

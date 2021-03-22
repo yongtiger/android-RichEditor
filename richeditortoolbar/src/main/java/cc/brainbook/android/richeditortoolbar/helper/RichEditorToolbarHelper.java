@@ -1069,17 +1069,14 @@ public abstract class RichEditorToolbarHelper {
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
-                                     CustomImageSpan.OnClickListener onClickListener,
-                                     LineDividerSpan.DrawBackgroundCallback drawBackgroundCallback
+                                     CustomImageSpan.OnClickListener onClickListener
     ) {
         if (spans == null || spans.isEmpty()) {
             return;
         }
 
         for (Object span : spans) {
-            if (span instanceof LineDividerSpan) {
-                ((LineDividerSpan) span).setDrawBackgroundCallback(drawBackgroundCallback);
-            } else if (span instanceof CustomImageSpan) {
+            if (span instanceof CustomImageSpan) {
                 final String uri = ((CustomImageSpan) span).getUri();
                 final String source = ((CustomImageSpan) span).getSource();
                 final int verticalAlignment = ((CustomImageSpan) span).getVerticalAlignment();

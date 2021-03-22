@@ -460,7 +460,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mMediaType = mediaType;
 
 		if (mMediaType != 0) {
-			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");//////////////////
+			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");
 		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
