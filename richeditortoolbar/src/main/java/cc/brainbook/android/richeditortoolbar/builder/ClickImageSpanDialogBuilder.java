@@ -5,7 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -15,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -235,8 +240,20 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				///Glide下载图片（使用已经缓存的图片）给imageView
 				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
 				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）//////////////////
-				final RequestOptions options = new RequestOptions()
-						.placeholder(R.drawable.placeholder); ///   .placeholder(new ColorDrawable(Color.BLACK))   // 或者可以直接使用ColorDrawable
+				final RequestOptions options = new RequestOptions();
+
+				///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
+				///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
+				///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
+				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+					final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+							R.drawable.placeholder,
+							mContext.getTheme());
+
+					options.placeholder(placeholderDrawable);
+				} else {
+					options.placeholder(R.drawable.placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
+				}
 
 				///获取图片真正的宽高
 				///https://www.jianshu.com/p/299b637afe7c

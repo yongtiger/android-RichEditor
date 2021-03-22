@@ -65,8 +65,8 @@
     <string name="list_span_indicator_margin">Indicator margin: %1$d</string>
     <string name="list_span_indicator_width">Indicator width: %1$d</string>
     <string name="list_span_indicator_gap_width">Indicator gap width: %1$d</string>
-    <string name="list_span_start">Start: </string>
-    <string name="list_span_reverse">Reverse: </string>
+    <string name="list_span_start">Start</string>
+    <string name="list_span_reverse">Reverse</string>
 
     <string name="line_divider_span_margin_top">Margin top: %1$d</string>
     <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
@@ -79,8 +79,8 @@
     <string name="image_span_src_hint">Image source (local or network address)</string>
     <string name="image_span_text">[img src="%1$s" width=%2$d height=%3$d align=%4$d]</string>
     <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$d height=%4$d align=%5$d]</string>
-    <string name="image_span_hint_display_width">width</string>
-    <string name="image_span_hint_display_height">height</string>
+    <string name="image_span_hint_display_width">Width</string>
+    <string name="image_span_hint_display_height">Height</string>
     <string name="image_span_constrain">Constrain</string>
     <string name="image_span_crop">Crop</string>
     <string name="image_span_draw">Draw</string>

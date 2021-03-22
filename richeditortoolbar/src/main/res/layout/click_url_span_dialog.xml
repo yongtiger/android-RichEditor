@@ -16,18 +16,16 @@
             android:layout_margin="@dimen/global_dimen"
             android:autofillHints="@string/url_span_text"
             android:hint="@string/url_span_text"
-            android:inputType="text"
-            android:maxLines="1"
-            android:singleLine="true" />
+            android:inputType="text" />
 
         <EditText
             android:id="@+id/et_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:maxLines="1"
-            android:inputType="textWebEmailAddress|textUri"
-            android:hint="@string/url_span_url" />
+            android:autofillHints="@string/url_span_url"
+            android:hint="@string/url_span_url"
+            android:inputType="textWebEmailAddress|textUri" />
 
     </LinearLayout>
 

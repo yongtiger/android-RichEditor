@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.4",   ///v2.0.4#避免内存泄漏#BaseDialogBuilder#clear()
-                versionCode: 20004
+                versionName: "2.0.5",   ///v2.0.5#[FIX#Android api 16#listView.addFooterView不显示]解决：addFootView()放在setAdapter()之前
+                versionCode: 20005
         ]
     }
 

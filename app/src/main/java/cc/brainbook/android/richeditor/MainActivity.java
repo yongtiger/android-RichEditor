@@ -17,6 +17,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements
         Drawable.Callback,
         CustomImageSpan.OnClickListener,
         LineDividerSpan.DrawBackgroundCallback {
+
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
 

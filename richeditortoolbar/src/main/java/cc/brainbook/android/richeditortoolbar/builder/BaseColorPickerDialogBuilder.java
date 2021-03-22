@@ -22,6 +22,7 @@ import cc.brainbook.android.colorpicker.builder.ColorWheelRendererBuilder;
 import cc.brainbook.android.colorpicker.renderer.ColorWheelRenderer;
 import cc.brainbook.android.colorpicker.slider.AlphaSlider;
 import cc.brainbook.android.colorpicker.slider.LightnessSlider;
+import cc.brainbook.android.richeditortoolbar.R;
 
 public class BaseColorPickerDialogBuilder extends BaseDialogBuilder {
     protected LinearLayout pickerContainer;
@@ -197,14 +198,14 @@ public class BaseColorPickerDialogBuilder extends BaseDialogBuilder {
             pickerContainer.addView(colorPreview);
 
             if (initialColor.length == 0) {
-                ImageView colorImage = (ImageView) View.inflate(context, cc.brainbook.android.colorpicker.R.layout.color_selector, null);
+                ImageView colorImage = (ImageView) View.inflate(context, R.layout.color_selector, null);
                 colorImage.setImageDrawable(new ColorDrawable(Color.WHITE));
             } else {
                 for (int i = 0; i < initialColor.length && i < this.pickerCount; i++) {
                     if (initialColor[i] == null)
                         break;
-                    LinearLayout colorLayout = (LinearLayout) View.inflate(context, cc.brainbook.android.colorpicker.R.layout.color_selector, null);
-                    ImageView colorImage = (ImageView) colorLayout.findViewById(cc.brainbook.android.colorpicker.R.id.image_preview);
+                    LinearLayout colorLayout = (LinearLayout) View.inflate(context, R.layout.color_selector, null);
+                    ImageView colorImage = (ImageView) colorLayout.findViewById(R.id.image_preview);
                     colorImage.setImageDrawable(new ColorDrawable(initialColor[i]));
                     colorPreview.addView(colorLayout);
                 }

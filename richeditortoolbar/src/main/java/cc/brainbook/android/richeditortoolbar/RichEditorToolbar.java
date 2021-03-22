@@ -1,6 +1,5 @@
 package cc.brainbook.android.richeditortoolbar;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +14,9 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SwitchCompat;
 
+import android.os.Build;
 import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Selection;
@@ -27,10 +28,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -1163,8 +1164,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final int listType = ArrayUtil.getIntItem(mContext, R.array.list_type_ids, which);
                                 final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
-                                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
-                                final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
+                                final SwitchCompat switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
                                 assert editTextStart != null;
                                 editTextStart.setEnabled(isListTypeOrdered(listType));
                                 assert switchIsReversed != null;
@@ -1207,8 +1207,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 final EditText editTextStart = ((AlertDialog) dialog).findViewById(R.id.et_start);
                                 assert editTextStart != null;
                                 final int start = Integer.parseInt(editTextStart.getText().toString());
-                                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
-                                final Switch switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
+                                final SwitchCompat switchIsReversed = ((AlertDialog) dialog).findViewById(R.id.switch_is_reversed);
                                 assert switchIsReversed != null;
                                 final boolean isReversed = switchIsReversed.isChecked();
 
@@ -1239,6 +1238,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final ListView listView = listSpanAlertDialog.getListView();
                 listView.addFooterView(listSpanDialogView);
 
+                ///[FIX#Android api 16#listView.addFooterView不显示]解决：addFootView()放在setAdapter()之前
+                ///https://blog.csdn.net/tengzhinei1/article/details/84211698
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN) {
+                    listView.setAdapter(listView.getAdapter());
+                }
+
                 ///初始化AlertDialog
                 final boolean isEnabled = view.getTag(R.id.list_list_type) != null && isListTypeOrdered(listType);
                 final EditText editTextStart = (EditText) listSpanAlertDialog.findViewById(R.id.et_start);
@@ -1246,8 +1251,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 editTextStart.setEnabled(isEnabled);
                 final int start = view.getTag(R.id.list_start) == null ? 1 :  (int) view.getTag(R.id.list_start);
                 editTextStart.setText(String.valueOf(start));
-                @SuppressLint("UseSwitchCompatOrMaterialCode")//////////////////
-                final Switch switchIsReversed = (Switch) listSpanAlertDialog.findViewById(R.id.switch_is_reversed);
+
+                ///[FIX#AlertDialog中的EditText无法弹出软键盘]
+                ///https://itimetraveler.github.io/2017/01/20/%E3%80%90Android%E3%80%91AlertDialog%E4%B8%AD%E7%9A%84EditText%E4%B8%8D%E8%83%BD%E5%BC%B9%E5%87%BA%E8%BD%AF%E9%94%AE%E7%9B%98%E7%9A%84%E9%97%AE%E9%A2%98/
+                ///https://developer.android.com/reference/android/app/Dialog.html
+//                editTextStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                    @Override
+//                    public void onFocusChange(View view, boolean focused) {
+//                        if (focused) {
+                            //dialog弹出软键盘
+                            listSpanAlertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+//                        }
+//                    }
+//                });
+
+                final SwitchCompat switchIsReversed = listSpanAlertDialog.findViewById(R.id.switch_is_reversed);
                 assert switchIsReversed != null;
                 switchIsReversed.setEnabled(isEnabled);
                 final boolean isReversed = view.getTag(R.id.list_is_reversed) != null && (boolean) view.getTag(R.id.list_is_reversed);
