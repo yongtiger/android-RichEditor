@@ -1169,6 +1169,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 editTextStart.setEnabled(isListTypeOrdered(listType));
                                 assert switchIsReversed != null;
                                 switchIsReversed.setEnabled(isListTypeOrdered(listType));
+
+                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_decrease).setEnabled(isListTypeOrdered(listType));
+                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_increase).setEnabled(isListTypeOrdered(listType));
                             }
                         })
                         ///清除样式
@@ -1244,6 +1247,27 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     listView.setAdapter(listView.getAdapter());
                 }
 
+                listView.findViewById(R.id.ib_decrease).setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final EditText editTextStart = listSpanAlertDialog.findViewById(R.id.et_start);
+                        assert editTextStart != null;
+                        final int start = Integer.parseInt(editTextStart.getText().toString());
+                        if (start > 1) {
+                            editTextStart.setText(String.valueOf(start - 1));
+                        }
+                    }
+                });
+                listView.findViewById(R.id.ib_increase).setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final EditText editTextStart = listSpanAlertDialog.findViewById(R.id.et_start);
+                        assert editTextStart != null;
+                        final int start = Integer.parseInt(editTextStart.getText().toString());
+                        editTextStart.setText(String.valueOf(start + 1));
+                    }
+                });
+
                 ///初始化AlertDialog
                 final boolean isEnabled = view.getTag(R.id.list_list_type) != null && isListTypeOrdered(listType);
                 final EditText editTextStart = (EditText) listSpanAlertDialog.findViewById(R.id.et_start);
@@ -1270,6 +1294,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 switchIsReversed.setEnabled(isEnabled);
                 final boolean isReversed = view.getTag(R.id.list_is_reversed) != null && (boolean) view.getTag(R.id.list_is_reversed);
                 switchIsReversed.setChecked(isReversed);
+
+                listView.findViewById(R.id.ib_decrease).setEnabled(isEnabled);
+                listView.findViewById(R.id.ib_increase).setEnabled(isEnabled);
 
                 return;
             }

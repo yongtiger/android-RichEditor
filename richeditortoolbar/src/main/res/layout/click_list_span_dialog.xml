@@ -1,29 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditText
-        android:id="@+id/et_start"
-        android:layout_width="@dimen/global_dimen_6"
+    <LinearLayout
+        android:id="@+id/ll_linear_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/global_dimen"
         android:layout_alignParentTop="true"
-
         android:gravity="center"
-        android:autofillHints="@string/list_span_start"
-        android:hint="@string/list_span_start"
-        android:inputType="number"
-        android:maxLines="1"
-        android:singleLine="true" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/ib_decrease"
+            android:layout_width="@dimen/global_dimen_4"
+            android:layout_height="@dimen/global_dimen_4"
+            android:contentDescription="@string/tool_tip_start_increase"
+            android:tooltipText="@string/tool_tip_start_decrease"
+            app:srcCompat="@drawable/ic_baseline_decrease_24" />
+
+        <EditText
+            android:id="@+id/et_start"
+            android:layout_width="@dimen/global_dimen_6"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/global_dimen"
+            android:gravity="center"
+            android:autofillHints="@string/list_span_start"
+            android:hint="@string/list_span_start"
+            android:inputType="number"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <ImageButton
+            android:id="@+id/ib_increase"
+            android:layout_width="@dimen/global_dimen_4"
+            android:layout_height="@dimen/global_dimen_4"
+            android:contentDescription="@string/tool_tip_start_increase"
+            android:tooltipText="@string/tool_tip_start_increase"
+            app:srcCompat="@drawable/ic_baseline_increase_24" />
+
+    </LinearLayout>
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_is_reversed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/et_start"
+        android:layout_below="@+id/ll_linear_layout"
         android:layout_margin="@dimen/global_dimen"
+        android:contentDescription="@string/tool_tip_reverse"
+        android:tooltipText="@string/tool_tip_reverse"
         android:text="@string/list_span_reverse" />
 
 </RelativeLayout>
