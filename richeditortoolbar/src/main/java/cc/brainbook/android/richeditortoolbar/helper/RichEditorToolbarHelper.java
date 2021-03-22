@@ -1063,7 +1063,7 @@ public abstract class RichEditorToolbarHelper {
 
     /* --------------------------------------------------------------------------------------- */
     ///执行postLoadSpans后处理
-    ///比如：设置LineDividerSpan的DrawBackgroundCallback、ImageSpan的Glide异步加载图片等
+    ///比如：ImageSpan的Glide异步加载图片等
     public static void postLoadSpans(Context context, Spannable spannable, List<Object> spans,
                                      Spannable pasteSpannable, int pasteOffset,
                                      Drawable placeholderDrawable,
@@ -1073,6 +1073,34 @@ public abstract class RichEditorToolbarHelper {
     ) {
         if (spans == null || spans.isEmpty()) {
             return;
+        }
+
+        if (onClickListener == null) {
+            onClickListener = new CustomImageSpan.OnClickListener() {
+                @Override
+                public void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
+                    final Context context = widget.getContext();
+
+                    final Intent intent = new Intent(Intent.ACTION_VIEW);
+                    final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
+                    final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
+                            context.getPackageName() + PROVIDER_AUTHORITIES);
+
+                    ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    }
+
+                    intent.setDataAndType(mediaUri, mediaType);
+
+                    try {
+                        context.startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            };
         }
 
         for (Object span : spans) {
@@ -1185,27 +1213,27 @@ public abstract class RichEditorToolbarHelper {
         }
     }
 
-    public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
-        final Context context = widget.getContext();
-
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-                context.getPackageName() + PROVIDER_AUTHORITIES);
-
-        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-
-        intent.setDataAndType(mediaUri, mediaType);
-
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(context.getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//    public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
+//        final Context context = widget.getContext();
+//
+//        final Intent intent = new Intent(Intent.ACTION_VIEW);
+//        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
+//        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
+//                context.getPackageName() + PROVIDER_AUTHORITIES);
+//
+//        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//        }
+//
+//        intent.setDataAndType(mediaUri, mediaType);
+//
+//        try {
+//            context.startActivity(intent);
+//        } catch (ActivityNotFoundException e) {
+//            e.printStackTrace();
+//            Toast.makeText(context.getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 
 }

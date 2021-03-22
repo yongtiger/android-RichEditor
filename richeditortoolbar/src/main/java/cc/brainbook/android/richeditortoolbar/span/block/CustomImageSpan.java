@@ -188,7 +188,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable,
 
     ///[CustomImageSpan.OnClickListener]
     public interface OnClickListener {
-        void onClick(View widget, Clickable clickable, Drawable drawable, String uri, String source);
+        void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source);
     }
     private OnClickListener mOnClickListener;
     public void setOnClickListener(OnClickListener onClickListener) {

@@ -1,14 +1,11 @@
 package cc.brainbook.android.richeditor;
 
 import android.Manifest;
-import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -24,7 +21,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,21 +28,13 @@ import java.util.List;
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
-import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
-import cc.brainbook.android.richeditortoolbar.span.block.AudioSpan;
-import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
-import cc.brainbook.android.richeditortoolbar.span.paragraph.LineDividerSpan;
-import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity implements
-        Drawable.Callback,
-        CustomImageSpan.OnClickListener {
+        Drawable.Callback {
 
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
@@ -99,9 +87,9 @@ public class MainActivity extends AppCompatActivity implements
         ///设置初始文本
         final Spanned spanned = Html.fromHtml(mHtmlText);
         mTextView.setText(spanned);
-        ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-        final Spannable textSpannable = ((Spannable) mTextView.getText());
-        postSetText(textSpannable);
+
+        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+        postSetText((Spannable) mTextView.getText());
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -119,9 +107,8 @@ public class MainActivity extends AppCompatActivity implements
                         final Spanned spanned = Html.fromHtml(mHtmlText);
                         mTextView.setText(spanned);
 
-                        ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]
-                        final Spannable textSpanned = ((Spannable) mTextView.getText());
-                        postSetText(textSpanned);
+                        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+                        postSetText((Spannable) mTextView.getText());
                     }
                 }
             }
@@ -140,38 +127,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
 
-    ///[CustomImageSpan.OnClickListener]TextView点击事件：URL点击；图片点击显示全图；video/audio点击开始播放
-    @Override//////////////////缺省化！
-    public void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
-        final Context context = widget.getContext();
 
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-        final Uri mediaUri = UriUtil.parseToUri(this, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-                getPackageName() + PROVIDER_AUTHORITIES);
-
-        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-
-        intent.setDataAndType(mediaUri, mediaType);
-
-        try {
-            context.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    ///[postSetText#显示LineDividerSpan、ImageSpan/VideoSpan/AudioSpan]//////////////////TextViewHelper
+    ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]//////////////////TextViewHelper
     private void postSetText(@NonNull Spannable textSpannable) {
         final Object[] spans = textSpannable.getSpans(0, textSpannable.length(), Object.class);
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         RichEditorToolbarHelper.postLoadSpans(this, textSpannable, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1,this,  this);
+                new ColorDrawable(Color.LTGRAY), -1,this,  null);
     }
 
     public void btnClickEdit(View view) {

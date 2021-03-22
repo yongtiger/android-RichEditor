@@ -271,7 +271,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         if (htmlText != null) {
                             editable.replace(0, editable.length(), Html.fromHtml(htmlText));
 
-                            ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+                            ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
                             postSetText();
                         }
                     }
@@ -1051,12 +1051,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
         initUndoRedo();
 
-        ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
+        ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
         postSetText();
     }
 
-    ///[postSetText#执行postLoadSpans及后处理，否则LineDividerSpan、ImageSpan/VideoSpan/AudioSpan不会显示！]
-    private void postSetText() {
+    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
+    public void postSetText() {
         final Editable editable = mRichEditText.getText();
         if (editable == null) {
             return;

@@ -26,12 +26,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     private final int mMarginTop, mMarginBottom;
 
     ///[FIX#assiststructure memory leak]解决：使用WeakReference
-    private WeakReference<DrawBackgroundCallback> mDrawBackgroundCallback = new WeakReference<DrawBackgroundCallback>(new LineDividerSpan.DrawBackgroundCallback() {
-        @Override
-        public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-            c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
-        }
-    });
+    private WeakReference<DrawBackgroundCallback> mDrawBackgroundCallback;
     public void setDrawBackgroundCallback(DrawBackgroundCallback drawBackgroundCallback) {
         mDrawBackgroundCallback = new WeakReference<>(drawBackgroundCallback);
     }
@@ -70,7 +65,15 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parc
     ///https://stackoverflow.com/questions/43611613/linebackgroundspan-drawbackground-called-repeatedly
     @Override
     public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-        if (mDrawBackgroundCallback.get() != null && start + 1 == end && text.charAt(start) == '\n') {
+        if (mDrawBackgroundCallback == null || mDrawBackgroundCallback.get() == null) {
+            mDrawBackgroundCallback = new WeakReference<DrawBackgroundCallback>(new LineDividerSpan.DrawBackgroundCallback() {
+                @Override
+                public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+                    c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
+                }
+            });
+        }
+        if (start + 1 == end && text.charAt(start) == '\n') {
             mDrawBackgroundCallback.get().drawBackground(c, p, left, right, top, baseline, bottom, text, start, end, lnum);
         }
     }
