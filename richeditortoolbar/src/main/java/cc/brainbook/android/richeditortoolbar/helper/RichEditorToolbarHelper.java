@@ -36,6 +36,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -1062,6 +1063,28 @@ public abstract class RichEditorToolbarHelper {
 
 
     /* --------------------------------------------------------------------------------------- */
+    ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+    public static void postSetText(Context context, @NonNull final Spannable textSpannable) {
+        final Object[] spans = textSpannable.getSpans(0, textSpannable.length(), Object.class);
+        final List<Object> spanList = Arrays.asList(spans);
+        ///执行postLoadSpans及后处理
+        RichEditorToolbarHelper.postLoadSpans(context, textSpannable, spanList, null, -1,
+                new ColorDrawable(Color.LTGRAY), -1, new Drawable.Callback() {
+                    ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
+                    ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
+                    @Override
+                    public void invalidateDrawable(@NonNull Drawable drawable) {
+                        RichEditorToolbarHelper.setImageSpan(textSpannable, drawable);
+                    }
+
+                    @Override
+                    public void scheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable, long l) {}
+
+                    @Override
+                    public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
+                },  null);  ///CustomImageSpan.OnClickListener onClickListener可自定义
+    }
+
     ///执行postLoadSpans后处理
     ///比如：ImageSpan的Glide异步加载图片等
     public static void postLoadSpans(Context context, Spannable spannable, List<Object> spans,
@@ -1201,39 +1224,14 @@ public abstract class RichEditorToolbarHelper {
         ///注意：实测此方法不闪烁！
         ///https://www.cnblogs.com/mfrbuaa/p/5045666.html
         final CustomImageSpan imageSpan = SpanUtil.getImageSpanByDrawable(spannable, drawable);
-        if (imageSpan != null) {
-            if (!TextUtils.isEmpty(spannable)) {
-                final int spanStart = spannable.getSpanStart(imageSpan);
-                final int spanEnd = spannable.getSpanEnd(imageSpan);
+        if (imageSpan != null && !TextUtils.isEmpty(spannable)) {
+            final int spanStart = spannable.getSpanStart(imageSpan);
+            final int spanEnd = spannable.getSpanEnd(imageSpan);
 
-                ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
+            ///注意：不必先removeSpan()！只setSpan()就能实现局部刷新EditText，以便让Gif动起来
 //                spannable.removeSpan(imageSpan);
-                spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
-            }
+            spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
         }
     }
-
-//    public static void onClick(@NonNull View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
-//        final Context context = widget.getContext();
-//
-//        final Intent intent = new Intent(Intent.ACTION_VIEW);
-//        final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-//        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-//                context.getPackageName() + PROVIDER_AUTHORITIES);
-//
-//        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//        }
-//
-//        intent.setDataAndType(mediaUri, mediaType);
-//
-//        try {
-//            context.startActivity(intent);
-//        } catch (ActivityNotFoundException e) {
-//            e.printStackTrace();
-//            Toast.makeText(context.getApplicationContext(), "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
 }

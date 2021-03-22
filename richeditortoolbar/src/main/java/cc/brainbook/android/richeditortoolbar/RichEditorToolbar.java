@@ -292,7 +292,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///使TextViewPreview无效，从而刷新TextViewPreview
         if (!TextUtils.isEmpty(mTextViewPreview.getText())) {
-//                    mTextViewPreview.invalidateDrawable(drawable);//////??????无效！
+//            mTextViewPreview.invalidateDrawable(drawable);//////??????无效！
             mTextViewPreview.invalidate();
         }
     }

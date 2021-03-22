@@ -3,13 +3,9 @@ package cc.brainbook.android.richeditor;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -18,12 +14,10 @@ import androidx.core.content.ContextCompat;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import java.util.Arrays;
-import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
@@ -33,8 +27,7 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-public class MainActivity extends AppCompatActivity implements
-        Drawable.Callback {
+public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
@@ -80,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements
         LinearLayout ll = (LinearLayout)findViewById(R.id.ll_linear_layout);
         ll.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+                Log.d("TAG", "LinearLayout click!");
             }
         });
 
@@ -89,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
         mTextView.setText(spanned);
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-        postSetText((Spannable) mTextView.getText());
+        RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -108,34 +101,13 @@ public class MainActivity extends AppCompatActivity implements
                         mTextView.setText(spanned);
 
                         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-                        postSetText((Spannable) mTextView.getText());
+                        RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
                     }
                 }
             }
         }
     }
 
-    ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]//////////////////缺省化！
-    ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
-    @Override
-    public void invalidateDrawable(@NonNull Drawable drawable) {
-        final Spannable spannable = ((Spannable) mTextView.getText());
-        RichEditorToolbarHelper.setImageSpan(spannable, drawable);
-    }
-    @Override
-    public void scheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable, long l) {}
-    @Override
-    public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
-
-
-    ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]//////////////////TextViewHelper
-    private void postSetText(@NonNull Spannable textSpannable) {
-        final Object[] spans = textSpannable.getSpans(0, textSpannable.length(), Object.class);
-        final List<Object> spanList = Arrays.asList(spans);
-        ///执行postLoadSpans及后处理
-        RichEditorToolbarHelper.postLoadSpans(this, textSpannable, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1,this,  null);
-    }
 
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
