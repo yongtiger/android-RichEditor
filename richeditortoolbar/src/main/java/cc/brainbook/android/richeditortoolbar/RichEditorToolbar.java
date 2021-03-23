@@ -3,7 +3,6 @@ package cc.brainbook.android.richeditortoolbar;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -131,7 +130,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String KEY_HTML_TEXT = "key_html_text";
     public static final String KEY_HTML_RESULT = "key_html_result";
 
-    public static final String SHARED_PREFERENCES_NAME_DRAFT = "rich_editor_shared_preferences_name_draft";
+    public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file_name";
     public static final int REQUEST_CODE_HTML_EDITOR = 101;
@@ -348,8 +347,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableClearDraft;
 
     private boolean checkDraft() {
-        final SharedPreferences sharedPreferences = mContext.getSharedPreferences(SHARED_PREFERENCES_NAME_DRAFT, Context.MODE_PRIVATE);
-        final String draftText = sharedPreferences.getString(SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+        final String draftText = PrefsUtil.getString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
         final boolean hasDraft = !TextUtils.isEmpty(draftText);
         mImageViewRestoreDraft.setEnabled(hasDraft);
         mImageViewRestoreDraft.setSelected(hasDraft);
@@ -485,7 +483,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
     ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
     private Context mContext;
 
-    private @LayoutRes int mLayoutRes;
+    private String mToolbarName;
+    private @LayoutRes int mToolbarLayout;
     private boolean enableLongClick;
 
 
@@ -520,8 +519,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
-        mLayoutRes = a.getResourceId(R.styleable.RichEditorToolbar_toolbarLayout, R.layout.toolbar);
-        LayoutInflater.from(mContext).inflate(mLayoutRes, this, true);
+        mToolbarName = a.getString(R.styleable.RichEditorToolbar_toolbarName);
+        if (TextUtils.isEmpty(mToolbarName)) {
+            mToolbarName = DEFAULT_TOOLBAR_NAME;
+        }
+
+        mToolbarLayout = a.getResourceId(R.styleable.RichEditorToolbar_toolbarLayout, R.layout.toolbar);
+        LayoutInflater.from(mContext).inflate(mToolbarLayout, this, true);
 
         enableLongClick = a.getBoolean(R.styleable.RichEditorToolbar_enableLongClick, false);
 
@@ -1047,7 +1051,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             final byte[] bytes = RichEditorToolbarHelper.toByteArray(mClassMap, editable, 0, editable.length(), true);
-            PrefsUtil.putString(mContext, SHARED_PREFERENCES_NAME_DRAFT, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
+            PrefsUtil.putString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
             if (checkDraft()) {
                 Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_successful, Toast.LENGTH_SHORT).show();
@@ -1057,7 +1061,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             return;
         } else if (view == mImageViewRestoreDraft) {
-            final String draftText = PrefsUtil.getString(mContext, SHARED_PREFERENCES_NAME_DRAFT, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+            final String draftText = PrefsUtil.getString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
             if (TextUtils.isEmpty(draftText)) {
                 return;
             }
@@ -1105,7 +1109,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             return;
         } else if (view == mImageViewClearDraft) {
-            PrefsUtil.clear(mContext, SHARED_PREFERENCES_NAME_DRAFT);
+            PrefsUtil.clear(mContext, mToolbarName);
 
             if (!checkDraft()) {
                 Toast.makeText(mContext.getApplicationContext(), R.string.message_clear_draft_successful, Toast.LENGTH_SHORT).show();

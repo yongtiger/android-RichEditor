@@ -2,6 +2,7 @@
 <resources>
 
     <declare-styleable name="RichEditorToolbar">
+        <attr name="toolbarName" format="string" />
         <attr name="toolbarLayout" format="reference" />
         <attr name="enableLongClick" format="boolean" />
 

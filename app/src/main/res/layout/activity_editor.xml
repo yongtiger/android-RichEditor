@@ -14,6 +14,10 @@
         android:onClick="btnClickSave"
         android:text="Save"/>
 
+    <!--///[RichEditorToolbar名字（app:toolbarName="XXX"），多RichEditorToolbar中必须唯一！用于保存草稿等]-->
+    <!--///[RichEditorToolbar自定义toolbar布局（app:toolbarLayout="@layout/editor_toolbar"）]-->
+    <!--///[RichEditorToolbar是否开启LongClick（app:enableLongClick="true"），注意：若开启LongClick，则android:tooltipText会不显示]-->
+    <!--///[RichEditorToolbar是否显示某按钮（app:enableXXX）]-->
     <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
         android:id="@+id/rich_editor_tool_bar"
         android:layout_width="match_parent"
@@ -22,12 +26,13 @@
         app:flexDirection="row"
         app:flexWrap="wrap"
         app:justifyContent="flex_start"
+        app:toolbarName="editor_toolbar"
         app:toolbarLayout="@layout/editor_toolbar"
         app:enableLongClick="true" />
-        <!--///[RichEditorToolbar是否显示某按钮（app:enableXXX）]-->
-        <!--///[RichEditorToolbar自定义toolbar布局（app:toolbarLayout="@layout/editor_toolbar"）]-->
-        <!--///[RichEditorToolbar是否开启LongClick（app:enableLongClick="true"），注意：若开启LongClick，则android:tooltipText会不显示]-->
 
+    <!--///android:inputType="textVisiblePassword"：解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失！-->
+    <!--///android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
+    <!--///android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
     <cc.brainbook.android.richeditortoolbar.RichEditText
         android:id="@+id/et_rich_edit_text"
         android:layout_width="match_parent"
@@ -37,9 +42,6 @@
         android:lineSpacingExtra="8dp"
         android:textSize="24sp"
         android:inputType="textMultiLine|textImeMultiLine|textVisiblePassword" />
-    <!--android:inputType="textVisiblePassword"：解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失！-->
-    <!--android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
-    <!--android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
 
     <TextView
         android:id="@+id/tv_preview"
