@@ -68,7 +68,7 @@
         android:text="@string/head"
         android:contentDescription="@string/tool_tip_head"
         android:tooltipText="@string/tool_tip_head"
-        style="@style/TextView"/>
+        style="@style/TextView" />
 
     <ImageView
         android:id="@+id/toolbar_line_divider"
@@ -148,28 +148,28 @@
         android:text="@string/font_family"
         android:contentDescription="@string/tool_tip_font_family"
         android:tooltipText="@string/tool_tip_font_family"
-        style="@style/TextView"/>
+        style="@style/TextView" />
 
     <TextView
         android:id="@+id/toolbar_absolute_size"
         android:text="@string/absolute_size"
         android:contentDescription="@string/tool_tip_absolute_size"
         android:tooltipText="@string/tool_tip_absolute_size"
-        style="@style/TextView"/>
+        style="@style/TextView" />
 
     <TextView
         android:id="@+id/toolbar_relative_size"
         android:contentDescription="@string/tool_tip_relative_size"
         android:tooltipText="@string/tool_tip_relative_size"
         android:text="@string/relative_size"
-        style="@style/TextView"/>
+        style="@style/TextView" />
 
     <TextView
         android:id="@+id/toolbar_scale_x"
         android:text="@string/scale_x"
         android:contentDescription="@string/tool_tip_scale_x"
         android:tooltipText="@string/tool_tip_scale_x"
-        style="@style/TextView"/>
+        style="@style/TextView" />
 
     <ImageView
         android:id="@+id/toolbar_code"

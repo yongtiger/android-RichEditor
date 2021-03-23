@@ -111,6 +111,17 @@
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_preview"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_display_x" />
+
+        <TextView
+            android:id="@+id/tv_display_x"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="X"
+            android:contentDescription="@string/image_span_tool_tip_display_x"
+            android:tooltipText="@string/image_span_tool_tip_display_x"
+            app:layout_constraintBaseline_toBaselineOf="@id/et_display_width"
+            app:layout_constraintStart_toEndOf="@+id/et_display_width"
             app:layout_constraintEnd_toStartOf="@+id/et_display_height" />
 
         <EditText
@@ -126,7 +137,7 @@
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_preview"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/et_display_width" />
+            app:layout_constraintStart_toEndOf="@+id/tv_display_x" />
 
         <CheckBox
             android:id="@+id/cb_display_constrain"
@@ -147,8 +158,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tool_tip_pickup_from_camera"
-            android:tooltipText="@string/image_span_tool_tip_pickup_from_camera"
+            android:contentDescription="@string/image_span_tool_tip_display_restore"
+            android:tooltipText="@string/image_span_tool_tip_display_restore"
             android:text="1 : 1"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:layout_constraintTop_toBottomOf="@+id/et_display_width"
@@ -160,8 +171,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tool_tip_pickup_from_camera"
-            android:tooltipText="@string/image_span_tool_tip_pickup_from_camera"
+            android:contentDescription="@string/image_span_tool_tip_crop"
+            android:tooltipText="@string/image_span_tool_tip_crop"
             android:text="@string/image_span_crop"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:layout_constraintTop_toBottomOf="@+id/btn_display_restore"
@@ -173,8 +184,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tool_tip_pickup_from_camera"
-            android:tooltipText="@string/image_span_tool_tip_pickup_from_camera"
+            android:contentDescription="@string/image_span_tool_tip_draw"
+            android:tooltipText="@string/image_span_tool_tip_draw"
             android:text="@string/image_span_draw"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             app:layout_constraintTop_toBottomOf="@+id/btn_display_restore"

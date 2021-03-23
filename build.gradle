@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.9",   ///v2.0.9#[RichEditorToolbar自定义toolbar布局（app:toolbarLayout="@layout/editor_toolbar"）]
-                versionCode: 20009
+                versionName: "2.0.10",   ///v2.0.10#manifest合并规则#tools:node="replace"
+                versionCode: 20010
         ]
     }
 

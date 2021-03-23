@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cc.brainbook.android.richeditor">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -35,6 +36,20 @@
 
         <activity android:name=".HtmlEditorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <!--///manifest合并规则#tools:node="replace"-->
+        <!--///https://developer.android.com/studio/build/manifest-merge-->
+        <!--///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop-->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            tools:node="replace" />
+        <!--///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle-->
+        <activity
+            android:name="cn.hzw.doodle.DoodleActivity"
+            android:configChanges="screenSize|orientation|keyboardHidden|navigation|keyboard"
+            tools:node="replace" />
 
         <!-- ///适应Android 7.0 -->
         <!-- https://blog.csdn.net/lmj623565791/article/details/72859156 -->

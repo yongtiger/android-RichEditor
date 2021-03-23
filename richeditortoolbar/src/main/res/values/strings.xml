@@ -84,6 +84,7 @@
     <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$d height=%4$d align=%5$d]</string>
     <string name="image_span_hint_display_width">Width</string>
     <string name="image_span_hint_display_height">Height</string>
+    <string name="image_span_tool_tip_display_x">Setup width and height</string>
     <string name="image_span_constrain">Constrain</string>
     <string name="image_span_crop">Crop</string>
     <string name="image_span_draw">Draw</string>
@@ -94,6 +95,9 @@
     <string name="image_span_tool_tip_pickup_from_recorder">Click to pickup from recorder</string>
     <string name="image_span_tool_tip_pickup_from_gallery">Click to pickup from gallery</string>
     <string name="image_span_tool_tip_pickup_from_camera">Click to pickup from camera</string>
+    <string name="image_span_tool_tip_display_restore">Click to restore aspect ratio</string>
+    <string name="image_span_tool_tip_crop">Click to crop</string>
+    <string name="image_span_tool_tip_draw">Click to draw</string>
 
     <string name="label_select_video">Select Video</string>
     <string name="label_select_audio">Select Audio</string>
