@@ -92,17 +92,17 @@ public class BoldSpanTest {
         }
 
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(mExpectInitSelected ? isSelected() : not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(mExpectInitSelected ? isSelected() : not(isSelected())));
 
         ///[动作：点击button]
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
 
         ///[assert]
         final String result = RichEditorToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         assertEquals(result, expectJsonString);
 
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(expectSelected ? isSelected() : not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(expectSelected ? isSelected() : not(isSelected())));
     }
 
 
@@ -198,9 +198,9 @@ public class BoldSpanTest {
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
         check("{\"spans\":[],\"text\":\"\"}", true);
 
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(not(isSelected())));
     }
 
     /**
@@ -213,9 +213,9 @@ public class BoldSpanTest {
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
         check("{\"spans\":[],\"text\":\"a\"}", true);
 
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(not(isSelected())));
     }
 
     /**
@@ -228,9 +228,9 @@ public class BoldSpanTest {
         mInitSelectionStart = 1; mInitSelectionEnd = 1; mExpectInitSelected = false;
         check("{\"spans\":[],\"text\":\"a\"}", true);
 
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(not(isSelected())));
     }
 
     /**
@@ -243,9 +243,9 @@ public class BoldSpanTest {
         mInitSelectionStart = 1; mInitSelectionEnd = 1; mExpectInitSelected = false;
         check("{\"spans\":[],\"text\":\"aa\"}",true);
 
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(not(isSelected())));
     }
 
     /**
@@ -258,9 +258,9 @@ public class BoldSpanTest {
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
         check("{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}", true);
 
-        onView(withId(R.id.iv_bold)).perform(click());
+        onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(not(isSelected())));
     }
 
     /**

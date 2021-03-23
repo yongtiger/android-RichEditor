@@ -95,7 +95,7 @@ public class BoldSpanTest {
         }
 
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(mExpectInitSelected ? isSelected() : not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(mExpectInitSelected ? isSelected() : not(isSelected())));
 
         ///注意：必须在UI线程操作View
         mActivityRule.getActivity().runOnUiThread(new Runnable() {
@@ -131,7 +131,7 @@ public class BoldSpanTest {
         assertEquals(Selection.getSelectionEnd(mRichEditText.getText()), expectSelectionEnd);
 
         ///检查是否Selected
-        onView(withId(R.id.iv_bold)).check(matches(expectSelected ? isSelected() : not(isSelected())));
+        onView(withId(R.id.toolbar_bold)).check(matches(expectSelected ? isSelected() : not(isSelected())));
     }
 
 

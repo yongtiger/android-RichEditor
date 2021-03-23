@@ -4,25 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--    <Spinner-->
-    <!--        android:id="@+id/spinner_typeface"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:entries="@array/typeface_family" />-->
-    <!--    &lt;!&ndash;    android:prompt="@string/app_name"&ndash;&gt;-->
-    <!--    &lt;!&ndash;    android:spinnerMode="dialog"&ndash;&gt;-->
-
-    <!--    Just use app:tint/app:backgroundTint instead of android:tint/android:backgroundTint, the tint will take effect below Lollipop.-->
-    <!--    https://stackoverflow.com/questions/29890654/appcompatbutton-backgroundtint-api-21-->
-
-    <!--    前景色：app:tint="@color/color_state_view"-->
-    <!--    背景色：android:background="@drawable/drawable_state_image_button"-->
-
-
-    <!--//////??????android:longClickable不起作用！-->
+    <!--///注意：android:longClickable不起作用！-->
+    <!--///https://blog.csdn.net/sunlit_6/article/details/83623823-->
 
     <ImageView
-        android:id="@+id/iv_leading_margin"
+        android:id="@+id/toolbar_leading_margin"
         android:contentDescription="@string/tool_tip_leading_margin"
         android:tooltipText="@string/tool_tip_leading_margin"
         app:tint="@color/selector_view"
@@ -30,7 +16,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_align_normal"
+        android:id="@+id/toolbar_align_normal"
         android:contentDescription="@string/tool_tip_align_normal"
         android:tooltipText="@string/tool_tip_align_normal"
         app:tint="@color/selector_view"
@@ -38,7 +24,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_align_center"
+        android:id="@+id/toolbar_align_center"
         android:contentDescription="@string/tool_tip_align_center"
         android:tooltipText="@string/tool_tip_align_center"
         app:tint="@color/selector_view"
@@ -46,7 +32,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_align_opposite"
+        android:id="@+id/toolbar_align_opposite"
         android:contentDescription="@string/tool_tip_align_opposite"
         android:tooltipText="@string/tool_tip_align_opposite"
         app:tint="@color/selector_view"
@@ -54,7 +40,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_list"
+        android:id="@+id/toolbar_list"
         android:contentDescription="@string/tool_tip_list"
         android:tooltipText="@string/tool_tip_list"
         app:tint="@color/selector_view"
@@ -62,7 +48,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_quote"
+        android:id="@+id/toolbar_quote"
         android:contentDescription="@string/tool_tip_quote"
         android:tooltipText="@string/tool_tip_quote"
         app:tint="@color/selector_view"
@@ -70,7 +56,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_pre"
+        android:id="@+id/toolbar_pre"
         android:contentDescription="@string/tool_tip_pre"
         android:tooltipText="@string/tool_tip_pre"
         app:tint="@color/selector_view"
@@ -78,14 +64,14 @@
         style="@style/ImageView" />
 
     <TextView
-        android:id="@+id/tv_head"
+        android:id="@+id/toolbar_head"
         android:text="@string/head"
         android:contentDescription="@string/tool_tip_head"
         android:tooltipText="@string/tool_tip_head"
         style="@style/TextView"/>
 
     <ImageView
-        android:id="@+id/iv_line_divider"
+        android:id="@+id/toolbar_line_divider"
         android:contentDescription="@string/tool_tip_line_divider"
         android:tooltipText="@string/tool_tip_line_divider"
         app:tint="@color/selector_view"
@@ -93,7 +79,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_bold"
+        android:id="@+id/toolbar_bold"
         android:contentDescription="@string/tool_tip_bold"
         android:tooltipText="@string/tool_tip_bold"
         app:tint="@color/selector_view"
@@ -101,7 +87,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_italic"
+        android:id="@+id/toolbar_italic"
         android:contentDescription="@string/tool_tip_italic"
         android:tooltipText="@string/tool_tip_italic"
         app:tint="@color/selector_view"
@@ -110,7 +96,7 @@
 
     <!--    ///原生span：Underline、StrikeThrough、Subscript、Superscript-->
     <ImageView
-        android:id="@+id/iv_underline"
+        android:id="@+id/toolbar_underline"
         android:contentDescription="@string/tool_tip_underline"
         android:tooltipText="@string/tool_tip_underline"
         app:tint="@color/selector_view"
@@ -118,7 +104,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_strikethrough"
+        android:id="@+id/toolbar_strikethrough"
         android:contentDescription="@string/tool_tip_strike_through"
         android:tooltipText="@string/tool_tip_strike_through"
         app:tint="@color/selector_view"
@@ -126,7 +112,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_subscript"
+        android:id="@+id/toolbar_subscript"
         android:contentDescription="@string/tool_tip_subscript"
         android:tooltipText="@string/tool_tip_subscript"
         app:tint="@color/selector_view"
@@ -134,7 +120,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_superscript"
+        android:id="@+id/toolbar_superscript"
         android:contentDescription="@string/tool_tip_superscript"
         android:tooltipText="@string/tool_tip_superscript"
         app:tint="@color/selector_view"
@@ -142,7 +128,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_foreground_color"
+        android:id="@+id/toolbar_foreground_color"
         android:contentDescription="@string/tool_tip_foreground_color"
         android:tooltipText="@string/tool_tip_foreground_color"
         app:tint="@color/selector_view"
@@ -150,7 +136,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_background_color"
+        android:id="@+id/toolbar_background_color"
         android:contentDescription="@string/tool_tip_background_color"
         android:tooltipText="@string/tool_tip_background_color"
         app:tint="@color/selector_view"
@@ -158,35 +144,35 @@
         style="@style/ImageView" />
 
     <TextView
-        android:id="@+id/tv_font_family"
+        android:id="@+id/toolbar_font_family"
         android:text="@string/font_family"
         android:contentDescription="@string/tool_tip_font_family"
         android:tooltipText="@string/tool_tip_font_family"
         style="@style/TextView"/>
 
     <TextView
-        android:id="@+id/tv_absolute_size"
+        android:id="@+id/toolbar_absolute_size"
         android:text="@string/absolute_size"
         android:contentDescription="@string/tool_tip_absolute_size"
         android:tooltipText="@string/tool_tip_absolute_size"
         style="@style/TextView"/>
 
     <TextView
-        android:id="@+id/tv_relative_size"
+        android:id="@+id/toolbar_relative_size"
         android:contentDescription="@string/tool_tip_relative_size"
         android:tooltipText="@string/tool_tip_relative_size"
         android:text="@string/relative_size"
         style="@style/TextView"/>
 
     <TextView
-        android:id="@+id/tv_scale_x"
+        android:id="@+id/toolbar_scale_x"
         android:text="@string/scale_x"
         android:contentDescription="@string/tool_tip_scale_x"
         android:tooltipText="@string/tool_tip_scale_x"
         style="@style/TextView"/>
 
     <ImageView
-        android:id="@+id/iv_code"
+        android:id="@+id/toolbar_code"
         android:contentDescription="@string/tool_tip_code"
         android:tooltipText="@string/tool_tip_code"
         app:tint="@color/selector_view"
@@ -194,7 +180,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_block"
+        android:id="@+id/toolbar_block"
         android:contentDescription="@string/tool_tip_block"
         android:tooltipText="@string/tool_tip_block"
         app:tint="@color/selector_view"
@@ -202,7 +188,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_border"
+        android:id="@+id/toolbar_border"
         android:contentDescription="@string/tool_tip_border"
         android:tooltipText="@string/tool_tip_border"
         app:tint="@color/selector_view"
@@ -210,7 +196,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_url"
+        android:id="@+id/toolbar_url"
         android:contentDescription="@string/tool_tip_url"
         android:tooltipText="@string/tool_tip_url"
         app:tint="@color/selector_view"
@@ -218,7 +204,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_image"
+        android:id="@+id/toolbar_image"
         android:contentDescription="@string/tool_tip_image"
         android:tooltipText="@string/tool_tip_image"
         app:tint="@color/selector_view"
@@ -226,7 +212,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_video"
+        android:id="@+id/toolbar_video"
         android:contentDescription="@string/tool_tip_video"
         android:tooltipText="@string/tool_tip_video"
         app:tint="@color/selector_view"
@@ -234,7 +220,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_audio"
+        android:id="@+id/toolbar_audio"
         android:contentDescription="@string/tool_tip_audio"
         android:tooltipText="@string/tool_tip_audio"
         app:tint="@color/selector_view"
@@ -250,7 +236,7 @@
         android:background="?android:attr/dividerVertical" />
 
     <ImageView
-        android:id="@+id/iv_clear_styles"
+        android:id="@+id/toolbar_clear_styles"
         android:contentDescription="@string/tool_tip_clear_styles"
         android:tooltipText="@string/tool_tip_clear_styles"
         app:tint="@color/selector_view"
@@ -258,7 +244,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_save_draft"
+        android:id="@+id/toolbar_save_draft"
         android:contentDescription="@string/tool_tip_save_draft"
         android:tooltipText="@string/tool_tip_save_draft"
         app:tint="@color/selector_view"
@@ -266,7 +252,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_restore_draft"
+        android:id="@+id/toolbar_restore_draft"
         android:contentDescription="@string/tool_tip_restore_draft"
         android:tooltipText="@string/tool_tip_restore_draft"
         app:tint="@color/selector_view"
@@ -274,7 +260,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_clear_draft"
+        android:id="@+id/toolbar_clear_draft"
         android:contentDescription="@string/tool_tip_clear_draft"
         android:tooltipText="@string/tool_tip_clear_draft"
         app:tint="@color/selector_view"
@@ -282,7 +268,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_undo"
+        android:id="@+id/toolbar_undo"
         android:contentDescription="@string/tool_tip_undo"
         android:tooltipText="@string/tool_tip_undo"
         app:tint="@color/selector_view"
@@ -290,7 +276,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_redo"
+        android:id="@+id/toolbar_redo"
         android:contentDescription="@string/tool_tip_redo"
         android:tooltipText="@string/tool_tip_redo"
         app:tint="@color/selector_view"
@@ -298,7 +284,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_save"
+        android:id="@+id/toolbar_save"
         android:contentDescription="@string/tool_tip_save"
         android:tooltipText="@string/tool_tip_save"
         app:tint="@color/selector_view"
@@ -306,7 +292,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_preview"
+        android:id="@+id/toolbar_preview"
         android:contentDescription="@string/tool_tip_preview"
         android:tooltipText="@string/tool_tip_preview"
         app:tint="@color/selector_view"
@@ -314,7 +300,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/iv_html"
+        android:id="@+id/toolbar_html"
         android:contentDescription="@string/tool_tip_html"
         android:tooltipText="@string/tool_tip_html"
         app:tint="@color/selector_view"

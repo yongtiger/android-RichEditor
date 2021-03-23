@@ -2,43 +2,46 @@
 <resources>
 
     <declare-styleable name="RichEditorToolbar">
-        <attr name="enable_leading_margin" format="boolean" />
-        <attr name="enable_align_normal" format="boolean" />
-        <attr name="enable_align_center" format="boolean" />
-        <attr name="enable_align_opposite" format="boolean" />
-        <attr name="enable_list" format="boolean" />
-        <attr name="enable_quote" format="boolean" />
-        <attr name="enable_pre" format="boolean" />
-        <attr name="enable_head" format="boolean" />
-        <attr name="enable_line_divider" format="boolean" />
-        <attr name="enable_bold" format="boolean" />
-        <attr name="enable_italic" format="boolean" />
-        <attr name="enable_underline" format="boolean" />
-        <attr name="enable_strikethrough" format="boolean" />
-        <attr name="enable_superscript" format="boolean" />
-        <attr name="enable_subscript" format="boolean" />
-        <attr name="enable_foreground_color" format="boolean" />
-        <attr name="enable_background_color" format="boolean" />
-        <attr name="enable_font_family" format="boolean" />
-        <attr name="enable_absolute_size" format="boolean" />
-        <attr name="enable_relative_size" format="boolean" />
-        <attr name="enable_scale_x" format="boolean" />
-        <attr name="enable_code" format="boolean" />
-        <attr name="enable_block" format="boolean" />
-        <attr name="enable_border" format="boolean" />
-        <attr name="enable_url" format="boolean" />
-        <attr name="enable_video" format="boolean" />
-        <attr name="enable_audio" format="boolean" />
-        <attr name="enable_image" format="boolean" />
-        <attr name="enable_clear_styles" format="boolean" />
-        <attr name="enable_save_draft" format="boolean" />
-        <attr name="enable_restore_draft" format="boolean" />
-        <attr name="enable_clear_draft" format="boolean" />
-        <attr name="enable_undo" format="boolean" />
-        <attr name="enable_redo" format="boolean" />
-        <attr name="enable_save" format="boolean" />
-        <attr name="enable_preview" format="boolean" />
-        <attr name="enable_html" format="boolean" />
+        <attr name="toolbarLayout" format="reference" />
+        <attr name="enableLongClick" format="boolean" />
+
+        <attr name="enableLeadingMargin" format="boolean" />
+        <attr name="enableAlignNormal" format="boolean" />
+        <attr name="enableAlignCenter" format="boolean" />
+        <attr name="enableAlignOpposite" format="boolean" />
+        <attr name="enableList" format="boolean" />
+        <attr name="enableQuote" format="boolean" />
+        <attr name="enablePre" format="boolean" />
+        <attr name="enableHead" format="boolean" />
+        <attr name="enableLineDivider" format="boolean" />
+        <attr name="enableBold" format="boolean" />
+        <attr name="enableItalic" format="boolean" />
+        <attr name="enableUnderline" format="boolean" />
+        <attr name="enableStrikethrough" format="boolean" />
+        <attr name="enableSuperscript" format="boolean" />
+        <attr name="enableSubscript" format="boolean" />
+        <attr name="enableForegroundColor" format="boolean" />
+        <attr name="enableBackgroundColor" format="boolean" />
+        <attr name="enableFontFamily" format="boolean" />
+        <attr name="enableAbsoluteSize" format="boolean" />
+        <attr name="enableRelativeSize" format="boolean" />
+        <attr name="enableScaleX" format="boolean" />
+        <attr name="enableCode" format="boolean" />
+        <attr name="enableBlock" format="boolean" />
+        <attr name="enableBorder" format="boolean" />
+        <attr name="enableUrl" format="boolean" />
+        <attr name="enableVideo" format="boolean" />
+        <attr name="enableAudio" format="boolean" />
+        <attr name="enableImage" format="boolean" />
+        <attr name="enableClearStyles" format="boolean" />
+        <attr name="enableSaveDraft" format="boolean" />
+        <attr name="enableRestoreDraft" format="boolean" />
+        <attr name="enableClearDraft" format="boolean" />
+        <attr name="enableUndo" format="boolean" />
+        <attr name="enableRedo" format="boolean" />
+        <attr name="enableSave" format="boolean" />
+        <attr name="enablePreview" format="boolean" />
+        <attr name="enableHtml" format="boolean" />
 
     </declare-styleable>
 

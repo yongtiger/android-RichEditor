@@ -181,9 +181,9 @@ public abstract class RichEditorToolbarHelper {
                     final int listStart = ((ListSpan) span).getStart();
                     final boolean isReversed = ((ListSpan) span).isReversed();
                     final int listType = ((ListSpan) span).getListType();
-                    view.setTag(R.id.list_start, listStart);
-                    view.setTag(R.id.list_is_reversed, isReversed);
-                    view.setTag(R.id.list_list_type, listType);
+                    view.setTag(R.id.view_tag_list_start, listStart);
+                    view.setTag(R.id.view_tag_list_is_reversed, isReversed);
+                    view.setTag(R.id.view_tag_list_list_type, listType);
                 }
 
                 ///段落span（带参数）：Head
@@ -207,9 +207,9 @@ public abstract class RichEditorToolbarHelper {
 
         ///段落span（带初始化参数）：List
         if (clazz == ListSpan.class) {
-            view.setTag(R.id.list_start, null);
-            view.setTag(R.id.list_is_reversed, null);
-            view.setTag(R.id.list_list_type, null);
+            view.setTag(R.id.view_tag_list_start, null);
+            view.setTag(R.id.view_tag_list_is_reversed, null);
+            view.setTag(R.id.view_tag_list_list_type, null);
         } else {
             view.setTag(null);
         }
@@ -241,11 +241,11 @@ public abstract class RichEditorToolbarHelper {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
                         final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);//////////////////
                         final String url = ((CustomURLSpan) span).getURL();
-                        view.setTag(R.id.url_text, text);
-                        view.setTag(R.id.url_url, url);
+                        view.setTag(R.id.view_tag_url_text, text);
+                        view.setTag(R.id.view_tag_url_url, url);
                     } else {
-                        view.setTag(R.id.url_text, null);
-                        view.setTag(R.id.url_url, null);
+                        view.setTag(R.id.view_tag_url_text, null);
+                        view.setTag(R.id.view_tag_url_url, null);
                     }
                 }
 
@@ -266,19 +266,19 @@ public abstract class RichEditorToolbarHelper {
                         final int height = strHeight == null ? 0 : Integer.parseInt(strHeight);
                         final int align = strAlign == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : Integer.parseInt(strAlign);
 
-                        view.setTag(R.id.image_text, text);
-                        view.setTag(R.id.image_uri, uri);
-                        view.setTag(R.id.image_src, src);
-                        view.setTag(R.id.image_width, width);
-                        view.setTag(R.id.image_height, height);
-                        view.setTag(R.id.image_align, align);
+                        view.setTag(R.id.view_tag_image_text, text);
+                        view.setTag(R.id.view_tag_image_uri, uri);
+                        view.setTag(R.id.view_tag_image_src, src);
+                        view.setTag(R.id.view_tag_image_width, width);
+                        view.setTag(R.id.view_tag_image_height, height);
+                        view.setTag(R.id.view_tag_image_align, align);
                     } else {
-                        view.setTag(R.id.image_text, null);
-                        view.setTag(R.id.image_uri, null);
-                        view.setTag(R.id.image_src, null);
-                        view.setTag(R.id.image_width, null);
-                        view.setTag(R.id.image_height, null);
-                        view.setTag(R.id.image_align, null);
+                        view.setTag(R.id.view_tag_image_text, null);
+                        view.setTag(R.id.view_tag_image_uri, null);
+                        view.setTag(R.id.view_tag_image_src, null);
+                        view.setTag(R.id.view_tag_image_width, null);
+                        view.setTag(R.id.view_tag_image_height, null);
+                        view.setTag(R.id.view_tag_image_align, null);
                     }
                 }
 
@@ -333,22 +333,22 @@ public abstract class RichEditorToolbarHelper {
             ///初始化对话框：无、单选、多选，只有单选时才初始化对话框
             if (start < end) {
                 final String text = String.valueOf(spannable.toString().toCharArray(), start, end - start);
-                view.setTag(R.id.url_text, text);///以选中的文本作为url_text
-                view.setTag(R.id.url_url, null);
+                view.setTag(R.id.view_tag_url_text, text);///以选中的文本作为url_text
+                view.setTag(R.id.view_tag_url_url, null);
             } else {
-                view.setTag(R.id.url_text, null);
-                view.setTag(R.id.url_url, null);
+                view.setTag(R.id.view_tag_url_text, null);
+                view.setTag(R.id.view_tag_url_url, null);
             }
         }
 
         ///字符span（带参数）：Image
         else if (clazz == CustomImageSpan.class || clazz == VideoSpan.class || clazz == AudioSpan.class) {
-            view.setTag(R.id.image_text, null);
-            view.setTag(R.id.image_uri, null);
-            view.setTag(R.id.image_src, null);
-            view.setTag(R.id.image_width, null);
-            view.setTag(R.id.image_height, null);
-            view.setTag(R.id.image_align, null);
+            view.setTag(R.id.view_tag_image_text, null);
+            view.setTag(R.id.view_tag_image_uri, null);
+            view.setTag(R.id.view_tag_image_src, null);
+            view.setTag(R.id.view_tag_image_width, null);
+            view.setTag(R.id.view_tag_image_height, null);
+            view.setTag(R.id.view_tag_image_align, null);
         }
 
         ///字符span（带参数）：ForegroundColor、BackgroundColor
@@ -397,17 +397,17 @@ public abstract class RichEditorToolbarHelper {
 
         ///段落span（带初始化参数）：List
         else if (clazz == ListSpan.class) {
-            if (view.getTag(R.id.list_start) == null
-                    || view.getTag(R.id.list_is_reversed) == null
-                    || view.getTag(R.id.list_list_type) == null) {
+            if (view.getTag(R.id.view_tag_list_start) == null
+                    || view.getTag(R.id.view_tag_list_is_reversed) == null
+                    || view.getTag(R.id.view_tag_list_list_type) == null) {
                 return false;
             }
             final int start = ((ListSpan) span).getStart();
             final boolean isReversed = ((ListSpan) span).isReversed();
             final int listType = ((ListSpan) span).getListType();
-            return start == (int) view.getTag(R.id.list_start)
-                    && isReversed == (boolean) view.getTag(R.id.list_is_reversed)
-                    && listType == (int) view.getTag(R.id.list_list_type);
+            return start == (int) view.getTag(R.id.view_tag_list_start)
+                    && isReversed == (boolean) view.getTag(R.id.view_tag_list_is_reversed)
+                    && listType == (int) view.getTag(R.id.view_tag_list_list_type);
         }
 
         ///字符span（带参数）：ForegroundColor、BackgroundColor

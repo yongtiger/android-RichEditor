@@ -2,18 +2,18 @@
 
 <resources>
 
-    <item name="url_text" type="id" />
-    <item name="url_url" type="id" />
+    <item name="view_tag_url_text" type="id" />
+    <item name="view_tag_url_url" type="id" />
 
-    <item name="image_text" type="id" />
-    <item name="image_uri" type="id" />
-    <item name="image_src" type="id" />
-    <item name="image_width" type="id" />
-    <item name="image_height" type="id" />
-    <item name="image_align" type="id" />
+    <item name="view_tag_image_text" type="id" />
+    <item name="view_tag_image_uri" type="id" />
+    <item name="view_tag_image_src" type="id" />
+    <item name="view_tag_image_width" type="id" />
+    <item name="view_tag_image_height" type="id" />
+    <item name="view_tag_image_align" type="id" />
 
-    <item name="list_start" type="id" />
-    <item name="list_is_reversed" type="id" />
-    <item name="list_list_type" type="id" />
+    <item name="view_tag_list_start" type="id" />
+    <item name="view_tag_list_is_reversed" type="id" />
+    <item name="view_tag_list_list_type" type="id" />
 
 </resources>

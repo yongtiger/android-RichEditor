@@ -35,18 +35,10 @@ public class EditorActivity extends AppCompatActivity {
 
         mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
         mRichEditText = (RichEditText) findViewById(R.id.et_rich_edit_text);
+        ///（必选）RichEditorToolbar设置编辑器
+        mRichEditorToolbar.setRichEditText(mRichEditText);
 
-        ///[Preview]
-        mTextViewPreview = (TextView) findViewById(R.id.tv_preview);
-        ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
-        ///设置TextView可点击，比如响应URLSpan点击事件。
-//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
-        ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
-//        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
-        mTextViewPreview.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
-
-
-        /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
+        ///（可选）设置初始文本
         final Intent intent = getIntent();
         final String htmlTextString = intent.getStringExtra(KEY_HTML_TEXT);
         if (!TextUtils.isEmpty(htmlTextString)) {
@@ -54,26 +46,15 @@ public class EditorActivity extends AppCompatActivity {
             mRichEditText.setText(htmlTextSpanned);
         }
 
-
-        /* -------------- ///设置 -------------- */
-//        ///（可选）设置编辑器初始文本
-//        mRichEditText.setText("\n\naaabbbcccdddeeefffggghhhiiijjjkkklllmmmnnnooopppqqqrrrssstttuuuvvvwwwxxxyyyzzz\n1234567890"); ///test
-//        mRichEditText.getText().setSpan(new BoldSpan(), 2, 3, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);    ///test
-//        mRichEditText.getText().setSpan(new BoldSpan(), 5, 6, Spanned.SPAN_EXCLUSIVE_INCLUSIVE);    ///test
-
-        ///（必选）RichEditorToolbar设置编辑器
-        mRichEditorToolbar.setRichEditText(mRichEditText);
-
-        ///（必选）RichEditorToolbar设置Preview
+        ///（可选）设置Preview
+        mTextViewPreview = (TextView) findViewById(R.id.tv_preview);
+        ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
+        ///设置TextView可点击，比如响应URLSpan点击事件。
+//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
+        ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
+//        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
+        mTextViewPreview.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
         mRichEditorToolbar.setPreview(mTextViewPreview);
-
-//        ///（可选）RichEditorToolbar设置LineDividerSpan.DrawBackgroundCallback
-//        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
-//            @Override
-//            public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
-//                c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
-//            }
-//        });
 
         ///（必选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
         mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
@@ -100,14 +81,19 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setVideoFileDir(videoFileDir);
         mRichEditorToolbar.setAudioFileDir(audioFileDir);
 
-        ///（可选，缺省为richeditortoolbar\src\main\res\layout\layout_toolbar.xml）
-        mRichEditorToolbar.setLayoutRes(R.layout.editor_toolbar);
-
-        ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
-//        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
+//        ///（可选）设置LineDividerSpan.DrawBackgroundCallback
+//        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
+//            @Override
+//            public void drawBackground(Canvas c, Paint p, int left, int right, int top, int baseline, int bottom, CharSequence text, int start, int end, int lnum) {
+//                c.drawLine(left, (top + bottom) * 0.5F, right, (top + bottom) * 0.5F, p);    ///画直线
+//            }
+//        });
 
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2); ///test
+
+        ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
+//        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
 
         ///（可选）设置HtmlEditorCallback
         mRichEditorToolbar.setHtmlEditorCallback(new RichEditorToolbar.HtmlEditorCallback() {
@@ -121,7 +107,7 @@ public class EditorActivity extends AppCompatActivity {
             }
         });
 
-        ///（必选）初始化RichEditorToolbar
+        ///（必选）初始化
         mRichEditorToolbar.init();
     }
 
@@ -134,6 +120,7 @@ public class EditorActivity extends AppCompatActivity {
             mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 
     public void btnClickSave(View view) {
         ///[startActivityForResult#setResult()返回数据]
