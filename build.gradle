@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.11",   ///v2.0.11#[RichEditorToolbar名字（app:toolbarName="XXX"），多RichEditorToolbar中必须唯一！用于保存草稿等]
-                versionCode: 20011
+                versionName: "2.0.12",   ///v2.0.12#（可选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
+                versionCode: 20012
         ]
     }
 

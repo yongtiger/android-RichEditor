@@ -415,7 +415,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     private boolean enableSelectionChange = true;
     private void updatePreview() {
-        if (mImageViewPreview != null && mTextViewPreview.getVisibility() == VISIBLE) {
+        if (mImageViewPreview != null && mTextViewPreview != null && mTextViewPreview.getVisibility() == VISIBLE) {
             ///[enableSelectionChange]禁止onSelectionChanged()
             ///注意：mTextViewPreview.setText()会引起mRichEditText#onSelectionChanged()，从而造成无selection单光标时切换toolbar按钮失效！
             enableSelectionChange = false;
@@ -1141,14 +1141,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
         } else if (view == mImageViewPreview) {
             view.setSelected(!view.isSelected());
 
-            if (view.isSelected()) {
-                mRichEditText.setVisibility(GONE);
-                mTextViewPreview.setVisibility(VISIBLE);
-                updatePreview();
-            } else {
-                mRichEditText.setVisibility(VISIBLE);
-                mTextViewPreview.setVisibility(GONE);
-                mTextViewPreview.setText(null);
+            if (mTextViewPreview != null) {
+                if (view.isSelected()) {
+                    mRichEditText.setVisibility(GONE);
+                    mTextViewPreview.setVisibility(VISIBLE);
+                    updatePreview();
+                } else {
+                    mRichEditText.setVisibility(VISIBLE);
+                    mTextViewPreview.setVisibility(GONE);
+                    mTextViewPreview.setText(null);
+                }
+
             }
 
             return;

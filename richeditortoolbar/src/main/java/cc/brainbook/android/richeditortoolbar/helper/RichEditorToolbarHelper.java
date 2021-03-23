@@ -1157,7 +1157,9 @@ public abstract class RichEditorToolbarHelper {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
-        if (placeholderDrawable == null) {
+        if (placeholderDrawable == null && placeholderResourceId == 0) {
+            glideImageLoader.setPlaceholderResourceId(R.drawable.placeholder);
+        } else if (placeholderDrawable == null) {
             glideImageLoader.setPlaceholderResourceId(placeholderResourceId);
         } else {
             glideImageLoader.setPlaceholderDrawable(placeholderDrawable);
