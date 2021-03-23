@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.12",   ///v2.0.12#（可选）mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
-                versionCode: 20012
+                versionName: "2.0.13",   ///v2.0.13#（可选）设置SaveCallbackmRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback())
+                versionCode: 20013
         ]
     }
 

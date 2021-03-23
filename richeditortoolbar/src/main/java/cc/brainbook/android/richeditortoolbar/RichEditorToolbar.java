@@ -363,6 +363,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewSave;
     private boolean enableSave;
 
+    public interface SaveCallback {
+        void save(String htmlResult);
+    }
+    private SaveCallback mSaveCallback;
+    public void setSaveCallback(SaveCallback saveCallback) {
+        mSaveCallback = saveCallback;
+    }
+
     private UndoRedoHelper mUndoRedoHelper;
 
     public void initUndoRedo() {
@@ -383,12 +391,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     @Override
     public void onPositionChangedListener(int position, UndoRedoHelper.Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition) {
-        mImageViewUndo.setSelected(isCanUndo);
-        mImageViewUndo.setEnabled(isCanUndo);
-        mImageViewRedo.setSelected(isCanRedo);
-        mImageViewRedo.setEnabled(isCanRedo);
-        mImageViewSave.setSelected(!isSavedPosition);
-        mImageViewSave.setEnabled(!isSavedPosition);
+        if (mImageViewUndo != null) {
+            mImageViewUndo.setSelected(isCanUndo);
+            mImageViewUndo.setEnabled(isCanUndo);
+        }
+        if (mImageViewRedo != null) {
+            mImageViewRedo.setSelected(isCanRedo);
+            mImageViewRedo.setEnabled(isCanRedo);
+        }
+        if (mImageViewSave != null) {
+            mImageViewSave.setSelected(!isSavedPosition);
+            mImageViewSave.setEnabled(!isSavedPosition);
+        }
 
         if (isSetSpans && action != null) {
             ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
@@ -1133,6 +1147,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             return;
         } else if (view == mImageViewSave) {
+            if (mSaveCallback != null) {
+                mSaveCallback.save(Html.toHtml(mRichEditText.getText(), mHtmlOption));
+            }
+
             mUndoRedoHelper.resetSavedPosition();
             mImageViewSave.setSelected(false);
             mImageViewSave.setEnabled(false);

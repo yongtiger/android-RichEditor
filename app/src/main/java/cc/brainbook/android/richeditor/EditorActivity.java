@@ -27,6 +27,7 @@ public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
     private TextView mTextViewPreview;
+    private String mHtmlResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,9 +90,6 @@ public class EditorActivity extends AppCompatActivity {
 //            }
 //        });
 
-        ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
-//        mRichEditorToolbar.setHistorySize(2); ///test
-
         ///（可选，缺省为TO_HTML_PARAGRAPH_LINES_CONSECUTIVE）
 //        mRichEditorToolbar.setHtmlOption(Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
 
@@ -104,6 +102,17 @@ public class EditorActivity extends AppCompatActivity {
                 intent.putExtra(KEY_HTML_TEXT, htmlString);
 
                 startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
+            }
+        });
+
+        ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
+//        mRichEditorToolbar.setHistorySize(2); ///test
+
+        ///（可选）设置SaveCallback
+        mRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback() {
+            @Override
+            public void save(String htmlResult) {
+                mHtmlResult = htmlResult;
             }
         });
 
@@ -126,8 +135,8 @@ public class EditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-        final String htmlResult = Html.toHtml(mRichEditText.getText(), Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE);
-        intent.putExtra(KEY_HTML_RESULT, htmlResult);
+        mHtmlResult = Html.toHtml(mRichEditText.getText(), mRichEditorToolbar.getHtmlOption());
+        intent.putExtra(KEY_HTML_RESULT, mHtmlResult);
 
         setResult(RESULT_OK, intent);
 
