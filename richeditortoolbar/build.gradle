@@ -46,7 +46,7 @@ dependencies {
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
 //    implementation 'com.github.yalantis:ucrop:2.2.6' ///lightweight general solution
 //    implementation 'com.github.yalantis:ucrop:2.2.6-native' ///get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
-    api 'com.github.yongtiger:android-uCrop:v13.0.4'
+    api 'com.github.yongtiger:android-uCrop:v13.0.5'
 
     ///注意：manifest合并规则#使用本库者需在清单中设置tools:node="replace"，所以这里必须用api！
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
