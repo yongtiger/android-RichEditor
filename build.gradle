@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.13",   ///v2.0.13#（可选）设置SaveCallbackmRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback())
-                versionCode: 20013
+                versionName: "2.0.14",   ///v2.0.14
+                versionCode: 20014
         ]
     }
 

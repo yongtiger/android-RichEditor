@@ -98,7 +98,7 @@ public class Html {
     ///[UPGRADE#android.text.Html]缺省的屏幕密度
     ///px in CSS is the equivalence of dip in Android
     ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
-    public static float sDisplayMetricsDensity = 3.0f;//////////////////Log.e
+    public static float sDisplayMetricsDensity;
 
     /**
      * Retrieves images for HTML &lt;img&gt; tags.

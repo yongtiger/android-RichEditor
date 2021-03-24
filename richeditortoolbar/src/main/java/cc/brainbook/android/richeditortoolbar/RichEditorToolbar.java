@@ -261,7 +261,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewImage;
     private boolean enableImage;
     private ClickImageSpanDialogBuilder mClickImageSpanDialogBuilder;
-    //////////////////
+
     private File mImageFileDir;  ///ImageSpan存放图片文件的目录，比如相机拍照、图片Crop剪切生成的图片文件
     public void setImageFileDir(File imageFilePath) {
         mImageFileDir = imageFilePath;
@@ -287,7 +287,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (REQUEST_CODE_HTML_EDITOR == requestCode) {
             if (RESULT_OK == resultCode) {
-                ///[HtmlEditor#onActivityResult]
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
                     if (data != null) {
@@ -364,7 +363,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableSave;
 
     public interface SaveCallback {
-        void save(String htmlResult);
+        void save(String htmlString);
     }
     private SaveCallback mSaveCallback;
     public void setSaveCallback(SaveCallback saveCallback) {
@@ -450,13 +449,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
         return mHtmlOption;
     }
 
-    ///[HtmlEditor#HtmlEditorCallback]
-    public interface HtmlEditorCallback {
-        void startHtmlEditorActivity(String htmlString);
+    public interface HtmlCallback {
+        void handleHtml(String htmlString);
     }
-    private HtmlEditorCallback mHtmlEditorCallback;
-    public void setHtmlEditorCallback(HtmlEditorCallback htmlEditorCallback) {
-        mHtmlEditorCallback = htmlEditorCallback;
+    private HtmlCallback mHtmlCallback;
+    public void setHtmlCallback(HtmlCallback htmlCallback) {
+        mHtmlCallback = htmlCallback;
     }
 
     /* ---------------- ///[TextContextMenu#Clipboard] ---------------- */
@@ -520,13 +518,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
         a.recycle();
     }
 
-    public void init(Context context, @NonNull TypedArray a) {
+    public void init(@NonNull Context context, @NonNull TypedArray a) {
         mContext = context;
+
+        ///[UPGRADE#android.text.Html]缺省的屏幕密度
+        Html.sDisplayMetricsDensity = context.getResources().getDisplayMetrics().scaledDensity;
 
         ///[clipboard]设置存放剪切板的文件目录
         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
         ///注意：建议使用应用的cache目录
-        mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);//////////////////getCacheDir
+        mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);
 
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
 
@@ -1176,9 +1177,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         } else if (view == mImageViewHtml) {
             final String htmlString = Html.toHtml(mRichEditText.getText(), mHtmlOption);
 
-            ///[HtmlEditor#启动HtmlEditorActivity]
-            if (mHtmlEditorCallback != null) {
-                mHtmlEditorCallback.startHtmlEditorActivity(htmlString);
+            if (mHtmlCallback != null) {
+                mHtmlCallback.handleHtml(htmlString);
             }
 
             return;

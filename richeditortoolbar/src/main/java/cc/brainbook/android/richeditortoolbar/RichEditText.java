@@ -13,6 +13,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.Toast;
 
 public class RichEditText extends AppCompatEditText {
@@ -102,9 +103,9 @@ public class RichEditText extends AppCompatEditText {
 
                     editable.delete(min, max);
                 } else {
-                    //////////////////Log.e
+                    Log.e("TAG-RichEditText", getContext().getString(R.string.message_failed_to_cut_to_clipboard));
                     Toast.makeText(getContext(),
-                            R.string.message_failed_to_copy_to_clipboard,
+                            R.string.message_failed_to_cut_to_clipboard,
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -127,7 +128,7 @@ public class RichEditText extends AppCompatEditText {
                     //////??????如何关闭TextContextMenuItem
 
                 } else {
-                    //////////////////Log.e
+                    Log.e("TAG-RichEditText", getContext().getString(R.string.message_failed_to_copy_to_clipboard));
                     Toast.makeText(getContext(),
                             R.string.message_failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();
@@ -232,4 +233,5 @@ public class RichEditText extends AppCompatEditText {
         ///调整Selection起止位置
         Selection.setSelection(editable, min, min + paste.length());
     }
+
 }
