@@ -556,7 +556,7 @@ public class Html {
                 if (style[j] instanceof CustomAbsoluteSizeSpan) {
                     CustomAbsoluteSizeSpan s = ((CustomAbsoluteSizeSpan) style[j]);
                     float sizeDip = s.getSize();
-                    if (!s.getDip()) {
+                    if (s.getDip()) {
                         ///[AppUtil#另外一种更优雅兼容Android P获取Application的方法]
                         Application application = AppUtil.getApplication();
                         assert application != null;
@@ -1432,7 +1432,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                 size = size.split("px")[0];
                 ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
                 ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
-                start(text, new AbsoluteSize(Integer.parseInt(size), true));
+                start(text, new AbsoluteSize(Integer.parseInt(size), false));
             } else if (size.endsWith("%")) {
                 size = size.split("%")[0];
                 start(text, new RelativeSize(Float.parseFloat(size) / 100));
@@ -1676,7 +1676,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                     String size = m.group(1);
                     if (size.endsWith("px")) {
                         size = size.split("px")[0];
-                        cssStyle.styles.add(new AbsoluteSize(Integer.parseInt(size), true));
+                        cssStyle.styles.add(new AbsoluteSize(Integer.parseInt(size), false));
                     } else if (size.endsWith("%")) {
                         size = size.split("%")[0];
                         cssStyle.styles.add(new RelativeSize(Float.parseFloat(size) / 100));

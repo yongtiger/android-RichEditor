@@ -1636,7 +1636,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///字符span（带参数）：AbsoluteSize
             else if (view == mTextViewAbsoluteSize) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.absolute_size_items, (String) view.getTag());
+                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.absolute_size_items, String.valueOf(view.getTag()));
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.absolute_size_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1645,7 +1645,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final String size = ArrayUtil.getStringItem(mContext, R.array.absolute_size_items, which);
 
-                                if (!TextUtils.equals(size, (String) view.getTag())) {
+                                if (!TextUtils.equals(size, String.valueOf(view.getTag()))) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1699,7 +1699,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///字符span（带参数）：RelativeSize
             else if (view == mTextViewRelativeSize) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.relative_size_items, (String) view.getTag());
+                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.relative_size_items, String.valueOf(view.getTag()));
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.relative_size_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1708,7 +1708,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final String sizeChange = ArrayUtil.getStringItem(mContext, R.array.relative_size_items, which);
 
-                                if (!TextUtils.equals(sizeChange, (String) view.getTag())) {
+                                if (!TextUtils.equals(sizeChange, String.valueOf(view.getTag()))) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1762,7 +1762,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///字符span（带参数）：ScaleX
             else if (view == mTextViewScaleX) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.scale_x_items, (String) view.getTag());
+                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.scale_x_items, String.valueOf(view.getTag()));
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.scale_x_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1771,7 +1771,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final String scaleX = ArrayUtil.getStringItem(mContext, R.array.scale_x_items, which);
 
-                                if (!TextUtils.equals(scaleX, (String) view.getTag())) {
+                                if (!TextUtils.equals(scaleX, String.valueOf(view.getTag()))) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {

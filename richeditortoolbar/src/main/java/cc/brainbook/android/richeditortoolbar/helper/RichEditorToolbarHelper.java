@@ -391,7 +391,7 @@ public abstract class RichEditorToolbarHelper {
                 return false;
             }
             final int spanLevel = ((HeadSpan) span).getLevel();
-            final int viewTagLevel = (int) view.getTag();
+            final int viewTagLevel = Integer.parseInt((String) view.getTag());
             return spanLevel == viewTagLevel;
         }
 
@@ -437,7 +437,7 @@ public abstract class RichEditorToolbarHelper {
                 return false;
             }
             final int spanSize = ((CustomAbsoluteSizeSpan) span).getSize();
-            final int viewTagAbsoluteSize = (int) view.getTag();
+            final int viewTagAbsoluteSize = Integer.parseInt((String) view.getTag());
             return spanSize == viewTagAbsoluteSize;
         }
 
@@ -447,7 +447,7 @@ public abstract class RichEditorToolbarHelper {
                 return false;
             }
             final float spanSizeChange = ((CustomRelativeSizeSpan) span).getSizeChange();
-            final float viewTagRelativeSize = (float) view.getTag();
+            final float viewTagRelativeSize = Float.parseFloat((String) view.getTag());
             return spanSizeChange == viewTagRelativeSize;
         }
 
@@ -457,7 +457,7 @@ public abstract class RichEditorToolbarHelper {
                 return false;
             }
             final float spanScaleX = ((CustomScaleXSpan) span).getScaleX();
-            final float viewTagScaleX = (float) view.getTag();
+            final float viewTagScaleX = Float.parseFloat((String) view.getTag());
             return spanScaleX == viewTagScaleX;
         }
 
@@ -506,7 +506,7 @@ public abstract class RichEditorToolbarHelper {
         else if (clazz == CustomAbsoluteSizeSpan.class) {
             final int spanSize = ((CustomAbsoluteSizeSpan) span).getSize();
             if (compareSpan == null) {
-                final int viewTagSize = (int) view.getTag();
+                final int viewTagSize = Integer.parseInt((String) view.getTag());
                 return spanSize == viewTagSize ? span : null;
             } else {
                 final int compareSpanSize = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
@@ -518,7 +518,7 @@ public abstract class RichEditorToolbarHelper {
         else if (clazz == CustomRelativeSizeSpan.class) {
             final float spanSizeChange = ((CustomRelativeSizeSpan) span).getSizeChange();
             if (compareSpan == null) {
-                final float viewTagSizeChange = (float) view.getTag();
+                final float viewTagSizeChange = Float.parseFloat((String) view.getTag());
                 return spanSizeChange == viewTagSizeChange ? span : null;
             } else {
                 final float compareSpanSizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
@@ -530,7 +530,7 @@ public abstract class RichEditorToolbarHelper {
         else if (clazz == CustomScaleXSpan.class) {
             final float spanScaleX = ((CustomScaleXSpan) span).getScaleX();
             if (compareSpan == null) {
-                final float viewTagScaleX = (float) view.getTag();
+                final float viewTagScaleX = Float.parseFloat((String) view.getTag());
                 return spanScaleX == viewTagScaleX ? span : null;
             } else {
                 final float compareSpanScaleX = ((CustomScaleXSpan) compareSpan).getScaleX();
