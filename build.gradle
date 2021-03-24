@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.14",   ///v2.0.14
-                versionCode: 20014
+                versionName: "2.0.15",   ///v2.0.15#[AppUtil#另外一种更优雅兼容Android P获取Application的方法]
+                versionCode: 20015
         ]
     }
 

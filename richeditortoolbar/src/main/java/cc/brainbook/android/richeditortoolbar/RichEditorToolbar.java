@@ -521,9 +521,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void init(@NonNull Context context, @NonNull TypedArray a) {
         mContext = context;
 
-        ///[UPGRADE#android.text.Html]缺省的屏幕密度
-        Html.sDisplayMetricsDensity = context.getResources().getDisplayMetrics().scaledDensity;
-
         ///[clipboard]设置存放剪切板的文件目录
         ///由于无法把spans一起Cut/Copy到剪切板，所以需要另外存储spans
         ///注意：建议使用应用的cache目录
@@ -1401,7 +1398,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///段落span（带参数）：Head
             else if (view == mTextViewHead) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
+                final int checkedItem = view.getTag() == null ? -1 : Integer.parseInt((String) view.getTag());;
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1409,7 +1406,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             public void onClick(DialogInterface dialog, int which) {
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
-                                if (view.getTag() == null || which != (int) view.getTag()) {
+                                if (view.getTag() == null || which != Integer.parseInt((String) view.getTag())) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -3151,7 +3148,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int level = ((HeadSpan) compareSpan).getLevel();
                 newSpan = new HeadSpan(level);
             } else if (view != null && view.getTag() != null) {
-                final int level = (int) view.getTag();
+                final int level = Integer.parseInt((String) view.getTag());
                 newSpan = new HeadSpan(level);
             }
         }
@@ -3199,7 +3196,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int size = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
                 newSpan = new CustomAbsoluteSizeSpan(size);
             } else if (view != null && view.getTag() != null) {
-                final int size = (int) view.getTag();
+                final int size = Integer.parseInt((String) view.getTag());
                 newSpan = new CustomAbsoluteSizeSpan(size);
             }
         }
@@ -3210,7 +3207,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final float sizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             } else if (view != null && view.getTag() != null) {
-                final float sizeChange = (float) view.getTag();
+                final float sizeChange = Float.parseFloat((String) view.getTag());
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             }
         }
@@ -3221,7 +3218,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final float scaleX = ((CustomScaleXSpan) compareSpan).getScaleX();
                 newSpan = new CustomScaleXSpan(scaleX);
             } else if (view != null && view.getTag() != null) {
-                final float scaleX = (float) view.getTag();
+                final float scaleX = Float.parseFloat((String) view.getTag());;
                 newSpan = new CustomScaleXSpan(scaleX);
             }
 

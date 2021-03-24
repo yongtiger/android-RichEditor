@@ -1,5 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
+import android.app.Application;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -72,6 +73,7 @@ import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.PreSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
+import cc.brainbook.android.richeditortoolbar.util.AppUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_DECIMAL;
@@ -94,11 +96,6 @@ public class Html {
     ///注意：Spanned.SPAN_PARAGRAPH要求ParagraphStyle span的结束位置在'\n'之后，即isSpanEndAtNewLine为false
     ///注意：当在'\n'处时，会引起ParagraphStyle span绘制问题！比如'a\n[\n]'时第一行也会被绘制
     public static boolean isSpanEndAtNewLine = false;   ///for test only if true
-
-    ///[UPGRADE#android.text.Html]缺省的屏幕密度
-    ///px in CSS is the equivalence of dip in Android
-    ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
-    public static float sDisplayMetricsDensity;
 
     /**
      * Retrieves images for HTML &lt;img&gt; tags.
@@ -560,11 +557,14 @@ public class Html {
                     CustomAbsoluteSizeSpan s = ((CustomAbsoluteSizeSpan) style[j]);
                     float sizeDip = s.getSize();
                     if (!s.getDip()) {
+                        ///[AppUtil#另外一种更优雅兼容Android P获取Application的方法]
+                        Application application = AppUtil.getApplication();
+                        assert application != null;
+
                         ///[UPGRADE#android.text.Html]px in CSS is the equivalance of dip in Android
                         ///注意：一般情况下，CustomAbsoluteSizeSpan的dip都为true，否则需要在使用Html之前设置本机的具体准确的屏幕密度！
-//                        Application application = ActivityThread.currentApplication();
-//                        sizeDip /= application.getResources().getDisplayMetrics().density;
-                        sizeDip /= sDisplayMetricsDensity;
+
+                        sizeDip /= application.getResources().getDisplayMetrics().density;
                     }
 
                     // px in CSS is the equivalance of dip in Android
