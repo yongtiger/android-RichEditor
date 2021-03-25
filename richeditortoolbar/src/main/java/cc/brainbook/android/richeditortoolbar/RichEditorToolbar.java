@@ -127,8 +127,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
-    public static final String KEY_HTML_TEXT = "key_html_text";
-    public static final String KEY_HTML_RESULT = "key_html_result";
+    public static final String KEY_TEXT = "key_text";///////////////JSON化
+    public static final String KEY_RESULT = "key_result";
 
     public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
@@ -290,7 +290,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
                     if (data != null) {
-                        final String htmlText = data.getStringExtra(KEY_HTML_RESULT);
+                        final String htmlText = data.getStringExtra(KEY_RESULT);
                         if (htmlText != null) {
                             editable.replace(0, editable.length(), Html.fromHtml(htmlText));
 
@@ -363,7 +363,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableSave;
 
     public interface SaveCallback {
-        void save(String htmlString);
+        void save(String result);
     }
     private SaveCallback mSaveCallback;
     public void setSaveCallback(SaveCallback saveCallback) {
@@ -1146,7 +1146,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         } else if (view == mImageViewSave) {
             if (mSaveCallback != null) {
-                mSaveCallback.save(Html.toHtml(mRichEditText.getText(), mHtmlOption));
+//                mSaveCallback.save(Html.toHtml(mRichEditText.getText(), mHtmlOption));
+                mSaveCallback.save(RichEditorToolbarHelper.toJson(getClassMap(),
+                        mRichEditText.getText(),
+                        0, mRichEditText.getText().length(),
+                        true));
+
             }
 
             mUndoRedoHelper.resetSavedPosition();
@@ -1188,7 +1193,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
-        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassHashMapKey(mClassMap, view);
         if (isParagraphStyle(clazz)) {
             final int selectionStart = Selection.getSelectionStart(editable);
             final int selectionEnd = Selection.getSelectionEnd(editable);
@@ -2113,7 +2118,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ///[更新ListSpan]
         ArrayList<ListSpan> updateListSpans = new ArrayList<>();
 
-        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassHashMapKey(mClassMap, view);
         if (isNestParagraphStyle(clazz)) {
             adjustNestParagraphStyleSpans(view, clazz, editable, selectionStart, selectionEnd, true, updateListSpans);
         } else {
@@ -2134,7 +2139,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         String beforeChange = null;
         int selectionStart = -1;
         int selectionEnd = -1;
-        final Class<?> clazz = RichEditorToolbarHelper.getClassMapKey(mClassMap, view);
+        final Class<?> clazz = RichEditorToolbarHelper.getClassHashMapKey(mClassMap, view);
 
         ///[BlockCharacterStyle#beforeChange]调整BlockCharacterStyle的Selection为第一个span的起始位置和最后span的结尾位置
         if (isBlockCharacterStyle(clazz) && view.isSelected()) {

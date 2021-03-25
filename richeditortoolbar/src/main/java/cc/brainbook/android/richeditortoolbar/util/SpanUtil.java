@@ -33,7 +33,7 @@ public abstract class SpanUtil {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = spannable.getSpans(start, end, clazz);
 
-        if (isSort) {
+        if (spans.length > 0 && isSort) {
             ///在Android6.0 以下这个方法返回的数组是有顺序的，但是7.0以上系统这个方法返回的数组顺序有错乱，所以我们需要自己排序
             ///https://stackoverflow.com/questions/41052172/spannablestringbuilder-getspans-sort-order-is-wrong-on-nougat-7-0-7-1
             ///https://www.jianshu.com/p/57783747e530
@@ -84,7 +84,7 @@ public abstract class SpanUtil {
             }
 
             ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
-            if (!Html.isSpanEndAtNewLine) {
+            if (!Html.IS_SPAN_END_AT_NEW_LINE) {
                 final int spanStart = spannable.getSpanStart(span);
                 final int spanEnd = spannable.getSpanEnd(span);
                 ///删除多余的span

@@ -95,7 +95,7 @@ public class Html {
     ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
     ///注意：Spanned.SPAN_PARAGRAPH要求ParagraphStyle span的结束位置在'\n'之后，即isSpanEndAtNewLine为false
     ///注意：当在'\n'处时，会引起ParagraphStyle span绘制问题！比如'a\n[\n]'时第一行也会被绘制
-    public static boolean isSpanEndAtNewLine = false;   ///for test only if true
+    public static final boolean IS_SPAN_END_AT_NEW_LINE = false;   ///for test only if true
 
     /**
      * Retrieves images for HTML &lt;img&gt; tags.
@@ -460,7 +460,7 @@ public class Html {
                 sRemovedSpans.add(nextParagraphStyleSpan);
 
                 ///[UPGRADE#android.text.Html#ParagraphStyle span的结束位置是否在'\n'处]
-                next = text.getSpanEnd(nextParagraphStyleSpan) + (isSpanEndAtNewLine ? 1 : 0);
+                next = text.getSpanEnd(nextParagraphStyleSpan) + (IS_SPAN_END_AT_NEW_LINE ? 1 : 0);
             }
         }
     }
@@ -962,7 +962,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             int flags = Spanned.SPAN_INCLUSIVE_EXCLUSIVE;
 
             if (obj instanceof IParagraphStyle) {
-                if (!Html.isSpanEndAtNewLine) {
+                if (!Html.IS_SPAN_END_AT_NEW_LINE) {
                     ///end位置之前为'\n'的位置，需要调整（加一即可）
                     if (end < mSpannableStringBuilder.length()) {
                         end++;

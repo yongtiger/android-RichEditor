@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -15,17 +14,17 @@ import java.io.File;
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.helper.Html;
+import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.REQUEST_CODE_HTML_EDITOR;
 
 public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
     private TextView mTextViewPreview;
-    private String mHtmlResult;
+    private String mResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +38,10 @@ public class EditorActivity extends AppCompatActivity {
 
         ///（可选）设置初始文本
         final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra(KEY_HTML_TEXT);
-        if (!TextUtils.isEmpty(htmlTextString)) {
-            final Spanned htmlTextSpanned = Html.fromHtml(htmlTextString);
-            mRichEditText.setText(htmlTextSpanned);
+        final String text = intent.getStringExtra(KEY_TEXT);
+        if (!TextUtils.isEmpty(text)) {
+//            mRichEditText.setText(Html.fromHtml(text));
+            mRichEditText.setText(RichEditorToolbarHelper.fromJson(text));
         }
 
 
@@ -88,7 +87,7 @@ public class EditorActivity extends AppCompatActivity {
             @Override
             public void handleHtml(String htmlString) {
                 final Intent intent = new Intent(EditorActivity.this, HtmlEditorActivity.class);
-                intent.putExtra(KEY_HTML_TEXT, htmlString);
+                intent.putExtra(KEY_TEXT, htmlString);
 
                 startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
             }
@@ -100,8 +99,8 @@ public class EditorActivity extends AppCompatActivity {
         ///（可选）设置SaveCallback
         mRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback() {
             @Override
-            public void save(String htmlString) {
-                mHtmlResult = htmlString;
+            public void save(String result) {
+                mResult = result;
             }
         });
 
@@ -134,8 +133,9 @@ public class EditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-        mHtmlResult = Html.toHtml(mRichEditText.getText(), mRichEditorToolbar.getHtmlOption());
-        intent.putExtra(KEY_HTML_RESULT, mHtmlResult);
+//        mHtmlResult = Html.toHtml(mRichEditText.getText(), mRichEditorToolbar.getHtmlOption());
+        mResult = RichEditorToolbarHelper.toJson(mRichEditorToolbar.getClassMap(), mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        intent.putExtra(KEY_RESULT, mResult);
 
         setResult(RESULT_OK, intent);
 

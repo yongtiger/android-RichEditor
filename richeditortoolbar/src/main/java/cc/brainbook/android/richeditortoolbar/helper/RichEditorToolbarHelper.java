@@ -1,6 +1,5 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.text.Editable;
 import android.text.Spannable;
@@ -88,9 +88,9 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_
 
 public abstract class RichEditorToolbarHelper {
     @Nullable
-    public static Class<?> getClassMapKey(@NonNull LinkedHashMap<Class<? extends Parcelable>, View> classMap, View view) {
-        for (Class<?> clazz : classMap.keySet()) {
-            if (classMap.get(clazz) == view) {
+    public static Class<?> getClassHashMapKey(@NonNull LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, View view) {
+        for (Class<?> clazz : classHashMap.keySet()) {
+            if (classHashMap.get(clazz) == view) {
                 return clazz;
             }
         }
@@ -239,7 +239,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：URL
                 if (clazz == CustomURLSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);//////////////////
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
                         final String url = ((CustomURLSpan) span).getURL();
                         view.setTag(R.id.view_tag_url_text, text);
                         view.setTag(R.id.view_tag_url_url, url);
@@ -252,7 +252,7 @@ public abstract class RichEditorToolbarHelper {
                 ///字符span（带参数）：Image
                 else if (clazz == CustomImageSpan.class || clazz == VideoSpan.class || clazz == AudioSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
-                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);//////////////////
+                        final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
 
                         final String uri = clazz == CustomImageSpan.class ? null :
                                 clazz == VideoSpan.class ? ((VideoSpan) span).getUri() : ((AudioSpan) span).getUri();
@@ -729,7 +729,7 @@ public abstract class RichEditorToolbarHelper {
             ///注意：必须过滤掉没有CREATOR变量的span！
             ///理论上，所有RichEditor用到的span都应该自定义、且直接实现Parcelable（即该span类直接包含CREATOR变量），否则予以忽略
             try {
-                clazz.getField("CREATOR");
+                clazz.getField("CREATOR");///////////////////
                 final int spanStart = spannable.getSpanStart(span);
                 final int spanEnd = spannable.getSpanEnd(span);
                 final int spanFlags = getSpanFlags(span);
@@ -850,7 +850,7 @@ public abstract class RichEditorToolbarHelper {
                             }
                             final JsonObject spanJsonObject = spanBeanJsonElement.getAsJsonObject();
 
-                            final Parcelable span = newSpan(spanClassName, spanJsonObject);
+                            final Parcelable span = newSpanFromJsonObject(spanClassName, spanJsonObject);
 
                             if (span != null) {
                                 JsonElement jsonElemen = spanBeanJsonObject.get("spanStart");
@@ -878,7 +878,7 @@ public abstract class RichEditorToolbarHelper {
     }
 
     @Nullable
-    private static Parcelable newSpan(String spanClassName, @NonNull JsonObject spanJsonObject) {
+    private static Parcelable newSpanFromJsonObject(String spanClassName, @NonNull JsonObject spanJsonObject) {
         JsonElement jsonElement;
 
         jsonElement = spanJsonObject.get("mNestingLevel");
@@ -1016,7 +1016,7 @@ public abstract class RichEditorToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
         } else if ("VideoSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -1030,7 +1030,7 @@ public abstract class RichEditorToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
         } else if ("AudioSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -1044,18 +1044,17 @@ public abstract class RichEditorToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
         }
 
         return null;
     }
 
     @DrawableRes
-    public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;
+    public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;/////////////////
     @NonNull
     private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
-        @SuppressLint("UseCompatLoadingForDrawables")//////////////////
-        final Drawable d = Resources.getSystem().getDrawable(sPlaceHolderDrawable);
+        final Drawable d = ResourcesCompat.getDrawable(Resources.getSystem(), sPlaceHolderDrawable, null);
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
         return d;

@@ -12,7 +12,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.text.Spannable;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
-import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
 
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_RESULT;
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_HTML_TEXT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
+import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
     ///[权限申请]
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    private String mHtmlText = "<hr>";  ///设置初始文本
+    ///设置初始文本
+//    private String mHtmlText = "<hr>";
+    private String mJsonText = "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}";
+
     private TextView mTextView;
 
     @Override
@@ -78,8 +79,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ///设置初始文本
-        final Spanned spanned = Html.fromHtml(mHtmlText);
-        mTextView.setText(spanned);
+//        final Spanned spanned = Html.fromHtml(mHtmlText);
+//        mTextView.setText(spanned);
+        final Spannable spannable = RichEditorToolbarHelper.fromJson(mJsonText);
+        mTextView.setText(spannable);
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
         RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
@@ -93,12 +96,13 @@ public class MainActivity extends AppCompatActivity {
         if (REQUEST_CODE_RICH_EDITOR == requestCode) {
             if (RESULT_OK == resultCode) {
                 if (data != null) {
-                    mHtmlText = data.getStringExtra(KEY_HTML_RESULT);
-                    if (TextUtils.isEmpty(mHtmlText)) {
+//                    mHtmlText = data.getStringExtra(KEY_RESULT);
+                    mJsonText = data.getStringExtra(KEY_RESULT);
+                    if (TextUtils.isEmpty(mJsonText)) {
                         mTextView.setText(null);
                     } else {
-                        final Spanned spanned = Html.fromHtml(mHtmlText);
-                        mTextView.setText(spanned);
+//                        mTextView.setText(Html.fromHtml(mHtmlText));
+                        mTextView.setText(RichEditorToolbarHelper.fromJson(mJsonText));
 
                         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
                         RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
@@ -112,7 +116,8 @@ public class MainActivity extends AppCompatActivity {
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
         final Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-        intent.putExtra(KEY_HTML_TEXT, mHtmlText);
+//        intent.putExtra(KEY_TEXT, mHtmlText);
+        intent.putExtra(KEY_TEXT, mJsonText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
     }
 
