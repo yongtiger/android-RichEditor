@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.17",   ///v2.0.17#使用Json代替Html，效率高三倍！
-                versionCode: 20017
+                versionName: "2.0.18",   ///v2.0.18#IStyle
+                versionCode: 20018
         ]
     }
 

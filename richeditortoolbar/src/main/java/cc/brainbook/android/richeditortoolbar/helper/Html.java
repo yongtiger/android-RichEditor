@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+
+import androidx.annotation.NonNull;
 import androidx.core.text.TextDirectionHeuristicsCompat;
 import android.text.Editable;
 import android.text.Layout;
@@ -13,7 +15,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BulletSpan;
-import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
@@ -42,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
@@ -315,7 +317,7 @@ public class Html {
     }
 
 
-    private static void handleHtml(StringBuilder out, Spanned text, ParagraphStyle compareSpan, int option) {
+    private static void handleHtml(StringBuilder out, Spanned text, IParagraphStyle compareSpan, int option) {
         int start, end;
         if (compareSpan == null) {
             start = 0;
@@ -327,10 +329,10 @@ public class Html {
 
         int next;
         for (int i = start; i <= end; i = next) {
-            final ParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, i, compareSpan);
+            final IParagraphStyle nextParagraphStyleSpan = getNextParagraphStyleSpan(text, i, compareSpan);
 
             if (nextParagraphStyleSpan == null) {
-                next = text.nextSpanTransition(i, end, ParagraphStyle.class);
+                next = text.nextSpanTransition(i, end, IParagraphStyle.class);
 
                 if (i < next) {
                     ///[PreSpan]
@@ -490,9 +492,9 @@ public class Html {
     private static void withinParagraph(StringBuilder out, Spanned text, int start, int end, boolean isOutPreTag) {
         int next;
         for (int i = start; i < end; i = next) {
-            next = text.nextSpanTransition(i, end, CharacterStyle.class);
+            next = text.nextSpanTransition(i, end, ICharacterStyle.class);
 
-            Object[] style = text.getSpans(i, next, CharacterStyle.class);
+            Object[] style = text.getSpans(i, next, ICharacterStyle.class);
 
             for (int j = 0; j < style.length; j++) {
                 if (style[j] instanceof CodeSpan) {
@@ -725,11 +727,11 @@ public class Html {
 
 
     private static ArrayList<Object> sRemovedSpans = new ArrayList<>();
-    private static ParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, ParagraphStyle compareSpan) {
-        ParagraphStyle resultSpan = null;
+    private static IParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, IParagraphStyle compareSpan) {
+        IParagraphStyle resultSpan = null;
 
-        final ArrayList<ParagraphStyle> paragraphStyleSpans = SpanUtil.getFilteredSpans(ParagraphStyle.class, (Editable) text, where, where, true);
-        for (ParagraphStyle paragraphStyleSpan : paragraphStyleSpans) {
+        final ArrayList<IParagraphStyle> paragraphStyleSpans = SpanUtil.getFilteredSpans(IParagraphStyle.class, (Editable) text, where, where, true);
+        for (IParagraphStyle paragraphStyleSpan : paragraphStyleSpans) {
             if (paragraphStyleSpan == compareSpan) {
                 break;
             } else if (sRemovedSpans.contains(paragraphStyleSpan)) {
@@ -1955,19 +1957,19 @@ class HtmlToSpannedConverter implements ContentHandler {
                 ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
                 adjustNewLine(text);
             } else if (isFromTag
-                    || text.getSpans(len, len, ParagraphStyle.class).length > 0
-                    || text.getSpans(len, len, CharacterStyle.class).length == 0) {
+                    || text.getSpans(len, len, IParagraphStyle.class).length > 0
+                    || text.getSpans(len, len, ICharacterStyle.class).length == 0) {
                 text.append('\n');
             }
         }
     }
 
     ///[UPGRADE#android.text.Html#添加'\n'#文尾的空ParagraphStyle（即spanStart == spanEnd）spans]
-    private void adjustNewLine(Editable text) {
+    private void adjustNewLine(@NonNull Editable text) {
         ///len为0时，Spannable和EditText虽然都能正常添加这类spans，但违背了ParagraphStyle至少包含'\n'的原则！需要添加'\n'
         ///len大于0时，虽然Spannable能正常添加，但EditText无法添加，需要添加'\n'
         final int len = text.length();
-        final Object[] spans = text.getSpans(len, len, ParagraphStyle.class);
+        final Object[] spans = text.getSpans(len, len, IParagraphStyle.class);
         for (Object obj : spans) {
             final int spanStart = text.getSpanStart(obj);
             final int spanEnd = text.getSpanEnd(obj);

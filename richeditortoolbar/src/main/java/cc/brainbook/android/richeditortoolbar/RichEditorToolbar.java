@@ -407,7 +407,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///注意：清除原有的span，比如BoldSpan的父类StyleSpan
             ///注意：必须保证selectionChanged()不被执行！否则死循环！
 //            mRichEditText.getIndicatorText().clearStyles(); ///[FIX#误删除了其它有用的spans！]
-            SpanUtil.clearAllSpans(mClassMap, mRichEditText.getText());
+            SpanUtil.clearAllSpans(mRichEditText.getText());
 
             ///执行postLoadSpans及后处理
             RichEditorToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),

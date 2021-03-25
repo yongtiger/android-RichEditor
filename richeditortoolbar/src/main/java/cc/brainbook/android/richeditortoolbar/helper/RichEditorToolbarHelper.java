@@ -1068,7 +1068,7 @@ public abstract class RichEditorToolbarHelper {
         final List<Object> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         RichEditorToolbarHelper.postLoadSpans(context, textSpannable, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1, new Drawable.Callback() {
+                new ColorDrawable(Color.LTGRAY), -1, new Drawable.Callback() {///////////////////Color.LTGRAY
                     ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
                     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
                     @Override

@@ -9,7 +9,6 @@ import android.text.style.MetricAffectingSpan;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-//public class CodeSpan extends CharacterStyle implements UpdateAppearance, Parcelable, ICharacterStyle {
 public class CodeSpan extends MetricAffectingSpan implements Parcelable, ICharacterStyle {
     @Override
     public void updateDrawState(@NonNull TextPaint tp) {

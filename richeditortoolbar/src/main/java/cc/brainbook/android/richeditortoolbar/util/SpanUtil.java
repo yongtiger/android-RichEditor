@@ -1,14 +1,11 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
-import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.ParagraphStyle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,10 +13,10 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
-
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IStyle;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
@@ -59,7 +56,7 @@ public abstract class SpanUtil {
                                     result = -1;
                                 }
                             }
-                        } else if (clazz == ParagraphStyle.class) {
+                        } else if (clazz == IParagraphStyle.class) {
                             if (o1 instanceof INestParagraphStyle) {
                                 result = 1;
                             } else if (o2 instanceof INestParagraphStyle) {
@@ -78,7 +75,7 @@ public abstract class SpanUtil {
             ///getSpans()获取clazz类及其子类
             ///比如：HeadSpan extends AbsoluteSizeSpan：
             ///editable.getSpans(start, end, AbsoluteSizeSpan)也能获取到AbsoluteSizeSpan的子类HeadSpan
-            if (clazz != ParagraphStyle.class && span.getClass() != clazz) {
+            if (clazz != IParagraphStyle.class && span.getClass() != clazz) {
 //                editable.removeSpan(span);    ///注意：千万不要remove！因为有可能是子类！
                 continue;
             }
@@ -173,9 +170,14 @@ public abstract class SpanUtil {
     /**
      * 清除所有spans
      */
-    public static void clearAllSpans(@NonNull LinkedHashMap<Class<? extends Parcelable>, View> classHashMap, Spannable spannable) {
-        for (Class<?> clazz : classHashMap.keySet()) {
-            removeSpans(clazz, spannable, 0, spannable.length());
+    public static void clearAllSpans(Spannable spannable) {
+        if (spannable == null) {
+            return;
+        }
+
+        final IStyle[] spans = spannable.getSpans(0, spannable.length(), IStyle.class);
+        for (IStyle span : spans) {
+            spannable.removeSpan(span);
         }
     }
 
