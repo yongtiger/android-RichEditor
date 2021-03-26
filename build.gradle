@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.18",   ///v2.0.18#IStyle
-                versionCode: 20018
+                versionName: "2.0.19",   ///v2.0.19#整理Html
+                versionCode: 20019
         ]
     }
 
