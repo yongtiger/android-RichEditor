@@ -130,11 +130,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
 
-    public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
-    public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file_name";
-    public static final int REQUEST_CODE_HTML_EDITOR = 101;
+    public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
     public static final String PROVIDER_AUTHORITIES = ".file.path.share";//////////////
+
+    ///RichEditorToolbar名字，用于保存草稿等
+    ///注意：多RichEditorToolbar中必须添加且唯一！同样，REQUEST_CODE_HTML_EDITOR也要唯一
+    public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
+    public static final int REQUEST_CODE_HTML_EDITOR = DEFAULT_TOOLBAR_NAME.hashCode() & 0xffff;    ///Can only use lower 16 bits for requestCode
 
 
     ///注意：只注册View不为null的Class！

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.1",   ///v2.1.1#Preview
-                versionCode: 20101
+                versionName: "2.1.2",   ///v2.1.2#多RichEditorToolbar中必须添加且唯一！同样，REQUEST_CODE_HTML_EDITOR也要唯一；另外，Can only use lower 16 bits for requestCode
+                versionCode: 20102
         ]
     }
 
