@@ -1061,8 +1061,7 @@ public abstract class ToolbarHelper {
                 },  null);  ///CustomImageSpan.OnClickListener onClickListener可自定义
     }
 
-    ///执行postLoadSpans后处理
-    ///比如：ImageSpan的Glide异步加载图片等
+    ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
     public static void postLoadSpans(Context context, Spannable spannable, List<IStyle> spans,
                                      Spannable pasteSpannable, int pasteOffset,
                                      Drawable placeholderDrawable,

@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         final Spannable spannable = ToolbarHelper.fromJson(mJsonText);
         mTextView.setText(spannable);
 
-        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
         ToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
     }
 

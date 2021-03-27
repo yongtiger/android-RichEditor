@@ -42,7 +42,7 @@ public class PreviewEditorActivity extends AppCompatActivity {
         if (jsonString != null) {
             mTextViewPreview.setText(ToolbarHelper.fromJson(jsonString));
 
-            ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+            ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
             ToolbarHelper.postSetText(this, (Spannable) mTextViewPreview.getText());
         }
     }
