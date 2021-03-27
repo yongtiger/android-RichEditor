@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 
-public class SpanBean<T extends Parcelable> implements Parcelable {
+public class SpanBean implements Parcelable {
     @Expose
     private int spanStart;
     @Expose
@@ -15,7 +15,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
     @Expose
     private int spanFlags;
     @Expose
-    private T span;
+    private Parcelable span;
     @Expose
     private String spanClassName;
 
@@ -43,11 +43,11 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         this.spanFlags = spanFlags;
     }
 
-    public T getSpan() {
+    public Parcelable getSpan() {
         return span;
     }
 
-    public void setSpan(T span) {
+    public void setSpan(Parcelable span) {
         this.span = span;
     }
 
@@ -59,7 +59,7 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         this.spanClassName = spanClassName;
     }
 
-    public SpanBean(T span, String spanClassName, int spanStart, int spanEnd, int spanFlags) {
+    public SpanBean(Parcelable span, String spanClassName, int spanStart, int spanEnd, int spanFlags) {
         this.spanStart = spanStart;
         this.spanEnd = spanEnd;
         this.spanFlags = spanFlags;
@@ -81,16 +81,16 @@ public class SpanBean<T extends Parcelable> implements Parcelable {
         spanClassName = in.readString();
     }
 
-    public static final Creator<SpanBean<?>> CREATOR = new Creator<SpanBean<?>>() {
+    public static final Creator<SpanBean> CREATOR = new Creator<SpanBean>() {
         @Override
         @NonNull
-        public SpanBean<?> createFromParcel(Parcel in) {
-            return new SpanBean<>(in);
+        public SpanBean createFromParcel(Parcel in) {
+            return new SpanBean(in);
         }
 
         @Override
         @NonNull
-        public SpanBean<?>[] newArray(int size) {
+        public SpanBean[] newArray(int size) {
             return new SpanBean[size];
         }
     };

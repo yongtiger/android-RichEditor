@@ -6,9 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.style.ImageSpan;
@@ -23,7 +21,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
-public class CustomImageSpan extends ImageSpan implements Clickable, Parcelable, IBlockCharacterStyle {
+public class CustomImageSpan extends ImageSpan implements Clickable, IBlockCharacterStyle {
     public static final int MEDIA_TYPE = 0;
     public static final int ALIGN_CENTER = 2;
 

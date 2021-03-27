@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
-import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
@@ -81,11 +81,11 @@ public class MainActivity extends AppCompatActivity {
         ///设置初始文本
 //        final Spanned spanned = Html.fromHtml(mHtmlText);
 //        mTextView.setText(spanned);
-        final Spannable spannable = RichEditorToolbarHelper.fromJson(mJsonText);
+        final Spannable spannable = ToolbarHelper.fromJson(mJsonText);
         mTextView.setText(spannable);
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-        RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
+        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -102,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.setText(null);
                     } else {
 //                        mTextView.setText(Html.fromHtml(mHtmlText));
-                        mTextView.setText(RichEditorToolbarHelper.fromJson(mJsonText));
+                        mTextView.setText(ToolbarHelper.fromJson(mJsonText));
 
                         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-                        RichEditorToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
+                        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
                     }
                 }
             }

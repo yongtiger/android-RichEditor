@@ -3,7 +3,6 @@ package cc.brainbook.android.richeditortoolbar.span.nest;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
@@ -14,7 +13,7 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class ListSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
+public class ListSpan implements LeadingMarginSpan, INestParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_INDENT = 160;//////////////////
 
 

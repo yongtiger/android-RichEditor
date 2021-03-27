@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -18,7 +17,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
-public class CustomQuoteSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
+public class CustomQuoteSpan implements LeadingMarginSpan, INestParagraphStyle {
     /**
      * Default color for the quote stripe.
      */

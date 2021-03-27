@@ -14,7 +14,7 @@ import java.io.File;
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
@@ -41,7 +41,7 @@ public class EditorActivity extends AppCompatActivity {
         final String text = intent.getStringExtra(KEY_TEXT);
         if (!TextUtils.isEmpty(text)) {
 //            mRichEditText.setText(Html.fromHtml(text));
-            mRichEditText.setText(RichEditorToolbarHelper.fromJson(text));
+            mRichEditText.setText(ToolbarHelper.fromJson(text));
         }
 
 
@@ -134,7 +134,7 @@ public class EditorActivity extends AppCompatActivity {
         final Intent intent = new Intent();
 
 //        mHtmlResult = Html.toHtml(mRichEditText.getText(), mRichEditorToolbar.getHtmlOption());
-        mResult = RichEditorToolbarHelper.toJson(mRichEditorToolbar.getClassMap(), mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        mResult = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         intent.putExtra(KEY_RESULT, mResult);
 
         setResult(RESULT_OK, intent);

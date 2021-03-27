@@ -17,7 +17,7 @@ import java.util.LinkedHashMap;
 import cc.brainbook.android.richeditor.EditorActivity;
 import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static org.junit.Assert.*;
 
@@ -48,8 +48,8 @@ public class FromJsonTest {
     }
 
     private void check(String srcString) {
-        Spannable spannable = RichEditorToolbarHelper.fromJson(srcString);
-        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, spannable, 0, spannable.length(), true);
+        Spannable spannable = ToolbarHelper.fromJson(srcString);
+        String jsonString = ToolbarHelper.toJson(mClassMap, spannable, 0, spannable.length(), true);
         assertEquals(srcString, jsonString);
     }
 

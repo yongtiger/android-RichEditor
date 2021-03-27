@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,7 +10,7 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class CustomFontFamilySpan extends TypefaceSpan implements Parcelable, ICharacterStyle {
+public class CustomFontFamilySpan extends TypefaceSpan implements ICharacterStyle {
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose

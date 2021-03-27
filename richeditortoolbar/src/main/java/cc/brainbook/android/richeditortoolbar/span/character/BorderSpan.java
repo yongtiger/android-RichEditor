@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
 import androidx.annotation.NonNull;
@@ -12,7 +11,7 @@ import androidx.annotation.NonNull;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
 ///https://www.jianshu.com/p/deb28c22852a
-public class BorderSpan  extends ReplacementSpan implements Parcelable, ICharacterStyle {
+public class BorderSpan  extends ReplacementSpan implements ICharacterStyle {
     private static final int COLOR = Color.GRAY;//////////////////
 
     private final Paint mPaint;

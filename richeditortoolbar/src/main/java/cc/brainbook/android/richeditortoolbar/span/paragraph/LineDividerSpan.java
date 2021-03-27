@@ -3,7 +3,6 @@ package cc.brainbook.android.richeditortoolbar.span.paragraph;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
 
@@ -16,7 +15,7 @@ import java.lang.ref.WeakReference;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, Parcelable, IParagraphStyle {
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, IParagraphStyle {
     public static final int DEFAULT_MARGIN_TOP = 0;
     public static final int DEFAULT_MARGIN_BOTTOM = 0;
 

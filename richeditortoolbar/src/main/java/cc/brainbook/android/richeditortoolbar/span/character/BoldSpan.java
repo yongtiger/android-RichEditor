@@ -2,14 +2,13 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.graphics.Typeface;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.style.StyleSpan;
 
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class BoldSpan extends StyleSpan implements Parcelable, ICharacterStyle {
+public class BoldSpan extends StyleSpan implements ICharacterStyle {
     public BoldSpan() {
         super(Typeface.BOLD);
     }

@@ -10,7 +10,7 @@ import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.getSpanFlags;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.getSpanFlags;
 import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidParagraph;
 
 ///Unicode表：http://www.tamasoft.co.jp/en/general-info/unicode.html

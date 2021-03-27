@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
@@ -16,7 +15,7 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class PreSpan implements LineBackgroundSpan, Parcelable, INestParagraphStyle {
+public class PreSpan implements LineBackgroundSpan, INestParagraphStyle {
     @ColorInt
     public static final int BACKGROUND_COLOR = Color.GRAY;//////////////////
     public static final int PADDING = 0;

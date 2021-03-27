@@ -6,14 +6,13 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.style.ReplacementSpan;
 
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class BlockSpan extends ReplacementSpan implements Parcelable, ICharacterStyle {
+public class BlockSpan extends ReplacementSpan implements ICharacterStyle {
     private static final int COLOR = Color.GRAY;//////////////////
     private static final float RADIUS = 10;//////////////////
 

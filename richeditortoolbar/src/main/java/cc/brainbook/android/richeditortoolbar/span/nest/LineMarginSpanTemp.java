@@ -2,15 +2,30 @@ package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.style.LineHeightSpan;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 
+import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+
 //////??????[UPGRADE#LineMarginSpanTemp]
-public class LineMarginSpanTemp implements LineHeightSpan, Parcelable {
+public class LineMarginSpanTemp implements LineHeightSpan, INestParagraphStyle {
+
+    ///[NestingLevel]
+    @Expose
+    private int mNestingLevel;
+    @Override
+    public int getNestingLevel() {
+        return mNestingLevel;
+    }
+    @Override
+    public void setNestingLevel(int nestingLevel) {
+        mNestingLevel = nestingLevel;
+    }
+
+
     @Expose
     private final int mMarginTop, mMarginBottom;
 

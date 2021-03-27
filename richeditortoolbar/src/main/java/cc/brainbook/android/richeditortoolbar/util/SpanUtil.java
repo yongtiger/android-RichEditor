@@ -26,7 +26,7 @@ public abstract class SpanUtil {
      * 获得排序和过滤后的spans
      */
     @NonNull
-    public static <T> ArrayList<T> getFilteredSpans(final Class<T> clazz, @NonNull final Spannable spannable, int start, int end, boolean isSort) {
+    public static <T extends IStyle> ArrayList<T> getFilteredSpans(final Class<T> clazz, @NonNull final Spannable spannable, int start, int end, boolean isSort) {
         final ArrayList<T> filteredSpans = new ArrayList<>();
         final T[] spans = spannable.getSpans(start, end, clazz);
 
@@ -101,7 +101,7 @@ public abstract class SpanUtil {
      * 获取光标选择区间的spans
      */
     @NonNull
-    public static <T> ArrayList<T> getSelectedSpans(Class<T> clazz, Editable editable) {
+    public static <T extends IStyle> ArrayList<T> getSelectedSpans(Class<T> clazz, Editable editable) {
         final int selectionStart = Selection.getSelectionStart(editable);
         final int selectionEnd = Selection.getSelectionEnd(editable);
         if (selectionStart == -1 || selectionEnd == -1 || selectionStart == selectionEnd) { ///-1 if there is no selection or cursor
@@ -156,7 +156,7 @@ public abstract class SpanUtil {
     /**
      * 清除区间[start, end]内的spans
      */
-    public static <T> void removeSpans(Class<T> clazz, Spannable spannable, int start, int end) {
+    public static <T extends IStyle> void removeSpans(Class<T> clazz, Spannable spannable, int start, int end) {
         final ArrayList<T> spans = getFilteredSpans(clazz, spannable, start, end, false);
         for (T span : spans) {
             final int spanStart = spannable.getSpanStart(span);

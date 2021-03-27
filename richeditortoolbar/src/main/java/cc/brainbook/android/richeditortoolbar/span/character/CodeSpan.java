@@ -2,14 +2,13 @@ package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.graphics.Typeface;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class CodeSpan extends MetricAffectingSpan implements Parcelable, ICharacterStyle {
+public class CodeSpan extends MetricAffectingSpan implements ICharacterStyle {
     @Override
     public void updateDrawState(@NonNull TextPaint tp) {
         tp.setTypeface(Typeface.MONOSPACE);

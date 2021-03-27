@@ -1,4 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.interfaces;
 
-public interface IStyle {
+import android.os.Parcelable;
+
+public interface IStyle extends Parcelable {
 }

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.0.19",   ///v2.0.19#整理Html
-                versionCode: 20019
+                versionName: "2.1.0",   ///v2.1.0#重构mClassMap、sXXXClassList
+                versionCode: 20100
         ]
     }
 

@@ -3,7 +3,6 @@ package cc.brainbook.android.richeditortoolbar.span.nest;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.Layout;
 import android.text.style.LeadingMarginSpan;
 
@@ -13,7 +12,7 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class CustomLeadingMarginSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
+public class CustomLeadingMarginSpan implements LeadingMarginSpan, INestParagraphStyle {
     public static final int DEFAULT_INDENT = 40;//////////////////
 
 

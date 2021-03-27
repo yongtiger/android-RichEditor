@@ -19,14 +19,14 @@ import cc.brainbook.android.richeditor.EditorActivity;
 import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper.fromJson;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.fromJson;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
 
@@ -98,7 +98,7 @@ public class BoldSpanTest {
         onView(withId(R.id.toolbar_bold)).perform(click());
 
         ///[assert]
-        final String result = RichEditorToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        final String result = ToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         assertEquals(result, expectJsonString);
 
         ///检查是否Selected

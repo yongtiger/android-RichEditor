@@ -1,14 +1,13 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class DivSpan implements Parcelable, INestParagraphStyle {
+public class DivSpan implements INestParagraphStyle {
 	///[NestingLevel]
 	@Expose
 	private int mNestingLevel;

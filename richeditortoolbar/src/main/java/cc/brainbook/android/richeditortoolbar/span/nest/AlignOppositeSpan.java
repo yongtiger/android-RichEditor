@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.Layout.Alignment;
 import android.text.style.AlignmentSpan;
 
@@ -11,7 +10,7 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class AlignOppositeSpan implements AlignmentSpan, Parcelable, INestParagraphStyle {
+public class AlignOppositeSpan implements AlignmentSpan, INestParagraphStyle {
 	///[NestingLevel]
 	@Expose
 	private int mNestingLevel;

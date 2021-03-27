@@ -18,7 +18,7 @@ import cc.brainbook.android.richeditor.EditorActivity;
 import cc.brainbook.android.richeditor.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
-import cc.brainbook.android.richeditortoolbar.helper.RichEditorToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static org.junit.Assert.*;
 
@@ -52,7 +52,7 @@ public class FromHtmlTest {
 
     private void check(String srcString, String expectJsonString) {
         mEditable = (Editable) Html.fromHtml(srcString);
-        String jsonString = RichEditorToolbarHelper.toJson(mClassMap, mEditable, 0, mEditable.length(), true);
+        String jsonString = ToolbarHelper.toJson(mClassMap, mEditable, 0, mEditable.length(), true);
         assertEquals(expectJsonString, jsonString);
     }
 

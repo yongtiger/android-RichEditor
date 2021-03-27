@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
-import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -20,7 +19,7 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIndicatorText;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
-public class ListItemSpan implements LeadingMarginSpan, Parcelable, INestParagraphStyle {
+public class ListItemSpan implements LeadingMarginSpan, INestParagraphStyle {
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;//////////////////
     @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;//////////////////
     @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");//////////////////
