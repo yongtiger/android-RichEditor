@@ -37,6 +37,9 @@
         <activity android:name=".HtmlEditorActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
+        <activity android:name=".PreviewEditorActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
         <!--///manifest合并规则#tools:node="replace"-->
         <!--///https://developer.android.com/studio/build/manifest-merge-->
         <!--///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop-->

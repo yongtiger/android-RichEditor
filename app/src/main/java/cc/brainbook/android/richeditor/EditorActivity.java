@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
@@ -99,20 +98,21 @@ public class EditorActivity extends AppCompatActivity {
         ///（可选）设置SaveCallback
         mRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback() {
             @Override
-            public void save(String result) {
-                mResult = result;
+            public void save(String jsonString) {
+                mResult = jsonString;
             }
         });
 
-        ///（可选）设置Preview////////////////////////
-        mTextViewPreview = (TextView) findViewById(R.id.tv_preview);
-        ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
-        ///设置TextView可点击，比如响应URLSpan点击事件。
-//        mTextViewPreview.setMovementMethod(new ScrollingMovementMethod());  ///让TextView可以滚动显示完整内容
-        ///注意：LinkMovementMethod继承了ScrollingMovementMethod，因此无需ScrollingMovementMethod
-//        mTextViewPreview.setMovementMethod(LinkMovementMethod.getInstance());
-        mTextViewPreview.setMovementMethod(ClickableMovementMethod.getInstance());   ///https://www.cnblogs.com/luction/p/3645210.html
-        mRichEditorToolbar.setPreview(mTextViewPreview);
+        ///（可选）设置PreviewCallback
+        mRichEditorToolbar.setPreviewCallback(new RichEditorToolbar.PreviewCallback() {
+            @Override
+            public void handlePreview(String jsonString) {
+                final Intent intent = new Intent(EditorActivity.this, PreviewEditorActivity.class);
+                intent.putExtra(KEY_TEXT, jsonString);
+
+                startActivity(intent);
+            }
+        });
 
         ///（必选）初始化
         mRichEditorToolbar.init();

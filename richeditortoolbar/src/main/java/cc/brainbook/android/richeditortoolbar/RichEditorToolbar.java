@@ -123,11 +123,11 @@ import static java.lang.Math.min;
 
 public class RichEditorToolbar extends FlexboxLayout implements
         Drawable.Callback, View.OnClickListener,
-        View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
+        View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示//////////////
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
-    public static final String KEY_TEXT = "key_text";///////////////JSON化
+    public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
 
     public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
@@ -320,12 +320,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public void invalidateDrawable(@NonNull Drawable drawable) {
         final Editable editable = mRichEditText.getText();
         ToolbarHelper.setImageSpan(editable, drawable);
-
-        ///使TextViewPreview无效，从而刷新TextViewPreview
-        if (!TextUtils.isEmpty(mTextViewPreview.getText())) {
-//            mTextViewPreview.invalidateDrawable(drawable);//////??????无效！
-            mTextViewPreview.invalidate();
-        }
     }
 
     ///[ImageSpan#Glide#loadImage()#Placeholder]
@@ -371,7 +365,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableSave;
 
     public interface SaveCallback {
-        void save(String result);
+        void save(String jsonString);
     }
     private SaveCallback mSaveCallback;
     public void setSaveCallback(SaveCallback saveCallback) {
@@ -429,20 +423,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private ImageView mImageViewPreview;
     private boolean enablePreview;
 
-    private TextView mTextViewPreview;
-    public void setPreview(TextView textViewPreview) {
-        mTextViewPreview = textViewPreview;
+    public interface PreviewCallback {
+        void handlePreview(String result);
     }
-
-    private boolean enableSelectionChange = true;
-    private void updatePreview() {
-        if (mImageViewPreview != null && mTextViewPreview != null && mTextViewPreview.getVisibility() == VISIBLE) {
-            ///[enableSelectionChange]禁止onSelectionChanged()
-            ///注意：mTextViewPreview.setText()会引起mRichEditText#onSelectionChanged()，从而造成无selection单光标时切换toolbar按钮失效！
-            enableSelectionChange = false;
-            mTextViewPreview.setText(mRichEditText.getText());
-            enableSelectionChange = true;
-        }
+    private PreviewCallback mPreviewCallback;
+    public void setPreviewCallback(PreviewCallback previewCallback) {
+        mPreviewCallback = previewCallback;
     }
 
     /* ---------------- ///[Html] ---------------- */
@@ -549,9 +535,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         enableLongClick = a.getBoolean(R.styleable.RichEditorToolbar_enableLongClick, false);
 
-
-//        /* -------------- ///段落span：Div --------------- */
-//        mClassMap.put(DivSpan.class, null);
 
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
         mImageViewLeadingMargin = (ImageView) findViewById(R.id.toolbar_leading_margin);
@@ -1061,9 +1044,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///[更新ListSpan]
             updateListSpans(editable, updateListSpans);
 
-            ///[Preview]
-            updatePreview();
-
             ///[Undo/Redo]
             mUndoRedoHelper.addHistory(UndoRedoHelper.CLEAR_STYLES_ACTION, selectionStart, null, null,
                     ToolbarHelper.toByteArray(editable, 0, editable.length(), false));
@@ -1121,9 +1101,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         null, -1,
                         mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, null);
 
-                ///[Preview]
-                updatePreview();
-
                 ///[Undo/Redo]
                 assert editable != null;
                 mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
@@ -1146,24 +1123,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
         } else if (view == mImageViewUndo) {
             mUndoRedoHelper.undo();
 
-            ///[Preview]
-            updatePreview();
-
             return;
         } else if (view == mImageViewRedo) {
             mUndoRedoHelper.redo();
 
-            ///[Preview]
-            updatePreview();
-
             return;
         } else if (view == mImageViewSave) {
             if (mSaveCallback != null) {
-//                mSaveCallback.save(Html.toHtml(mRichEditText.getText(), mHtmlOption));
                 mSaveCallback.save(ToolbarHelper.toJson(mRichEditText.getText(),
                         0, mRichEditText.getText().length(),
                         true));
-
             }
 
             mUndoRedoHelper.resetSavedPosition();
@@ -1172,19 +1141,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             return;
         } else if (view == mImageViewPreview) {
-            view.setSelected(!view.isSelected());
-
-            if (mTextViewPreview != null) {
-                if (view.isSelected()) {
-                    mRichEditText.setVisibility(GONE);
-                    mTextViewPreview.setVisibility(VISIBLE);
-                    updatePreview();
-                } else {
-                    mRichEditText.setVisibility(VISIBLE);
-                    mTextViewPreview.setVisibility(GONE);
-                    mTextViewPreview.setText(null);
-                }
-
+            if (mPreviewCallback != null) {
+                mPreviewCallback.handlePreview(ToolbarHelper.toJson(mRichEditText.getText(),
+                        0, mRichEditText.getText().length(),
+                        true));
             }
 
             return;
@@ -1257,9 +1217,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(R.id.view_tag_list_start, null);
                                 view.setTag(R.id.view_tag_list_is_reversed, null);
                                 view.setTag(R.id.view_tag_list_list_type, null);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1289,9 +1246,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///改变selection的span
                                 applyParagraphStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1377,9 +1331,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///改变selection的span
                                 applyParagraphStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         ///清除样式
@@ -1401,9 +1352,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///清空view tag
                                 view.setTag(null);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1436,9 +1384,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyParagraphStyleSpans(view, editable);
 
-                                    ///[Preview]
-                                    updatePreview();
-
                                     ((TextView) view).setText(HeadSpan.HEADING_LABELS[which]);
                                 }
 
@@ -1463,9 +1408,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.head));
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1529,8 +1471,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             }
 
-            ///[Preview]
-            updatePreview();
         } else if (ICharacterStyle.class.isAssignableFrom(clazz)) {
 
             ///字符span（带参数）：ForegroundColor、BackgroundColor
@@ -1554,9 +1494,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                     ///改变selection的span
                                     applyCharacterStyleSpans(view, editable);
-
-                                    ///[Preview]
-                                    updatePreview();
                                 }
                             }
                         })
@@ -1573,9 +1510,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setBackgroundColor(Color.TRANSPARENT);
                                 ///改变selection的span
                                 applyCharacterStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null);
@@ -1614,9 +1548,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyCharacterStyleSpans(view, editable);
 
-                                    ///[Preview]
-                                    updatePreview();
-
                                     ((TextView) view).setText(family);
                                 }
 
@@ -1638,9 +1569,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///清空view tag
                                 view.setTag(null);
-
-                                ///[Preview]
-                                updatePreview();
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.font_family));
@@ -1677,9 +1605,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyCharacterStyleSpans(view, editable);
 
-                                    ///[Preview]
-                                    updatePreview();
-
                                     ((TextView) view).setText(size);
                                 }
 
@@ -1704,9 +1629,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.absolute_size));
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1740,9 +1662,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyCharacterStyleSpans(view, editable);
 
-                                    ///[Preview]
-                                    updatePreview();
-
                                     ((TextView) view).setText(sizeChange);
                                 }
 
@@ -1767,9 +1686,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.relative_size));
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1803,9 +1719,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyCharacterStyleSpans(view, editable);
 
-                                    ///[Preview]
-                                    updatePreview();
-
                                     ((TextView) view).setText(scaleX);
                                 }
 
@@ -1830,9 +1743,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///更新view text
                                 ((TextView) view).setText(mContext.getString(R.string.scale_x));
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1870,9 +1780,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///改变selection的span
                                 applyCharacterStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         ///清除样式
@@ -1891,9 +1798,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///清空view tag
                                 view.setTag(R.id.view_tag_url_text, null);
                                 view.setTag(R.id.view_tag_url_url, null);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null);
@@ -1947,9 +1851,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///改变selection的span
                                 applyCharacterStyleSpans(view, editable);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         ///清除样式
@@ -1975,9 +1876,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(R.id.view_tag_image_width, null);
                                 view.setTag(R.id.view_tag_image_height, null);
                                 view.setTag(R.id.view_tag_image_align, null);
-
-                                ///[Preview]
-                                updatePreview();
                             }
                         })
                         ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
@@ -2004,9 +1902,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
             view.setSelected(!view.isSelected());
 
             applyCharacterStyleSpans(view, editable);
-
-            ///[Preview]
-            updatePreview();
         }
     }
 
@@ -2234,8 +2129,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
-        ///[enableSelectionChange]禁止onSelectionChanged()
-        if (!enableSelectionChange || isSkipTextWatcher || isSkipUndoRedo) {
+        if (isSkipTextWatcher || isSkipUndoRedo) {
             return;
         }
 
@@ -2423,9 +2317,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     isSkipTextWatcher = false;
                 }
             }
-
-            ///[Preview]
-            updatePreview();
 
             ///[Undo/Redo]
             if (!isSkipUndoRedo) {
