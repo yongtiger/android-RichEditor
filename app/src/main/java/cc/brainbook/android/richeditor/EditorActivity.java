@@ -22,7 +22,6 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.REQUEST_C
 public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
-    private TextView mTextViewPreview;
     private String mResult;
 
     @Override
