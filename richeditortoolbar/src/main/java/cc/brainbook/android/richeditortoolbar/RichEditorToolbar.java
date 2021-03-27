@@ -130,14 +130,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
 
-    public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
     public static final String PROVIDER_AUTHORITIES = ".file.path.share";//////////////
 
     ///RichEditorToolbar名字，用于保存草稿等
-    ///注意：多RichEditorToolbar中必须添加且唯一！同样，REQUEST_CODE_HTML_EDITOR也要唯一
+    ///注意：多RichEditorToolbar中必须添加且唯一！同样，mRequestCodeHtmlEditor、mSharedPreferencesKeyDraftText也要唯一
     public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
-    public static final int REQUEST_CODE_HTML_EDITOR = DEFAULT_TOOLBAR_NAME.hashCode() & 0xffff;    ///Can only use lower 16 bits for requestCode
 
 
     ///注意：只注册View不为null的Class！
@@ -296,7 +294,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (REQUEST_CODE_HTML_EDITOR == requestCode) {
+        if (mRequestCodeHtmlEditor == requestCode) {
             if (RESULT_OK == resultCode) {
                 final Editable editable = mRichEditText.getText();
                 if (editable != null) {
@@ -351,7 +349,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableClearDraft;
 
     private boolean checkDraft() {
-        final String draftText = PrefsUtil.getString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+        final String draftText = PrefsUtil.getString(mContext, mToolbarName, mSharedPreferencesKeyDraftText, null);
         final boolean hasDraft = !TextUtils.isEmpty(draftText);
         mImageViewRestoreDraft.setEnabled(hasDraft);
         mImageViewRestoreDraft.setSelected(hasDraft);
@@ -493,6 +491,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private Context mContext;
 
     private String mToolbarName;
+    public String getToolbarName() {
+        return mToolbarName;
+    }
+
+    private int mRequestCodeHtmlEditor;
+    public int getRequestCodeHtmlEditor() {
+        return mRequestCodeHtmlEditor;
+    }
+
+    private String mSharedPreferencesKeyDraftText;
+    public String getSharedPreferencesKeyDraftText() {
+        return mSharedPreferencesKeyDraftText;
+    }
+
     private @LayoutRes int mToolbarLayout;
     private boolean enableLongClick;
 
@@ -528,10 +540,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
         setFlexDirection(FlexDirection.ROW);
         setFlexWrap(FlexWrap.WRAP);
 
+        ///RichEditorToolbar名字，用于保存草稿等
+        ///注意：多RichEditorToolbar中必须添加且唯一！同样，mRequestCodeHtmlEditor、mSharedPreferencesKeyDraftText也要唯一
         mToolbarName = a.getString(R.styleable.RichEditorToolbar_toolbarName);
         if (TextUtils.isEmpty(mToolbarName)) {
             mToolbarName = DEFAULT_TOOLBAR_NAME;
         }
+        mRequestCodeHtmlEditor = mToolbarName.hashCode() & 0xffff;    ///Can only use lower 16 bits for requestCode
+        mSharedPreferencesKeyDraftText = mToolbarName + "_shared_preferences_key_draft_text";
+
 
         mToolbarLayout = a.getResourceId(R.styleable.RichEditorToolbar_toolbarLayout, R.layout.toolbar);
         LayoutInflater.from(mContext).inflate(mToolbarLayout, this, true);
@@ -1059,7 +1076,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             final byte[] bytes = ToolbarHelper.toByteArray(editable, 0, editable.length(), true);
-            PrefsUtil.putString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
+            PrefsUtil.putString(mContext, mToolbarName, mSharedPreferencesKeyDraftText, Base64.encodeToString(bytes, 0));
 
             if (checkDraft()) {
                 Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_successful, Toast.LENGTH_SHORT).show();
@@ -1069,7 +1086,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
             return;
         } else if (view == mImageViewRestoreDraft) {
-            final String draftText = PrefsUtil.getString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
+            final String draftText = PrefsUtil.getString(mContext, mToolbarName, mSharedPreferencesKeyDraftText, null);
             if (TextUtils.isEmpty(draftText)) {
                 return;
             }

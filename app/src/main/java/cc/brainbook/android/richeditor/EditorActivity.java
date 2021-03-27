@@ -17,7 +17,6 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.REQUEST_CODE_HTML_EDITOR;
 
 public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
@@ -87,7 +86,7 @@ public class EditorActivity extends AppCompatActivity {
                 final Intent intent = new Intent(EditorActivity.this, HtmlEditorActivity.class);
                 intent.putExtra(KEY_TEXT, htmlString);
 
-                startActivityForResult(intent, REQUEST_CODE_HTML_EDITOR);
+                startActivityForResult(intent, mRichEditorToolbar.getRequestCodeHtmlEditor());
             }
         });
 
