@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.6",   ///v2.1.6#ClickImageSpanDialogBuilder.ImageSpanCallback
-                versionCode: 20106
+                versionName: "2.1.7",   ///v2.1.7#ClickImageSpanDialogBuilder.ImageSpanCallback#getVideoCoverFile()
+                versionCode: 20107
         ]
     }
 

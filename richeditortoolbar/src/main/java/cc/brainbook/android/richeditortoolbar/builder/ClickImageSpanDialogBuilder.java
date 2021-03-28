@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -41,18 +40,14 @@ import com.bumptech.glide.request.transition.Transition;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.util.Date;
 
 import cc.brainbook.android.richeditortoolbar.R;
-import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 import cn.hzw.doodle.DoodleActivity;
 import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-
-import static cc.brainbook.android.richeditortoolbar.util.FileUtil.generateVideoCover;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
@@ -110,7 +105,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	public interface ImageSpanCallback {
 		Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src);
-		Pair<Uri, File>  getMediaTypeSourceAndFile(Context context, int mediaType);
+		Pair<Uri, File> getMediaTypeSourceAndFile(Context context, int mediaType);
+		File getVideoCoverFile(Context context, Uri uri);
 	}
 	private ImageSpanCallback mImageSpanCallback;
 	public ClickImageSpanDialogBuilder setImageSpanCallback(ImageSpanCallback imageSpanCallback) {
@@ -707,18 +703,19 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
-					final Uri selectedUri = data.getData();
-					if (selectedUri != null) {
-						mEditTextUri.setText(selectedUri.toString());
+					final Uri resultUri = data.getData();
+					if (resultUri != null) {
+						mEditTextUri.setText(resultUri.toString());
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
-							///生成视频的第一帧图片/////////////////
-							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + ".jpg";
-							final File videoCoverFile = new File("mImageFileDir", videoCoverFileName);/////////////mImageFileDir
-							generateVideoCover(mContext, selectedUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
-
-							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-							enableDeleteOldSrcFile = true;
+							if (mImageSpanCallback != null) {
+								///生成视频的第一帧图片
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								if (videoCoverFile != null) {
+									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+									enableDeleteOldSrcFile = true;
+								}
+							}
 						}
 					} else {
 						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
@@ -748,13 +745,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						enableDeleteOldUriFile = true;
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
-							///生成视频的第一帧图片
-							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + ".jpg";
-							final File videoCoverFile = new File("mImageFileDir", videoCoverFileName);//////////////////
-							generateVideoCover(mContext, resultUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
-
-							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-							enableDeleteOldSrcFile = true;
+							if (mImageSpanCallback != null) {
+								///生成视频的第一帧图片
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								if (videoCoverFile != null) {
+									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+									enableDeleteOldSrcFile = true;
+								}
+							}
 						}
 					} else {
 						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
