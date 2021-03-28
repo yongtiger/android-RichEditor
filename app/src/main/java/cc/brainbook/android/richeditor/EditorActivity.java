@@ -21,11 +21,12 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
-import static cc.brainbook.android.richeditor.MainActivity.PROVIDER_AUTHORITIES;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
 public class EditorActivity extends AppCompatActivity {
+    public static final String PROVIDER_AUTHORITIES = ".file.path.share";
+
     private static final String IMAGE_FILE_SUFFIX = ".jpg";
     private static final String VIDEO_FILE_SUFFIX = ".mp4";
     private static final String AUDIO_FILE_SUFFIX = ".3gp";//////////////////

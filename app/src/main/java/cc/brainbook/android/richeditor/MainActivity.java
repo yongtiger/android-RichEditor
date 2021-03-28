@@ -25,7 +25,6 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESUL
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String PROVIDER_AUTHORITIES = ".file.path.share";
 
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
