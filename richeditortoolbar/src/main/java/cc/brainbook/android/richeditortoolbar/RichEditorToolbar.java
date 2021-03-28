@@ -123,7 +123,7 @@ import static java.lang.Math.min;
 
 public class RichEditorToolbar extends FlexboxLayout implements
         Drawable.Callback, View.OnClickListener,
-        View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示//////////////
+        View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener {
@@ -132,7 +132,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     public static final String SHARED_PREFERENCES_KEY_DRAFT_TEXT = "rich_editor_shared_preferences_key_draft_text";
     public static final String CLIPBOARD_FILE_NAME = "rich_editor_clipboard_file";
-    public static final String PROVIDER_AUTHORITIES = ".file.path.share";//////////////
 
     ///RichEditorToolbar名字，用于保存草稿等
     ///注意：多RichEditorToolbar中必须添加且唯一！同样，mRequestCodeHtmlEditor也要唯一

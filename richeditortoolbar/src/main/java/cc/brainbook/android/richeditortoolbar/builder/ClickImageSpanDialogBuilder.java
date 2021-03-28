@@ -50,8 +50,7 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
-import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.PROVIDER_AUTHORITIES;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.PROVIDER_AUTHORITIES;
 import static cc.brainbook.android.richeditortoolbar.util.FileUtil.generateVideoCover;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {

@@ -16,6 +16,7 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.PROVIDER_AUTHORITIES;
 
 public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
@@ -66,6 +67,9 @@ public class EditorActivity extends AppCompatActivity {
 //        mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.placeholder);
 
+        ///（可选，缺省为".file.path.share"）PROVIDER_AUTHORITIES
+//        PROVIDER_AUTHORITIES = ".file.path.share";
+
 
 //        ///（可选）设置LineDividerSpan.DrawBackgroundCallback
 //        mRichEditorToolbar.setDrawBackgroundCallback(new LineDividerSpan.DrawBackgroundCallback() {
@@ -92,7 +96,7 @@ public class EditorActivity extends AppCompatActivity {
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2);
 
-        ///（可选）设置SaveCallback
+        ///（如enableSave为true，则必选）设置SaveCallback
         mRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback() {
             @Override
             public void save(String jsonString) {
@@ -100,7 +104,7 @@ public class EditorActivity extends AppCompatActivity {
             }
         });
 
-        ///（可选）设置PreviewCallback
+        ///（如enablePreview为true，则必选）设置PreviewCallback
         mRichEditorToolbar.setPreviewCallback(new RichEditorToolbar.PreviewCallback() {
             @Override
             public void handlePreview(String jsonString) {
