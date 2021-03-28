@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.4",   ///v2.1.4#（可选，缺省为".file.path.share"）PROVIDER_AUTHORITIES = ".file.path.share"
-                versionCode: 20104
+                versionName: "2.1.5",   ///v2.1.5#public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
+                versionCode: 20105
         ]
     }
 

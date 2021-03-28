@@ -1,14 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.helper;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -23,7 +19,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,7 +39,6 @@ import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
-import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -83,7 +77,6 @@ import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
-import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 public abstract class ToolbarHelper {
     ///缺省的PROVIDER_AUTHORITIES
@@ -1040,12 +1033,13 @@ public abstract class ToolbarHelper {
 
     /* --------------------------------------------------------------------------------------- */
     ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-    public static void postSetText(Context context, @NonNull final Spannable textSpannable) {
+    public static void postSetText(Context context, @NonNull final Spannable textSpannable,
+                                   CustomImageSpan.OnClickListener onClickListener) {
         final IStyle[] spans = textSpannable.getSpans(0, textSpannable.length(), IStyle.class);
         final List<IStyle> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         ToolbarHelper.postLoadSpans(context, textSpannable, spanList, null, -1,
-                new ColorDrawable(Color.LTGRAY), -1, new Drawable.Callback() {///////////////////Color.LTGRAY
+                null, R.drawable.placeholder, new Drawable.Callback() {
                     ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
                     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
                     @Override
@@ -1058,7 +1052,7 @@ public abstract class ToolbarHelper {
 
                     @Override
                     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
-                },  null);  ///CustomImageSpan.OnClickListener onClickListener可自定义
+                },  onClickListener);
     }
 
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
@@ -1071,34 +1065,6 @@ public abstract class ToolbarHelper {
     ) {
         if (spans == null || spans.isEmpty()) {
             return;
-        }
-
-        if (onClickListener == null) {
-            onClickListener = new CustomImageSpan.OnClickListener() {
-                @Override
-                public void onClick(View widget, Clickable clickable, Drawable drawable, String uriString, String source) {
-                    final Context context = widget.getContext();
-
-                    final Intent intent = new Intent(Intent.ACTION_VIEW);
-                    final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-                    final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-                            context.getPackageName() + PROVIDER_AUTHORITIES);
-
-                    ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    }
-
-                    intent.setDataAndType(mediaUri, mediaType);
-
-                    try {
-                        context.startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                        e.printStackTrace();
-                        Toast.makeText(context, "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            };
         }
 
         for (IStyle span : spans) {

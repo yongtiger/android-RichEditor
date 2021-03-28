@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     ///设置初始文本
-//    private String mHtmlText = "<hr>";
     private String mJsonText = "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}";
 
     private TextView mTextView;
@@ -78,14 +77,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ///设置初始文本
-//        final Spanned spanned = Html.fromHtml(mHtmlText);
-//        mTextView.setText(spanned);
-        final Spannable spannable = ToolbarHelper.fromJson(mJsonText);
-        mTextView.setText(spannable);
-
-        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
-        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
+        ///设置文本
+        setText(mJsonText);
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -96,22 +89,17 @@ public class MainActivity extends AppCompatActivity {
         if (REQUEST_CODE_RICH_EDITOR == requestCode) {
             if (RESULT_OK == resultCode) {
                 if (data != null) {
-//                    mHtmlText = data.getStringExtra(KEY_RESULT);
                     mJsonText = data.getStringExtra(KEY_RESULT);
                     if (TextUtils.isEmpty(mJsonText)) {
                         mTextView.setText(null);
                     } else {
-//                        mTextView.setText(Html.fromHtml(mHtmlText));
-                        mTextView.setText(ToolbarHelper.fromJson(mJsonText));
-
-                        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
-                        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText());
+                        ///设置文本
+                        setText(mJsonText);
                     }
                 }
             }
         }
     }
-
 
     public void btnClickEdit(View view) {
         ///[startActivityForResult#启动Activity来获取数据]
@@ -119,6 +107,15 @@ public class MainActivity extends AppCompatActivity {
 //        intent.putExtra(KEY_TEXT, mHtmlText);
         intent.putExtra(KEY_TEXT, mJsonText);
         startActivityForResult(intent, REQUEST_CODE_RICH_EDITOR);
+    }
+
+
+    ///设置文本
+    private void setText(String jsonString) {
+        mTextView.setText(ToolbarHelper.fromJson(jsonString));
+
+        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
+        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText(), new ImageSpanOnClickListener());
     }
 
 }

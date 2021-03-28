@@ -398,7 +398,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(View view) {
 				final String src = mEditTextSrc.getText().toString();
-
+/////////////////
 				final Uri source = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 				if (source == null) {
 					return;
@@ -415,7 +415,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onClick(View view) {
 				final String src = mEditTextSrc.getText().toString();
-
+/////////////////
 				final Uri imageUri = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
 				if (imageUri == null) {
 					return;
@@ -587,6 +587,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private void pickFromRecorder() {
 		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
+		/////////////////
 		///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
 		final File mediaFile = new File(mMediaType == 1 ? mVideoFileDir : mAudioFileDir,
 				StringUtil.getDateFormat(new Date()) + (mMediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
@@ -650,6 +651,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			}
 		}
 
+		/////////////////
 		///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
 		///如果指定了保存路径，则照片保存到指定文件（此时，Intent返回null）
 		///另外，不建议用uri！这种FileProvider内容提供者的uri很难获得File文件目录进行文件操作！
@@ -709,7 +711,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mEditTextUri.setText(selectedUri.toString());
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
-							///生成视频的第一帧图片
+							///生成视频的第一帧图片/////////////////
 							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
 							final File videoCoverFile = new File(mImageFileDir, videoCoverFileName);
 							generateVideoCover(mContext, selectedUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
