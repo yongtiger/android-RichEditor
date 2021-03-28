@@ -17,7 +17,7 @@ import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.PROVIDER_AUTHORITIES;
+import static cc.brainbook.android.richeditor.MainActivity.PROVIDER_AUTHORITIES;
 
 public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener {
     @Override

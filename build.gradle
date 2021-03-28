@@ -5,13 +5,13 @@ buildscript {
         setup = [
                 compileSdk : 30,
                 buildTools : "30.0.3",
-                minSdk     : 15,
+                minSdk     : 16,
                 targetSdk  : 30
         ]
 
         release = [
-                versionName: "2.1.5",   ///v2.1.5#public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
-                versionCode: 20105
+                versionName: "2.1.6",   ///v2.1.6#ClickImageSpanDialogBuilder.ImageSpanCallback
+                versionCode: 20106
         ]
     }
 

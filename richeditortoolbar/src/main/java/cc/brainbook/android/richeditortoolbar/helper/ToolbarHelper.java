@@ -79,8 +79,6 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public abstract class ToolbarHelper {
-    ///缺省的PROVIDER_AUTHORITIES
-    public static String PROVIDER_AUTHORITIES = ".file.path.share";
 
     public static final ArrayList<Class<? extends INestParagraphStyle>> sNestParagraphStyleSpanClassList = new ArrayList<Class<? extends INestParagraphStyle>>(){{
         add(DivSpan.class);

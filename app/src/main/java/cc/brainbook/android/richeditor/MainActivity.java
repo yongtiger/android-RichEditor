@@ -24,8 +24,8 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivity extends AppCompatActivity {
+    public static final String PROVIDER_AUTHORITIES = ".file.path.share";
 
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;

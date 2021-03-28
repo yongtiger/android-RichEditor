@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.util.Pair;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.text.Editable;
@@ -50,13 +51,10 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.PROVIDER_AUTHORITIES;
+
 import static cc.brainbook.android.richeditortoolbar.util.FileUtil.generateVideoCover;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
-	private static final String IMAGE_FILE_SUFFIX = ".jpg";
-	private static final String VIDEO_FILE_SUFFIX = ".mp4";
-	private static final String AUDIO_FILE_SUFFIX = ".3gp";//////////////////
 
 	public static final int ALIGN_BOTTOM = 0;
 	public static final int ALIGN_BASELINE = 1;
@@ -77,25 +75,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	private int mMediaType;	///0: image; 1: video; 2: audio
 	private String mDefaultAudioVideoCoverImageFileName;	///缺省的音频/视频封面图片
-
-	private File mImageFileDir;	///完整的图片绝对目录（绝对路径）
-	public ClickImageSpanDialogBuilder setImageFileDir(File imageFileDir) {
-		mImageFileDir = imageFileDir;
-
-		return this;
-	}
-	private File mVideoFileDir;	///完整的视频绝对目录（绝对路径）
-	public ClickImageSpanDialogBuilder setVideoFileDir(File videoFileDir) {
-		mVideoFileDir = videoFileDir;
-
-		return this;
-	}
-	private File mAudioFileDir;	///完整的音频绝对目录（绝对路径）
-	public ClickImageSpanDialogBuilder setAudioFileDir(File audioFileDir) {
-		mAudioFileDir = audioFileDir;
-
-		return this;
-	}
 
 	private String mInitialUri;	///初始化时的uri
 	private String mInitialSrc;	///初始化时的src
@@ -128,6 +107,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private RadioButton mRadioButtonAlignBaseline;
 	private RadioButton mRadioButtonAlignCenter;
 
+
+	public interface ImageSpanCallback {
+		Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src);
+		Pair<Uri, File>  getMediaTypeSourceAndFile(Context context, int mediaType);
+	}
+	private ImageSpanCallback mImageSpanCallback;
+	public ClickImageSpanDialogBuilder setImageSpanCallback(ImageSpanCallback imageSpanCallback) {
+		mImageSpanCallback = imageSpanCallback;
+		return this;
+	}
 
 	public interface OnClickListener {
 		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
@@ -397,16 +386,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonCrop.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				final String src = mEditTextSrc.getText().toString();
-/////////////////
-				final Uri source = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
-				if (source == null) {
+				if (mImageSpanCallback == null) {
 					return;
 				}
 
-				final File destinationFile = new File(mImageFileDir, "crop_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);//////////////////
+				final String src = mEditTextSrc.getText().toString();
 
-				startCrop((Activity) mContext, source, destinationFile.getAbsolutePath());
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "crop", src);
+
+				if (pair.first != null && pair.second != null) {
+					startCrop((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+				}
 			}
 		});
 
@@ -414,16 +404,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonDraw.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				final String src = mEditTextSrc.getText().toString();
-/////////////////
-				final Uri imageUri = UriUtil.parseToUri(mContext, src, mContext.getPackageName() + PROVIDER_AUTHORITIES);
-				if (imageUri == null) {
+				if (mImageSpanCallback == null) {
 					return;
 				}
 
-				final File destinationFile = new File(mImageFileDir, "draw_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);//////////////////
+				final String src = mEditTextSrc.getText().toString();
 
-				startDraw((Activity) mContext, imageUri, destinationFile.getAbsolutePath());
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "draw", src);
+
+				if (pair.first != null && pair.second != null) {
+					startDraw((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+				}
 			}
 		});
 
@@ -456,7 +447,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mMediaType = mediaType;
 
 		if (mMediaType != 0) {
-			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");
+			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");////////////
 		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -585,31 +576,35 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	///[媒体选择器#Autio/Video媒体录制]
 	private void pickFromRecorder() {
-		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-
-		/////////////////
-		///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
-		final File mediaFile = new File(mMediaType == 1 ? mVideoFileDir : mAudioFileDir,
-				StringUtil.getDateFormat(new Date()) + (mMediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
-		final Uri mediaUri = UriUtil.getFileProviderUriFromFile(mContext, mediaFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, mediaUri);
-
-		//////??????如果是视频，还可以设置其它值：
-		///MediaStore.EXTRA_VIDEO_QUALITY：设置视频录制的质量，0为低质量，1为高质量。
-		///MediaStore.EXTRA_DURATION_LIMIT：设置视频最大允许录制的时长，单位为毫秒。
-		///MediaStore.EXTRA_SIZE_LIMIT：指定视频最大允许的尺寸，单位为byte。
-
-		///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+		if (mImageSpanCallback == null) {
+			return;
 		}
 
-		try {
-			((Activity) mContext).startActivityForResult(intent,
-					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
-		} catch (ActivityNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+
+		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
+
+		if (pair.first != null) {
+			///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, pair.first);
+
+			//////??????如果是视频，还可以设置其它值：
+			///MediaStore.EXTRA_VIDEO_QUALITY：设置视频录制的质量，0为低质量，1为高质量。
+			///MediaStore.EXTRA_DURATION_LIMIT：设置视频最大允许录制的时长，单位为毫秒。
+			///MediaStore.EXTRA_SIZE_LIMIT：指定视频最大允许的尺寸，单位为byte。
+
+			///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+			}
+
+			try {
+				((Activity) mContext).startActivityForResult(intent,
+						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 
@@ -637,6 +632,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	///[图片选择器#相机拍照]
 	private File mCameraResultFile;
 	private void pickFromCamera() {
+		if (mImageSpanCallback == null) {
+			return;
+		}
+
 		// create Intent to take a picture and return control to the calling application
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
@@ -651,27 +650,29 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			}
 		}
 
-		/////////////////
-		///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
-		///如果指定了保存路径，则照片保存到指定文件（此时，Intent返回null）
-		///另外，不建议用uri！这种FileProvider内容提供者的uri很难获得File文件目录进行文件操作！
-		///指定拍照路径时，先检查路径中的文件夹是否都存在，不存在时先创建文件夹再调用相机拍照；照片的命名中不要包含空格等特殊符号
-		///https://www.jianshu.com/p/c1c2555e287c
-		mCameraResultFile = new File(mImageFileDir, StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
-		final Uri cameraResultUri = UriUtil.getFileProviderUriFromFile(mContext, mCameraResultFile, mContext.getPackageName() + PROVIDER_AUTHORITIES);
-		intent.putExtra(MediaStore.EXTRA_OUTPUT, cameraResultUri);
+		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
+		mCameraResultFile = pair.second;
 
-		///因为没有使用cameraResultUri传递拍照结果图片目录，所以注释掉以下：
+		if (pair.first != null) {
+			///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
+			///如果指定了保存路径，则照片保存到指定文件（此时，Intent返回null）
+			///另外，不建议用uri！这种FileProvider内容提供者的uri很难获得File文件目录进行文件操作！
+			///指定拍照路径时，先检查路径中的文件夹是否都存在，不存在时先创建文件夹再调用相机拍照；照片的命名中不要包含空格等特殊符号
+			///https://www.jianshu.com/p/c1c2555e287c
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, pair.first);
+
+			///因为没有使用cameraResultUri传递拍照结果图片目录，所以注释掉以下：
 //		///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
 //		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 //		}
 
-		try {
-			((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
-		} catch (ActivityNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			try {
+				((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 
@@ -712,8 +713,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							///生成视频的第一帧图片/////////////////
-							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
-							final File videoCoverFile = new File(mImageFileDir, videoCoverFileName);
+							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + ".jpg";
+							final File videoCoverFile = new File("mImageFileDir", videoCoverFileName);/////////////mImageFileDir
 							generateVideoCover(mContext, selectedUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
 
 							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
@@ -748,8 +749,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
 							///生成视频的第一帧图片
-							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
-							final File videoCoverFile = new File(mImageFileDir, videoCoverFileName);
+							final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + ".jpg";
+							final File videoCoverFile = new File("mImageFileDir", videoCoverFileName);//////////////////
 							generateVideoCover(mContext, resultUri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
 
 							mEditTextSrc.setText(videoCoverFile.getAbsolutePath());

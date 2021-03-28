@@ -1,24 +1,35 @@
 package cc.brainbook.android.richeditor;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.view.View;
 
 import java.io.File;
+import java.util.Date;
 
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.util.StringUtil;
+import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
+import static cc.brainbook.android.richeditor.MainActivity.PROVIDER_AUTHORITIES;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.PROVIDER_AUTHORITIES;
 
 public class EditorActivity extends AppCompatActivity {
+    private static final String IMAGE_FILE_SUFFIX = ".jpg";
+    private static final String VIDEO_FILE_SUFFIX = ".mp4";
+    private static final String AUDIO_FILE_SUFFIX = ".3gp";//////////////////
+
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
     private String mResult;
@@ -44,7 +55,7 @@ public class EditorActivity extends AppCompatActivity {
 
         /* --------------///[ImageSpan]-------------- *//////////////////////////////
         ///（如enableVideo/enableAudio/enableImage为true，则必选）设置存放图片/音频、视频文件的目录（必须非null、且存在、且可写入）
-        File imageFileDir, videoFileDir, audioFileDir;
+        final File imageFileDir, videoFileDir, audioFileDir;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
             ///外部存储可用
@@ -59,9 +70,22 @@ public class EditorActivity extends AppCompatActivity {
             videoFileDir = new File(getFilesDir(), Environment.DIRECTORY_MOVIES);
             audioFileDir = new File(getFilesDir(), Environment.DIRECTORY_MUSIC);
         }
-        mRichEditorToolbar.setImageFileDir(imageFileDir);
-        mRichEditorToolbar.setVideoFileDir(videoFileDir);
-        mRichEditorToolbar.setAudioFileDir(audioFileDir);
+        mRichEditorToolbar.setImageSpanCallback(new ClickImageSpanDialogBuilder.ImageSpanCallback() {
+            @Override
+            public Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src) {
+                final Uri source = UriUtil.parseToUri(context, src, context.getPackageName() + PROVIDER_AUTHORITIES);
+                final File file = new File(imageFileDir, action + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+                return new Pair<>(source, file);
+            }
+
+            @Override
+            public Pair<Uri, File> getMediaTypeSourceAndFile(Context context, int mediaType) {
+                final File file = new File(mediaType == 0 ? imageFileDir : mediaType == 1 ? videoFileDir : audioFileDir,
+				StringUtil.getDateFormat(new Date()) + (mediaType == 0 ? IMAGE_FILE_SUFFIX : mediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
+		        final Uri source = UriUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + PROVIDER_AUTHORITIES);
+                return new Pair<>(source, file);
+            }
+        });
 
         ///（可选）mPlaceholderDrawable和mPlaceholderResourceId可都不设置、采用缺省，如都设置则mPlaceholderDrawable优先
 //        mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
