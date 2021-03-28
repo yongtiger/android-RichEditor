@@ -49,7 +49,6 @@ public class EditorActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final String text = intent.getStringExtra(KEY_TEXT);
         if (!TextUtils.isEmpty(text)) {
-//            mRichEditText.setText(Html.fromHtml(text));
             mRichEditText.setText(ToolbarHelper.fromJson(text));
         }
 
@@ -91,9 +90,6 @@ public class EditorActivity extends AppCompatActivity {
         ///（可选）mPlaceholderDrawable和mPlaceholderResourceId可都不设置、采用缺省，如都设置则mPlaceholderDrawable优先
 //        mRichEditorToolbar.setPlaceholderDrawable(new ColorDrawable(Color.LTGRAY));
 //        mRichEditorToolbar.setPlaceholderResourceId(R.drawable.placeholder);
-
-        ///（可选，缺省为".file.path.share"）PROVIDER_AUTHORITIES
-//        PROVIDER_AUTHORITIES = ".file.path.share";
 
 
 //        ///（可选）设置LineDividerSpan.DrawBackgroundCallback
@@ -159,7 +155,6 @@ public class EditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-//        mHtmlResult = Html.toHtml(mRichEditText.getText(), mRichEditorToolbar.getHtmlOption());
         mResult = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         intent.putExtra(KEY_RESULT, mResult);
 
