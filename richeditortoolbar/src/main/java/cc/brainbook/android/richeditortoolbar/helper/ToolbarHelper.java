@@ -5,12 +5,14 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.util.Pair;
 
 import android.text.Editable;
 import android.text.Spannable;
@@ -1032,9 +1034,14 @@ public abstract class ToolbarHelper {
 
 
     /* --------------------------------------------------------------------------------------- */
+    public interface LegacyLoadImageCallback {
+        int getMaxWidth();
+    }
+
     ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
     public static void postSetText(Context context, @NonNull final Spannable textSpannable,
-                                   CustomImageSpan.OnClickListener onClickListener) {
+                                   CustomImageSpan.OnClickListener onClickListener,
+                                   LegacyLoadImageCallback legacyLoadImageCallback) {
         final IStyle[] spans = textSpannable.getSpans(0, textSpannable.length(), IStyle.class);
         final List<IStyle> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
@@ -1052,7 +1059,7 @@ public abstract class ToolbarHelper {
 
                     @Override
                     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
-                },  onClickListener);
+                },  onClickListener, legacyLoadImageCallback);
     }
 
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
@@ -1061,7 +1068,8 @@ public abstract class ToolbarHelper {
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
-                                     CustomImageSpan.OnClickListener onClickListener
+                                     CustomImageSpan.OnClickListener onClickListener,
+                                     LegacyLoadImageCallback legacyLoadImageCallback
     ) {
         if (spans == null || spans.isEmpty()) {
             return;
@@ -1081,20 +1089,25 @@ public abstract class ToolbarHelper {
                 spannable0.removeSpan(span);
 
                 ///[ImageSpan#Glide#GifDrawable]
-                loadImage(context, span.getClass(), spannable, spanStart, spanEnd, pasteSpannable, pasteOffset,
-                        uri, source, verticalAlignment, drawableWidth, drawableHeight, placeholderDrawable, placeholderResourceId, drawableCallback, onClickListener);
+                loadImage(context, span.getClass(), spannable, spanStart, spanEnd
+                        , pasteSpannable, pasteOffset,
+                        uri, source, verticalAlignment, drawableWidth, drawableHeight,
+                        placeholderDrawable, placeholderResourceId,
+                        drawableCallback, onClickListener, legacyLoadImageCallback
+                        );
             }
         }
     }
 
     public static <T extends IStyle> void loadImage(final Context context, final Class<T> clazz, final Spannable spannable, final int start, final int end,
-                                     final Spannable pasteSpannable, final int pasteOffset,
-                                     final String viewTagUri, final String viewTagSrc,
-                                     final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
-                                     Drawable placeholderDrawable,
-                                     @DrawableRes int placeholderResourceId,
-                                     Drawable.Callback drawableCallback,
-                                     final CustomImageSpan.OnClickListener onClickListener) {
+                                                    final Spannable pasteSpannable, final int pasteOffset,
+                                                    final String viewTagUri, final String viewTagSrc,
+                                                    final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
+                                                    Drawable placeholderDrawable,
+                                                    @DrawableRes int placeholderResourceId,
+                                                    Drawable.Callback drawableCallback,
+                                                    final CustomImageSpan.OnClickListener onClickListener,
+                                                    final LegacyLoadImageCallback legacyLoadImageCallback) {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId如都设置则mPlaceholderDrawable优先
@@ -1121,53 +1134,27 @@ public abstract class ToolbarHelper {
 
 //                drawable = new ColorDrawable(Color.BLACK);  ///test
 
-//                if (drawable != null) {
-//                    int width = viewTagWidth, height = viewTagHeight;
-//                    if ((width <= 0 || height <= 0)
-//                            && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-//                        width = 100;
-//                        height = 100;
-//                    } else {
-//                        if (width <= 0 && height <= 0) {
-//                            width = drawable.getIntrinsicWidth();
-//                            height = drawable.getIntrinsicHeight();
-//                        } else if (width <= 0) {
-//                            width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-//                        } else if (height <= 0) {
-//                            height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
-//                        }
-//                    }
-//
-//                    drawable.setBounds(0, 0, width, height);   ///注意：Drawable必须设置Bounds才能显示
-//
-//                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-//                            : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-//                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
-//
-//                    (pasteSpannable == null ? spannable : pasteSpannable)
-//                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
-//                }
+                if (drawable != null) {
+                    ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+                    final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight);
+
+                    drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
+
+                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                            : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+
+                    (pasteSpannable == null ? spannable : pasteSpannable)
+                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
+                }
             }
 
             @Override
             public void onResourceReady(@NonNull Drawable drawable) {
-                int width = viewTagWidth, height = viewTagHeight;
-                if ((width <= 0 || height <= 0)
-                        && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-                    width = 100;
-                    height = 100;
-                } else {
-                    if (width <= 0 && height <= 0) {
-                        width = drawable.getIntrinsicWidth();
-                        height = drawable.getIntrinsicHeight();
-                    } else if (width <= 0) {
-                        width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-                    } else if (height <= 0) {
-                        height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
-                    }
-                }
+                ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+                final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight);
 
-                drawable.setBounds(0, 0, width, height);  ///注意：Drawable必须设置Bounds才能显示
+                drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
                 final CustomImageSpan span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                         : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
@@ -1190,6 +1177,37 @@ public abstract class ToolbarHelper {
 
                 ///[CustomImageSpan.OnClickListener]
                 span.setOnClickListener(onClickListener);
+            }
+
+            ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+            @NonNull
+            private Pair<Integer, Integer> adjustSize(Drawable drawable, int width, int height) {
+                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
+                    int maxWidth = legacyLoadImageCallback.getMaxWidth();
+                    if (width > maxWidth) {
+                        width = maxWidth;
+                        height = 0;
+                    }
+                }
+
+                if ((width <= 0 || height <= 0)
+                        && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+                    width = 100;
+                    height = 100;
+                } else {
+                    if (width <= 0 && height <= 0) {
+                        width = drawable.getIntrinsicWidth();
+                        height = drawable.getIntrinsicHeight();
+                    } else if (width <= 0) {
+                        width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
+                    } else if (height <= 0) {
+                        height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+                    }
+                }
+
+                return new Pair<>(width, height);
             }
         });
 

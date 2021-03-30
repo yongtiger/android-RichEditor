@@ -6,8 +6,6 @@ import androidx.core.util.Pair;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,7 +19,6 @@ import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
-import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
@@ -45,6 +42,17 @@ public class EditorActivity extends AppCompatActivity {
 
         mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
         mRichEditText = (RichEditText) findViewById(R.id.et_rich_edit_text);
+
+        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+        mRichEditText.post(new Runnable() {
+            @Override
+            public void run() {
+                ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
+                mRichEditorToolbar.postSetText();
+            }
+        });
+
         ///（必选）RichEditorToolbar设置编辑器
         mRichEditorToolbar.setRichEditText(mRichEditText);
 
@@ -151,6 +159,26 @@ public class EditorActivity extends AppCompatActivity {
 
         ///（必选）初始化
         mRichEditorToolbar.init();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override

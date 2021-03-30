@@ -19,7 +19,7 @@ public class PreviewEditorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview_editor);
+        setContentView(R.layout.activity_preview);
 
         mTextView = findViewById(R.id.tv_preview);
 
@@ -39,18 +39,29 @@ public class PreviewEditorActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         final String jsonString = intent.getStringExtra(KEY_TEXT);
         if (jsonString != null) {
-            ///设置文本
-            setText(jsonString);
+            mTextView.setText(ToolbarHelper.fromJson(jsonString));
+            mTextView.post(new Runnable() {
+                @Override
+                public void run() {
+                    postSetText();
+                }
+            });
         }
     }
 
 
-    ///设置文本
-    private void setText(String jsonString) {
-        mTextView.setText(ToolbarHelper.fromJson(jsonString));
-
+    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
+    private void postSetText() {
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
-        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText(), new ImageSpanOnClickListener());
+        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText(), new ImageSpanOnClickListener(),
+                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                new ToolbarHelper.LegacyLoadImageCallback() {
+                    @Override
+                    public int getMaxWidth() {
+                        return mTextView.getWidth() - mTextView.getTotalPaddingLeft() - mTextView.getTotalPaddingRight();
+                    }
+                });
     }
 
 }

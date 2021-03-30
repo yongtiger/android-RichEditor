@@ -126,7 +126,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
-        UndoRedoHelper.OnPositionChangedListener {
+        UndoRedoHelper.OnPositionChangedListener, ToolbarHelper.LegacyLoadImageCallback {
     public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
 
@@ -399,7 +399,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
                     null, -1,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, null);
+                    mPlaceholderDrawable, mPlaceholderResourceId,
+                    this, null, this);
         }
     }
 
@@ -462,7 +463,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(pasteEditable, bytes),
                     pasteEditable, pasteOffset,
-                    mPlaceholderDrawable, mPlaceholderResourceId, this, null);
+                    mPlaceholderDrawable, mPlaceholderResourceId,
+                    this, null, this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -901,9 +903,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
         initUndoRedo();
-
-        ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-        postSetText();
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
@@ -918,7 +917,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ToolbarHelper.postLoadSpans(mContext, editable,
                 ToolbarHelper.fromSpanBeans(spanBeans, editable),
                 null, -1,
-                mPlaceholderDrawable, mPlaceholderResourceId, this, null);
+                mPlaceholderDrawable, mPlaceholderResourceId,
+                this, null, this);
     }
 
     private int getActionId(View view) {
@@ -1096,7 +1096,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 ToolbarHelper.postLoadSpans(mContext, editable,
                         ToolbarHelper.fromSpanBeans(spanBeans, editable),
                         null, -1,
-                        mPlaceholderDrawable, mPlaceholderResourceId, RichEditorToolbar.this, null);
+                        mPlaceholderDrawable, mPlaceholderResourceId,
+                        this, null, this);
 
                 ///[Undo/Redo]
                 assert editable != null;
@@ -2744,7 +2745,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                             ///[ImageSpan#Glide#GifDrawable]
                             ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                    viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this, null);
+                                    viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
+                                    mPlaceholderDrawable, mPlaceholderResourceId,
+                                    this, null, this);
                         }
                     }
                 }
@@ -2815,7 +2818,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     if (!TextUtils.isEmpty(viewTagSrc) && start < end) {
                         ///[ImageSpan#Glide#GifDrawable]
                         ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight, mPlaceholderDrawable, mPlaceholderResourceId, this, null);
+                                viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
+                                mPlaceholderDrawable, mPlaceholderResourceId,
+                                this, null, this);
                     }
                 }
             }
@@ -3181,6 +3186,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             }
         }
+    }
+
+    ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+    ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+    @Override
+    public int getMaxWidth() {
+        return mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight();
     }
 
 }

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -68,6 +67,15 @@ public class MainActivity extends AppCompatActivity {
         mTextView.setFocusable(false);
         mTextView.setClickable(false);
         mTextView.setLongClickable(false);
+
+        mTextView.setText(ToolbarHelper.fromJson(mJsonText));
+        mTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                postSetText();
+            }
+        });
+
         ///test
         LinearLayout ll = (LinearLayout)findViewById(R.id.ll_linear_layout);
         ll.setOnClickListener(new View.OnClickListener() {
@@ -75,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("TAG", "LinearLayout click!");
             }
         });
-
-        ///设置文本
-        setText(mJsonText);
     }
 
     ///[startActivityForResult#onActivityResult()获得返回数据]
@@ -93,7 +98,8 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.setText(null);
                     } else {
                         ///设置文本
-                        setText(mJsonText);
+                        mTextView.setText(ToolbarHelper.fromJson(mJsonText));
+                        postSetText();
                     }
                 }
             }
@@ -109,12 +115,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    ///设置文本
-    private void setText(String jsonString) {
-        mTextView.setText(ToolbarHelper.fromJson(jsonString));
-
+    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
+    private void postSetText() {
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
-        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText(), new ImageSpanOnClickListener());
+        ToolbarHelper.postSetText(this, (Spannable) mTextView.getText(), new ImageSpanOnClickListener(),
+                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                new ToolbarHelper.LegacyLoadImageCallback() {
+                    @Override
+                    public int getMaxWidth() {
+                        return mTextView.getWidth() - mTextView.getTotalPaddingLeft() - mTextView.getTotalPaddingRight();
+                    }
+                });
     }
 
 }

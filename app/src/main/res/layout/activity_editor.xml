@@ -33,10 +33,13 @@
     <!--///android:inputType="textVisiblePassword"：解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失！-->
     <!--///android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
     <!--///android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
+    <!--///注意：EditText有缺省padding为4dp!-->
     <cc.brainbook.android.richeditortoolbar.RichEditText
         android:id="@+id/et_rich_edit_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/global_dimen"
+        android:padding="@dimen/global_dimen"
         android:gravity="start"
         android:scrollbars="vertical"
         android:lineSpacingExtra="8dp"

@@ -9,6 +9,7 @@
         android:id="@+id/tv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/global_dimen"
         android:gravity="start"
         android:scrollbars="vertical"
         android:lineSpacingExtra="8dp"
