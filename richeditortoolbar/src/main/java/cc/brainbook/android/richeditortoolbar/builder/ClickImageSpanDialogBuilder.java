@@ -44,12 +44,15 @@ import com.yalantis.ucrop.UCrop;
 import java.io.File;
 
 import cc.brainbook.android.richeditortoolbar.R;
+import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 import cn.hzw.doodle.DoodleActivity;
 import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.isInteger;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
@@ -118,7 +121,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
-	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align) {
+	private ToolbarHelper.LegacyLoadImageCallback mLegacyLoadImageCallback;
+	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align,
+											   ToolbarHelper.LegacyLoadImageCallback legacyLoadImageCallback) {
+		mLegacyLoadImageCallback = legacyLoadImageCallback;
+
 		mEditTextUri.setText(uriString);
 
 		mInitialUri = uriString;
@@ -140,356 +147,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		return this;
 	}
-
-	private void initView(@NonNull View layout) {
-		mButtonPickFromMedia = (Button) layout.findViewById(R.id.btn_pickup_from_media);
-		mButtonPickFromMedia.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				pickFromMedia();
-			}
-		});
-
-		mButtonPickFromRecorder = (Button) layout.findViewById(R.id.btn_pickup_from_recorder);
-		mButtonPickFromRecorder.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				pickFromRecorder();
-			}
-		});
-
-		mEditTextUri = (EditText) layout.findViewById(R.id.et_uri);
-		mEditTextUri.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				deleteOldUriFile();
-				enableDeleteOldUriFile = false;
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
-
-		mButtonPickFromMedia.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
-		mButtonPickFromRecorder.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
-		mEditTextUri.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
-
-		mButtonPickFromGallery = (Button) layout.findViewById(R.id.btn_pickup_from_gallery);
-		mButtonPickFromGallery.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				pickFromGallery();
-			}
-		});
-
-		mButtonPickFromCamera = (Button) layout.findViewById(R.id.btn_pickup_from_camera);
-		mButtonPickFromCamera.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				pickFromCamera();
-			}
-		});
-
-		mEditTextSrc = (EditText) layout.findViewById(R.id.et_src);
-		mEditTextSrc.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				deleteOldSrcFile();
-				enableDeleteOldSrcFile = false;
-			}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				final String src = s.toString();
-
-				///Glide下载图片（使用已经缓存的图片）给imageView
-				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）//////////////////
-				final RequestOptions options = new RequestOptions();
-
-				///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
-				///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
-				///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-					final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
-							///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
-//                    		R.drawable.layer_list_placeholder,
-							R.drawable.placeholder,
-							mContext.getTheme());
-
-					options.placeholder(placeholderDrawable);
-				} else {
-					options.placeholder(R.drawable.layer_list_placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
-				}
-
-				///获取图片真正的宽高
-				///https://www.jianshu.com/p/299b637afe7c
-				Glide.with(mContext.getApplicationContext())
-//						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
-						.load(src)
-						.apply(options)
-
-//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
-//							.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-//						.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
-
-						///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
-						///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
-						///https://github.com/bumptech/glide/issues/3304
-//							.into(new SimpleTarget<Bitmap>() { ... }
-						.into(new CustomTarget<Drawable>() {
-							@Override
-							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
-								mEditTextDisplayWidth.setText(null);
-								mEditTextDisplayHeight.setText(null);
-
-								mEditTextDisplayWidth.setEnabled(false);
-								mEditTextDisplayHeight.setEnabled(false);
-								mCheckBoxDisplayConstrain.setEnabled(false);
-								mButtonDisplayRestore.setEnabled(false);
-
-								///先设置Crop和Draw为false
-								mButtonCrop.setEnabled(false);
-								mButtonDraw.setEnabled(false);
-
-								mImageViewPreview.setImageDrawable(placeholder);
-							}
-
-							@Override
-							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
-								if ((mImageWidth <= 0 || mImageHeight <= 0)
-										&& (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-									mImageWidth = 100;
-									mImageHeight = 100;
-								} else {
-									if (mImageWidth <= 0 && mImageHeight <= 0) {
-										mImageWidth = drawable.getIntrinsicWidth();
-										mImageHeight = drawable.getIntrinsicHeight();
-									} else if (mImageWidth <= 0) {
-										mImageWidth = drawable.getIntrinsicWidth() * mImageHeight / drawable.getIntrinsicHeight();
-									} else if (mImageHeight <= 0) {
-										mImageHeight = drawable.getIntrinsicHeight() * mImageWidth / drawable.getIntrinsicWidth();
-									}
-								}
-
-//								drawable.setBounds(0, 0, mImageWidth, mImageHeight);
-
-								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
-
-								mEditTextDisplayWidth.setEnabled(true);
-								mEditTextDisplayHeight.setEnabled(true);
-								mCheckBoxDisplayConstrain.setEnabled(true);
-								mButtonDisplayRestore.setEnabled(true);
-
-////								mImageViewPreview.setImageDrawable(null);
-								mImageViewPreview.setImageDrawable(drawable);
-//								mImageViewPreview.invalidateDrawable(drawable);
-								mImageViewPreview.getDrawable().setBounds(0, 0, mImageWidth, mImageHeight);
-//								mImageViewPreview.invalidate();
-//								mImageViewPreview.requestLayout();
-
-								Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-								Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, mImageWidth, mImageHeight, true));
-								mImageViewPreview.setImageDrawable(d);
-
-
-								///[ImageSpan#Glide#GifDrawable]
-								///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
-								if (drawable instanceof GifDrawable) {
-									((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
-									((GifDrawable) drawable).start();
-								} else {
-									///除GifDrawable保持禁止之外，其它都允许Crop和Draw
-									mButtonCrop.setEnabled(true);
-									mButtonDraw.setEnabled(true);
-								}
-							}
-
-							@Override
-							public void onLoadFailed(@Nullable Drawable errorDrawable) {}
-
-							@Override
-							public void onLoadCleared(@Nullable Drawable placeholder) {}
-						});
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
-
-		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
-
-		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
-		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (!mEditTextDisplayWidth.hasFocus()) {
-					// is only executed if the EditText was directly changed by the user
-					return;
-				}
-
-				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
-					return;
-				}
-
-				int newWidth = parseInt(s.toString());
-				int newHeight = parseInt(mEditTextDisplayHeight.getText().toString());
-
-				if (newWidth <= 0) {
-					newWidth = newHeight * mImageWidth / mImageHeight;
-				}
-
-				if (mEditTextDisplayWidth.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
-					final int height = newWidth * mImageHeight / mImageWidth;
-					if (height != newHeight) {
-						mEditTextDisplayHeight.setText(String.valueOf(height));
-						newHeight = height;
-					}
-				}
-
-				mImageViewPreview.getDrawable().setBounds(0, 0, newWidth, newHeight);
-//				mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
-//				mImageViewPreview.invalidate();
-//				mImageViewPreview.requestLayout();
-
-				Bitmap bitmap = ((BitmapDrawable) mImageViewPreview.getDrawable()).getBitmap();
-				Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true));
-				mImageViewPreview.setImageDrawable(d);
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
-		mEditTextDisplayHeight = (EditText) layout.findViewById(R.id.et_display_height);
-		mEditTextDisplayHeight.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (!mEditTextDisplayHeight.hasFocus()) {
-					// is only executed if the EditText was directly changed by the user
-					return;
-				}
-
-				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
-					return;
-				}
-
-				int newHeight = parseInt(s.toString());
-				int newWidth = parseInt(mEditTextDisplayWidth.getText().toString());
-
-				if (newHeight <= 0) {
-					newHeight = newWidth * mImageHeight / mImageWidth;
-				}
-
-				if (mEditTextDisplayHeight.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
-					final int width = newHeight * mImageWidth / mImageHeight;
-					if (width != newWidth) {
-						mEditTextDisplayWidth.setText(String.valueOf(width));
-						newWidth = width;
-					}
-				}
-
-				mImageViewPreview.getDrawable().setBounds(0, 0, newWidth, newHeight);
-//				mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
-//				mImageViewPreview.invalidate();
-//				mImageViewPreview.requestLayout();
-
-				Bitmap bitmap = ((BitmapDrawable) mImageViewPreview.getDrawable()).getBitmap();
-				Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true));
-				mImageViewPreview.setImageDrawable(d);
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {}
-		});
-
-		mCheckBoxDisplayConstrain = (CheckBox) layout.findViewById(R.id.cb_display_constrain);
-		mCheckBoxDisplayConstrain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if (isChecked && mImageWidth > 0) {
-					final int width = parseInt(mEditTextDisplayWidth.getText().toString());
-					final int height = width * mImageHeight / mImageWidth;
-					mEditTextDisplayHeight.setText(String.valueOf(height));
-
-					mImageViewPreview.getDrawable().setBounds(0, 0, width, height);
-//					mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
-				}
-			}
-		});
-		mButtonDisplayRestore = (Button) layout.findViewById(R.id.btn_display_restore);
-		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-				mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
-			}
-		});
-
-		mButtonCrop = (Button) layout.findViewById(R.id.btn_crop);
-		mButtonCrop.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (mImageSpanCallback == null) {
-					return;
-				}
-
-				final String src = mEditTextSrc.getText().toString();
-
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "crop", src);
-
-				if (pair.first != null && pair.second != null) {
-					startCrop((Activity) mContext, pair.first, pair.second.getAbsolutePath());
-				}
-			}
-		});
-
-		mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
-		mButtonDraw.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				if (mImageSpanCallback == null) {
-					return;
-				}
-
-				final String src = mEditTextSrc.getText().toString();
-
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "draw", src);
-
-				if (pair.first != null && pair.second != null) {
-					startDraw((Activity) mContext, pair.first, pair.second.getAbsolutePath());
-				}
-			}
-		});
-
-		mRadioGroup = (RadioGroup) layout.findViewById(R.id.rg_align);
-		mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				if (checkedId == R.id.rb_align_bottom) {
-					mVerticalAlignment = ALIGN_BOTTOM;
-				} else if (checkedId == R.id.rb_align_baseline) {
-					mVerticalAlignment = ALIGN_BASELINE;
-				} else if (checkedId == R.id.rb_align_center) {
-					mVerticalAlignment = ALIGN_CENTER;
-				}
-			}
-		});
-		mRadioButtonAlignBottom = (RadioButton) layout.findViewById(R.id.rb_align_bottom);
-		mRadioButtonAlignBaseline = (RadioButton) layout.findViewById(R.id.rb_align_baseline);
-		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
-	}
-
 
 	private ClickImageSpanDialogBuilder(@NonNull Context context, int mediaType) {
 		this(context, 0, mediaType);
@@ -615,6 +272,516 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		deleteOldSrcFile();
 
 		onClickListener.onClick(dialog, null, null,0,0,0);
+	}
+
+	///[ClickImageSpanDialogBuilder#onActivityResult()]
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		///[媒体选择器#Video/Audio媒体库]
+		if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					final Uri resultUri = data.getData();
+					if (resultUri != null) {
+						mEditTextUri.setText(resultUri.toString());
+
+						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
+							if (mImageSpanCallback != null) {
+								///生成视频的第一帧图片
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								if (videoCoverFile != null) {
+									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+									enableDeleteOldSrcFile = true;
+								}
+							}
+						}
+					} else {
+						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Toast.makeText(mContext.getApplicationContext(),
+								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed));
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		///[媒体选择器#Video/Audio媒体录制]
+		else if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_RECORDER) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					final Uri resultUri = data.getData();
+					if (resultUri != null) {
+						mEditTextUri.setText(resultUri.toString());
+						enableDeleteOldUriFile = true;
+
+						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
+							if (mImageSpanCallback != null) {
+								///生成视频的第一帧图片
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								if (videoCoverFile != null) {
+									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+									enableDeleteOldSrcFile = true;
+								}
+							}
+						}
+					} else {
+						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Toast.makeText(mContext.getApplicationContext(),
+								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed));
+				Toast.makeText(mContext.getApplicationContext(),
+						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		///[图片选择器#相册图库]
+		else if (requestCode == REQUEST_CODE_PICK_FROM_GALLERY) {
+			if (resultCode == RESULT_OK) {
+				if (data != null) {
+					final Uri selectedUri = data.getData();
+					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
+						mEditTextSrc.setText(selectedUri.toString());
+					} else {
+						Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_cannot_retrieve_image));
+						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
+					}
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
+			} else {
+				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_select_failed));
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		///[图片选择器#相机拍照]
+		else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
+			if (resultCode == RESULT_OK) {
+				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
+					mEditTextSrc.setText(mCameraResultFile.getAbsolutePath());
+					enableDeleteOldSrcFile = true;
+				}
+			} else if (resultCode == RESULT_CANCELED) {
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
+			} else {
+				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_capture_failed));
+				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
+		else if (requestCode == UCrop.REQUEST_CROP) {
+			if (resultCode == RESULT_OK) {
+				final String resultString = UCrop.getOutput(data);
+				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+					mEditTextSrc.setText(resultString);
+					enableDeleteOldSrcFile = true;
+				}
+			} else if (resultCode == UCrop.RESULT_ERROR) {
+				final Throwable cropError = UCrop.getError(data);
+				if (cropError != null) {
+					Log.e("TAG-ClickImageSpan", cropError.getMessage());
+					Toast.makeText(mContext.getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+
+		///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
+		else if (requestCode == REQUEST_CODE_DRAW) {
+			if (data != null) {
+				if (resultCode == DoodleActivity.RESULT_OK) {
+					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
+					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+						mEditTextSrc.setText(resultString);
+						enableDeleteOldSrcFile = true;
+					}
+				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
+					Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_draw_failed));
+					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+	}
+
+	///避免内存泄漏
+	public void clear() {
+		super.clear();
+
+		mButtonCrop = null;
+		mButtonDraw = null;
+		mButtonDisplayRestore = null;
+		mButtonPickFromCamera = null;
+		mButtonPickFromGallery = null;
+		mButtonPickFromRecorder = null;
+		mButtonPickFromMedia = null;
+		mCheckBoxDisplayConstrain = null;
+		mEditTextDisplayHeight = null;
+		mEditTextDisplayWidth = null;
+		mEditTextSrc = null;
+		mEditTextUri = null;
+		mImageViewPreview = null;
+		mRadioGroup = null;
+		mRadioButtonAlignBottom = null;
+		mRadioButtonAlignBaseline = null;
+		mRadioButtonAlignCenter = null;
+	}
+
+
+	private void initView(@NonNull View layout) {
+		mButtonPickFromMedia = (Button) layout.findViewById(R.id.btn_pickup_from_media);
+		mButtonPickFromMedia.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromMedia();
+			}
+		});
+
+		mButtonPickFromRecorder = (Button) layout.findViewById(R.id.btn_pickup_from_recorder);
+		mButtonPickFromRecorder.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromRecorder();
+			}
+		});
+
+		mEditTextUri = (EditText) layout.findViewById(R.id.et_uri);
+		mEditTextUri.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				deleteOldUriFile();
+				enableDeleteOldUriFile = false;
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+
+		mButtonPickFromMedia.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
+		mButtonPickFromRecorder.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
+		mEditTextUri.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
+
+		mButtonPickFromGallery = (Button) layout.findViewById(R.id.btn_pickup_from_gallery);
+		mButtonPickFromGallery.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromGallery();
+			}
+		});
+
+		mButtonPickFromCamera = (Button) layout.findViewById(R.id.btn_pickup_from_camera);
+		mButtonPickFromCamera.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				pickFromCamera();
+			}
+		});
+
+		mEditTextSrc = (EditText) layout.findViewById(R.id.et_src);
+		mEditTextSrc.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+				deleteOldSrcFile();
+				enableDeleteOldSrcFile = false;
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				final String src = s.toString();
+
+				///Glide下载图片（使用已经缓存的图片）给imageView
+				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
+				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）//////////////////
+				final RequestOptions options = new RequestOptions();
+
+				///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
+				///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
+				///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
+				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+					final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+							///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
+//                    		R.drawable.layer_list_placeholder,
+							R.drawable.placeholder,
+							mContext.getTheme());
+
+					options.placeholder(placeholderDrawable);
+				} else {
+					options.placeholder(R.drawable.layer_list_placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
+				}
+
+				///获取图片真正的宽高
+				///https://www.jianshu.com/p/299b637afe7c
+				Glide.with(mContext.getApplicationContext())
+//						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
+						.load(src)
+						.apply(options)
+
+//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
+//							.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//						.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+
+						///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
+						///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
+						///https://github.com/bumptech/glide/issues/3304
+//							.into(new SimpleTarget<Bitmap>() { ... }
+						.into(new CustomTarget<Drawable>() {
+							@Override
+							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
+								mEditTextDisplayWidth.setText(null);
+								mEditTextDisplayHeight.setText(null);
+
+								mEditTextDisplayWidth.setEnabled(false);
+								mEditTextDisplayHeight.setEnabled(false);
+								mCheckBoxDisplayConstrain.setEnabled(false);
+								mButtonDisplayRestore.setEnabled(false);
+
+								///先设置Crop和Draw为false
+								mButtonCrop.setEnabled(false);
+								mButtonDraw.setEnabled(false);
+
+								mImageViewPreview.setImageDrawable(placeholder);
+							}
+
+							@Override
+							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
+								///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+								final Pair<Integer, Integer> pair = ToolbarHelper.adjustSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
+
+								mImageWidth = pair.first; mImageHeight = pair.second;
+
+								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+
+								mEditTextDisplayWidth.setEnabled(true);
+								mEditTextDisplayHeight.setEnabled(true);
+								mCheckBoxDisplayConstrain.setEnabled(true);
+								mButtonDisplayRestore.setEnabled(true);
+
+								setDrawable(drawable, mImageWidth, mImageHeight);
+
+								if (!(drawable instanceof GifDrawable)) {
+									///除GifDrawable保持禁止之外，其它都允许Crop和Draw
+									mButtonCrop.setEnabled(true);
+									mButtonDraw.setEnabled(true);
+								}
+							}
+
+							@Override
+							public void onLoadFailed(@Nullable Drawable errorDrawable) {}
+
+							@Override
+							public void onLoadCleared(@Nullable Drawable placeholder) {}
+						});
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+
+		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
+
+		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
+		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (!mEditTextDisplayWidth.hasFocus()) {
+					// is only executed if the EditText was directly changed by the user
+					return;
+				}
+
+				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
+					return;
+				}
+
+				int newWidth = parseInt(s.toString());
+				if (newWidth > IMAGE_MAX_WIDTH) {
+					return;
+				}
+				int newHeight = parseInt(mEditTextDisplayHeight.getText().toString());
+
+				if (newWidth <= 0) {
+					newWidth = newHeight * mImageWidth / mImageHeight;
+					if (newWidth > IMAGE_MAX_WIDTH) {
+						newWidth = IMAGE_MAX_WIDTH;
+					}
+				}
+
+				if (mEditTextDisplayWidth.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
+					int height = newWidth * mImageHeight / mImageWidth;
+					if (height > IMAGE_MAX_HEIGHT) {
+						height = IMAGE_MAX_HEIGHT;
+					}
+					if (height != newHeight) {
+						mEditTextDisplayHeight.setText(String.valueOf(height));
+						newHeight = height;
+					}
+				}
+
+				setDrawable(mImageViewPreview.getDrawable(), newWidth, newHeight);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+		mEditTextDisplayHeight = (EditText) layout.findViewById(R.id.et_display_height);
+		mEditTextDisplayHeight.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				if (!mEditTextDisplayHeight.hasFocus()) {
+					// is only executed if the EditText was directly changed by the user
+					return;
+				}
+
+				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
+					return;
+				}
+
+				int newHeight = parseInt(s.toString());
+				if (newHeight > IMAGE_MAX_HEIGHT) {
+					return;
+				}
+				int newWidth = parseInt(mEditTextDisplayWidth.getText().toString());
+
+				if (newHeight <= 0) {
+					newHeight = newWidth * mImageHeight / mImageWidth;
+					if (newHeight > IMAGE_MAX_HEIGHT) {
+						newHeight = IMAGE_MAX_HEIGHT;
+					}
+				}
+
+				if (mEditTextDisplayHeight.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
+					int width = newHeight * mImageWidth / mImageHeight;
+					if (width > IMAGE_MAX_WIDTH) {
+						width = IMAGE_MAX_WIDTH;
+					}
+					if (width != newWidth) {
+						mEditTextDisplayWidth.setText(String.valueOf(width));
+						newWidth = width;
+					}
+				}
+
+				setDrawable(mImageViewPreview.getDrawable(), newWidth, newHeight);
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {}
+		});
+
+		mCheckBoxDisplayConstrain = (CheckBox) layout.findViewById(R.id.cb_display_constrain);
+		mCheckBoxDisplayConstrain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked && mImageWidth > 0) {
+					final int width = parseInt(mEditTextDisplayWidth.getText().toString());
+					final int height = width * mImageHeight / mImageWidth;
+					mEditTextDisplayHeight.setText(String.valueOf(height));
+
+					mImageViewPreview.getDrawable().setBounds(0, 0, width, height);
+//					mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
+				}
+			}
+		});
+		mButtonDisplayRestore = (Button) layout.findViewById(R.id.btn_display_restore);
+		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+				mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+			}
+		});
+
+		mButtonCrop = (Button) layout.findViewById(R.id.btn_crop);
+		mButtonCrop.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (mImageSpanCallback == null) {
+					return;
+				}
+
+				final String src = mEditTextSrc.getText().toString();
+
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "crop", src);
+
+				if (pair.first != null && pair.second != null) {
+					startCrop((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+				}
+			}
+		});
+
+		mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
+		mButtonDraw.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (mImageSpanCallback == null) {
+					return;
+				}
+
+				final String src = mEditTextSrc.getText().toString();
+
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "draw", src);
+
+				if (pair.first != null && pair.second != null) {
+					startDraw((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+				}
+			}
+		});
+
+		mRadioGroup = (RadioGroup) layout.findViewById(R.id.rg_align);
+		mRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				if (checkedId == R.id.rb_align_bottom) {
+					mVerticalAlignment = ALIGN_BOTTOM;
+				} else if (checkedId == R.id.rb_align_baseline) {
+					mVerticalAlignment = ALIGN_BASELINE;
+				} else if (checkedId == R.id.rb_align_center) {
+					mVerticalAlignment = ALIGN_CENTER;
+				}
+			}
+		});
+		mRadioButtonAlignBottom = (RadioButton) layout.findViewById(R.id.rb_align_bottom);
+		mRadioButtonAlignBaseline = (RadioButton) layout.findViewById(R.id.rb_align_baseline);
+		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
+	}
+
+	private void setDrawable(Drawable drawable, int width, int height) {
+		///[ImageSpan#Glide#GifDrawable]
+		///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
+		if (drawable instanceof GifDrawable) {
+			drawable.setBounds(0, 0, width, height);
+			mImageViewPreview.setImageDrawable(drawable);
+
+			((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
+			((GifDrawable) drawable).start();
+		} else {
+			final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+			final Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, width, height, true));
+			mImageViewPreview.setImageDrawable(d);
+		}
 	}
 
 
@@ -761,150 +928,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		}
 	}
 
-	///[ClickImageSpanDialogBuilder#onActivityResult()]
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		///[媒体选择器#Video/Audio媒体库]
-		if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {
-			if (resultCode == RESULT_OK) {
-				if (data != null) {
-					final Uri resultUri = data.getData();
-					if (resultUri != null) {
-						mEditTextUri.setText(resultUri.toString());
-
-						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
-							if (mImageSpanCallback != null) {
-								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
-								if (videoCoverFile != null) {
-									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-									enableDeleteOldSrcFile = true;
-								}
-							}
-						}
-					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
-						Toast.makeText(mContext.getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
-								Toast.LENGTH_SHORT).show();
-					}
-				}
-			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
-						Toast.LENGTH_SHORT).show();
-			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed));
-				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		///[媒体选择器#Video/Audio媒体录制]
-		else if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_RECORDER) {
-			if (resultCode == RESULT_OK) {
-				if (data != null) {
-					final Uri resultUri = data.getData();
-					if (resultUri != null) {
-						mEditTextUri.setText(resultUri.toString());
-						enableDeleteOldUriFile = true;
-
-						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
-							if (mImageSpanCallback != null) {
-								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
-								if (videoCoverFile != null) {
-									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-									enableDeleteOldSrcFile = true;
-								}
-							}
-						}
-					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
-						Toast.makeText(mContext.getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
-								Toast.LENGTH_SHORT).show();
-					}
-				}
-			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
-						Toast.LENGTH_SHORT).show();
-			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed));
-				Toast.makeText(mContext.getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		///[图片选择器#相册图库]
-		else if (requestCode == REQUEST_CODE_PICK_FROM_GALLERY) {
-			if (resultCode == RESULT_OK) {
-				if (data != null) {
-					final Uri selectedUri = data.getData();
-					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
-						mEditTextSrc.setText(selectedUri.toString());
-					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_cannot_retrieve_image));
-						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
-					}
-				}
-			} else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
-            } else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_select_failed));
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-		///[图片选择器#相机拍照]
-        else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
-			if (resultCode == RESULT_OK) {
-				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
-					mEditTextSrc.setText(mCameraResultFile.getAbsolutePath());
-					enableDeleteOldSrcFile = true;
-				}
-            } else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
-			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_capture_failed));
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
-			}
-		}
-
-        ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
-        else if (requestCode == UCrop.REQUEST_CROP) {
-            if (resultCode == RESULT_OK) {
-                final String resultString = UCrop.getOutput(data);
-                if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
-					mEditTextSrc.setText(resultString);
-					enableDeleteOldSrcFile = true;
-                }
-            } else if (resultCode == UCrop.RESULT_ERROR) {
-                final Throwable cropError = UCrop.getError(data);
-                if (cropError != null) {
-					Log.e("TAG-ClickImageSpan", cropError.getMessage());
-					Toast.makeText(mContext.getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-
-        ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
-        else if (requestCode == REQUEST_CODE_DRAW) {
-            if (data != null) {
-				if (resultCode == DoodleActivity.RESULT_OK) {
-					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
-					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
-						mEditTextSrc.setText(resultString);
-						enableDeleteOldSrcFile = true;
-					}
-				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
-					Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_draw_failed));
-					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
-				}
-            }
-        }
-	}
-
 	///删除与原始uri/src不同的文件
 	private boolean enableDeleteOldUriFile = false;
 	private boolean enableDeleteOldSrcFile = false;
@@ -933,29 +956,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				Log.w("TAG-ClickImageSpan", "Fail to delete file: " + file.getAbsolutePath());
 			}
 		}
-	}
-
-	///避免内存泄漏
-	public void clear() {
-		super.clear();
-
-		mButtonCrop = null;
-		mButtonDraw = null;
-		mButtonDisplayRestore = null;
-		mButtonPickFromCamera = null;
-		mButtonPickFromGallery = null;
-		mButtonPickFromRecorder = null;
-		mButtonPickFromMedia = null;
-		mCheckBoxDisplayConstrain = null;
-		mEditTextDisplayHeight = null;
-		mEditTextDisplayWidth = null;
-		mEditTextSrc = null;
-		mEditTextUri = null;
-		mImageViewPreview = null;
-		mRadioGroup = null;
-		mRadioButtonAlignBottom = null;
-		mRadioButtonAlignBaseline = null;
-		mRadioButtonAlignCenter = null;
 	}
 
 }

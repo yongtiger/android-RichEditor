@@ -84,6 +84,11 @@ import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
 
+    public static final int IMAGE_MAX_WIDTH = 2000;
+    public static final int IMAGE_MAX_HEIGHT = 2000;
+    public static final int IMAGE_DEFAULT_WIDTH = 200;
+    public static final int IMAGE_DEFAULT_HEIGHT = 200;
+
     public static final ArrayList<Class<? extends INestParagraphStyle>> sNestParagraphStyleSpanClassList = new ArrayList<Class<? extends INestParagraphStyle>>(){{
         add(DivSpan.class);
         add(CustomLeadingMarginSpan.class);
@@ -1136,7 +1141,7 @@ public abstract class ToolbarHelper {
 
                 if (drawable != null) {
                     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                    final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight);
+                    final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
 
                     drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
@@ -1152,7 +1157,7 @@ public abstract class ToolbarHelper {
             @Override
             public void onResourceReady(@NonNull Drawable drawable) {
                 ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight);
+                final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
 
                 drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
@@ -1179,36 +1184,6 @@ public abstract class ToolbarHelper {
                 span.setOnClickListener(onClickListener);
             }
 
-            ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-            @NonNull
-            private Pair<Integer, Integer> adjustSize(Drawable drawable, int width, int height) {
-                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
-                    int maxWidth = legacyLoadImageCallback.getMaxWidth();
-                    if (width > maxWidth) {
-                        width = maxWidth;
-                        height = 0;
-                    }
-                }
-
-                if ((width <= 0 || height <= 0)
-                        && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-                    width = 100;
-                    height = 100;
-                } else {
-                    if (width <= 0 && height <= 0) {
-                        width = drawable.getIntrinsicWidth();
-                        height = drawable.getIntrinsicHeight();
-                    } else if (width <= 0) {
-                        width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-                    } else if (height <= 0) {
-                        height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
-                    }
-                }
-
-                return new Pair<>(width, height);
-            }
         });
 
         ///[ImageSpan#Glide#loadImage()]
@@ -1227,6 +1202,43 @@ public abstract class ToolbarHelper {
 //                spannable.removeSpan(imageSpan);
             spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
         }
+    }
+
+    ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+    @NonNull
+    public static Pair<Integer, Integer> adjustSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
+        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
+            final int maxWidth = legacyLoadImageCallback.getMaxWidth();
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = 0;
+            }
+        }
+
+        if ((width <= 0 || height <= 0)
+                && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+            width = IMAGE_DEFAULT_WIDTH;
+            height = IMAGE_DEFAULT_HEIGHT;
+        } else {
+            if (width <= 0 && height <= 0) {
+                width = drawable.getIntrinsicWidth();
+                height = drawable.getIntrinsicHeight();
+            } else if (width <= 0) {
+                width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
+                if (width > IMAGE_MAX_WIDTH) {
+                    width = IMAGE_MAX_WIDTH;
+                }
+            } else if (height <= 0) {
+                height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+                if (height > IMAGE_MAX_HEIGHT) {
+                    height = IMAGE_MAX_HEIGHT;
+                }
+            }
+        }
+
+        return new Pair<>(width, height);
     }
 
 }

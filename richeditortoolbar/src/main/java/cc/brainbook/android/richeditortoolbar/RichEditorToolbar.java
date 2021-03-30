@@ -1889,7 +1889,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int width = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
-                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align);
+                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
                 mClickImageSpanDialogBuilder.build().show();
 
                 return;
