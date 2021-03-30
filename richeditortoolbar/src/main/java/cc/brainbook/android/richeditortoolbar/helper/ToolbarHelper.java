@@ -78,6 +78,8 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
+
 public abstract class ToolbarHelper {
 
     public static final ArrayList<Class<? extends INestParagraphStyle>> sNestParagraphStyleSpanClassList = new ArrayList<Class<? extends INestParagraphStyle>>(){{
@@ -241,8 +243,8 @@ public abstract class ToolbarHelper {
                         final String strWidth = StringUtil.getParameter(text, "width=", " ");
                         final String strHeight = StringUtil.getParameter(text, "height=", " ");
                         final String strAlign = StringUtil.getParameter(text, "align=", "]");
-                        final int width = strWidth == null ? 0 : Integer.parseInt(strWidth);
-                        final int height = strHeight == null ? 0 : Integer.parseInt(strHeight);
+                        final int width = parseInt(strWidth);
+                        final int height = parseInt(strHeight);
                         final int align = strAlign == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : Integer.parseInt(strAlign);
 
                         view.setTag(R.id.view_tag_image_text, text);
@@ -984,7 +986,7 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
+            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         } else if ("VideoSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -998,7 +1000,7 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
+            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         } else if ("AudioSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -1012,7 +1014,7 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);/////////////////
+            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         }
 
         return null;
@@ -1021,7 +1023,7 @@ public abstract class ToolbarHelper {
     @DrawableRes
     public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;/////////////////
     @NonNull
-    private static Drawable getDrawable(int drawableWidth, int drawableHeight) {
+    private static Drawable getDrawable(int drawableWidth, int drawableHeight) {/////////////////
         final Drawable d = ResourcesCompat.getDrawable(Resources.getSystem(), sPlaceHolderDrawable, null);
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
@@ -1037,7 +1039,7 @@ public abstract class ToolbarHelper {
         final List<IStyle> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         ToolbarHelper.postLoadSpans(context, textSpannable, spanList, null, -1,
-                null, R.drawable.placeholder, new Drawable.Callback() {
+                null, R.drawable.layer_list_placeholder, new Drawable.Callback() {
                     ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
                     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
                     @Override
@@ -1095,9 +1097,9 @@ public abstract class ToolbarHelper {
                                      final CustomImageSpan.OnClickListener onClickListener) {
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
-        ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
+        ///注意：mPlaceholderDrawable和mPlaceholderResourceId如都设置则mPlaceholderDrawable优先
         if (placeholderDrawable == null && placeholderResourceId == 0) {
-            glideImageLoader.setPlaceholderResourceId(R.drawable.placeholder);
+            glideImageLoader.setPlaceholderResourceId(R.drawable.layer_list_placeholder);
         } else if (placeholderDrawable == null) {
             glideImageLoader.setPlaceholderResourceId(placeholderResourceId);
         } else {
@@ -1117,21 +1119,55 @@ public abstract class ToolbarHelper {
             public void onLoadStarted(@Nullable Drawable drawable) {
                 isAsync = true;
 
-                if (drawable != null) {
-                    drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);   ///注意：Drawable必须设置Bounds才能显示
+//                drawable = new ColorDrawable(Color.BLACK);  ///test
 
-                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                            : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
-
-                    (pasteSpannable == null ? spannable : pasteSpannable)
-                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
-                }
+//                if (drawable != null) {
+//                    int width = viewTagWidth, height = viewTagHeight;
+//                    if ((width <= 0 || height <= 0)
+//                            && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+//                        width = 100;
+//                        height = 100;
+//                    } else {
+//                        if (width <= 0 && height <= 0) {
+//                            width = drawable.getIntrinsicWidth();
+//                            height = drawable.getIntrinsicHeight();
+//                        } else if (width <= 0) {
+//                            width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
+//                        } else if (height <= 0) {
+//                            height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+//                        }
+//                    }
+//
+//                    drawable.setBounds(0, 0, width, height);   ///注意：Drawable必须设置Bounds才能显示
+//
+//                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+//                            : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+//                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+//
+//                    (pasteSpannable == null ? spannable : pasteSpannable)
+//                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
+//                }
             }
 
             @Override
             public void onResourceReady(@NonNull Drawable drawable) {
-                drawable.setBounds(0, 0, viewTagWidth, viewTagHeight);  ///注意：Drawable必须设置Bounds才能显示
+                int width = viewTagWidth, height = viewTagHeight;
+                if ((width <= 0 || height <= 0)
+                        && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+                    width = 100;
+                    height = 100;
+                } else {
+                    if (width <= 0 && height <= 0) {
+                        width = drawable.getIntrinsicWidth();
+                        height = drawable.getIntrinsicHeight();
+                    } else if (width <= 0) {
+                        width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
+                    } else if (height <= 0) {
+                        height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+                    }
+                }
+
+                drawable.setBounds(0, 0, width, height);  ///注意：Drawable必须设置Bounds才能显示
 
                 final CustomImageSpan span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
                         : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)

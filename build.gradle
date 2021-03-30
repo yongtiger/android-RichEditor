@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.7",   ///v2.1.7#ClickImageSpanDialogBuilder.ImageSpanCallback#getVideoCoverFile()
-                versionCode: 20107
+                versionName: "2.1.8",   ///v2.1.8#[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
+                versionCode: 20108
         ]
     }
 

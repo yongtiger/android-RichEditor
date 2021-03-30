@@ -90,6 +90,7 @@ import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_UNORDERED_SQUARE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.updateListSpans;
+import static cc.brainbook.android.richeditortoolbar.util.StringUtil.isInteger;
 
 /**
  * This class processes HTML strings into displayable styled text.
@@ -2001,14 +2002,6 @@ class HtmlToSpannedConverter implements ContentHandler {
         return tag.length() == 2 &&
                 Character.toLowerCase(tag.charAt(0)) == 'h' &&
                 tag.charAt(1) >= '1' && tag.charAt(1) <= '6';
-    }
-
-    private boolean isInteger(String str) {
-        if (TextUtils.isEmpty(str)) {
-            return false;
-        }
-        Pattern pattern = Pattern.compile("^[-+]?[\\d]*$");
-        return pattern.matcher(str).matches();
     }
 
 }

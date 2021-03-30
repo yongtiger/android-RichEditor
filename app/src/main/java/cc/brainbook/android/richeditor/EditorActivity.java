@@ -6,6 +6,8 @@ import androidx.core.util.Pair;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -54,7 +56,7 @@ public class EditorActivity extends AppCompatActivity {
         }
 
 
-        /* --------------///[ImageSpan]-------------- *//////////////////////////////
+        /* --------------///[ImageSpan]-------------- */
         ///（如enableVideo/enableAudio/enableImage为true，则必选）设置存放图片/音频、视频文件的目录（必须非null、且存在、且可写入）
         final File imageFileDir, videoFileDir, audioFileDir;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())

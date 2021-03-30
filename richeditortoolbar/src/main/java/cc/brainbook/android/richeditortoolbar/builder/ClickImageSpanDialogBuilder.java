@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -48,6 +50,8 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static cc.brainbook.android.richeditortoolbar.util.StringUtil.isInteger;
+import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
@@ -65,11 +69,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final int REQUEST_CODE_DRAW = 10;
 
 
-	private int mImageOverrideWidth = 200;//////////////////
-	private int mImageOverrideHeight = 200;
-
 	private int mMediaType;	///0: image; 1: video; 2: audio
-	private String mDefaultAudioVideoCoverImageFileName;	///缺省的音频/视频封面图片
 
 	private String mInitialUri;	///初始化时的uri
 	private String mInitialSrc;	///初始化时的src
@@ -118,28 +118,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
-	private boolean isInitializing;
-	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align, int imageOverrideWidth, int imageOverrideHeight) {
-		isInitializing = true;
-		mImageOverrideWidth = imageOverrideWidth;
-		mImageOverrideHeight = imageOverrideHeight;
-
+	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align) {
 		mEditTextUri.setText(uriString);
 
-		///保存初始uri、src
 		mInitialUri = uriString;
 		mInitialSrc = src;
 
-		///设置缺省的音频/视频封面图片
-		if (TextUtils.isEmpty(src) && mMediaType != 0) {
-			mEditTextSrc.setText(mDefaultAudioVideoCoverImageFileName);
-			mEditTextDisplayWidth.setText(String.valueOf(mImageOverrideWidth));
-			mEditTextDisplayHeight.setText(String.valueOf(mImageOverrideHeight));
-		} else {
-			mEditTextSrc.setText(src);
-			mEditTextDisplayWidth.setText(String.valueOf(width));
-			mEditTextDisplayHeight.setText(String.valueOf(height));
-		}
+		mImageWidth = width;
+		mImageHeight = height;
+
+		mEditTextSrc.setText(src);
 
 		mVerticalAlignment = align;
 		if (align == ALIGN_BOTTOM) {
@@ -228,12 +216,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
 				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
 					final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+							///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
+//                    		R.drawable.layer_list_placeholder,
 							R.drawable.placeholder,
 							mContext.getTheme());
 
 					options.placeholder(placeholderDrawable);
 				} else {
-					options.placeholder(R.drawable.placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
+					options.placeholder(R.drawable.layer_list_placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
 				}
 
 				///获取图片真正的宽高
@@ -243,7 +233,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						.load(src)
 						.apply(options)
 
-						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
+//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
 //							.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
 //						.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
 
@@ -254,11 +244,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						.into(new CustomTarget<Drawable>() {
 							@Override
 							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
-								mImageWidth = 0;
-								mImageHeight = 0;
-
-								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+								mEditTextDisplayWidth.setText(null);
+								mEditTextDisplayHeight.setText(null);
 
 								mEditTextDisplayWidth.setEnabled(false);
 								mEditTextDisplayHeight.setEnabled(false);
@@ -273,29 +260,49 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 
 							@Override
-							public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-								mImageWidth = resource.getIntrinsicWidth();
-								mImageHeight = resource.getIntrinsicHeight();
-
-								if (!isInitializing) {
-									mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-									mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
+								if ((mImageWidth <= 0 || mImageHeight <= 0)
+										&& (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+									mImageWidth = 100;
+									mImageHeight = 100;
+								} else {
+									if (mImageWidth <= 0 && mImageHeight <= 0) {
+										mImageWidth = drawable.getIntrinsicWidth();
+										mImageHeight = drawable.getIntrinsicHeight();
+									} else if (mImageWidth <= 0) {
+										mImageWidth = drawable.getIntrinsicWidth() * mImageHeight / drawable.getIntrinsicHeight();
+									} else if (mImageHeight <= 0) {
+										mImageHeight = drawable.getIntrinsicHeight() * mImageWidth / drawable.getIntrinsicWidth();
+									}
 								}
+
+//								drawable.setBounds(0, 0, mImageWidth, mImageHeight);
+
+								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
 
 								mEditTextDisplayWidth.setEnabled(true);
 								mEditTextDisplayHeight.setEnabled(true);
 								mCheckBoxDisplayConstrain.setEnabled(true);
 								mButtonDisplayRestore.setEnabled(true);
 
-								mImageViewPreview.setImageDrawable(resource);
+////								mImageViewPreview.setImageDrawable(null);
+								mImageViewPreview.setImageDrawable(drawable);
+//								mImageViewPreview.invalidateDrawable(drawable);
+								mImageViewPreview.getDrawable().setBounds(0, 0, mImageWidth, mImageHeight);
+//								mImageViewPreview.invalidate();
+//								mImageViewPreview.requestLayout();
 
-								isInitializing = false;
+								Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+								Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, mImageWidth, mImageHeight, true));
+								mImageViewPreview.setImageDrawable(d);
+
 
 								///[ImageSpan#Glide#GifDrawable]
 								///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
-								if (resource instanceof GifDrawable) {
-									((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
-									((GifDrawable) resource).start();
+								if (drawable instanceof GifDrawable) {
+									((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
+									((GifDrawable) drawable).start();
 								} else {
 									///除GifDrawable保持禁止之外，其它都允许Crop和Draw
 									mButtonCrop.setEnabled(true);
@@ -304,9 +311,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 
 							@Override
-							public void onLoadFailed(@Nullable Drawable errorDrawable) {
-								isInitializing = false;
-							}
+							public void onLoadFailed(@Nullable Drawable errorDrawable) {}
 
 							@Override
 							public void onLoadCleared(@Nullable Drawable placeholder) {}
@@ -317,7 +322,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			public void afterTextChanged(Editable s) {}
 		});
 
-		mImageViewPreview = (ImageView) layout.findViewById(R.id.toolbar_preview);
+		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
 
 		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
 		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
@@ -326,13 +331,38 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (mEditTextDisplayWidth.isFocused() && mCheckBoxDisplayConstrain.isChecked() && mImageWidth > 0) {
-					final int width = Integer.parseInt(s.toString());
-					final int height = width * mImageHeight / mImageWidth;
-					if (height != Integer.parseInt(mEditTextDisplayHeight.getText().toString())) {
+				if (!mEditTextDisplayWidth.hasFocus()) {
+					// is only executed if the EditText was directly changed by the user
+					return;
+				}
+
+				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
+					return;
+				}
+
+				int newWidth = parseInt(s.toString());
+				int newHeight = parseInt(mEditTextDisplayHeight.getText().toString());
+
+				if (newWidth <= 0) {
+					newWidth = newHeight * mImageWidth / mImageHeight;
+				}
+
+				if (mEditTextDisplayWidth.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
+					final int height = newWidth * mImageHeight / mImageWidth;
+					if (height != newHeight) {
 						mEditTextDisplayHeight.setText(String.valueOf(height));
+						newHeight = height;
 					}
 				}
+
+				mImageViewPreview.getDrawable().setBounds(0, 0, newWidth, newHeight);
+//				mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
+//				mImageViewPreview.invalidate();
+//				mImageViewPreview.requestLayout();
+
+				Bitmap bitmap = ((BitmapDrawable) mImageViewPreview.getDrawable()).getBitmap();
+				Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true));
+				mImageViewPreview.setImageDrawable(d);
 			}
 
 			@Override
@@ -345,13 +375,38 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (mEditTextDisplayHeight.isFocused() && mCheckBoxDisplayConstrain.isChecked() && mImageHeight > 0) {
-					final int height = Integer.parseInt(s.toString());
-					final int width = height * mImageWidth / mImageHeight;
-					if (width != Integer.parseInt(mEditTextDisplayWidth.getText().toString())) {
+				if (!mEditTextDisplayHeight.hasFocus()) {
+					// is only executed if the EditText was directly changed by the user
+					return;
+				}
+
+				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
+					return;
+				}
+
+				int newHeight = parseInt(s.toString());
+				int newWidth = parseInt(mEditTextDisplayWidth.getText().toString());
+
+				if (newHeight <= 0) {
+					newHeight = newWidth * mImageHeight / mImageWidth;
+				}
+
+				if (mEditTextDisplayHeight.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
+					final int width = newHeight * mImageWidth / mImageHeight;
+					if (width != newWidth) {
 						mEditTextDisplayWidth.setText(String.valueOf(width));
+						newWidth = width;
 					}
 				}
+
+				mImageViewPreview.getDrawable().setBounds(0, 0, newWidth, newHeight);
+//				mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
+//				mImageViewPreview.invalidate();
+//				mImageViewPreview.requestLayout();
+
+				Bitmap bitmap = ((BitmapDrawable) mImageViewPreview.getDrawable()).getBitmap();
+				Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true));
+				mImageViewPreview.setImageDrawable(d);
 			}
 
 			@Override
@@ -363,9 +418,12 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageWidth > 0) {
-					final int width = Integer.parseInt(mEditTextDisplayWidth.getText().toString());
+					final int width = parseInt(mEditTextDisplayWidth.getText().toString());
 					final int height = width * mImageHeight / mImageWidth;
 					mEditTextDisplayHeight.setText(String.valueOf(height));
+
+					mImageViewPreview.getDrawable().setBounds(0, 0, width, height);
+//					mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
 				}
 			}
 		});
@@ -433,18 +491,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 
-	private ClickImageSpanDialogBuilder(Context context, int mediaType) {
+	private ClickImageSpanDialogBuilder(@NonNull Context context, int mediaType) {
 		this(context, 0, mediaType);
 	}
 
-	private ClickImageSpanDialogBuilder(final Context context, int theme, int mediaType) {
+	private ClickImageSpanDialogBuilder(@NonNull Context context, int theme, int mediaType) {
         mContext = context;
 
 		mMediaType = mediaType;
-
-		if (mMediaType != 0) {
-			mDefaultAudioVideoCoverImageFileName = "file:///android_asset/" + (mMediaType == 1 ? "video.png" : "audio.png");////////////
-		}
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.click_image_span_dialog, null);
@@ -456,11 +510,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	@NonNull
-	public static ClickImageSpanDialogBuilder with(Context context, int mediaType) {
+	public static ClickImageSpanDialogBuilder with(@NonNull Context context, int mediaType) {
 		return new ClickImageSpanDialogBuilder(context, mediaType);
 	}
 	@NonNull
-	public static ClickImageSpanDialogBuilder with(Context context, int theme, int mediaType) {
+	public static ClickImageSpanDialogBuilder with(@NonNull Context context, int theme, int mediaType) {
 		return new ClickImageSpanDialogBuilder(context, theme, mediaType);
 	}
 
@@ -535,11 +589,21 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		final String uri = mEditTextUri.getText().toString();
 		final String src = mEditTextSrc.getText().toString();
 
+		int width = parseInt(mEditTextDisplayWidth.getText().toString());
+		if (width < 0) {
+			width = 0;
+		}
+
+		int height = parseInt(mEditTextDisplayHeight.getText().toString());
+		if (height < 0) {
+			height = 0;
+		}
+
 		onClickListener.onClick(dialog,
 				uri,
 				src,
-				Integer.parseInt(mEditTextDisplayWidth.getText().toString()),
-				Integer.parseInt(mEditTextDisplayHeight.getText().toString()),
+				width,
+				height,
 				mVerticalAlignment);
 	}
 	public void doNegativeAction(@NonNull OnClickListener onClickListener, DialogInterface dialog) {

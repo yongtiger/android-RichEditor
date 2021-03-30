@@ -1,0 +1,14 @@
+<!--///[MaterialColor]-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--///设置背景颜色-->
+    <item>
+        <!--//////??????注意：color不能使用Alpha！-->
+        <!--<color android:color="?attr/colorOnSurface" android:alpha="@dimen/material_emphasis_disabled" />-->
+        <color android:color="@android:color/darker_gray" />
+    </item>
+
+    <item android:gravity="center"
+        android:drawable="@drawable/placeholder"/>
+
+</layer-list>

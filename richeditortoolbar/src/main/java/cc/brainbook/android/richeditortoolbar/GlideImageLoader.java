@@ -2,9 +2,12 @@ package cc.brainbook.android.richeditortoolbar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.gif.GifDrawable;
@@ -13,13 +16,8 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 public class GlideImageLoader {
-    ///Glide要求的Image最大尺寸
-    ///注意：如果宽高都限制1000，则可能出现(1000, 1800)的情况！
-    private static final int DEFAULT_IMAGE_OVERRIDE_WIDTH = 200;//////////////////
-    private static final int DEFAULT_IMAGE_OVERRIDE_HEIGHT = 200;//////////////////
-    private int mImageOverrideWidth, mImageOverrideHeight;
 
-    private Context mContext;
+    private final Context mContext;
 
     @Nullable
     private Drawable mPlaceholderDrawable;
@@ -33,23 +31,7 @@ public class GlideImageLoader {
     }
 
     public GlideImageLoader(Context context) {
-        this(context, DEFAULT_IMAGE_OVERRIDE_WIDTH, DEFAULT_IMAGE_OVERRIDE_HEIGHT);
-    }
-
-    public GlideImageLoader(Context context, int imageOverrideWidth, int imageOverrideHeight) {
         mContext = context;
-        mImageOverrideWidth = imageOverrideWidth;
-        mImageOverrideHeight = imageOverrideHeight;
-    }
-
-    public GlideImageLoader(Context context, int imageOverrideWidth, int imageOverrideHeight, @Nullable Drawable placeholderDrawable) {
-        this(context, imageOverrideWidth, imageOverrideHeight);
-        mPlaceholderDrawable = placeholderDrawable;
-    }
-
-    public GlideImageLoader(Context context, int imageOverrideWidth, int imageOverrideHeight, @DrawableRes int placeholderResourceId) {
-        this(context, imageOverrideWidth, imageOverrideHeight);
-        mPlaceholderResourceId = placeholderResourceId;
     }
 
     public interface Callback {
@@ -76,6 +58,17 @@ public class GlideImageLoader {
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
         if (mPlaceholderDrawable != null) {
             options.placeholder(mPlaceholderDrawable);
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            ///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
+            ///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
+            ///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
+            final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+                    ///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
+//                    R.drawable.layer_list_placeholder,
+                    R.drawable.placeholder,
+                    mContext.getTheme());
+
+            options.placeholder(placeholderDrawable);
         } else  {
             options.placeholder(mPlaceholderResourceId);
         }
@@ -83,7 +76,7 @@ public class GlideImageLoader {
         Glide.with(mContext)
                 .load(viewTagSrc)
                 .apply(options)
-                .override(mImageOverrideWidth, mImageOverrideHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
+//                .override(200, 200) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
 //                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
 //                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
                 .into(new CustomTarget<Drawable>() {
@@ -95,21 +88,21 @@ public class GlideImageLoader {
                     }
 
                     @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
                         if (mCallback != null) {
-                            mCallback.onResourceReady(resource);
+                            mCallback.onResourceReady(drawable);
                         }
 
                         ///[ImageSpan#Glide#GifDrawable]
                         ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
-                        if (resource instanceof GifDrawable) {
-                            ((GifDrawable) resource).setLoopCount(GifDrawable.LOOP_FOREVER);
-                            ((GifDrawable) resource).start();
+                        if (drawable instanceof GifDrawable) {
+                            ((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
+                            ((GifDrawable) drawable).start();
 
                             ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
                             ///https://github.com/koral--/android-gif-drawable/issues/516
                             if (mDrawableCallback != null) {
-                                resource.setCallback(mDrawableCallback);
+                                drawable.setCallback(mDrawableCallback);
                             }
                         }
                     }

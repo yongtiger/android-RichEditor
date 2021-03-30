@@ -276,15 +276,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mImageSpanCallback = imageSpanCallback;
     }
 
-    private int mImageOverrideWidth = 200;//////////////////
-    private int mImageOverrideHeight = 200;
-    public void setImageOverrideWidth(int imageOverrideWidth) {
-        mImageOverrideWidth = imageOverrideWidth;
-    }
-    public void setImageOverrideHeight(int imageOverrideHeight) {
-        mImageOverrideHeight = imageOverrideHeight;
-    }
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mRequestCodeHtmlEditor == requestCode) {
             if (RESULT_OK == resultCode) {
@@ -316,7 +307,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     ///[ImageSpan#Glide#loadImage()#Placeholder]
-    ///注意：mPlaceholderDrawable和mPlaceholderResourceId必须至少设置其中一个！如都设置则mPlaceholderDrawable优先
+    ///注意：mPlaceholderDrawable和mPlaceholderResourceId如都设置则mPlaceholderDrawable优先
     @Nullable
     private Drawable mPlaceholderDrawable;
     public void setPlaceholderDrawable(@Nullable Drawable placeholderDrawable) {
@@ -883,7 +874,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
 
         /* -------------- ///[Preview] --------------- */
-        mImageViewPreview = (ImageView) findViewById(R.id.toolbar_preview);
+        mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
         enablePreview = mImageViewPreview != null && a.getBoolean(R.styleable.RichEditorToolbar_enablePreview, true);
         if (enablePreview) {
             mImageViewPreview.setOnClickListener(this);
@@ -1830,7 +1821,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理n
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
-                                if (view != mImageViewImage && uri.length() == 0 || src.length() == 0 || width == 0 || height == 0) {
+                                if (view != mImageViewImage && uri.length() == 0 || src.length() == 0) {
                                     return;
                                 }
 
@@ -1841,7 +1832,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 }
 
                                 ///把width\height\align保存到text中
-                                final String text = view == mImageViewImage ?
+                                final String text = view == mImageViewImage ?////////////width、height为0则不显示
                                         String.format(getContext().getResources().getString(R.string.image_span_text), src, width, height, align)
                                         : String.format(getContext().getResources().getString(R.string.image_span_media_text), uri, src, width, height, align);
 
@@ -1897,7 +1888,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int width = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
-                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, mImageOverrideWidth, mImageOverrideHeight);
+                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align);
                 mClickImageSpanDialogBuilder.build().show();
 
                 return;

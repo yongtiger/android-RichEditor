@@ -292,7 +292,7 @@
         style="@style/ImageView" />
 
     <ImageView
-        android:id="@+id/toolbar_preview"
+        android:id="@+id/iv_preview"
         android:contentDescription="@string/tool_tip_preview"
         android:tooltipText="@string/tool_tip_preview"
         app:tint="@color/selector_view"
