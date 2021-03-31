@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.12",   ///v2.1.12#ClickImageSpanDialogBuilder#mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked()
-                versionCode: 20112
+                versionName: "2.1.13",   ///v2.1.13#ClickImageSpanDialogBuilder#ImageButtonDecrease/mImageButtonIncrease
+                versionCode: 20113
         ]
     }
 

@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -53,6 +54,7 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
@@ -101,7 +103,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private boolean enableEditTextDisplayChangedListener;
 	private CheckBox mCheckBoxDisplayConstrainWidth;
 	private CheckBox mCheckBoxDisplayConstrainHeight;
-	private Button mButtonDisplayRestore;
+	private ImageButton mImageButtonDisplayRestore;
+	private ImageButton mImageButtonDecrease;
+	private ImageButton mImageButtonIncrease;
 
     private Button mButtonCrop;
     private Button mButtonDraw;
@@ -430,7 +434,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		mButtonCrop = null;
 		mButtonDraw = null;
-		mButtonDisplayRestore = null;
+		mImageButtonDisplayRestore = null;
+		mImageButtonDecrease = null;
+		mImageButtonIncrease = null;
 		mButtonPickFromCamera = null;
 		mButtonPickFromGallery = null;
 		mButtonPickFromRecorder = null;
@@ -562,7 +568,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mEditTextDisplayHeight.setEnabled(false);
 								mCheckBoxDisplayConstrainWidth.setEnabled(false);
 								mCheckBoxDisplayConstrainHeight.setEnabled(false);
-								mButtonDisplayRestore.setEnabled(false);
+								mImageButtonDisplayRestore.setEnabled(false);
+								mImageButtonDecrease.setEnabled(false);
+								mImageButtonIncrease.setEnabled(false);
 
 								///先设置Crop和Draw为false
 								mButtonCrop.setEnabled(false);
@@ -595,7 +603,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mEditTextDisplayHeight.setEnabled(true);
 								mCheckBoxDisplayConstrainWidth.setEnabled(true);
 								mCheckBoxDisplayConstrainHeight.setEnabled(true);
-								mButtonDisplayRestore.setEnabled(true);
+								mImageButtonDisplayRestore.setEnabled(true);
+								mImageButtonDecrease.setEnabled(true);
+								mImageButtonIncrease.setEnabled(true);
 							}
 
 							@Override
@@ -624,7 +634,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				adjustEditTextDisplay(true);
+				adjustEditTextDisplay(true, 0.0F);
 			}
 
 			@Override
@@ -643,7 +653,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				adjustEditTextDisplay(false);
+				adjustEditTextDisplay(false, 0.0F);
 			}
 
 			@Override
@@ -655,7 +665,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageWidth > 0) {
-					adjustEditTextDisplay(true);
+					adjustEditTextDisplay(true, 0.0F);
 				}
 			}
 		});
@@ -665,13 +675,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageHeight > 0) {
-					adjustEditTextDisplay(false);
+					adjustEditTextDisplay(false, 0.0F);
 				}
 			}
 		});
 
-		mButtonDisplayRestore = (Button) layout.findViewById(R.id.btn_display_restore);
-		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
+		mImageButtonDisplayRestore = (ImageButton) layout.findViewById(R.id.ib_display_restore);
+		mImageButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				enableEditTextDisplayChangedListener = false;
@@ -682,6 +692,22 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
 //				setDrawable(mImageViewPreview.getDrawable(), mImageWidth, mImageHeight);
 				setDrawable(mOriginalDrawable, mImageWidth, mImageHeight);
+			}
+		});
+
+		mImageButtonDecrease = (ImageButton) layout.findViewById(R.id.ib_decrease);
+		mImageButtonDecrease.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				adjustEditTextDisplay(true, -IMAGE_ZOOM_FACTOR);
+			}
+		});
+
+		mImageButtonIncrease = (ImageButton) layout.findViewById(R.id.ib_increase);
+		mImageButtonIncrease.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				adjustEditTextDisplay(true, IMAGE_ZOOM_FACTOR);
 			}
 		});
 
@@ -796,14 +822,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		}
 	}
 
-	private void adjustEditTextDisplay(boolean isWidth) {
+	private void adjustEditTextDisplay(boolean isWidth, float zoomFactor) {
 		int width = parseInt(mEditTextDisplayWidth.getText().toString());
 		int height = parseInt(mEditTextDisplayHeight.getText().toString());
 
+		int newWidth = zoomFactor == 0.0F ? width : (int) (width * (zoomFactor + 1));
+		int newHeight = zoomFactor == 0.0F ? height : (int) (height * (zoomFactor + 1));
+
 		final Pair<Integer, Integer> pair = isWidth ?
-				adjustWidth(width, height, mImageWidth, mImageHeight,
+				adjustWidth(newWidth, newHeight, mImageWidth, mImageHeight,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked()) :
-				adjustHeight(width, height, mImageWidth, mImageHeight,
+				adjustHeight(newWidth, newHeight, mImageWidth, mImageHeight,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked());
 
 		updateEditTextDisplay(width, height, pair.first, pair.second);

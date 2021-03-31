@@ -95,6 +95,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <ImageButton
+            android:id="@+id/ib_display_restore"
+            android:layout_width="@dimen/global_dimen_4"
+            android:layout_height="@dimen/global_dimen_4"
+            android:contentDescription="@string/image_span_tool_tip_display_restore"
+            android:tooltipText="@string/image_span_tool_tip_display_restore"
+            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_baseline_1x_mobiledata_24" />
+
+        <ImageButton
+            android:id="@+id/ib_decrease"
+            android:layout_width="@dimen/global_dimen_4"
+            android:layout_height="@dimen/global_dimen_4"
+            android:contentDescription="@string/tool_tip_start_increase"
+            android:tooltipText="@string/tool_tip_start_decrease"
+            app:layout_constraintEnd_toStartOf="@+id/ib_display_restore"
+            app:layout_constraintBottom_toBottomOf="@+id/ib_display_restore"
+            app:layout_constraintTop_toTopOf="@+id/ib_display_restore"
+            app:srcCompat="@drawable/ic_baseline_decrease_24" />
+
+        <ImageButton
+            android:id="@+id/ib_increase"
+            android:layout_width="@dimen/global_dimen_4"
+            android:layout_height="@dimen/global_dimen_4"
+            android:contentDescription="@string/tool_tip_start_increase"
+            android:tooltipText="@string/tool_tip_start_increase"
+            app:srcCompat="@drawable/ic_baseline_increase_24"
+            app:layout_constraintStart_toEndOf="@+id/ib_display_restore"
+            app:layout_constraintBottom_toBottomOf="@+id/ib_display_restore"
+            app:layout_constraintTop_toTopOf="@+id/ib_display_restore" />
+
         <CheckBox
             android:id="@+id/cb_display_constrain_by_width"
             android:layout_width="wrap_content"
@@ -103,8 +136,8 @@
             android:contentDescription="@string/image_span_constrain_by_width"
             android:tooltipText="@string/image_span_constrain_by_width"
             android:checked="true"
-            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_display_x"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_display_x"
             app:layout_constraintEnd_toStartOf="@+id/et_display_width" />
 
         <EditText
@@ -118,8 +151,8 @@
             android:singleLine="true"
             android:maxLines="1"
             android:inputType="number"
-            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintStart_toEndOf="@+id/cb_display_constrain_by_width"
+            app:layout_constraintTop_toTopOf="@+id/tv_display_x"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_display_x"
             app:layout_constraintEnd_toStartOf="@+id/tv_display_x" />
 
         <TextView
@@ -129,9 +162,9 @@
             android:text="X"
             android:contentDescription="@string/image_span_tool_tip_display_x"
             android:tooltipText="@string/image_span_tool_tip_display_x"
-            app:layout_constraintBaseline_toBaselineOf="@id/et_display_width"
-            app:layout_constraintStart_toEndOf="@+id/et_display_width"
-            app:layout_constraintEnd_toStartOf="@+id/et_display_height" />
+            app:layout_constraintTop_toBottomOf="@+id/ib_display_restore"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <EditText
             android:id="@+id/et_display_height"
@@ -144,8 +177,8 @@
             android:singleLine="true"
             android:maxLines="1"
             android:inputType="number"
-            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintEnd_toStartOf="@+id/cb_display_constrain_by_height"
+            app:layout_constraintTop_toTopOf="@+id/tv_display_x"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_display_x"
             app:layout_constraintStart_toEndOf="@+id/tv_display_x" />
 
         <CheckBox
@@ -156,22 +189,9 @@
             android:contentDescription="@string/image_span_constrain_by_width"
             android:tooltipText="@string/image_span_constrain_by_width"
             android:checked="false"
-            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tv_display_x"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_display_x"
             app:layout_constraintStart_toEndOf="@+id/et_display_height" />
-
-        <Button
-            android:id="@+id/btn_display_restore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tool_tip_display_restore"
-            android:tooltipText="@string/image_span_tool_tip_display_restore"
-            android:text="1 : 1"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="parent" />
 
         <Button
             android:id="@+id/btn_crop"
@@ -182,7 +202,7 @@
             android:tooltipText="@string/image_span_tool_tip_crop"
             android:text="@string/image_span_crop"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/btn_display_restore"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_draw" />
 
@@ -195,7 +215,7 @@
             android:tooltipText="@string/image_span_tool_tip_draw"
             android:text="@string/image_span_draw"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/btn_display_restore"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_crop" />
 

@@ -90,6 +90,8 @@ public abstract class ToolbarHelper {
     ///ColorDrawable.getWidth()/getHeight()均为-1，此时设置为缺省数值
     public static final int IMAGE_DEFAULT_WIDTH = 200;
     public static final int IMAGE_DEFAULT_HEIGHT = 200;
+    ///缩放因子（放大：1+0.5F；缩小：1-0.5F）
+    public static final float IMAGE_ZOOM_FACTOR = 0.5F;
 
     public static final ArrayList<Class<? extends INestParagraphStyle>> sNestParagraphStyleSpanClassList = new ArrayList<Class<? extends INestParagraphStyle>>(){{
         add(DivSpan.class);
