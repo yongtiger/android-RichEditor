@@ -95,6 +95,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <CheckBox
+            android:id="@+id/cb_display_constrain_by_width"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/global_dimen"
+            android:contentDescription="@string/image_span_constrain_by_width"
+            android:tooltipText="@string/image_span_constrain_by_width"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/et_display_width" />
+
         <EditText
             android:id="@+id/et_display_width"
             android:layout_width="@dimen/global_dimen_8"
@@ -107,7 +119,7 @@
             android:maxLines="1"
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/cb_display_constrain_by_width"
             app:layout_constraintEnd_toStartOf="@+id/tv_display_x" />
 
         <TextView
@@ -133,22 +145,20 @@
             android:maxLines="1"
             android:inputType="number"
             app:layout_constraintTop_toBottomOf="@+id/iv_preview"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cb_display_constrain_by_height"
             app:layout_constraintStart_toEndOf="@+id/tv_display_x" />
 
         <CheckBox
-            android:id="@+id/cb_display_constrain"
+            android:id="@+id/cb_display_constrain_by_height"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_constrain"
-            android:tooltipText="@string/image_span_constrain"
-            android:checked="true"
-            android:text="@string/image_span_constrain"
-            app:layout_constraintTop_toBottomOf="@+id/et_display_width"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_display_restore"
-            app:layout_constraintBaseline_toBaselineOf="@+id/btn_display_restore"/>
+            android:contentDescription="@string/image_span_constrain_by_width"
+            android:tooltipText="@string/image_span_constrain_by_width"
+            android:checked="false"
+            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_display_height" />
 
         <Button
             android:id="@+id/btn_display_restore"
@@ -159,9 +169,9 @@
             android:tooltipText="@string/image_span_tool_tip_display_restore"
             android:text="1 : 1"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/et_display_width"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cb_display_constrain" />
+            app:layout_constraintStart_toEndOf="parent" />
 
         <Button
             android:id="@+id/btn_crop"

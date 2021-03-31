@@ -99,7 +99,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private EditText mEditTextDisplayWidth;
 	private EditText mEditTextDisplayHeight;
 	private boolean enableEditTextDisplayChangedListener;
-	private CheckBox mCheckBoxDisplayConstrain;
+	private CheckBox mCheckBoxDisplayConstrainWidth;
+	private CheckBox mCheckBoxDisplayConstrainHeight;
 	private Button mButtonDisplayRestore;
 
     private Button mButtonCrop;
@@ -434,7 +435,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonPickFromGallery = null;
 		mButtonPickFromRecorder = null;
 		mButtonPickFromMedia = null;
-		mCheckBoxDisplayConstrain = null;
+		mCheckBoxDisplayConstrainWidth = null;
+		mCheckBoxDisplayConstrainHeight = null;
 		mEditTextDisplayHeight = null;
 		mEditTextDisplayWidth = null;
 		mEditTextSrc = null;
@@ -558,7 +560,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 								mEditTextDisplayWidth.setEnabled(false);
 								mEditTextDisplayHeight.setEnabled(false);
-								mCheckBoxDisplayConstrain.setEnabled(false);
+								mCheckBoxDisplayConstrainWidth.setEnabled(false);
+								mCheckBoxDisplayConstrainHeight.setEnabled(false);
 								mButtonDisplayRestore.setEnabled(false);
 
 								///先设置Crop和Draw为false
@@ -590,7 +593,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 								mEditTextDisplayWidth.setEnabled(true);
 								mEditTextDisplayHeight.setEnabled(true);
-								mCheckBoxDisplayConstrain.setEnabled(true);
+								mCheckBoxDisplayConstrainWidth.setEnabled(true);
+								mCheckBoxDisplayConstrainHeight.setEnabled(true);
 								mButtonDisplayRestore.setEnabled(true);
 							}
 
@@ -646,8 +650,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			public void afterTextChanged(Editable s) {}
 		});
 
-		mCheckBoxDisplayConstrain = (CheckBox) layout.findViewById(R.id.cb_display_constrain);
-		mCheckBoxDisplayConstrain.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		mCheckBoxDisplayConstrainWidth = (CheckBox) layout.findViewById(R.id.cb_display_constrain_by_width);
+		mCheckBoxDisplayConstrainWidth.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageWidth > 0) {
@@ -655,6 +659,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				}
 			}
 		});
+
+		mCheckBoxDisplayConstrainHeight = (CheckBox) layout.findViewById(R.id.cb_display_constrain_by_height);
+		mCheckBoxDisplayConstrainHeight.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked && mImageHeight > 0) {
+					adjustEditTextDisplay(false);
+				}
+			}
+		});
+
 		mButtonDisplayRestore = (Button) layout.findViewById(R.id.btn_display_restore);
 		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -786,8 +801,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		int height = parseInt(mEditTextDisplayHeight.getText().toString());
 
 		final Pair<Integer, Integer> pair = isWidth ?
-				adjustWidth(width, height, mImageWidth, mImageHeight, mCheckBoxDisplayConstrain.isChecked()) :
-				adjustHeight(width, height, mImageWidth, mImageHeight, mCheckBoxDisplayConstrain.isChecked());
+				adjustWidth(width, height, mImageWidth, mImageHeight,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked()) :
+				adjustHeight(width, height, mImageWidth, mImageHeight,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked());
 
 		updateEditTextDisplay(width, height, pair.first, pair.second);
 
