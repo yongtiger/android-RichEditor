@@ -202,9 +202,8 @@
             android:tooltipText="@string/image_span_tool_tip_crop"
             android:text="@string/image_span_crop"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_draw" />
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/btn_draw"
@@ -215,16 +214,15 @@
             android:tooltipText="@string/image_span_tool_tip_draw"
             android:text="@string/image_span_draw"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_crop" />
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <RadioGroup
             android:id="@+id/rg_align"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            app:layout_constraintTop_toBottomOf="@+id/btn_crop">
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x">
 
             <RadioButton
                 android:id="@+id/rb_align_bottom"

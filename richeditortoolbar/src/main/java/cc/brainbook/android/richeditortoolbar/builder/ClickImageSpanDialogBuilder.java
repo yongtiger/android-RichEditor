@@ -299,6 +299,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								///生成视频的第一帧图片
 								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
 								if (videoCoverFile != null) {
+									mImageWidth = 0;
+									mImageHeight = 0;
 									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
 									enableDeleteOldSrcFile = true;
 								}
@@ -336,6 +338,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								///生成视频的第一帧图片
 								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
 								if (videoCoverFile != null) {
+									mImageWidth = 0;
+									mImageHeight = 0;
 									mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
 									enableDeleteOldSrcFile = true;
 								}
@@ -365,6 +369,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				if (data != null) {
 					final Uri selectedUri = data.getData();
 					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
+						mImageWidth = 0;
+						mImageHeight = 0;
 						mEditTextSrc.setText(selectedUri.toString());
 					} else {
 						Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_cannot_retrieve_image));
@@ -383,6 +389,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
 			if (resultCode == RESULT_OK) {
 				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
+					mImageWidth = 0;
+					mImageHeight = 0;
 					mEditTextSrc.setText(mCameraResultFile.getAbsolutePath());
 					enableDeleteOldSrcFile = true;
 				}
@@ -399,6 +407,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			if (resultCode == RESULT_OK) {
 				final String resultString = UCrop.getOutput(data);
 				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+					mImageWidth = 0;
+					mImageHeight = 0;
 					mEditTextSrc.setText(resultString);
 					enableDeleteOldSrcFile = true;
 				}
@@ -417,6 +427,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				if (resultCode == DoodleActivity.RESULT_OK) {
 					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
 					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+						mImageWidth = 0;
+						mImageHeight = 0;
 						mEditTextSrc.setText(resultString);
 						enableDeleteOldSrcFile = true;
 					}
