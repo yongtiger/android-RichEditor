@@ -66,8 +66,8 @@
     <string name="list_span_indicator_width">Indicator width: %1$d</string>
     <string name="list_span_indicator_gap_width">Indicator gap width: %1$d</string>
     <string name="list_span_start">Start</string>
-    <string name="tool_tip_start_decrease">Start decrease</string>
-    <string name="tool_tip_start_increase">Start increase</string>
+    <string name="tool_tip_zoom_out">Zoom out</string>
+    <string name="tool_tip_zoom_in">Zoom in</string>
     <string name="list_span_reverse">Reverse</string>
     <string name="tool_tip_reverse">Reverse</string>
 

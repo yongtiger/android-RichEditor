@@ -104,8 +104,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private CheckBox mCheckBoxDisplayConstrainWidth;
 	private CheckBox mCheckBoxDisplayConstrainHeight;
 	private ImageButton mImageButtonDisplayRestore;
-	private ImageButton mImageButtonDecrease;
-	private ImageButton mImageButtonIncrease;
+	private ImageButton mImageButtonZoomOut;
+	private ImageButton mImageButtonZoomIn;
 
     private Button mButtonCrop;
     private Button mButtonDraw;
@@ -447,8 +447,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonCrop = null;
 		mButtonDraw = null;
 		mImageButtonDisplayRestore = null;
-		mImageButtonDecrease = null;
-		mImageButtonIncrease = null;
+		mImageButtonZoomOut = null;
+		mImageButtonZoomIn = null;
 		mButtonPickFromCamera = null;
 		mButtonPickFromGallery = null;
 		mButtonPickFromRecorder = null;
@@ -581,8 +581,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mCheckBoxDisplayConstrainWidth.setEnabled(false);
 								mCheckBoxDisplayConstrainHeight.setEnabled(false);
 								mImageButtonDisplayRestore.setEnabled(false);
-								mImageButtonDecrease.setEnabled(false);
-								mImageButtonIncrease.setEnabled(false);
+								mImageButtonZoomOut.setEnabled(false);
+								mImageButtonZoomIn.setEnabled(false);
 
 								///先设置Crop和Draw为false
 								mButtonCrop.setEnabled(false);
@@ -616,8 +616,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mCheckBoxDisplayConstrainWidth.setEnabled(true);
 								mCheckBoxDisplayConstrainHeight.setEnabled(true);
 								mImageButtonDisplayRestore.setEnabled(true);
-								mImageButtonDecrease.setEnabled(true);
-								mImageButtonIncrease.setEnabled(true);
+								mImageButtonZoomOut.setEnabled(true);
+								mImageButtonZoomIn.setEnabled(true);
 							}
 
 							@Override
@@ -707,16 +707,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			}
 		});
 
-		mImageButtonDecrease = (ImageButton) layout.findViewById(R.id.ib_decrease);
-		mImageButtonDecrease.setOnClickListener(new View.OnClickListener() {
+		mImageButtonZoomOut = (ImageButton) layout.findViewById(R.id.ib_zoom_out);
+		mImageButtonZoomOut.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				adjustEditTextDisplay(true, -IMAGE_ZOOM_FACTOR);
 			}
 		});
 
-		mImageButtonIncrease = (ImageButton) layout.findViewById(R.id.ib_increase);
-		mImageButtonIncrease.setOnClickListener(new View.OnClickListener() {
+		mImageButtonZoomIn = (ImageButton) layout.findViewById(R.id.ib_zoom_in);
+		mImageButtonZoomIn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				adjustEditTextDisplay(true, IMAGE_ZOOM_FACTOR);

@@ -107,22 +107,22 @@
             app:srcCompat="@drawable/ic_baseline_1x_mobiledata_24" />
 
         <ImageButton
-            android:id="@+id/ib_decrease"
+            android:id="@+id/ib_zoom_out"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_start_increase"
-            android:tooltipText="@string/tool_tip_start_decrease"
+            android:contentDescription="@string/tool_tip_zoom_out"
+            android:tooltipText="@string/tool_tip_zoom_out"
             app:layout_constraintEnd_toStartOf="@+id/ib_display_restore"
             app:layout_constraintBottom_toBottomOf="@+id/ib_display_restore"
             app:layout_constraintTop_toTopOf="@+id/ib_display_restore"
             app:srcCompat="@drawable/ic_baseline_decrease_24" />
 
         <ImageButton
-            android:id="@+id/ib_increase"
+            android:id="@+id/ib_zoom_in"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_start_increase"
-            android:tooltipText="@string/tool_tip_start_increase"
+            android:contentDescription="@string/tool_tip_zoom_in"
+            android:tooltipText="@string/tool_tip_zoom_in"
             app:srcCompat="@drawable/ic_baseline_increase_24"
             app:layout_constraintStart_toEndOf="@+id/ib_display_restore"
             app:layout_constraintBottom_toBottomOf="@+id/ib_display_restore"
