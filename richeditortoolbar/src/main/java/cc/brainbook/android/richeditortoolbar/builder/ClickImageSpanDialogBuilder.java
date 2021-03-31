@@ -20,6 +20,8 @@ import androidx.core.util.Pair;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -51,9 +53,8 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_MAX_WIDTH;
-import static cc.brainbook.android.richeditortoolbar.util.StringUtil.isInteger;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
@@ -82,6 +83,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private int mImageWidth;
 	private int mImageHeight;
 
+	///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+	private Drawable mOriginalDrawable;
+
 	private Button mButtonPickFromMedia;
 	private Button mButtonPickFromRecorder;
 	private EditText mEditTextUri;
@@ -94,6 +98,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	private EditText mEditTextDisplayWidth;
 	private EditText mEditTextDisplayHeight;
+	private boolean enableEditTextDisplayChangedListener;
 	private CheckBox mCheckBoxDisplayConstrain;
 	private Button mButtonDisplayRestore;
 
@@ -465,7 +470,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 				deleteOldUriFile();
 				enableDeleteOldUriFile = false;
-
 			}
 
 			@Override
@@ -545,8 +549,12 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						.into(new CustomTarget<Drawable>() {
 							@Override
 							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
+								mImageViewPreview.setImageDrawable(placeholder);
+
+								enableEditTextDisplayChangedListener = false;
 								mEditTextDisplayWidth.setText(null);
 								mEditTextDisplayHeight.setText(null);
+								enableEditTextDisplayChangedListener = true;
 
 								mEditTextDisplayWidth.setEnabled(false);
 								mEditTextDisplayHeight.setEnabled(false);
@@ -556,25 +564,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								///先设置Crop和Draw为false
 								mButtonCrop.setEnabled(false);
 								mButtonDraw.setEnabled(false);
-
-								mImageViewPreview.setImageDrawable(placeholder);
 							}
 
 							@Override
 							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
 								///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-								final Pair<Integer, Integer> pair = ToolbarHelper.adjustSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
+								final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
 
 								mImageWidth = pair.first; mImageHeight = pair.second;
 
-								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
-
-								mEditTextDisplayWidth.setEnabled(true);
-								mEditTextDisplayHeight.setEnabled(true);
-								mCheckBoxDisplayConstrain.setEnabled(true);
-								mButtonDisplayRestore.setEnabled(true);
-
+								///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+								mOriginalDrawable = drawable;
 								setDrawable(drawable, mImageWidth, mImageHeight);
 
 								if (!(drawable instanceof GifDrawable)) {
@@ -582,6 +582,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 									mButtonCrop.setEnabled(true);
 									mButtonDraw.setEnabled(true);
 								}
+
+								enableEditTextDisplayChangedListener = false;
+								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+								enableEditTextDisplayChangedListener = true;
+
+								mEditTextDisplayWidth.setEnabled(true);
+								mEditTextDisplayHeight.setEnabled(true);
+								mCheckBoxDisplayConstrain.setEnabled(true);
+								mButtonDisplayRestore.setEnabled(true);
 							}
 
 							@Override
@@ -599,92 +609,37 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
 
 		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
+		mEditTextDisplayWidth.setFilters(inputFilters);
 		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (!mEditTextDisplayWidth.hasFocus()) {
-					// is only executed if the EditText was directly changed by the user
+				if (!enableEditTextDisplayChangedListener) {
 					return;
 				}
 
-				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
-					return;
-				}
-
-				int newWidth = parseInt(s.toString());
-				if (newWidth > IMAGE_MAX_WIDTH) {
-					return;
-				}
-				int newHeight = parseInt(mEditTextDisplayHeight.getText().toString());
-
-				if (newWidth <= 0) {
-					newWidth = newHeight * mImageWidth / mImageHeight;
-					if (newWidth > IMAGE_MAX_WIDTH) {
-						newWidth = IMAGE_MAX_WIDTH;
-					}
-				}
-
-				if (mEditTextDisplayWidth.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
-					int height = newWidth * mImageHeight / mImageWidth;
-					if (height > IMAGE_MAX_HEIGHT) {
-						height = IMAGE_MAX_HEIGHT;
-					}
-					if (height != newHeight) {
-						mEditTextDisplayHeight.setText(String.valueOf(height));
-						newHeight = height;
-					}
-				}
-
-				setDrawable(mImageViewPreview.getDrawable(), newWidth, newHeight);
+				adjustEditTextDisplay(true);
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {}
 		});
+
 		mEditTextDisplayHeight = (EditText) layout.findViewById(R.id.et_display_height);
+		mEditTextDisplayHeight.setFilters(inputFilters);
 		mEditTextDisplayHeight.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				if (!mEditTextDisplayHeight.hasFocus()) {
-					// is only executed if the EditText was directly changed by the user
+				if (!enableEditTextDisplayChangedListener) {
 					return;
 				}
 
-				if (mImageWidth <= 0 || mImageHeight <= 0 || !isInteger(s.toString())) {
-					return;
-				}
-
-				int newHeight = parseInt(s.toString());
-				if (newHeight > IMAGE_MAX_HEIGHT) {
-					return;
-				}
-				int newWidth = parseInt(mEditTextDisplayWidth.getText().toString());
-
-				if (newHeight <= 0) {
-					newHeight = newWidth * mImageHeight / mImageWidth;
-					if (newHeight > IMAGE_MAX_HEIGHT) {
-						newHeight = IMAGE_MAX_HEIGHT;
-					}
-				}
-
-				if (mEditTextDisplayHeight.isFocused() && mCheckBoxDisplayConstrain.isChecked()) {
-					int width = newHeight * mImageWidth / mImageHeight;
-					if (width > IMAGE_MAX_WIDTH) {
-						width = IMAGE_MAX_WIDTH;
-					}
-					if (width != newWidth) {
-						mEditTextDisplayWidth.setText(String.valueOf(width));
-						newWidth = width;
-					}
-				}
-
-				setDrawable(mImageViewPreview.getDrawable(), newWidth, newHeight);
+				adjustEditTextDisplay(false);
 			}
 
 			@Override
@@ -696,12 +651,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageWidth > 0) {
-					final int width = parseInt(mEditTextDisplayWidth.getText().toString());
-					final int height = width * mImageHeight / mImageWidth;
-					mEditTextDisplayHeight.setText(String.valueOf(height));
-
-					mImageViewPreview.getDrawable().setBounds(0, 0, width, height);
-//					mImageViewPreview.invalidateDrawable(mImageViewPreview.getDrawable());
+					adjustEditTextDisplay(true);
 				}
 			}
 		});
@@ -709,8 +659,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mButtonDisplayRestore.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				enableEditTextDisplayChangedListener = false;
 				mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
 				mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+				enableEditTextDisplayChangedListener = true;
+
+				///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+//				setDrawable(mImageViewPreview.getDrawable(), mImageWidth, mImageHeight);
+				setDrawable(mOriginalDrawable, mImageWidth, mImageHeight);
 			}
 		});
 
@@ -768,7 +724,43 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
 	}
 
+	///https://www.jianshu.com/p/5b5cef2ffff2
+	private final InputFilter[] inputFilters = new InputFilter[] {
+			/**
+			 * @param source 输入的文字
+			 * @param start 输入-0，删除-0
+			 * @param end 输入-文字的长度，删除-0
+			 * @param dest 原先显示的内容
+			 * @param dstart 输入-原光标位置，删除-光标删除结束位置
+			 * @param dend  输入-原光标位置，删除-光标删除开始位置
+			 * @return
+			*/
+			/**限制文本长度*/
+			new InputFilter.LengthFilter(4),
+
+			new InputFilter() {
+				@Override
+				public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+//                    ///不做任何Filter
+//                    return null;
+//                    return source; ///等同于source.subSequence(start, end);
+
+//                    ///删除（所选内容替换为空）
+//                    //////??????[BUG#当所选包括最后一个字符时，全部内容被删除了！]
+//                    return "";
+
+					///[Filter过滤#android:inputType="number"]注意：不受EditText#android:inputType限制！可以任意内容，所以需要Filter过滤来处理
+					///注意：允许删除，甚至为空
+					return source.toString().replaceAll("[^\\d]+", ""); ///注意：负数符号也被过滤掉了
+				}
+			}
+	};
+
 	private void setDrawable(Drawable drawable, int width, int height) {
+		if (width == 0 || height == 0) {
+			return;
+		}
+
 		///[ImageSpan#Glide#GifDrawable]
 		///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
 		if (drawable instanceof GifDrawable) {
@@ -778,9 +770,42 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
 			((GifDrawable) drawable).start();
 		} else {
-			final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-			final Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, width, height, true));
-			mImageViewPreview.setImageDrawable(d);
+			try {
+				final Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+				final Drawable d = new BitmapDrawable(mContext.getResources(), Bitmap.createScaledBitmap(bitmap, width, height, true));
+				mImageViewPreview.setImageDrawable(d);
+			} catch (ClassCastException e) {
+				drawable.setBounds(0, 0, width, height);
+				mImageViewPreview.setImageDrawable(drawable);
+			}
+		}
+	}
+
+	private void adjustEditTextDisplay(boolean isWidth) {
+		int width = parseInt(mEditTextDisplayWidth.getText().toString());
+		int height = parseInt(mEditTextDisplayHeight.getText().toString());
+
+		final Pair<Integer, Integer> pair = isWidth ?
+				adjustWidth(width, height, mImageWidth, mImageHeight, mCheckBoxDisplayConstrain.isChecked()) :
+				adjustHeight(width, height, mImageWidth, mImageHeight, mCheckBoxDisplayConstrain.isChecked());
+
+		updateEditTextDisplay(width, height, pair.first, pair.second);
+
+		///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+//		setDrawable(mImageViewPreview.getDrawable(), pair.first, pair.second);
+		setDrawable(mOriginalDrawable, pair.first, pair.second);
+	}
+
+	private void updateEditTextDisplay(int width, int height, int newWidth, int newHeight) {
+		if (width > 0 && width != newWidth) {
+			enableEditTextDisplayChangedListener = false;
+			mEditTextDisplayWidth.setText(String.valueOf(newWidth));
+			enableEditTextDisplayChangedListener = true;
+		}
+		if (height > 0 && height != newHeight) {
+			enableEditTextDisplayChangedListener = false;
+			mEditTextDisplayHeight.setText(String.valueOf(newHeight));
+			enableEditTextDisplayChangedListener = true;
 		}
 	}
 

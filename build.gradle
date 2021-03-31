@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.10",   ///v2.1.10#ClickImageSpanDialogBuilder调用public static Pair<Integer, Integer> adjustSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback)
-                versionCode: 20110
+                versionName: "2.1.11",   ///v2.1.11#ClickImageSpanDialogBuilder#InputFilter
+                versionCode: 20111
         ]
     }
 

@@ -84,8 +84,10 @@ import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
 
-    public static final int IMAGE_MAX_WIDTH = 2000;
-    public static final int IMAGE_MAX_HEIGHT = 2000;
+    /////??????Android设备最大尺寸（目前为3040）
+    public static final int IMAGE_MAX_WIDTH = 5000;
+    public static final int IMAGE_MAX_HEIGHT = 5000;
+    ///ColorDrawable.getWidth()/getHeight()均为-1，此时设置为缺省数值
     public static final int IMAGE_DEFAULT_WIDTH = 200;
     public static final int IMAGE_DEFAULT_HEIGHT = 200;
 
@@ -1141,7 +1143,7 @@ public abstract class ToolbarHelper {
 
                 if (drawable != null) {
                     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                    final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
+                    final Pair<Integer, Integer> pair = adjustDrawableSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
 
                     drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
@@ -1157,7 +1159,7 @@ public abstract class ToolbarHelper {
             @Override
             public void onResourceReady(@NonNull Drawable drawable) {
                 ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                final Pair<Integer, Integer> pair = adjustSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
+                final Pair<Integer, Integer> pair = adjustDrawableSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
 
                 drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
@@ -1206,7 +1208,7 @@ public abstract class ToolbarHelper {
 
     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
     @NonNull
-    public static Pair<Integer, Integer> adjustSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
+    public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
         ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
         ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
@@ -1236,6 +1238,61 @@ public abstract class ToolbarHelper {
                     height = IMAGE_MAX_HEIGHT;
                 }
             }
+        }
+
+        return new Pair<>(width, height);
+    }
+
+
+    @NonNull
+    public static Pair<Integer, Integer> adjustWidth(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+        if (width <= 0) {
+            width = compareWidth <= 0 || compareHeight <= 0 ? 0 : height * compareWidth / compareHeight;
+            if (width > 0) {
+                final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, isConstrain);
+                width = pair.first;
+                height = pair.second;
+            }
+
+            return new Pair<>(width, height);
+        }
+
+        if (width > IMAGE_MAX_WIDTH) {
+            width = IMAGE_MAX_WIDTH;
+        }
+
+        if (isConstrain && (width * compareHeight != height * compareWidth)) {
+            height = 0;
+            final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, true);
+            width = pair.first;
+            height = pair.second;
+        }
+
+        return new Pair<>(width, height);
+    }
+
+    @NonNull
+    public static Pair<Integer, Integer> adjustHeight(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+        if (height <= 0) {
+            height = compareWidth <= 0 || compareHeight <= 0 ? 0 : width * compareHeight / compareWidth;
+            if (height > 0) {
+                final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, isConstrain);
+                width = pair.first;
+                height = pair.second;
+            }
+
+            return new Pair<>(width, height);
+        }
+
+        if (height > IMAGE_MAX_HEIGHT) {
+            height = IMAGE_MAX_HEIGHT;
+        }
+
+        if (isConstrain && (width * compareHeight != height * compareWidth)) {
+            width = 0;
+            final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, true);
+            width = pair.first;
+            height = pair.second;
         }
 
         return new Pair<>(width, height);
