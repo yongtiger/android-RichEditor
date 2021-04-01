@@ -42,6 +42,7 @@ import com.bumptech.glide.load.resource.gif.GifDrawable;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.slider.Slider;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -97,6 +98,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private EditText mEditTextSrc;
 
 	private ImageView mImageViewPreview;
+
+	private Slider mSliderDisplayWidth;
+	private Slider mSliderDisplayHeight;
 
 	private EditText mEditTextDisplayWidth;
 	private EditText mEditTextDisplayHeight;
@@ -457,6 +461,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mCheckBoxDisplayConstrainHeight = null;
 		mEditTextDisplayHeight = null;
 		mEditTextDisplayWidth = null;
+		mSliderDisplayWidth = null;
+		mSliderDisplayHeight = null;
 		mEditTextSrc = null;
 		mEditTextUri = null;
 		mImageViewPreview = null;
@@ -576,6 +582,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mEditTextDisplayHeight.setText(null);
 								enableEditTextDisplayChangedListener = true;
 
+								mSliderDisplayWidth.setEnabled(false);
+								mSliderDisplayHeight.setEnabled(false);
 								mEditTextDisplayWidth.setEnabled(false);
 								mEditTextDisplayHeight.setEnabled(false);
 								mCheckBoxDisplayConstrainWidth.setEnabled(false);
@@ -611,6 +619,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
 								enableEditTextDisplayChangedListener = true;
 
+								mSliderDisplayWidth.setEnabled(true);
+								mSliderDisplayHeight.setEnabled(true);
 								mEditTextDisplayWidth.setEnabled(true);
 								mEditTextDisplayHeight.setEnabled(true);
 								mCheckBoxDisplayConstrainWidth.setEnabled(true);
@@ -634,6 +644,51 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		mImageViewPreview = (ImageView) layout.findViewById(R.id.iv_preview);
 
+		mSliderDisplayWidth = layout.findViewById(R.id.slider_display_width);
+		mSliderDisplayWidth.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+			@Override
+			public void onStartTrackingTouch(@NonNull Slider slider) {
+				Log.d("TAG", "SliderDisplayWidth# onStartTrackingTouch: ");
+			}
+
+			@Override
+			public void onStopTrackingTouch(@NonNull Slider slider) {
+				Log.d("TAG", "SliderDisplayHeight# onStopTrackingTouch: " + slider.getValue());
+
+				adjustEditTextDisplay(true,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
+						slider.getValue() / 4 - 1F);
+			}
+		});
+		mSliderDisplayWidth.addOnChangeListener(new Slider.OnChangeListener() {
+			@Override
+			public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+				Log.d("TAG", "SliderDisplayWidth# onValueChange: " + value);
+			}
+		});
+		mSliderDisplayHeight = layout.findViewById(R.id.slider_display_height);
+		mSliderDisplayHeight.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+			@Override
+			public void onStartTrackingTouch(@NonNull Slider slider) {
+				Log.d("TAG", "SliderDisplayHeight# onStartTrackingTouch: ");
+			}
+
+			@Override
+			public void onStopTrackingTouch(@NonNull Slider slider) {
+				Log.d("TAG", "SliderDisplayHeight# onStopTrackingTouch: " + slider.getValue());
+
+				adjustEditTextDisplay(false,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
+						slider.getValue() / 4 - 1F);
+			}
+		});
+		mSliderDisplayHeight.addOnChangeListener(new Slider.OnChangeListener() {
+			@Override
+			public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+				Log.d("TAG", "SliderDisplayHeight# onValueChange: " + value);
+			}
+		});
+
 		mEditTextDisplayWidth = (EditText) layout.findViewById(R.id.et_display_width);
 		mEditTextDisplayWidth.setFilters(inputFilters);
 		mEditTextDisplayWidth.addTextChangedListener(new TextWatcher() {
@@ -646,7 +701,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				adjustEditTextDisplay(true, 0.0F);
+				adjustEditTextDisplay(true,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
+						0.0F);
 			}
 
 			@Override
@@ -665,7 +722,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					return;
 				}
 
-				adjustEditTextDisplay(false, 0.0F);
+				adjustEditTextDisplay(false,
+						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
+						0.0F);
 			}
 
 			@Override
@@ -677,7 +736,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageWidth > 0) {
-					adjustEditTextDisplay(true, 0.0F);
+					adjustEditTextDisplay(true, true, 0.0F);
 				}
 			}
 		});
@@ -687,7 +746,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked && mImageHeight > 0) {
-					adjustEditTextDisplay(false, 0.0F);
+					adjustEditTextDisplay(false, true, 0.0F);
 				}
 			}
 		});
@@ -711,7 +770,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageButtonZoomOut.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				adjustEditTextDisplay(true, -IMAGE_ZOOM_FACTOR);
+				adjustEditTextDisplay(true, true, -IMAGE_ZOOM_FACTOR);
 			}
 		});
 
@@ -719,7 +778,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageButtonZoomIn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				adjustEditTextDisplay(true, IMAGE_ZOOM_FACTOR);
+				adjustEditTextDisplay(true, true, IMAGE_ZOOM_FACTOR);
 			}
 		});
 
@@ -834,18 +893,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		}
 	}
 
-	private void adjustEditTextDisplay(boolean isWidth, float zoomFactor) {
+	private void adjustEditTextDisplay(boolean isWidth, boolean isConstrain, float zoomFactor) {
 		int width = parseInt(mEditTextDisplayWidth.getText().toString());
 		int height = parseInt(mEditTextDisplayHeight.getText().toString());
 
-		int newWidth = zoomFactor == 0.0F ? width : (int) (width * (zoomFactor + 1));
-		int newHeight = zoomFactor == 0.0F ? height : (int) (height * (zoomFactor + 1));
+		int newWidth = zoomFactor == 0.0F || !isWidth && !isConstrain ? width : (int) (width * (zoomFactor + 1));
+		int newHeight = zoomFactor == 0.0F || isWidth && !isConstrain ? height : (int) (height * (zoomFactor + 1));
 
 		final Pair<Integer, Integer> pair = isWidth ?
-				adjustWidth(newWidth, newHeight, mImageWidth, mImageHeight,
-						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked()) :
-				adjustHeight(newWidth, newHeight, mImageWidth, mImageHeight,
-						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked());
+				adjustWidth(newWidth, newHeight, mImageWidth, mImageHeight, isConstrain) :
+				adjustHeight(newWidth, newHeight, mImageWidth, mImageHeight, isConstrain);
 
 		updateEditTextDisplay(width, height, pair.first, pair.second);
 

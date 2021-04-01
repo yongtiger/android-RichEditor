@@ -1263,7 +1263,7 @@ public abstract class ToolbarHelper {
             width = IMAGE_MAX_WIDTH;
         }
 
-        if (isConstrain && (width * compareHeight != height * compareWidth)) {
+        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
             height = 0;
             final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, true);
             width = pair.first;
@@ -1290,7 +1290,7 @@ public abstract class ToolbarHelper {
             height = IMAGE_MAX_HEIGHT;
         }
 
-        if (isConstrain && (width * compareHeight != height * compareWidth)) {
+        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
             width = 0;
             final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, true);
             width = pair.first;

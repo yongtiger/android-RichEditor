@@ -99,6 +99,7 @@
             android:id="@+id/ib_display_restore"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
+            android:layout_margin="@dimen/global_dimen"
             android:contentDescription="@string/image_span_tool_tip_display_restore"
             android:tooltipText="@string/image_span_tool_tip_display_restore"
             app:layout_constraintTop_toBottomOf="@+id/iv_preview"
@@ -110,6 +111,7 @@
             android:id="@+id/ib_zoom_out"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
+            android:layout_margin="@dimen/global_dimen"
             android:contentDescription="@string/tool_tip_zoom_out"
             android:tooltipText="@string/tool_tip_zoom_out"
             app:layout_constraintEnd_toStartOf="@+id/ib_display_restore"
@@ -121,6 +123,7 @@
             android:id="@+id/ib_zoom_in"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
+            android:layout_margin="@dimen/global_dimen"
             android:contentDescription="@string/tool_tip_zoom_in"
             android:tooltipText="@string/tool_tip_zoom_in"
             app:srcCompat="@drawable/ic_baseline_increase_24"
@@ -132,7 +135,8 @@
             android:id="@+id/cb_display_constrain_by_width"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/global_dimen"
+            android:layout_marginEnd="@dimen/global_dimen_0"
+            android:layout_marginRight="@dimen/global_dimen_0"
             android:contentDescription="@string/image_span_constrain_by_width"
             android:tooltipText="@string/image_span_constrain_by_width"
             android:checked="true"
@@ -159,6 +163,7 @@
             android:id="@+id/tv_display_x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/global_dimen"
             android:text="X"
             android:contentDescription="@string/image_span_tool_tip_display_x"
             android:tooltipText="@string/image_span_tool_tip_display_x"
@@ -185,7 +190,8 @@
             android:id="@+id/cb_display_constrain_by_height"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/global_dimen"
+            android:layout_marginStart="@dimen/global_dimen_2"
+            android:layout_marginLeft="@dimen/global_dimen_2"
             android:contentDescription="@string/image_span_constrain_by_width"
             android:tooltipText="@string/image_span_constrain_by_width"
             android:checked="false"
@@ -217,12 +223,41 @@
             app:layout_constraintTop_toTopOf="@+id/iv_preview"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_display_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/global_dimen"
+            android:layout_marginStart="@dimen/global_dimen"
+            android:layout_marginLeft="@dimen/global_dimen"
+            android:layout_marginEnd="@dimen/global_dimen"
+            android:layout_marginRight="@dimen/global_dimen"
+            android:valueFrom="0.0"
+            android:valueTo="4.0"
+            android:stepSize="1.0"
+            android:value="4.0"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_display_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/global_dimen"
+            android:layout_marginLeft="@dimen/global_dimen"
+            android:layout_marginEnd="@dimen/global_dimen"
+            android:layout_marginRight="@dimen/global_dimen"
+            android:valueFrom="0.0"
+            android:valueTo="4.0"
+            android:stepSize="1.0"
+            android:value="4.0"
+            app:layout_constraintTop_toBottomOf="@+id/slider_display_width" />
+
         <RadioGroup
             android:id="@+id/rg_align"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            app:layout_constraintTop_toBottomOf="@+id/tv_display_x">
+            app:layout_constraintTop_toBottomOf="@+id/slider_display_height">
 
             <RadioButton
                 android:id="@+id/rb_align_bottom"
