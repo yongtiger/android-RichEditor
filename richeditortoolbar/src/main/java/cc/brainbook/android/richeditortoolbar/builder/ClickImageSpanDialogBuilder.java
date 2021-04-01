@@ -99,9 +99,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	private ImageView mImageViewPreview;
 
-	private Slider mSliderDisplayWidth;
-	private Slider mSliderDisplayHeight;
-
 	private EditText mEditTextDisplayWidth;
 	private EditText mEditTextDisplayHeight;
 	private boolean enableEditTextDisplayChangedListener;
@@ -110,6 +107,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private ImageButton mImageButtonDisplayRestore;
 	private ImageButton mImageButtonZoomOut;
 	private ImageButton mImageButtonZoomIn;
+	private Slider mSliderDisplayWidth;
+	private Slider mSliderDisplayHeight;
 
     private Button mButtonCrop;
     private Button mButtonDraw;
@@ -140,14 +139,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 											   ToolbarHelper.LegacyLoadImageCallback legacyLoadImageCallback) {
 		mLegacyLoadImageCallback = legacyLoadImageCallback;
 
-		mEditTextUri.setText(uriString);
-
 		mInitialUri = uriString;
 		mInitialSrc = src;
 
 		mImageWidth = width;
 		mImageHeight = height;
 
+		mEditTextUri.setText(uriString);
 		mEditTextSrc.setText(src);
 
 		mVerticalAlignment = align;
@@ -565,16 +563,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						.apply(options)
 
 //						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
-//							.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//						.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
 //						.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
 
 						///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
 						///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
 						///https://github.com/bumptech/glide/issues/3304
-//							.into(new SimpleTarget<Bitmap>() { ... }
+//						.into(new SimpleTarget<Bitmap>() { ... }
 						.into(new CustomTarget<Drawable>() {
 							@Override
-							public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
+							public void onLoadStarted(@Nullable Drawable placeholder) {
 								mImageViewPreview.setImageDrawable(placeholder);
 
 								enableEditTextDisplayChangedListener = false;
@@ -647,45 +645,25 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mSliderDisplayWidth = layout.findViewById(R.id.slider_display_width);
 		mSliderDisplayWidth.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
 			@Override
-			public void onStartTrackingTouch(@NonNull Slider slider) {
-				Log.d("TAG", "SliderDisplayWidth# onStartTrackingTouch: ");
-			}
+			public void onStartTrackingTouch(@NonNull Slider slider) {}
 
 			@Override
 			public void onStopTrackingTouch(@NonNull Slider slider) {
-				Log.d("TAG", "SliderDisplayHeight# onStopTrackingTouch: " + slider.getValue());
-
 				adjustEditTextDisplay(true,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
 						slider.getValue());
 			}
 		});
-		mSliderDisplayWidth.addOnChangeListener(new Slider.OnChangeListener() {
-			@Override
-			public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-				Log.d("TAG", "SliderDisplayWidth# onValueChange: " + value);
-			}
-		});
 		mSliderDisplayHeight = layout.findViewById(R.id.slider_display_height);
 		mSliderDisplayHeight.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
 			@Override
-			public void onStartTrackingTouch(@NonNull Slider slider) {
-				Log.d("TAG", "SliderDisplayHeight# onStartTrackingTouch: ");
-			}
+			public void onStartTrackingTouch(@NonNull Slider slider) {}
 
 			@Override
 			public void onStopTrackingTouch(@NonNull Slider slider) {
-				Log.d("TAG", "SliderDisplayHeight# onStopTrackingTouch: " + slider.getValue());
-
 				adjustEditTextDisplay(false,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
 						slider.getValue());
-			}
-		});
-		mSliderDisplayHeight.addOnChangeListener(new Slider.OnChangeListener() {
-			@Override
-			public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
-				Log.d("TAG", "SliderDisplayHeight# onValueChange: " + value);
 			}
 		});
 
@@ -897,8 +875,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		int width = parseInt(mEditTextDisplayWidth.getText().toString());
 		int height = parseInt(mEditTextDisplayHeight.getText().toString());
 
-		int newWidth = zoomFactor == 0.0F || !isWidth && !isConstrain ? width : (int) (width * (zoomFactor + 1));
-		int newHeight = zoomFactor == 0.0F || isWidth && !isConstrain ? height : (int) (height * (zoomFactor + 1));
+		int newWidth = zoomFactor == 0.0F || !isWidth && !isConstrain ? width : (int) (width * (zoomFactor + 1.0F));
+		int newHeight = zoomFactor == 0.0F || isWidth && !isConstrain ? height : (int) (height * (zoomFactor + 1.0F));
 
 		final Pair<Integer, Integer> pair = isWidth ?
 				adjustWidth(newWidth, newHeight, mImageWidth, mImageHeight, isConstrain) :
@@ -1006,16 +984,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		// create Intent to take a picture and return control to the calling application
 		final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-		///Android R 11 (API 30)开始，只有预装的系统相机应用可以响应action.IMAGE_CAPTURE 等操作，
-		///而且intent.resolveActivity(mContext.getPackageManager())会返回null
-		///https://juejin.im/post/6860370635664261128
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-			// Ensure that there's a camera activity to handle the intent
-			if (intent.resolveActivity(mContext.getPackageManager()) == null) {//////////////////
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_system_camera_not_available, Toast.LENGTH_SHORT).show();
-				return;
-			}
-		}
+		///https://stackoverflow.com/questions/64945660/consider-adding-a-queries-declaration-to-your-manifest-when-calling-this-method
+//		///Android R 11 (API 30)开始，只有预装的系统相机应用可以响应action.IMAGE_CAPTURE 等操作，
+//		///而且intent.resolveActivity(mContext.getPackageManager())会返回null
+//		///https://juejin.im/post/6860370635664261128
+//		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+//			// Ensure that there's a camera activity to handle the intent
+//			if (intent.resolveActivity(mContext.getPackageManager()) == null) {
+//				Toast.makeText(mContext.getApplicationContext(), R.string.message_system_camera_not_available, Toast.LENGTH_SHORT).show();
+//				return;
+//			}
+//		}
 
 		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
 		mCameraResultFile = pair.second;
@@ -1029,10 +1008,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, pair.first);
 
 			///因为没有使用cameraResultUri传递拍照结果图片目录，所以注释掉以下：
-//		///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
-//		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-//		}
+//			///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+//			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//			}
 
 			try {
 				((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
