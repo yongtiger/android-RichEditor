@@ -232,10 +232,10 @@
             android:layout_marginLeft="@dimen/global_dimen"
             android:layout_marginEnd="@dimen/global_dimen"
             android:layout_marginRight="@dimen/global_dimen"
-            android:valueFrom="0.0"
-            android:valueTo="4.0"
-            android:stepSize="1.0"
-            android:value="4.0"
+            android:valueFrom="-1.0"
+            android:valueTo="0.0"
+            android:stepSize="0.25"
+            android:value="0.0"
             app:layout_constraintTop_toBottomOf="@+id/tv_display_x" />
 
         <com.google.android.material.slider.Slider
@@ -246,10 +246,10 @@
             android:layout_marginLeft="@dimen/global_dimen"
             android:layout_marginEnd="@dimen/global_dimen"
             android:layout_marginRight="@dimen/global_dimen"
-            android:valueFrom="0.0"
-            android:valueTo="4.0"
-            android:stepSize="1.0"
-            android:value="4.0"
+            android:valueFrom="-1.0"
+            android:valueTo="0.0"
+            android:stepSize="0.25"
+            android:value="0.0"
             app:layout_constraintTop_toBottomOf="@+id/slider_display_width" />
 
         <RadioGroup

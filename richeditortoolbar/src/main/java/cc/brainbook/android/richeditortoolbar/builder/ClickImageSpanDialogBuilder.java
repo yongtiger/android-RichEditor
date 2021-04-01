@@ -657,7 +657,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				adjustEditTextDisplay(true,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
-						slider.getValue() / 4 - 1F);
+						slider.getValue());
 			}
 		});
 		mSliderDisplayWidth.addOnChangeListener(new Slider.OnChangeListener() {
@@ -679,7 +679,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				adjustEditTextDisplay(false,
 						mCheckBoxDisplayConstrainWidth.isChecked() || mCheckBoxDisplayConstrainHeight.isChecked(),
-						slider.getValue() / 4 - 1F);
+						slider.getValue());
 			}
 		});
 		mSliderDisplayHeight.addOnChangeListener(new Slider.OnChangeListener() {
