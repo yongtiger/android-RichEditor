@@ -80,18 +80,13 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
-
-    /////??????Android设备最大尺寸（目前为3040）
-    public static final int IMAGE_MAX_WIDTH = 5000;
-    public static final int IMAGE_MAX_HEIGHT = 5000;
-    ///ColorDrawable.getWidth()/getHeight()均为-1，此时设置为缺省数值
-    public static final int IMAGE_DEFAULT_WIDTH = 200;
-    public static final int IMAGE_DEFAULT_HEIGHT = 200;
-    ///缩放因子（放大：1+0.5F；缩小：1-0.5F）
-    public static final float IMAGE_ZOOM_FACTOR = 0.5F;
 
     public static final ArrayList<Class<? extends INestParagraphStyle>> sNestParagraphStyleSpanClassList = new ArrayList<Class<? extends INestParagraphStyle>>(){{
         add(DivSpan.class);

@@ -15,7 +15,6 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.util.Pair;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
@@ -55,7 +54,8 @@ import cn.hzw.doodle.DoodleParams;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.IMAGE_ZOOM_FACTOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
@@ -75,6 +75,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final int REQUEST_CODE_PICK_FROM_CAMERA = 6;
 	private static final int REQUEST_CODE_DRAW = 10;
 
+	private static final String ACTION_CROP = "crop";
+	private static final String ACTION_DRAW= "draw";
 
 	private int mMediaType;	///0: image; 1: video; 2: audio
 
@@ -144,6 +146,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		mImageWidth = width;
 		mImageHeight = height;
+		Log.d("TAG-ClickImageSpan", "initial()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
 		mEditTextUri.setText(uriString);
 		mEditTextSrc.setText(src);
@@ -534,10 +537,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				final String src = s.toString();
+				Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# src: " + src);
 
 				///Glide下载图片（使用已经缓存的图片）给imageView
 				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）//////////////////
+				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
 				final RequestOptions options = new RequestOptions();
 
 				///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
@@ -598,9 +602,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							@Override
 							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
 								///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+								Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 								final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
-
 								mImageWidth = pair.first; mImageHeight = pair.second;
+								Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
 								///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
 								mOriginalDrawable = drawable;
@@ -770,7 +775,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "crop", src);
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, ACTION_CROP, src);
 
 				if (pair.first != null && pair.second != null) {
 					startCrop((Activity) mContext, pair.first, pair.second.getAbsolutePath());
@@ -788,7 +793,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, "draw", src);
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, ACTION_DRAW, src);
 
 				if (pair.first != null && pair.second != null) {
 					startDraw((Activity) mContext, pair.first, pair.second.getAbsolutePath());
@@ -826,7 +831,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			 * @return
 			*/
 			/**限制文本长度*/
-			new InputFilter.LengthFilter(4),
+			new InputFilter.LengthFilter(IMAGE_MAX_DISPLAY_DIGITS),
 
 			new InputFilter() {
 				@Override
@@ -928,6 +933,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
 		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
+		Log.d("TAG-ClickImageSpan", "pickFromRecorder()# Uri: " + pair.first);
 
 		if (pair.first != null) {
 			///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
@@ -998,6 +1004,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
 		mCameraResultFile = pair.second;
+		Log.d("TAG-ClickImageSpan", "pickFromCamera()# mCameraResultFile: " + pair.second);
 
 		if (pair.first != null) {
 			///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
@@ -1024,9 +1031,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
     private void startCrop(@NonNull Activity activity, @NonNull Uri source, @NonNull String destination) {
-		///[FIX#NotFoundException: File res/drawable/ucrop_ic_cross.xml from drawable resource ID]
-		///https://github.com/Yalantis/uCrop/issues/529
-		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+		///建议在MyApplication中添加
+//		///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
+//		///[NotFoundException: File res/drawable/ucrop_ic_cross.xml from drawable resource ID]https://github.com/Yalantis/uCrop/issues/529
+//		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		final UCrop uCrop = UCrop.of(source, destination);
 

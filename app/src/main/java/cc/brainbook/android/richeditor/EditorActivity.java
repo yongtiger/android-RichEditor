@@ -85,7 +85,7 @@ public class EditorActivity extends AppCompatActivity {
             @Override
             public Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src) {
                 final Uri source = UriUtil.parseToUri(context, src, context.getPackageName() + PROVIDER_AUTHORITIES);
-                final File file = new File(imageFileDir, action + Util.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+                final File file = new File(imageFileDir, action + "_" + Util.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
                 return new Pair<>(source, file);
             }
 
