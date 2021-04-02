@@ -1175,10 +1175,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
+        final int selectionStart = Selection.getSelectionStart(editable);
+        final int selectionEnd = Selection.getSelectionEnd(editable);
+        if (selectionStart == -1 || selectionEnd == -1) {
+            return;
+        }
+
         final Class<? extends IStyle> clazz = getClassMapKey(view);
         if (IParagraphStyle.class.isAssignableFrom(clazz)) {
-            final int selectionStart = Selection.getSelectionStart(editable);
-            final int selectionEnd = Selection.getSelectionEnd(editable);
 
             ///段落span（带初始化参数）：List
             if (view == mImageViewList) {
@@ -1324,6 +1328,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 listView.findViewById(R.id.ib_decrease).setEnabled(isEnabled);
                 listView.findViewById(R.id.ib_increase).setEnabled(isEnabled);
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
@@ -1367,13 +1374,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
             ///段落span（带参数）：Head
             else if (view == mTextViewHead) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = view.getTag() == null ? -1 : Integer.parseInt((String) view.getTag());;
+                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1381,7 +1391,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             public void onClick(DialogInterface dialog, int which) {
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
-                                if (view.getTag() == null || which != Integer.parseInt((String) view.getTag())) {
+                                if (view.getTag() == null || which != (int) view.getTag()) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1422,6 +1432,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
 
                 return;
             }
@@ -1530,6 +1543,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
                 colorPickerDialogBuilder.build().show();
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
@@ -1586,6 +1602,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
 
                 return;
             }
@@ -1644,6 +1663,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
@@ -1701,6 +1723,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
@@ -1757,6 +1782,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
 
                 return;
             }
@@ -1818,8 +1846,10 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 final String text = (String) view.getTag(R.id.view_tag_url_text);
                 final String url = (String) view.getTag(R.id.view_tag_url_url);
-                clickUrlSpanDialogBuilder.initial(text, url);
-                clickUrlSpanDialogBuilder.build().show();
+                clickUrlSpanDialogBuilder.initial(text, url).build().show();
+
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
 
                 return;
             }
@@ -1910,6 +1940,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
                 mClickImageSpanDialogBuilder.build().show();
 
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange();
+
                 return;
             }
 
@@ -1935,6 +1968,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .show();
 
+            ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+            mRichEditText.disableSelectionChange();
+
             return true;
         }
 
@@ -1951,6 +1987,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mLeadingMarginSpanIndent)
                     .build().show();
+
+            ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+            mRichEditText.disableSelectionChange();
 
             return true;
         }
@@ -1972,6 +2011,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     .initial(mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor)
                     .build().show();
 
+            ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+            mRichEditText.disableSelectionChange();
+
             return true;
         }
 
@@ -1991,6 +2033,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
                     .build().show();
 
+            ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+            mRichEditText.disableSelectionChange();
+
             return true;
         }
 
@@ -2008,6 +2053,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
                     .build().show();
+
+            ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+            mRichEditText.disableSelectionChange();
 
             return true;
         }
@@ -3100,7 +3148,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int level = ((HeadSpan) compareSpan).getLevel();
                 newSpan = new HeadSpan(level);
             } else if (view != null && view.getTag() != null) {
-                final int level = Integer.parseInt((String) view.getTag());
+                final int level = (int) view.getTag();
                 newSpan = new HeadSpan(level);
             }
         }
@@ -3148,7 +3196,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int size = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
                 newSpan = new CustomAbsoluteSizeSpan(size);
             } else if (view != null && view.getTag() != null) {
-                final int size = Integer.parseInt((String) view.getTag());
+                final int size = (int) view.getTag();
                 newSpan = new CustomAbsoluteSizeSpan(size);
             }
         }
@@ -3159,7 +3207,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final float sizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             } else if (view != null && view.getTag() != null) {
-                final float sizeChange = Float.parseFloat((String) view.getTag());
+                final float sizeChange = Float.parseFloat((String) view.getTag());/////////////////////(float) view.getTag()
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             }
         }

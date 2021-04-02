@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.19",   ///v2.1.19#[禁止横屏时软键盘全屏显示]
-                versionCode: 20119
+                versionName: "2.1.20",   ///v2.1.20#[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                versionCode: 20120
         ]
     }
 

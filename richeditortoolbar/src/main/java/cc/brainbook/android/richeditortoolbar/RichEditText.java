@@ -17,7 +17,17 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class RichEditText extends AppCompatEditText {
-    private final boolean enableSelectionChange = true;
+    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+    private boolean enableSelectionChange = true;
+    private int mSelectionStart;
+    private int mSelectionEnd;
+    public void disableSelectionChange() {
+        enableSelectionChange = false;
+        mSelectionStart = getSelectionStart();
+        mSelectionEnd = getSelectionEnd();
+    }
+
+
 
     private OnSelectionChanged mOnSelectionChanged;
     public interface OnSelectionChanged {
@@ -45,8 +55,14 @@ public class RichEditText extends AppCompatEditText {
     protected void onSelectionChanged(int selectionStart, int selectionEnd) {
         super.onSelectionChanged(selectionStart, selectionEnd);
 
-        if (mOnSelectionChanged != null && enableSelectionChange && selectionStart >= 0 && selectionEnd >= 0) {
-            mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
+        if (mOnSelectionChanged != null && selectionStart >= 0 && selectionEnd >= 0) {
+            if (enableSelectionChange) {
+                mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
+            } else {
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                setSelection(mSelectionStart, mSelectionEnd);
+                enableSelectionChange = true;
+            }
         }
     }
 
