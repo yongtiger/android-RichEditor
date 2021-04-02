@@ -80,8 +80,8 @@
     <string name="image_span_camera">Camera</string>
     <string name="image_span_uri_hint">Audio/Video source (local or network address)</string>
     <string name="image_span_src_hint">Image source (local or network address)</string>
-    <string name="image_span_text">[img src="%1$s" width=%2$d height=%3$d align=%4$d]</string>
-    <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$d height=%4$d align=%5$d]</string>
+    <string name="image_span_text">[img src="%1$s" width=%2$s height=%3$s align=%4$d]</string>
+    <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$s height=%4$s align=%5$d]</string>
     <string name="image_span_hint_display_width">Width</string>
     <string name="image_span_hint_display_height">Height</string>
     <string name="image_span_tool_tip_display_x">Setup width and height</string>

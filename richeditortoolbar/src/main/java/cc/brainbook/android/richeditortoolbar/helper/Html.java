@@ -1546,7 +1546,8 @@ class HtmlToSpannedConverter implements ContentHandler {
                 if (isInteger(widthString)) {
                     width = Integer.parseInt(widthString);
                 } else {
-                    width = d.getIntrinsicWidth();
+//                    width = d.getIntrinsicWidth();
+                    width = 0;
                 }
 
                 int height;
@@ -1554,7 +1555,8 @@ class HtmlToSpannedConverter implements ContentHandler {
                 if (isInteger(heightString)) {
                     height = Integer.parseInt(heightString);
                 } else {
-                    height = d.getIntrinsicHeight();
+//                    height = d.getIntrinsicHeight();
+                    height = 0;
                 }
 
 //            d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
@@ -1577,11 +1579,15 @@ class HtmlToSpannedConverter implements ContentHandler {
 //        text.append("\uFFFC");
 //        text.append(String.format(Resources.getSystem().getString(R.string.image_span_text), src, ///Note: Resources.getSystem() can only support system resources!
             if ("img".equals(type)) {
-                text.append(String.format("[img src=\"%1$s\" width=%2$d height=%3$d align=%4$d]", source,
-                        span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
+                text.append(String.format("[img src=\"%1$s\" width=%2$s height=%3$s align=%4$d]", source,
+                        span.getDrawableWidth() == 0 ? "" : String.valueOf(span.getDrawableWidth()),
+                        span.getDrawableHeight() == 0 ? "" : String.valueOf(span.getDrawableHeight()),
+                        span.getVerticalAlignment()));
             } else {
-                text.append(String.format("[media uri=\"%1$s\" src=\"%2$s\" width=%3$d height=%4$d align=%5$d]", uri, source,
-                        span.getDrawableWidth(), span.getDrawableHeight(), span.getVerticalAlignment()));
+                text.append(String.format("[media uri=\"%1$s\" src=\"%2$s\" width=%3$s height=%4$s align=%5$d]", uri, source,
+                        span.getDrawableWidth() == 0 ? "" : String.valueOf(span.getDrawableWidth()),
+                        span.getDrawableHeight() == 0 ? "" : String.valueOf(span.getDrawableHeight()),
+                        span.getVerticalAlignment()));
             }
 
             text.setSpan(span, len, text.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);

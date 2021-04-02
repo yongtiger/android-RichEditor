@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.2.16",   ///v2.1.16#整理全部代码
-                versionCode: 20116
+                versionName: "2.1.17",   ///v2.1.17#CustomImageSpan#width、height为0则不显示
+                versionCode: 20117
         ]
     }
 

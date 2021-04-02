@@ -1844,9 +1844,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 }
 
                                 ///把width\height\align保存到text中
-                                final String text = view == mImageViewImage ?////////////width、height为0则不显示
-                                        String.format(getContext().getResources().getString(R.string.image_span_text), src, width, height, align)
-                                        : String.format(getContext().getResources().getString(R.string.image_span_media_text), uri, src, width, height, align);
+                                final String text = view == mImageViewImage ?
+                                        String.format(getContext().getResources().getString(R.string.image_span_text), src,
+                                                width == 0 ? "" : String.valueOf(width), height == 0 ? "" : String.valueOf(height), align)
+                                        : String.format(getContext().getResources().getString(R.string.image_span_media_text), uri, src,
+                                                width == 0 ? "" : String.valueOf(width), height == 0 ? "" : String.valueOf(height), align);
 
                                 ///保存参数到view tag
                                 view.setTag(R.id.view_tag_image_text, text);
