@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.15",   ///v2.1.15#完成ClickImageSpanDialogBuilder
-                versionCode: 20115
+                versionName: "2.2.16",   ///v2.1.16#整理全部代码
+                versionCode: 20116
         ]
     }
 

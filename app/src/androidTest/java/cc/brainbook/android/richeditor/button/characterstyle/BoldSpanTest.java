@@ -1,8 +1,6 @@
 package cc.brainbook.android.richeditor.button.characterstyle;
 
-import android.os.Parcelable;
 import android.text.Selection;
-import android.view.View;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -12,8 +10,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditor.EditorActivity;
 import cc.brainbook.android.richeditor.R;
@@ -44,7 +40,6 @@ public class BoldSpanTest {
 
 
     private RichEditorToolbar mRichEditorToolbar;
-    private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap;
     private RichEditText mRichEditText;
 
     private String mInitJsonString;
@@ -59,7 +54,6 @@ public class BoldSpanTest {
     @Before
     public void beforeTest() {
         mRichEditorToolbar = mActivityRule.getActivity().findViewById(R.id.rich_editor_tool_bar);
-        mClassMap = mRichEditorToolbar.getClassMap();
         mRichEditText = mRichEditorToolbar.getRichEditText();
     }
 
@@ -98,7 +92,7 @@ public class BoldSpanTest {
         onView(withId(R.id.toolbar_bold)).perform(click());
 
         ///[assert]
-        final String result = ToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        final String result = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         assertEquals(result, expectJsonString);
 
         ///检查是否Selected

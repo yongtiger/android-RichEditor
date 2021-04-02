@@ -1,8 +1,6 @@
 package cc.brainbook.android.richeditor.text.characterstyle;
 
-import android.os.Parcelable;
 import android.text.Selection;
-import android.view.View;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -12,8 +10,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.LinkedHashMap;
 
 import cc.brainbook.android.richeditor.EditorActivity;
 import cc.brainbook.android.richeditor.R;
@@ -43,7 +39,6 @@ public class BoldSpanTest {
 
 
     private RichEditorToolbar mRichEditorToolbar;
-    private LinkedHashMap<Class<? extends Parcelable>, View> mClassMap;
     private RichEditText mRichEditText;
 
     private String mInitJsonString;
@@ -58,7 +53,6 @@ public class BoldSpanTest {
     @Before
     public void beforeTest() {
         mRichEditorToolbar = mActivityRule.getActivity().findViewById(R.id.rich_editor_tool_bar);
-        mClassMap = mRichEditorToolbar.getClassMap();
         mRichEditText = mRichEditorToolbar.getRichEditText();
     }
 
@@ -123,7 +117,7 @@ public class BoldSpanTest {
         }
 
         ///[assert]
-        final String result = ToolbarHelper.toJson(mClassMap, mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        final String result = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
         assertEquals(result, expectJsonString);
 
         ///检查Selection
@@ -147,7 +141,7 @@ public class BoldSpanTest {
     private String mReplaceJsonString9 = "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}";///a[a]a[a]a
     private String mReplaceJsonString10 = "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaa\"}";///[a]a[a]
 
-    
+
     /**
      * {}
      */
@@ -999,7 +993,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1065,7 +1059,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"a\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1131,7 +1125,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"a\"}",
-                1, 1, true);
+                1, 1, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1197,7 +1191,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"aa\"}",
-                1, 1, true);
+                1, 1, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1263,7 +1257,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1396,12 +1390,12 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
-                0, 1, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                0, 1, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -1415,37 +1409,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
                 0, 3, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":5},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaaa\"}",
                 0, 5, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaaa\"}",
                 0, 3, true);
 
     }
@@ -1462,7 +1456,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1528,7 +1522,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"a\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1594,12 +1588,12 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}",
-                0, 1, true);
+                "{\"spans\":[],\"text\":\"a\"}",
+                0, 1, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -1613,37 +1607,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
                 0, 3, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}",
                 0, 5, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaa\"}",
                 0, 3, true);
 
     }
@@ -1660,12 +1654,12 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
-                1, 1, true);
+                1, 1, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
-                1, 2, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaa\"}",
+                1, 2, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -1679,37 +1673,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaaaa\"}",
                 1, 4, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":5},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":6},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaaaaa\"}",
                 1, 6, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaa\"}",
                 1, 4, true);
 
     }
@@ -1726,7 +1720,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
-                1, 1, true);
+                1, 1, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -1792,12 +1786,12 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"a\"}",
-                1, 1, true);
+                1, 1, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aa\"}",
-                1, 2, true);
+                "{\"spans\":[],\"text\":\"aa\"}",
+                1, 2, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -1811,37 +1805,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaa\"}",
                 1, 4, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaa\"}",
                 1, 6, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaa\"}",
                 1, 4, true);
 
     }
@@ -1862,8 +1856,8 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
-                2, 3, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaa\"}",
+                2, 3, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -1877,37 +1871,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaa\"}",
                 2, 4, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
                 2, 4, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":5},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaaaa\"}",
                 2, 5, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaaaaa\"}",
                 2, 6, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":6},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaaaaa\"}",
                 2, 6, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":9,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":9,\"spanFlags\":34,\"spanStart\":7},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaaaaaa\"}",
                 2, 7, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaaaa\"}",
                 2, 5, true);
 
     }
@@ -2060,8 +2054,8 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
-                2, 3, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
+                2, 3, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -2075,37 +2069,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaa\"}",
                 2, 4, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
                 2, 4, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}",
                 2, 5, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaa\"}",
                 2, 6, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaa\"}",
                 2, 6, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaaa\"}",
                 2, 7, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaa\"}",
                 2, 5, true);
 
     }
@@ -2122,7 +2116,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
-                3, 3, false);
+                3, 3, true);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -2324,8 +2318,8 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
-                3, 4, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaa\"}",
+                3, 4, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -2339,37 +2333,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaa\"}",
                 3, 5, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaa\"}",
                 3, 5, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaa\"}",
                 3, 6, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":6}],\"text\":\"aaaaaaa\"}",
                 3, 7, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaaa\"}",
                 3, 7, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":8,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":6}],\"text\":\"aaaaaaaa\"}",
                 3, 8, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5}],\"text\":\"aaaaaa\"}",
                 3, 6, true);
 
     }
@@ -2519,7 +2513,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -2577,7 +2571,7 @@ public class BoldSpanTest {
      * {[a]\na}
      */
     @Test
-        public void testCase103() {
+    public void testCase103() {
         ///[init]
         mInitJsonString = "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\\na\"}";
         mInitSelectionStart = 0; mInitSelectionEnd = 3; mExpectInitSelected = true;
@@ -2585,12 +2579,12 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}",
-                0, 1, true);
+                "{\"spans\":[],\"text\":\"a\"}",
+                0, 1, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -2604,37 +2598,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
                 0, 2, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1}],\"text\":\"aaa\"}",
                 0, 3, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaa\"}",
                 0, 4, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":1},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}",
                 0, 5, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaa\"}",
                 0, 3, true);
 
     }
@@ -2651,7 +2645,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[],\"text\":\"\"}",
-                0, 0, true);
+                0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
@@ -2721,8 +2715,8 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaa\"}",
-                1, 2, true);
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaa\"}",
+                1, 2, false);
 
         /* ----------------------- replace with:{\n} ------------------------ */
         check(mReplaceJsonString2,
@@ -2736,37 +2730,37 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:a[a] ------------------------ */
         check(mReplaceJsonString4,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:[a]a ------------------------ */
         check(mReplaceJsonString5,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaa\"}",
                 1, 3, true);
 
         /* ----------------------- replace with:a[a]a ------------------------ */
         check(mReplaceJsonString6,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2}],\"text\":\"aaaaa\"}",
                 1, 4, true);
 
         /* ----------------------- replace with:a[a]a[a] ------------------------ */
         check(mReplaceJsonString7,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:[a]a[a]a ------------------------ */
         check(mReplaceJsonString8,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":6,\"spanFlags\":34,\"spanStart\":5},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":4,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaaa\"}",
                 1, 5, true);
 
         /* ----------------------- replace with:a[a]a[a]a ------------------------ */
         check(mReplaceJsonString9,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":7,\"spanFlags\":34,\"spanStart\":6},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":3,\"spanFlags\":34,\"spanStart\":2},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":4}],\"text\":\"aaaaaaa\"}",
                 1, 6, true);
 
         /* ----------------------- replace with:[a]a[a] ------------------------ */
         check(mReplaceJsonString10,
-                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aaaaa\"}",
+                "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0},{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":5,\"spanFlags\":34,\"spanStart\":3}],\"text\":\"aaaaa\"}",
                 1, 4, true);
 
     }
@@ -2915,7 +2909,7 @@ public class BoldSpanTest {
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":2,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"aa\"}",
-                1, 1, false);
+                1, 1, true);
 
         /* ----------------------- replace with:{a} ------------------------ */
         check(mReplaceJsonString1,

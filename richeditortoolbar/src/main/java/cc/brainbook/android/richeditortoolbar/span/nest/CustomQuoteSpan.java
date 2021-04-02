@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
 import androidx.annotation.ColorInt;
@@ -15,25 +14,13 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
+
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
 public class CustomQuoteSpan implements LeadingMarginSpan, INestParagraphStyle {
-    /**
-     * Default color for the quote stripe.
-     */
-    @ColorInt
-    public static final int STANDARD_COLOR = Color.GRAY;//////////////////
-
-    /**
-     * Default stripe width in pixels.
-     */
-    public static final int STANDARD_STRIPE_WIDTH_PX = 16;//////////////////
-
-    /**
-     * Default gap width in pixels.
-     */
-    public static final int STANDARD_GAP_WIDTH_PX = 40;//////////////////
-
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
@@ -59,10 +46,10 @@ public class CustomQuoteSpan implements LeadingMarginSpan, INestParagraphStyle {
 
 
     public CustomQuoteSpan() {
-        this(1, STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
+        this(1, CUSTOM_QUOTE_SPAN_STANDARD_COLOR, CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX, CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX);
     }
     public CustomQuoteSpan(int nestingLevel) {
-        this(nestingLevel, STANDARD_COLOR, STANDARD_STRIPE_WIDTH_PX, STANDARD_GAP_WIDTH_PX);
+        this(nestingLevel, CUSTOM_QUOTE_SPAN_STANDARD_COLOR, CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX, CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX);
     }
     public CustomQuoteSpan(int nestingLevel, @ColorInt int color, @IntRange(from = 0) int stripeWidth,
                            @IntRange(from = 0) int gapWidth) {

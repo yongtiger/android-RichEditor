@@ -80,10 +80,12 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_HEIGHT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_HEIGHT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
@@ -177,7 +179,7 @@ public abstract class ToolbarHelper {
                 else if (clazz == HeadSpan.class) {
                     final int level = ((HeadSpan) span).getLevel();
                     view.setTag(level);
-                    final String headText = HeadSpan.HEADING_LABELS[level];
+                    final String headText = HEAD_SPAN_HEADING_LABELS[level];
                     if (!headText.equals(((TextView) view).getText().toString())) {
                         ((TextView) view).setText(headText);
                     }
@@ -992,7 +994,7 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new CustomImageSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new CustomImageSpan(getPlaceHolderDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         } else if ("VideoSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -1006,7 +1008,7 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new VideoSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new VideoSpan(getPlaceHolderDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         } else if ("AudioSpan".equals(spanClassName)) {
             jsonElement = spanJsonObject.get("mUri");
             final String uri = jsonElement == null ? "" : jsonElement.getAsString();
@@ -1020,17 +1022,15 @@ public abstract class ToolbarHelper {
             jsonElement = spanJsonObject.get("mDrawableHeight");
             final int drawableHeight = jsonElement == null ? 0 : jsonElement.getAsInt();
 
-            return new AudioSpan(getDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
+            return new AudioSpan(getPlaceHolderDrawable(drawableWidth, drawableHeight), uri, source, verticalAlignment);
         }
 
         return null;
     }
 
-    @DrawableRes
-    public static int sPlaceHolderDrawable = android.R.drawable.picture_frame;/////////////////
     @NonNull
-    private static Drawable getDrawable(int drawableWidth, int drawableHeight) {/////////////////
-        final Drawable d = ResourcesCompat.getDrawable(Resources.getSystem(), sPlaceHolderDrawable, null);
+    private static Drawable getPlaceHolderDrawable(int drawableWidth, int drawableHeight) {
+        final Drawable d = ResourcesCompat.getDrawable(Resources.getSystem(), PLACE_HOLDER_DRAWABLE, null);
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
         return d;

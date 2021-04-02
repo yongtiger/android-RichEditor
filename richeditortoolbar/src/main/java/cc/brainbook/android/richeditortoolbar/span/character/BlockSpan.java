@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.span.character;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -12,10 +11,10 @@ import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 
-public class BlockSpan extends ReplacementSpan implements ICharacterStyle {
-    private static final int COLOR = Color.GRAY;//////////////////
-    private static final float RADIUS = 10;//////////////////
+import static cc.brainbook.android.richeditortoolbar.config.Config.BLOCK_SPAN_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.BLOCK_SPAN_RADIUS;
 
+public class BlockSpan extends ReplacementSpan implements ICharacterStyle {
 
     private final Drawable drawable;
     private float padding;
@@ -23,8 +22,8 @@ public class BlockSpan extends ReplacementSpan implements ICharacterStyle {
 
     public BlockSpan() {
         GradientDrawable d = new GradientDrawable();
-        d.setColor(COLOR);
-        d.setCornerRadius(RADIUS);
+        d.setColor(BLOCK_SPAN_COLOR);
+        d.setCornerRadius(BLOCK_SPAN_RADIUS);
         drawable = d;
     }
 

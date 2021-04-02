@@ -14,11 +14,11 @@ import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
+
 ///[UPGRADE#LineDividerSpan]
 public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, IParagraphStyle {
-    public static final int DEFAULT_MARGIN_TOP = 0;
-    public static final int DEFAULT_MARGIN_BOTTOM = 0;
-
 
     ///[implements LineHeightSpan]
     @Expose
@@ -32,7 +32,7 @@ public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, IPar
 
 
     public LineDividerSpan() {
-        this(DEFAULT_MARGIN_TOP, DEFAULT_MARGIN_BOTTOM);
+        this(LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP, LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM);
     }
 
     public LineDividerSpan(int marginTop, int marginBottom) {

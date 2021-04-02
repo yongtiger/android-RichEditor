@@ -1,12 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Parcel;
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import android.text.style.LineBackgroundSpan;
@@ -15,10 +13,10 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.PRE_SPAN_BACKGROUND_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.PRE_SPAN_PADDING;
+
 public class PreSpan implements LineBackgroundSpan, INestParagraphStyle {
-    @ColorInt
-    public static final int BACKGROUND_COLOR = Color.GRAY;//////////////////
-    public static final int PADDING = 0;
 
     private Rect mBgRect;
 
@@ -50,11 +48,11 @@ public class PreSpan implements LineBackgroundSpan, INestParagraphStyle {
         final int paintColor = p.getColor();
 
         ///Draw background
-        mBgRect.set(left - PADDING,
-                top - (lnum == 0 ? PADDING / 2 : - (PADDING / 2)),
-                right + PADDING,
-                bottom + PADDING / 2);
-        p.setColor(BACKGROUND_COLOR);
+        mBgRect.set(left - PRE_SPAN_PADDING,
+                top - (lnum == 0 ? PRE_SPAN_PADDING / 2 : - (PRE_SPAN_PADDING / 2)),
+                right + PRE_SPAN_PADDING,
+                bottom + PRE_SPAN_PADDING / 2);
+        p.setColor(PRE_SPAN_BACKGROUND_COLOR);
         c.drawRect(mBgRect, p);
 
         ///restore paint color

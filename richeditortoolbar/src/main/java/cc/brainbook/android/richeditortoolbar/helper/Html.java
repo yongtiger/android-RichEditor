@@ -80,6 +80,7 @@ import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.AppUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_DECIMAL;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_LATIN;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.LIST_TYPE_ORDERED_LOWER_ROMAN;
@@ -1537,7 +1538,7 @@ class HtmlToSpannedConverter implements ContentHandler {
                     ///[UPGRADE#android.text.Html]Resources.getSystem() can only support system resources!
 //                    getDrawable(com.android.internal.R.drawable.unknown_image);
 //                    getDrawable(android.R.drawable.gallery_thumb);
-            d = ResourcesCompat.getDrawable(Resources.getSystem(), android.R.drawable.picture_frame, null);///////////////////
+            d = ResourcesCompat.getDrawable(Resources.getSystem(), PLACE_HOLDER_DRAWABLE, null);    ///PLACE_HOLDER_DRAWABLE = android.R.drawable.picture_frame
 
             if (d != null) {
                 int width;

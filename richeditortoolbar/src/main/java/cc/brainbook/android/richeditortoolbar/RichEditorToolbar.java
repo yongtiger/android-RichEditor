@@ -18,6 +18,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import android.os.Build;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
@@ -95,10 +96,20 @@ import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
-import cc.brainbook.android.richeditortoolbar.util.Util;
 
 import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_LEADING_MARGIN_SPAN_DEFAULT_INDENT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
+import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
+import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_SPAN_DEFAULT_INDENT;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.createChildrenListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.removeChildrenListItemSpans;
@@ -169,7 +180,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ---------------- ///段落span（带初始化参数）：LeadingMargin ---------------- */
     private ImageView mImageViewLeadingMargin;
     private boolean enableLeadingMargin;
-    private int mLeadingMarginSpanIndent = CustomLeadingMarginSpan.DEFAULT_INDENT;
+    private int mLeadingMarginSpanIndent = CUSTOM_LEADING_MARGIN_SPAN_DEFAULT_INDENT;
 
     /* ---------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan ---------------- */
     private ImageView mImageViewAlignNormal;
@@ -182,17 +193,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ---------------- ///段落span（带初始化参数）：List ---------------- */
     private ImageView mImageViewList;
     private boolean enableList;
-    private int mIndicatorMargin = ListSpan.DEFAULT_INDENT;
-    private int mIndicatorWidth = ListItemSpan.DEFAULT_INDICATOR_WIDTH;
-    private int mIndicatorGapWidth = ListItemSpan.DEFAULT_INDICATOR_GAP_WIDTH;
-    private @ColorInt int mIndicatorColor = ListItemSpan.DEFAULT_INDICATOR_COLOR;
+    private int mIndicatorMargin = LIST_SPAN_DEFAULT_INDENT;
+    private int mIndicatorWidth = LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
+    private int mIndicatorGapWidth = LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
+    private @ColorInt int mIndicatorColor = LIST_ITEM_SPAN_DEFAULT_INDICATOR_COLOR;
 
     /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
     private ImageView mImageViewQuote;
     private boolean enableQuote;
-    private @ColorInt int mQuoteSpanColor = CustomQuoteSpan.STANDARD_COLOR;
-    private int mQuoteSpanStripWidth = CustomQuoteSpan.STANDARD_STRIPE_WIDTH_PX;
-    private int mQuoteSpanGapWidth = CustomQuoteSpan.STANDARD_GAP_WIDTH_PX;
+    private @ColorInt int mQuoteSpanColor = CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
+    private int mQuoteSpanStripWidth = CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
+    private int mQuoteSpanGapWidth = CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
 
     /* -------------- ///字符span（带参数）：Pre --------------- */
     private ImageView mImageViewPre;
@@ -205,8 +216,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
     /* ---------------- ///段落span：LineDivider ---------------- */
     private ImageView mImageViewLineDivider;
     private boolean enableLineDivider;
-    private int mLineDividerSpanMarginTop = LineDividerSpan.DEFAULT_MARGIN_TOP;
-    private int mLineDividerSpanMarginBottom = LineDividerSpan.DEFAULT_MARGIN_BOTTOM;
+    private int mLineDividerSpanMarginTop = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
+    private int mLineDividerSpanMarginBottom = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 
     /* ---------------- ///字符span：Bold、Italic ---------------- */
     private ImageView mImageViewBold;
@@ -1382,7 +1393,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     ///改变selection的span
                                     applyParagraphStyleSpans(view, editable);
 
-                                    ((TextView) view).setText(HeadSpan.HEADING_LABELS[which]);
+                                    ((TextView) view).setText(HEAD_SPAN_HEADING_LABELS[which]);
                                 }
 
                                 dialog.dismiss();
@@ -2129,7 +2140,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             return;
         }
 
-        if (DEBUG) Log.d("TAG", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
+        if (DEBUG) Log.d("TAG-RichEditorToolbar", "============= selectionChanged ============" + selectionStart + ", " + selectionEnd);
 
         for (Class<? extends IStyle> clazz : mClassMap.keySet()) {
             if (IParagraphStyle.class.isAssignableFrom(clazz)) {
@@ -2139,10 +2150,30 @@ public class RichEditorToolbar extends FlexboxLayout implements
             }
 
             ///test
-            if (DEBUG) Util.testOutput(editable, clazz);
+            if (DEBUG) testOutput(editable, clazz);
         }
 
-        if (DEBUG) Log.d("TAG", ToolbarHelper.toJson(editable, 0, editable.length(), true));
+        if (DEBUG) Log.d("TAG-RichEditorToolbar", ToolbarHelper.toJson(editable, 0, editable.length(), true));
+    }
+
+    private static <T> void testOutput(@NonNull Spanned spanned, Class<T> clazz) {
+        final T[] spans = spanned.getSpans(0, spanned.length(), clazz);
+        for (T span : spans) {
+            ///忽略getSpans()获取的子类（不是clazz本身）
+            if (span.getClass() != clazz) {
+                continue;
+            }
+
+            final int spanStart = spanned.getSpanStart(span);
+            final int spanEnd = spanned.getSpanEnd(span);
+
+            if (span instanceof INestParagraphStyle) {
+                if (DEBUG) Log.d("TAG-RichEditorToolbar", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd
+                        + "  nest = " + ((INestParagraphStyle) span).getNestingLevel());
+            } else  {
+                if (DEBUG) Log.d("TAG-RichEditorToolbar", span.getClass().getSimpleName() + ": " + spanStart + ", " + spanEnd);
+            }
+        }
     }
 
 
@@ -2807,7 +2838,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int viewTagWidth = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
                 final int viewTagHeight = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int viewTagAlign = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
-                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);//////////////////
+                final String compareText = String.valueOf(editable.toString().toCharArray(), start, end - start);
                 if (isApply && !TextUtils.isEmpty(viewTagText) && !compareText.equals(viewTagText)) {
                     ///忽略TextWatcher的UndoRedo
                     isSkipUndoRedo = true;
@@ -2985,7 +3016,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         }
     }
 
-    ///注意：当右缩+new时需要compareSpan//////////////////
+    ///注意：当右缩+new时需要compareSpan
     private IStyle createNewSpan(View view, Class<?  extends IStyle> clazz, Editable editable, int start, int end, IStyle compareSpan, IStyle parentSpan) {
         ///添加新span
         IStyle newSpan = null;

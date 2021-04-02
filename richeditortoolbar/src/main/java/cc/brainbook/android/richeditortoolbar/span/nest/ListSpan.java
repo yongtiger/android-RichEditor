@@ -13,9 +13,9 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
-public class ListSpan implements LeadingMarginSpan, INestParagraphStyle {
-    @IntRange(from = 0) public static final int DEFAULT_INDENT = 160;//////////////////
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_SPAN_DEFAULT_INDENT;
 
+public class ListSpan implements LeadingMarginSpan, INestParagraphStyle {
 
     ///[ListType]
     @Expose
@@ -46,13 +46,13 @@ public class ListSpan implements LeadingMarginSpan, INestParagraphStyle {
 
     public ListSpan(int nestingLevel,
                     int listType) {
-        this(nestingLevel, listType, 0, false, DEFAULT_INDENT);
+        this(nestingLevel, listType, 0, false, LIST_SPAN_DEFAULT_INDENT);
     }
     public ListSpan(int nestingLevel,
                     int listType,
                     @IntRange(from = 0)int start,
                     boolean isReversed) {
-        this(nestingLevel, listType, start, isReversed, DEFAULT_INDENT);
+        this(nestingLevel, listType, start, isReversed, LIST_SPAN_DEFAULT_INDENT);
     }
     public ListSpan(int nestingLevel,
                     int listType,

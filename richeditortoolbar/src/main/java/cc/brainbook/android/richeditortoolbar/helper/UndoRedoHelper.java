@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
@@ -77,75 +78,75 @@ public class UndoRedoHelper {
         return mHistory.mSavedPosition == mHistory.mPosition;
     }
 
-    ///Label//////////////////////////////////i18n
+    ///Label
     public String getLabel(int id) {
         switch (id) {
             case INIT_ACTION:
-                return "init";
+                return mContext.getString(R.string.undo_redo_helper_label_init);
             case CHANGE_TEXT_ACTION:
-                return "change text";
+                return mContext.getString(R.string.undo_redo_helper_label_change_text);
             case RESTORE_DRAFT_ACTION:
-                return "restore draft";
+                return mContext.getString(R.string.undo_redo_helper_label_restore_draft);
             case CLEAR_STYLES_ACTION:
-                return "clear styles";
+                return mContext.getString(R.string.undo_redo_helper_label_clear_styles);
 
             case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
-                return "change align normal span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_align_normal_span);
             case CHANGE_ALIGN_CENTER_SPAN_ACTION:
-                return "change align center span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_align_center_span);
             case CHANGE_ALIGN_OPPOSITE_SPAN_ACTION:
-                return "change align opposite span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_align_opposite_span);
             case CHANGE_LEADING_MARGIN_SPAN_ACTION:
-                return "change leading margin span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_leading_margin_span);
             case CHANGE_QUOTE_SPAN_ACTION:
-                return "change quote span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_quote_span);
             case CHANGE_LIST_SPAN_ACTION:
-                return "change list span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_list_span);
             case CHANGE_HEAD_SPAN_ACTION:
-                return "change head span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_head_span);
             case CHANGE_PRE_SPAN_ACTION:
-                return "change pre span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_pre_span);
             case CHANGE_LINE_DIVIDER_SPAN_ACTION:
-                return "change line divider span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_line_divider_span);
 
             case CHANGE_BOLD_SPAN_ACTION:
-                return "change bold span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_bold_span);
             case CHANGE_ITALIC_SPAN_ACTION:
-                return "change italic span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_italic_span);
             case CHANGE_UNDERLINE_SPAN_ACTION:
-                return "change underline span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_underline_span);
             case CHANGE_STRIKE_THROUGH_SPAN_ACTION:
-                return "change strike through span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_strike_through_span);
             case CHANGE_SUBSCRIPT_SPAN_ACTION:
-                return "change subscript span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_subscript_span);
             case CHANGE_SUPERSCRIPT_SPAN_ACTION:
-                return "change superscript span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_superscript_span);
             case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
-                return "change foreground color span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_foreground_color_span);
             case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:
-                return "change background color span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_background_color_span);
             case CHANGE_FONT_FAMILY_SPAN_ACTION:
-                return "change font family span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_font_family_span);
             case CHANGE_ABSOLUTE_SIZE_SPAN_ACTION:
-                return "change absolute size span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_absolute_size_span);
             case CHANGE_RELATIVE_SIZE_SPAN_ACTION:
-                return "change relative size span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_relative_size_span);
             case CHANGE_SCALE_X_SPAN_ACTION:
-                return "change scale x span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_scale_x_span);
             case CHANGE_CODE_SPAN_ACTION:
-                return "change code span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_code_span);
             case CHANGE_BLOCK_SPAN_ACTION:
-                return "change block span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_block_span);
             case CHANGE_BORDER_SPAN_ACTION:
-                return "change border span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_border_span);
             case CHANGE_URL_SPAN_ACTION:
-                return "change url span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_url_span);
             case CHANGE_IMAGE_SPAN_ACTION:
-                return "change image span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_image_span);
             case CHANGE_VIDEO_SPAN_ACTION:
-                return "change video span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_video_span);
             case CHANGE_AUDIO_SPAN_ACTION:
-                return "change audio span";
+                return mContext.getString(R.string.undo_redo_helper_label_change_audio_span);
 
             default:
                 return null;
@@ -210,8 +211,8 @@ public class UndoRedoHelper {
         }
 
         replace(currentAction, currentAction.mAfter, currentAction.mBefore);
-//////////////////////////////////i18n
-        Toast.makeText(mContext.getApplicationContext(), "Undo: " + getLabel(currentAction.getId()), Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(mContext.getApplicationContext(), String.format(mContext.getString(R.string.undo_redo_helper_undo), getLabel(currentAction.getId())), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -225,8 +226,8 @@ public class UndoRedoHelper {
         }
 
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
-//////////////////////////////////i18n
-        Toast.makeText(mContext.getApplicationContext(), "Redo: " + getLabel(nextAction.getId()), Toast.LENGTH_SHORT).show();
+
+        Toast.makeText(mContext.getApplicationContext(), String.format(mContext.getString(R.string.undo_redo_helper_redo), getLabel(nextAction.getId())), Toast.LENGTH_SHORT).show();
     }
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {

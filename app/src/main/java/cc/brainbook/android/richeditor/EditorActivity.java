@@ -29,7 +29,7 @@ public class EditorActivity extends AppCompatActivity {
 
     private static final String IMAGE_FILE_SUFFIX = ".jpg";
     private static final String VIDEO_FILE_SUFFIX = ".mp4";
-    private static final String AUDIO_FILE_SUFFIX = ".3gp";//////////////////
+    private static final String AUDIO_FILE_SUFFIX = ".3gp";
 
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;

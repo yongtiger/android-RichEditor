@@ -1,7 +1,6 @@
 package cc.brainbook.android.richeditortoolbar.span.nest;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Parcel;
 import androidx.annotation.ColorInt;
@@ -16,14 +15,13 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_COLOR;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIndicatorText;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
 public class ListItemSpan implements LeadingMarginSpan, INestParagraphStyle {
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_WIDTH = 20;//////////////////
-    @IntRange(from = 0) public static final int DEFAULT_INDICATOR_GAP_WIDTH = 40;//////////////////
-    @ColorInt public static final int DEFAULT_INDICATOR_COLOR = Color.parseColor("#DDDDDD");//////////////////
-
 
     @Expose
     private ListSpan mListSpan;
@@ -57,7 +55,9 @@ public class ListItemSpan implements LeadingMarginSpan, INestParagraphStyle {
 
     public ListItemSpan(ListSpan listSpan,
                         @IntRange(from = 0) int index) {
-        this(listSpan, index, DEFAULT_INDICATOR_WIDTH, DEFAULT_INDICATOR_GAP_WIDTH, DEFAULT_INDICATOR_COLOR, true);
+        this(listSpan, index, LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH,
+                LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH,
+                LIST_ITEM_SPAN_DEFAULT_INDICATOR_COLOR, true);
     }
     public ListItemSpan(ListSpan listSpan,
                         @IntRange(from = 0) int index,

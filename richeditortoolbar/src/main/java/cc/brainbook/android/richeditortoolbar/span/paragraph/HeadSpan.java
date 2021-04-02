@@ -13,17 +13,12 @@ import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_DEFAULT_MARGIN_BOTTOM;
+import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_DEFAULT_MARGIN_TOP;
+import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_SIZES;
+
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\HeadSpan.java
 public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParagraphStyle {
-    ///参考Html.HEADING_SIZES
-    private static final float[] HEADING_SIZES = {
-            1.5f, 1.4f, 1.3f, 1.2f, 1.1f, 1f,
-    };
-    public static final String[] HEADING_LABELS = {"H1", "H2", "H3", "H4", "H5", "H6"};
-
-    private static final int[] DEFAULT_MARGIN_TOP = {60, 50, 40, 30, 20, 10};//////////////////
-    private static final int[] DEFAULT_MARGIN_BOTTOM = {60, 50, 40, 30, 20, 10};//////////////////
-
 
     @Expose
     private final int mLevel;
@@ -33,11 +28,11 @@ public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParag
 
 
     public HeadSpan(int level) {
-        this(level, DEFAULT_MARGIN_TOP[level], DEFAULT_MARGIN_BOTTOM[level]);
+        this(level, HEAD_SPAN_DEFAULT_MARGIN_TOP[level], HEAD_SPAN_DEFAULT_MARGIN_BOTTOM[level]);
     }
 
     public HeadSpan(int level, int marginTop, int marginBottom) {
-        super(HEADING_SIZES[level]);
+        super(HEAD_SPAN_HEADING_SIZES[level]);
         mLevel = level;
         mMarginTop = marginTop;
         mMarginBottom = marginBottom;

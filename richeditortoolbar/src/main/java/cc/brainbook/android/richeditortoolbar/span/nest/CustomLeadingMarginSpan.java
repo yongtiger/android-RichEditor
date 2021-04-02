@@ -13,8 +13,6 @@ import com.google.gson.annotations.Expose;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 
 public class CustomLeadingMarginSpan implements LeadingMarginSpan, INestParagraphStyle {
-    public static final int DEFAULT_INDENT = 40;//////////////////
-
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
