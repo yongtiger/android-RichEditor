@@ -258,8 +258,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	public void doPositiveAction(@NonNull OnClickListener onClickListener, DialogInterface dialog) {
-		final String uri = mEditTextUri.getText().toString();
-		final String src = mEditTextSrc.getText().toString();
+		final String uri = mEditTextUri.getText() == null ? "" : mEditTextUri.getText().toString();	///[FIX]
+		final String src = mEditTextSrc.getText() == null ? "" : mEditTextSrc.getText().toString();	///[FIX]
 
 		int width = parseInt(mEditTextDisplayWidth.getText().toString());
 		if (width < 0) {
@@ -877,6 +877,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	private void adjustEditTextDisplay(boolean isWidth, boolean isConstrain, float zoomFactor) {
+		///[FIX]
+		if (mEditTextDisplayWidth.getText() == null || mEditTextDisplayHeight.getText() == null) {
+			return;
+		}
+
 		int width = parseInt(mEditTextDisplayWidth.getText().toString());
 		int height = parseInt(mEditTextDisplayHeight.getText().toString());
 

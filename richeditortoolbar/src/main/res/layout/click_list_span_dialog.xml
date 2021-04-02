@@ -13,11 +13,11 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/ib_zoom_out"
+            android:id="@+id/ib_decrease"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_zoom_in"
-            android:tooltipText="@string/tool_tip_zoom_out"
+            android:contentDescription="@string/tool_tip_decrease"
+            android:tooltipText="@string/tool_tip_decrease"
             app:srcCompat="@drawable/ic_baseline_decrease_24" />
 
         <EditText
@@ -33,11 +33,11 @@
             android:singleLine="true" />
 
         <ImageButton
-            android:id="@+id/ib_zoom_in"
+            android:id="@+id/ib_increase"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_zoom_in"
-            android:tooltipText="@string/tool_tip_zoom_in"
+            android:contentDescription="@string/tool_tip_increase"
+            android:tooltipText="@string/tool_tip_increase"
             app:srcCompat="@drawable/ic_baseline_increase_24" />
 
     </LinearLayout>

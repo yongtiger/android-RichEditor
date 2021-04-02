@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import java.io.File;
@@ -37,6 +38,7 @@ public class EditorActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("TAG", "onCreate: =========================");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
@@ -163,22 +165,32 @@ public class EditorActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        Log.d("TAG", "onStart: =========================");
         super.onStart();
     }
 
     @Override
     protected void onResume() {
+        Log.d("TAG", "onResume: =========================");
         super.onResume();
     }
 
     @Override
     protected void onPause() {
+        Log.d("TAG", "onPause: =========================");
         super.onPause();
     }
 
     @Override
     protected void onStop() {
+        Log.d("TAG", "onStop: =========================");
         super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("TAG", "onDestroy: =========================");
+        super.onDestroy();
     }
 
     @Override

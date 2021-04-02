@@ -1202,8 +1202,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 assert switchIsReversed != null;
                                 switchIsReversed.setEnabled(isListTypeOrdered(listType));
 
-                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_zoom_out).setEnabled(isListTypeOrdered(listType));
-                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_zoom_in).setEnabled(isListTypeOrdered(listType));
+                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_decrease).setEnabled(isListTypeOrdered(listType));
+                                ((AlertDialog) dialog).getListView().findViewById(R.id.ib_increase).setEnabled(isListTypeOrdered(listType));
                             }
                         })
                         ///清除样式
@@ -1273,7 +1273,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     listView.setAdapter(listView.getAdapter());
                 }
 
-                listView.findViewById(R.id.ib_zoom_out).setOnClickListener(new OnClickListener() {
+                listView.findViewById(R.id.ib_decrease).setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final EditText editTextStart = listSpanAlertDialog.findViewById(R.id.et_start);
@@ -1284,7 +1284,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         }
                     }
                 });
-                listView.findViewById(R.id.ib_zoom_in).setOnClickListener(new OnClickListener() {
+                listView.findViewById(R.id.ib_increase).setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         final EditText editTextStart = listSpanAlertDialog.findViewById(R.id.et_start);
@@ -1321,8 +1321,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final boolean isReversed = view.getTag(R.id.view_tag_list_is_reversed) != null && (boolean) view.getTag(R.id.view_tag_list_is_reversed);
                 switchIsReversed.setChecked(isReversed);
 
-                listView.findViewById(R.id.ib_zoom_out).setEnabled(isEnabled);
-                listView.findViewById(R.id.ib_zoom_in).setEnabled(isEnabled);
+                listView.findViewById(R.id.ib_decrease).setEnabled(isEnabled);
+                listView.findViewById(R.id.ib_increase).setEnabled(isEnabled);
 
                 return;
             }
