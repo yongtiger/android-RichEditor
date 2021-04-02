@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.regex.Pattern;
@@ -16,6 +17,10 @@ public abstract class StringUtil {
         final int start = index + paramStart.length();
         final int end = s.indexOf(paramEnd, index);
         return s.substring(start, end);
+    }
+
+    public static boolean isUrl(@NonNull String src) {
+        return src.startsWith("http://") || src.startsWith("https://");
     }
 
     public static boolean isInteger(String str) {

@@ -96,6 +96,7 @@ import cc.brainbook.android.richeditortoolbar.util.FileUtil;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.PrefsUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
+import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.BuildConfig.DEBUG;
@@ -1769,12 +1770,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             public void onClick(DialogInterface dialog, String text, String url) {
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
-                                if (text.length() == 0 && url.length() == 0) {  //////??????url正则表达式
+                                if (text.length() == 0 && url.length() == 0) {
                                     return;
                                 }
                                 final ArrayList<CustomURLSpan> selectedSpans = SpanUtil.getSelectedSpans(CustomURLSpan.class, mRichEditText.getText());
-                                if ((text.length() == 0 || url.length() == 0) && selectedSpans.size() == 0) {  //////??????url正则表达式
+                                if ((text.length() == 0 || url.length() == 0) && selectedSpans.size() == 0) {
                                     return;
+                                }
+
+                                if (!StringUtil.isUrl(url)) {
+                                    url = "http://" + url;
                                 }
 
                                 ///如果view未选中则选中view

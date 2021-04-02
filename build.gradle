@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.17",   ///v2.1.17#CustomImageSpan#width、height为0则不显示
-                versionCode: 20117
+                versionName: "2.1.18",   ///v2.1.18#ClickURLSpanDialogBuilder#if (!StringUtil.isUrl(url)) {url = "http://" + url;}
+                versionCode: 20118
         ]
     }
 
