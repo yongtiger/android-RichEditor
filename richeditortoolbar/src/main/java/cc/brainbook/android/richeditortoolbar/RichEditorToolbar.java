@@ -1210,32 +1210,12 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ((AlertDialog) dialog).getListView().findViewById(R.id.ib_increase).setEnabled(isListTypeOrdered(listType));
                             }
                         })
-                        ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ///如果view选中则未选中view
-                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
-                                if (view.isSelected()) {
-                                    view.setSelected(false);
-                                }
-
-                                ///改变selection的span
-                                applyParagraphStyleSpans(view, editable);
-
-                                ///更新View
-                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
-                                selectionChanged(selectionStart, selectionEnd);
-
-                                ///清空view tag
-                                view.setTag(R.id.view_tag_list_start, null);
-                                view.setTag(R.id.view_tag_list_is_reversed, null);
-                                view.setTag(R.id.view_tag_list_list_type, null);
-                            }
-                        })
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///获取listTypeIndex并由此得到对应的listType
                                 final int listTypeIndex = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
                                 final int listType = ArrayUtil.getIntItem(mContext, R.array.list_type_ids, listTypeIndex);
@@ -1262,8 +1242,45 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 applyParagraphStyleSpans(view, editable);
                             }
                         })
+                        ///清除样式
+                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
+                                ///如果view选中则未选中view
+                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
+                                if (view.isSelected()) {
+                                    view.setSelected(false);
+                                }
+
+                                ///改变selection的span
+                                applyParagraphStyleSpans(view, editable);
+
+                                ///更新View
+                                ///注意：多层NestParagraphStyle span在清除样式后，仍然可能view被选中
+                                selectionChanged(selectionStart, selectionEnd);
+
+                                ///清空view tag
+                                view.setTag(R.id.view_tag_list_start, null);
+                                view.setTag(R.id.view_tag_list_is_reversed, null);
+                                view.setTag(R.id.view_tag_list_list_type, null);
+                            }
+                        })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();
+
+                listSpanAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+                            }
+                        });
+
+                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                mRichEditText.disableSelectionChange(true);
 
                 ///[FIX#自定义单选或多选AlertDialog中含有其它控件时，ListView太长导致无法滚动显示完整]
                 ///不能用setView()！改为ListView.addFooterView()
@@ -1328,9 +1345,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 listView.findViewById(R.id.ib_decrease).setEnabled(isEnabled);
                 listView.findViewById(R.id.ib_increase).setEnabled(isEnabled);
 
-                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
-
                 return;
             }
 
@@ -1340,6 +1354,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view未选中则选中view
                                 ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                 if (!view.isSelected()) {
@@ -1354,6 +1371,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1372,10 +1392,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1389,6 +1415,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
                                 if (view.getTag() == null || which != (int) view.getTag()) {
@@ -1414,6 +1443,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1431,10 +1463,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1504,6 +1542,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setPositiveButton(android.R.string.ok, new ColorPickerClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 final ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
                                 if (colorDrawable == null || colorDrawable.getColor() != selectedColor) {
                                     ///如果view未选中则选中view
@@ -1524,6 +1565,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1541,10 +1585,19 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     final ColorDrawable colorDrawable = (ColorDrawable) view.getBackground();
                     colorPickerDialogBuilder.initialColor(colorDrawable.getColor());
                 }
-                colorPickerDialogBuilder.build().show();
+
+                AlertDialog alertDialog = colorPickerDialogBuilder.build();
+                alertDialog.show();
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                        mRichEditText.enableSelectionChange();
+                    }
+                });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1558,6 +1611,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setSingleChoiceItems(R.array.font_family_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///由用户选择项which获取对应的选择参数
                                 final String family = ArrayUtil.getStringItem(mContext, R.array.font_family_items, which);
 
@@ -1584,6 +1640,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1601,10 +1660,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1618,6 +1683,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setSingleChoiceItems(R.array.absolute_size_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///由用户选择项which获取对应的选择参数
                                 final String size = ArrayUtil.getStringItem(mContext, R.array.absolute_size_items, which);
 
@@ -1644,6 +1712,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1661,10 +1732,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1678,6 +1755,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setSingleChoiceItems(R.array.relative_size_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///由用户选择项which获取对应的选择参数
                                 final String sizeChange = ArrayUtil.getStringItem(mContext, R.array.relative_size_items, which);
 
@@ -1704,6 +1784,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1721,10 +1804,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1738,6 +1827,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setSingleChoiceItems(R.array.scale_x_items, checkedItem, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///由用户选择项which获取对应的选择参数
                                 final String scaleX = ArrayUtil.getStringItem(mContext, R.array.scale_x_items, which);
 
@@ -1764,6 +1856,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1781,10 +1876,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
-                        .show();
+                        .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                    mRichEditText.enableSelectionChange();
+                                }
+                        });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1796,6 +1897,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setPositiveButton(android.R.string.ok, new ClickURLSpanDialogBuilder.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String text, String url) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
                                 if (text.length() == 0 && url.length() == 0) {
@@ -1828,6 +1932,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///如果view选中则未选中view
                                 ///注意：如果view未选中了则不再进行view未选中操作！提高效率
                                 if (view.isSelected()) {
@@ -1846,10 +1953,19 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                 final String text = (String) view.getTag(R.id.view_tag_url_text);
                 final String url = (String) view.getTag(R.id.view_tag_url_url);
-                clickUrlSpanDialogBuilder.initial(text, url).build().show();
+
+                AlertDialog alertDialog = clickUrlSpanDialogBuilder.initial(text, url).build();
+                alertDialog.show();
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                        mRichEditText.enableSelectionChange();
+                    }
+                });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1863,6 +1979,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setPositiveButton(android.R.string.ok, new ClickImageSpanDialogBuilder.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///避免内存泄漏
                                 mClickImageSpanDialogBuilder.clear();
 
@@ -1901,6 +2020,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+
                                 ///避免内存泄漏
                                 mClickImageSpanDialogBuilder.clear();
 
@@ -1938,10 +2060,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
                 mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
-                mClickImageSpanDialogBuilder.build().show();
+                AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
+                alertDialog.show();
+                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                        mRichEditText.enableSelectionChange();
+                    }
+                });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                mRichEditText.disableSelectionChange();
+                mRichEditText.disableSelectionChange(true);
 
                 return;
             }
@@ -1966,17 +2096,23 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             dialog.dismiss();
                         }
                     })
-                    .show();
+                    .show().setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                                mRichEditText.enableSelectionChange();
+                            }
+                    });
 
             ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-            mRichEditText.disableSelectionChange();
+            mRichEditText.disableSelectionChange(true);
 
             return true;
         }
 
         ///段落span（带初始化参数）：LeadingMargin
         else if (view == mImageViewLeadingMargin) {
-            ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
+            AlertDialog alertDialog = ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -1986,17 +2122,25 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mLeadingMarginSpanIndent)
-                    .build().show();
+                    .build();
+            alertDialog.show();
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                    mRichEditText.enableSelectionChange();
+                }
+            });
 
             ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-            mRichEditText.disableSelectionChange();
+            mRichEditText.disableSelectionChange(true);
 
             return true;
         }
 
         ///段落span（带初始化参数）：List
         else if (view == mImageViewList) {
-            ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
+            AlertDialog alertDialog = ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickListSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -2009,17 +2153,25 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mIndicatorMargin, mIndicatorWidth, mIndicatorGapWidth, mIndicatorColor)
-                    .build().show();
+                    .build();
+            alertDialog.show();
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                    mRichEditText.enableSelectionChange();
+                }
+            });
 
             ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-            mRichEditText.disableSelectionChange();
+            mRichEditText.disableSelectionChange(true);
 
             return true;
         }
 
         ///段落span（带初始化参数）：Quote
         else if (view == mImageViewQuote) {
-            ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
+            AlertDialog alertDialog = ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -2031,17 +2183,25 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mQuoteSpanColor, mQuoteSpanStripWidth, mQuoteSpanGapWidth)
-                    .build().show();
+                    .build();
+            alertDialog.show();
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                    mRichEditText.enableSelectionChange();
+                }
+            });
 
             ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-            mRichEditText.disableSelectionChange();
+            mRichEditText.disableSelectionChange(true);
 
             return true;
         }
 
         ///段落span（带初始化参数）：LineDivider
         else if (view == mImageViewLineDivider) {
-            ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
+            AlertDialog alertDialog = ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
                         @Override
@@ -2052,10 +2212,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     })
                     .setNegativeButton(android.R.string.cancel, null))
                     .initial(mLineDividerSpanMarginTop, mLineDividerSpanMarginBottom)
-                    .build().show();
+                    .build();
+            alertDialog.show();
+            alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+                    mRichEditText.enableSelectionChange();
+                }
+            });
 
             ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-            mRichEditText.disableSelectionChange();
+            mRichEditText.disableSelectionChange(true);
 
             return true;
         }

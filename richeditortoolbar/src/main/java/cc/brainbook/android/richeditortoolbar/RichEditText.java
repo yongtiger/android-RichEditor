@@ -19,20 +19,59 @@ import android.widget.Toast;
 public class RichEditText extends AppCompatEditText {
     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
     private boolean enableSelectionChange = true;
-    private int mSelectionStart;
-    private int mSelectionEnd;
-    public void disableSelectionChange() {
+    private boolean isPreserveSelection;
+    private int mSelectionStart = -1;
+    private int mSelectionEnd = -1;
+    public void disableSelectionChange(boolean isPreserveSelection) {
         enableSelectionChange = false;
-        mSelectionStart = getSelectionStart();
-        mSelectionEnd = getSelectionEnd();
+        this.isPreserveSelection = isPreserveSelection;
+        if (isPreserveSelection) {
+            mSelectionStart = getSelectionStart();
+            mSelectionEnd = getSelectionEnd();
+        }
+    }
+    public void enableSelectionChange() {
+        if (!enableSelectionChange) {
+            if (isPreserveSelection) {
+                if (getSelectionStart() != mSelectionStart || getSelectionEnd() != mSelectionEnd) {
+                    setSelection(mSelectionStart, mSelectionEnd);
+                }
+
+                isPreserveSelection = false;
+                mSelectionStart = -1;
+                mSelectionEnd = -1;
+            }
+
+            enableSelectionChange = true;
+        }
     }
 
+    @Override
+    protected void onSelectionChanged(int selectionStart, int selectionEnd) {
+        super.onSelectionChanged(selectionStart, selectionEnd);
+
+        if (selectionStart >= 0 && selectionEnd >= 0) {
+            if (enableSelectionChange) {
+                if (mOnSelectionChanged != null) {
+                    mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
+                }
+            } else if (isPreserveSelection) {
+                if (getSelectionStart() != mSelectionStart || getSelectionEnd() != mSelectionEnd) {
+                    setSelection(mSelectionStart, mSelectionEnd);
+                }
+            }
+        }
+    }
 
 
     private OnSelectionChanged mOnSelectionChanged;
     public interface OnSelectionChanged {
         void selectionChanged(int selectionStart, int selectionEnd);
     }
+    public void setOnSelectionChanged(OnSelectionChanged onSelectionChanged) {
+        mOnSelectionChanged = onSelectionChanged;
+    }
+
 
     public RichEditText(Context context) {
         super(context);
@@ -49,25 +88,6 @@ public class RichEditText extends AppCompatEditText {
     @Override
     protected void onTextChanged(CharSequence text, int start, int before, int after) {
         super.onTextChanged(text, start, before, after);
-    }
-
-    @Override
-    protected void onSelectionChanged(int selectionStart, int selectionEnd) {
-        super.onSelectionChanged(selectionStart, selectionEnd);
-
-        if (mOnSelectionChanged != null && selectionStart >= 0 && selectionEnd >= 0) {
-            if (enableSelectionChange) {
-                mOnSelectionChanged.selectionChanged(selectionStart, selectionEnd);
-            } else {
-                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                setSelection(mSelectionStart, mSelectionEnd);
-                enableSelectionChange = true;
-            }
-        }
-    }
-
-    public void setOnSelectionChanged(OnSelectionChanged selectionChanged) {
-        mOnSelectionChanged = selectionChanged;
     }
 
 
