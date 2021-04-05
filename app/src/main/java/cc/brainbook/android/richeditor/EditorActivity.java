@@ -34,7 +34,6 @@ public class EditorActivity extends AppCompatActivity {
 
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
-    private String mResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,11 +139,11 @@ public class EditorActivity extends AppCompatActivity {
         ///（可选，必须大于1！否则Undo和Redo永远disable。缺省为无限）RichEditorToolbar设置HistorySize
 //        mRichEditorToolbar.setHistorySize(2);
 
-        ///（如enableSave为true，则必选）设置SaveCallback
+        ///（可选）设置SaveCallback
         mRichEditorToolbar.setSaveCallback(new RichEditorToolbar.SaveCallback() {
             @Override
             public void save(String jsonString) {
-                mResult = jsonString;
+                /// do save ...
             }
         });
 
@@ -208,8 +207,8 @@ public class EditorActivity extends AppCompatActivity {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
 
-        mResult = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
-        intent.putExtra(KEY_RESULT, mResult);
+        final String result = ToolbarHelper.toJson(mRichEditText.getText(), 0, mRichEditText.getText().length(), true);
+        intent.putExtra(KEY_RESULT, result);
 
         setResult(RESULT_OK, intent);
 
