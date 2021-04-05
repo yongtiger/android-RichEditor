@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.23",   ///v2.1.23#ImageSpanOnClickListener(FILE_PROVIDER_AUTHORITIES_SUFFIX)
-                versionCode: 20123
+                versionName: "2.1.24",   ///v2.1.24#ToolbarHelper#postSetText(Context context, @NonNull final TextView textView, String mFileProviderAuthoritiesSuffix)
+                versionCode: 20124
         ]
     }
 

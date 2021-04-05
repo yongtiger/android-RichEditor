@@ -152,7 +152,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setPreviewCallback(new RichEditorToolbar.PreviewCallback() {
             @Override
             public void handlePreview(String jsonString) {
-                final Intent intent = new Intent(EditorActivity.this, PreviewEditorActivity.class);
+                final Intent intent = new Intent(EditorActivity.this, EditorPreviewActivity.class);
                 intent.putExtra(KEY_TEXT, jsonString);
 
                 startActivity(intent);

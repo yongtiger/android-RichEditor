@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import cc.brainbook.android.richeditortoolbar.GlideImageLoader;
+import cc.brainbook.android.richeditortoolbar.ImageSpanOnClickListener;
 import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
@@ -1040,6 +1041,20 @@ public abstract class ToolbarHelper {
     /* --------------------------------------------------------------------------------------- */
     public interface LegacyLoadImageCallback {
         int getMaxWidth();
+    }
+
+    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
+    public static void postSetText(Context context, @NonNull final TextView textView, String mFileProviderAuthoritiesSuffix) {
+        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
+        ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(mFileProviderAuthoritiesSuffix),
+                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                new ToolbarHelper.LegacyLoadImageCallback() {
+                    @Override
+                    public int getMaxWidth() {
+                        return textView.getWidth() - textView.getTotalPaddingLeft() - textView.getTotalPaddingRight();
+                    }
+                });
     }
 
     ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]

@@ -15,8 +15,9 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
+import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.postSetText;
 
-public class PreviewEditorActivity extends AppCompatActivity {
+public class EditorPreviewActivity extends AppCompatActivity {
 
     private TextView mTextView;
 
@@ -24,9 +25,9 @@ public class PreviewEditorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_preview);
+        setContentView(R.layout.activity_editor_preview);
 
-        mTextView = findViewById(R.id.tv_preview);
+        mTextView = findViewById(R.id.tv_editor_preview);
 
         ///实现TextView超链接五种方式：https://blog.csdn.net/lyankj/article/details/51882335
         ///设置TextView可点击，比如响应URLSpan点击事件。
@@ -48,25 +49,10 @@ public class PreviewEditorActivity extends AppCompatActivity {
             mTextView.post(new Runnable() {
                 @Override
                 public void run() {
-                    postSetText(PreviewEditorActivity.this, mTextView);
+                    postSetText(EditorPreviewActivity.this, mTextView, FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 }
             });
         }
-    }
-
-
-    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-    private void postSetText(Context context, @NonNull final TextView textView) {
-        ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
-        ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(FILE_PROVIDER_AUTHORITIES_SUFFIX),
-                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-                new ToolbarHelper.LegacyLoadImageCallback() {
-                    @Override
-                    public int getMaxWidth() {
-                        return textView.getWidth() - textView.getTotalPaddingLeft() - textView.getTotalPaddingRight();
-                    }
-                });
     }
 
 }

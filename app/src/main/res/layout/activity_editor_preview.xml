@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tv_preview"
+        android:id="@+id/tv_editor_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/global_dimen"
