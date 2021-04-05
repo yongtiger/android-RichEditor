@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.22",   ///v2.1.22#ImageSpanOnClickListener(FILE_PROVIDER_AUTHORITIES_SUFFIX)
-                versionCode: 20122
+                versionName: "2.1.23",   ///v2.1.23#ImageSpanOnClickListener(FILE_PROVIDER_AUTHORITIES_SUFFIX)
+                versionCode: 20123
         ]
     }
 

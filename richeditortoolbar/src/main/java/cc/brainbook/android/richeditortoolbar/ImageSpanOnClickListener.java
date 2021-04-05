@@ -48,4 +48,5 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
             Toast.makeText(context.getApplicationContext(), cc.brainbook.android.richeditortoolbar.R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
         }
     }
+
 }
