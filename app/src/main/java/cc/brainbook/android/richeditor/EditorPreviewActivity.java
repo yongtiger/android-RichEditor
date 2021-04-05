@@ -1,16 +1,12 @@
 package cc.brainbook.android.richeditor;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Spannable;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
-import cc.brainbook.android.richeditortoolbar.ImageSpanOnClickListener;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;

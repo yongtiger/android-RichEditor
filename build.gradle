@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.24",   ///v2.1.24#ToolbarHelper#postSetText(Context context, @NonNull final TextView textView, String mFileProviderAuthoritiesSuffix)
-                versionCode: 20124
+                versionName: "2.1.25",   ///v2.1.25#ToolbarHelper#postSetText(Context context, @NonNull final TextView textView, String mFileProviderAuthoritiesSuffix)
+                versionCode: 20125
         ]
     }
 

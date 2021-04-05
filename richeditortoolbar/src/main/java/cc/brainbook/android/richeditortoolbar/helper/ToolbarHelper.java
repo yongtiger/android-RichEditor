@@ -1037,6 +1037,98 @@ public abstract class ToolbarHelper {
         return d;
     }
 
+    ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+    @NonNull
+    public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
+        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
+            final int maxWidth = legacyLoadImageCallback.getMaxWidth();
+            if (width > maxWidth) {
+                width = maxWidth;
+                height = 0;
+            }
+        }
+
+        if ((width <= 0 || height <= 0)
+                && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
+            width = IMAGE_DEFAULT_WIDTH;
+            height = IMAGE_DEFAULT_HEIGHT;
+        } else {
+            if (width <= 0 && height <= 0) {
+                width = drawable.getIntrinsicWidth();
+                height = drawable.getIntrinsicHeight();
+            } else if (width <= 0) {
+                width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
+                if (width > IMAGE_MAX_WIDTH) {
+                    width = IMAGE_MAX_WIDTH;
+                }
+            } else if (height <= 0) {
+                height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+                if (height > IMAGE_MAX_HEIGHT) {
+                    height = IMAGE_MAX_HEIGHT;
+                }
+            }
+        }
+
+        return new Pair<>(width, height);
+    }
+
+
+    @NonNull
+    public static Pair<Integer, Integer> adjustWidth(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+        if (width <= 0) {
+            width = compareWidth <= 0 || compareHeight <= 0 ? 0 : height * compareWidth / compareHeight;
+            if (width > 0) {
+                final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, isConstrain);
+                width = pair.first;
+                height = pair.second;
+            }
+
+            return new Pair<>(width, height);
+        }
+
+        if (width > IMAGE_MAX_WIDTH) {
+            width = IMAGE_MAX_WIDTH;
+        }
+
+        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
+            height = 0;
+            final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, true);
+            width = pair.first;
+            height = pair.second;
+        }
+
+        return new Pair<>(width, height);
+    }
+
+    @NonNull
+    public static Pair<Integer, Integer> adjustHeight(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+        if (height <= 0) {
+            height = compareWidth <= 0 || compareHeight <= 0 ? 0 : width * compareHeight / compareWidth;
+            if (height > 0) {
+                final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, isConstrain);
+                width = pair.first;
+                height = pair.second;
+            }
+
+            return new Pair<>(width, height);
+        }
+
+        if (height > IMAGE_MAX_HEIGHT) {
+            height = IMAGE_MAX_HEIGHT;
+        }
+
+        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
+            width = 0;
+            final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, true);
+            width = pair.first;
+            height = pair.second;
+        }
+
+        return new Pair<>(width, height);
+    }
+
 
     /* --------------------------------------------------------------------------------------- */
     public interface LegacyLoadImageCallback {
@@ -1057,7 +1149,7 @@ public abstract class ToolbarHelper {
                 });
     }
 
-    ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]
+    ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(Context context, @NonNull final Spannable textSpannable,
                                    CustomImageSpan.OnClickListener onClickListener,
                                    LegacyLoadImageCallback legacyLoadImageCallback) {
@@ -1216,98 +1308,6 @@ public abstract class ToolbarHelper {
 //                spannable.removeSpan(imageSpan);
             spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
         }
-    }
-
-    ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-    @NonNull
-    public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
-        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
-            final int maxWidth = legacyLoadImageCallback.getMaxWidth();
-            if (width > maxWidth) {
-                width = maxWidth;
-                height = 0;
-            }
-        }
-
-        if ((width <= 0 || height <= 0)
-                && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-            width = IMAGE_DEFAULT_WIDTH;
-            height = IMAGE_DEFAULT_HEIGHT;
-        } else {
-            if (width <= 0 && height <= 0) {
-                width = drawable.getIntrinsicWidth();
-                height = drawable.getIntrinsicHeight();
-            } else if (width <= 0) {
-                width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-                if (width > IMAGE_MAX_WIDTH) {
-                    width = IMAGE_MAX_WIDTH;
-                }
-            } else if (height <= 0) {
-                height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
-                if (height > IMAGE_MAX_HEIGHT) {
-                    height = IMAGE_MAX_HEIGHT;
-                }
-            }
-        }
-
-        return new Pair<>(width, height);
-    }
-
-
-    @NonNull
-    public static Pair<Integer, Integer> adjustWidth(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
-        if (width <= 0) {
-            width = compareWidth <= 0 || compareHeight <= 0 ? 0 : height * compareWidth / compareHeight;
-            if (width > 0) {
-                final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, isConstrain);
-                width = pair.first;
-                height = pair.second;
-            }
-
-            return new Pair<>(width, height);
-        }
-
-        if (width > IMAGE_MAX_WIDTH) {
-            width = IMAGE_MAX_WIDTH;
-        }
-
-        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
-            height = 0;
-            final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, true);
-            width = pair.first;
-            height = pair.second;
-        }
-
-        return new Pair<>(width, height);
-    }
-
-    @NonNull
-    public static Pair<Integer, Integer> adjustHeight(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
-        if (height <= 0) {
-            height = compareWidth <= 0 || compareHeight <= 0 ? 0 : width * compareHeight / compareWidth;
-            if (height > 0) {
-                final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, isConstrain);
-                width = pair.first;
-                height = pair.second;
-            }
-
-            return new Pair<>(width, height);
-        }
-
-        if (height > IMAGE_MAX_HEIGHT) {
-            height = IMAGE_MAX_HEIGHT;
-        }
-
-        if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
-            width = 0;
-            final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, true);
-            width = pair.first;
-            height = pair.second;
-        }
-
-        return new Pair<>(width, height);
     }
 
 }
