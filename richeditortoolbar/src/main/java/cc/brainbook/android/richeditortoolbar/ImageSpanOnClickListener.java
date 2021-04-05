@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditor;
+package cc.brainbook.android.richeditortoolbar;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -17,9 +17,14 @@ import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
-import static cc.brainbook.android.richeditor.EditorActivity.PROVIDER_AUTHORITIES;
-
 public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener {
+    private final String mFileProviderAuthoritiesSuffix;
+
+    public ImageSpanOnClickListener(String fileProviderAuthoritiesSuffix) {
+        mFileProviderAuthoritiesSuffix = fileProviderAuthoritiesSuffix;
+    }
+
+
     @Override
     public void onClick(@NonNull View view, Clickable clickable, Drawable drawable, String uriString, String source) {
         final Context context = view.getContext();
@@ -27,7 +32,7 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
         final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-                context.getPackageName() + PROVIDER_AUTHORITIES);
+                context.getPackageName() + mFileProviderAuthoritiesSuffix);
 
         ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -40,7 +45,7 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
-            Toast.makeText(context, "Activity was not found for intent, " + intent.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context.getApplicationContext(), cc.brainbook.android.richeditortoolbar.R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 }

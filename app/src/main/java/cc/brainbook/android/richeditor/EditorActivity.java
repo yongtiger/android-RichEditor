@@ -26,7 +26,7 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESUL
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
 public class EditorActivity extends AppCompatActivity {
-    public static final String PROVIDER_AUTHORITIES = ".file.path.share";
+    public static final String FILE_PROVIDER_AUTHORITIES_SUFFIX = ".file.path.share";
 
     private static final String IMAGE_FILE_SUFFIX = ".jpg";
     private static final String VIDEO_FILE_SUFFIX = ".mp4";
@@ -86,7 +86,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setImageSpanCallback(new ClickImageSpanDialogBuilder.ImageSpanCallback() {
             @Override
             public Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src) {
-                final Uri source = UriUtil.parseToUri(context, src, context.getPackageName() + PROVIDER_AUTHORITIES);
+                final Uri source = UriUtil.parseToUri(context, src, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 final File file = new File(imageFileDir, action + "_" + Util.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
                 return new Pair<>(source, file);
             }
@@ -95,7 +95,7 @@ public class EditorActivity extends AppCompatActivity {
             public Pair<Uri, File> getMediaTypeSourceAndFile(Context context, int mediaType) {
                 final File file = new File(mediaType == 0 ? imageFileDir : mediaType == 1 ? videoFileDir : audioFileDir,
 				Util.getDateFormat(new Date()) + (mediaType == 0 ? IMAGE_FILE_SUFFIX : mediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
-		        final Uri source = UriUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + PROVIDER_AUTHORITIES);
+		        final Uri source = UriUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 return new Pair<>(source, file);
             }
 
