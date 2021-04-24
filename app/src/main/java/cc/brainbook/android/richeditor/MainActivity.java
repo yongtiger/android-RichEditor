@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         mTextView.post(new Runnable() {
             @Override
             public void run() {
-                postSetText(MainActivity.this, mTextView, FILE_PROVIDER_AUTHORITIES_SUFFIX);
+                postSetText(MainActivity.this, mTextView, getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
             }
         });
 
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         ///设置文本
                         mTextView.setText(ToolbarHelper.fromJson(mJsonText));
-                        postSetText(MainActivity.this, mTextView, FILE_PROVIDER_AUTHORITIES_SUFFIX);
+                        postSetText(MainActivity.this, mTextView, getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                     }
                 }
             }

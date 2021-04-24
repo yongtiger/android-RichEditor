@@ -1136,9 +1136,9 @@ public abstract class ToolbarHelper {
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-    public static void postSetText(Context context, @NonNull final TextView textView, String mFileProviderAuthoritiesSuffix) {
+    public static void postSetText(Context context, @NonNull final TextView textView, String authority) {
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
-        ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(mFileProviderAuthoritiesSuffix),
+        ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(authority),
                 ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
                 ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
                 new ToolbarHelper.LegacyLoadImageCallback() {

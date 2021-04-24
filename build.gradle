@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.1.26",   ///v2.1.26#EditorActivity#（可选）设置SaveCallback
-                versionCode: 20126
+                versionName: "2.1.27",   ///v2.1.27#typo#FILE_PROVIDER_AUTHORITIES_SUFFIX
+                versionCode: 20127
         ]
     }
 

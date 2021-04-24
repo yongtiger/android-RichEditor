@@ -45,7 +45,7 @@ public class EditorPreviewActivity extends AppCompatActivity {
             mTextView.post(new Runnable() {
                 @Override
                 public void run() {
-                    postSetText(EditorPreviewActivity.this, mTextView, FILE_PROVIDER_AUTHORITIES_SUFFIX);
+                    postSetText(EditorPreviewActivity.this, mTextView, getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 }
             });
         }

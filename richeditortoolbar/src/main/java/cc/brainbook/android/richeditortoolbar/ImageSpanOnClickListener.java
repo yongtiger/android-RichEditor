@@ -18,10 +18,10 @@ import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener {
-    private final String mFileProviderAuthoritiesSuffix;
+    private final String mFileProviderAuthority;
 
-    public ImageSpanOnClickListener(String fileProviderAuthoritiesSuffix) {
-        mFileProviderAuthoritiesSuffix = fileProviderAuthoritiesSuffix;
+    public ImageSpanOnClickListener(String authority) {
+        mFileProviderAuthority = authority;
     }
 
 
@@ -31,8 +31,7 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
 
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         final String mediaType = clickable instanceof AudioSpan ? "audio/*" : clickable instanceof VideoSpan ? "video/*" : "image/*";
-        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source,
-                context.getPackageName() + mFileProviderAuthoritiesSuffix);
+        final Uri mediaUri = UriUtil.parseToUri(context, clickable instanceof AudioSpan || clickable instanceof VideoSpan ? uriString : source, mFileProviderAuthority);
 
         ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
