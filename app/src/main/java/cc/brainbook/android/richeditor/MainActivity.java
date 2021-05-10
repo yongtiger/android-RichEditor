@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
-import cc.brainbook.android.richeditortoolbar.ImageSpanOnClickListener;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
