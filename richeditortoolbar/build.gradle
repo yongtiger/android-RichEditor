@@ -51,6 +51,6 @@ dependencies {
     ///注意：manifest合并规则#使用本库者需在清单中设置tools:node="replace"，所以这里必须用api！
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 //    implementation 'com.github.1993hzw:Doodle:5.5.4'
-    api 'com.github.yongtiger:android-DoodleDraw:v16.1.3'
+    api 'com.github.yongtiger:android-DoodleDraw:v16.1.4'
 
 }

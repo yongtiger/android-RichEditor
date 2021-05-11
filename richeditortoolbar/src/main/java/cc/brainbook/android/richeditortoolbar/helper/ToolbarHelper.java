@@ -457,7 +457,7 @@ public abstract class ToolbarHelper {
     }
 
     ///注意：不包括block span（如URLSpan、ImageSpan）
-    @NonNull
+    @Nullable
     public static <T extends IStyle> T filterSpanByCompareSpanOrViewParameter(View view, Class<T> clazz, T span, T compareSpan) {
         ///字符span（带参数）：ForegroundColor、BackgroundColor
         if (clazz == CustomForegroundColorSpan.class) {
@@ -674,22 +674,25 @@ public abstract class ToolbarHelper {
     @NonNull
     public static TextBean saveSpans(Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
         final TextBean textBean = new TextBean();
-        if (isSetText) {
-            final CharSequence subSequence = spannable.subSequence(selectionStart, selectionEnd);
-            textBean.setText(subSequence.toString());
-        }
 
-        final ArrayList<SpanBean> spanBeans = new ArrayList<>();
-        for (Class<? extends IStyle> clazz : sAllClassList) {
-            toSpanBeans(spanBeans, clazz, spannable, selectionStart, selectionEnd);
+        if (spannable != null) {
+            if (isSetText) {
+                final CharSequence subSequence = spannable.subSequence(selectionStart, selectionEnd);
+                textBean.setText(subSequence.toString());
+            }
+
+            final ArrayList<SpanBean> spanBeans = new ArrayList<>();
+            for (Class<? extends IStyle> clazz : sAllClassList) {
+                toSpanBeans(spanBeans, clazz, spannable, selectionStart, selectionEnd);
+            }
+            textBean.setSpans(spanBeans);
         }
-        textBean.setSpans(spanBeans);
 
         return textBean;
     }
 
     public static ArrayList<IStyle> loadSpans(Editable editable, TextBean textBean) {
-        if (textBean != null) {
+        if (editable != null && textBean != null) {
             if (textBean.getText() != null) {
                 //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
                 if (!TextUtils.equals(textBean.getText(), editable)) {
@@ -709,7 +712,11 @@ public abstract class ToolbarHelper {
         return null;
     }
 
-    public static <T extends IStyle> void toSpanBeans(List<SpanBean> spanBeans, Class<T> clazz, Spannable spannable, int start, int end) {
+    public static <T extends IStyle> void toSpanBeans(List<SpanBean> spanBeans, @NonNull Class<T> clazz, Spannable spannable, int start, int end) {
+        if (spanBeans == null || spannable == null) {
+            return;
+        }
+
         final ArrayList<T> spans = SpanUtil.getFilteredSpans(clazz, spannable, start, end, false);
         for (T span : spans) {
             final int spanStart = spannable.getSpanStart(span);
@@ -725,7 +732,7 @@ public abstract class ToolbarHelper {
     @NonNull
     public static ArrayList<IStyle> fromSpanBeans(List<SpanBean> spanBeans, Spannable spannable) {
         final ArrayList<IStyle> resultSpanList = new ArrayList<>();
-        if (spanBeans != null) {
+        if (spannable != null && spanBeans != null) {
             for (SpanBean spanBean : spanBeans) {
                 final int spanStart = spanBean.getSpanStart();
                 final int spanEnd = spanBean.getSpanEnd();
@@ -749,7 +756,7 @@ public abstract class ToolbarHelper {
     }
 
     public static byte[] toByteArray(Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(spannable, selectionStart, selectionEnd, isSetText);
+        final TextBean textBean = spannable == null ? null :saveSpans(spannable, selectionStart, selectionEnd, isSetText);
 
         return ParcelUtil.marshall(textBean);
     }
@@ -761,7 +768,7 @@ public abstract class ToolbarHelper {
     }
 
     public static String toJson(Spannable spannable, int selectionStart, int selectionEnd, boolean isSetText) {
-        final TextBean textBean = saveSpans(spannable, selectionStart, selectionEnd, isSetText);
+        final TextBean textBean = spannable == null ? null : saveSpans(spannable, selectionStart, selectionEnd, isSetText);
 
         ///[Gson#Exclude父类成员变量的序列化和反序列化]
         ///一是因为只测试显示使用而不进行真正的反序列化，并不需要父类成员变量序列化
@@ -1032,6 +1039,7 @@ public abstract class ToolbarHelper {
     @NonNull
     private static Drawable getPlaceHolderDrawable(int drawableWidth, int drawableHeight) {
         final Drawable d = ResourcesCompat.getDrawable(Resources.getSystem(), PLACE_HOLDER_DRAWABLE, null);
+        assert d != null;
         d.setBounds(0, 0, drawableWidth, drawableHeight);
 
         return d;
@@ -1136,7 +1144,11 @@ public abstract class ToolbarHelper {
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-    public static void postSetText(Context context, @NonNull final TextView textView, String authority) {
+    public static void postSetText(@NonNull Context context, final TextView textView, String authority) {
+        if (textView == null) {
+            return;
+        }
+
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
         ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(authority),
                 ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
@@ -1150,9 +1162,13 @@ public abstract class ToolbarHelper {
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-    public static void postSetText(Context context, @NonNull final Spannable textSpannable,
+    public static void postSetText(@NonNull Context context, final Spannable textSpannable,
                                    CustomImageSpan.OnClickListener onClickListener,
                                    LegacyLoadImageCallback legacyLoadImageCallback) {
+        if (textSpannable == null) {
+            return;
+        }
+
         final IStyle[] spans = textSpannable.getSpans(0, textSpannable.length(), IStyle.class);
         final List<IStyle> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
@@ -1174,7 +1190,7 @@ public abstract class ToolbarHelper {
     }
 
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
-    public static void postLoadSpans(Context context, Spannable spannable, List<IStyle> spans,
+    public static void postLoadSpans(@NonNull Context context, Spannable spannable, List<IStyle> spans,
                                      Spannable pasteSpannable, int pasteOffset,
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
@@ -1182,7 +1198,7 @@ public abstract class ToolbarHelper {
                                      CustomImageSpan.OnClickListener onClickListener,
                                      LegacyLoadImageCallback legacyLoadImageCallback
     ) {
-        if (spans == null || spans.isEmpty()) {
+        if (spannable == null && pasteSpannable == null || spans == null || spans.isEmpty()) {
             return;
         }
 
@@ -1210,7 +1226,7 @@ public abstract class ToolbarHelper {
         }
     }
 
-    public static <T extends IStyle> void loadImage(final Context context, final Class<T> clazz, final Spannable spannable, final int start, final int end,
+    public static <T extends IStyle> void loadImage(@NonNull final Context context, @NonNull final Class<T> clazz, final Spannable spannable, final int start, final int end,
                                                     final Spannable pasteSpannable, final int pasteOffset,
                                                     final String viewTagUri, final String viewTagSrc,
                                                     final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
@@ -1219,6 +1235,10 @@ public abstract class ToolbarHelper {
                                                     Drawable.Callback drawableCallback,
                                                     final CustomImageSpan.OnClickListener onClickListener,
                                                     final LegacyLoadImageCallback legacyLoadImageCallback) {
+        if (spannable == null && pasteSpannable == null) {
+            return;
+        }
+
         final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId如都设置则mPlaceholderDrawable优先

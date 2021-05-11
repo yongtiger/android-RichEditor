@@ -22,8 +22,7 @@
         <!-- 因为screen size也开始跟着设备的横竖切换而改变。所以，在AndroidManifest.xml里设置的MiniSdkVersion和 TargetSdkVersion属性大于等于13的情况下， -->
         <!-- 如果你想阻止程序在运行时重新加载Activity，除了设置"orientation"，你还必须设置"ScreenSize"。 -->
         <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,27 +30,27 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".EditorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".EditorActivity" />
 
-        <activity android:name=".HtmlEditorActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".HtmlEditorActivity" />
 
-        <activity android:name=".EditorPreviewActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".EditorPreviewActivity" />
 
         <!--///manifest合并规则#tools:node="replace"-->
         <!--///https://developer.android.com/studio/build/manifest-merge-->
         <!--///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop-->
+        <!--///注意：必须设置为固定屏幕方向，否则翻屏时会丢失全部修改！-->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             tools:node="replace" />
+
         <!--///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle-->
+        <!--///注意：必须设置为固定屏幕方向，否则翻屏时会丢失全部修改！-->
         <activity
             android:name="cn.hzw.doodle.DoodleActivity"
-            android:configChanges="screenSize|orientation|keyboardHidden|navigation|keyboard"
+            android:screenOrientation="portrait"
             tools:node="replace" />
 
         <!-- ///适应Android 7.0 -->

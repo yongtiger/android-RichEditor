@@ -9,9 +9,9 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.Date;
@@ -35,10 +35,18 @@ public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("TAG", "onCreate: =========================");
         super.onCreate(savedInstanceState);
+
+        if (getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null) {
+            Toast.makeText(this, R.string.error_the_parameters_cannot_be_null, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_editor);
 
         mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
@@ -58,11 +66,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setRichEditText(mRichEditText);
 
         ///（可选）设置初始文本
-        final Intent intent = getIntent();
-        final String text = intent.getStringExtra(KEY_TEXT);
-        if (!TextUtils.isEmpty(text)) {
-            mRichEditText.setText(ToolbarHelper.fromJson(text));
-        }
+        mRichEditText.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
 
 
         /* --------------///[ImageSpan]-------------- */

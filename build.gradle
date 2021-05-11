@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.2.00",   ///v2.2.00#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories. This repository is deprecated and it will be shut down in the future
-                versionCode: 20200
+                versionName: "2.2.01",   ///v2.2.01#getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null
+                versionCode: 20201
         ]
     }
 

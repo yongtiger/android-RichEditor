@@ -1,8 +1,8 @@
 package cc.brainbook.android.richeditor;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,13 +14,19 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.postSetText;
 
 public class EditorPreviewActivity extends AppCompatActivity {
-
     private TextView mTextView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null) {
+            Toast.makeText(this, R.string.error_the_parameters_cannot_be_null, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_editor_preview);
 
         mTextView = findViewById(R.id.tv_editor_preview);
@@ -38,17 +44,13 @@ public class EditorPreviewActivity extends AppCompatActivity {
         mTextView.setClickable(false);
         mTextView.setLongClickable(false);
 
-        final Intent intent = getIntent();
-        final String jsonString = intent.getStringExtra(KEY_TEXT);
-        if (jsonString != null) {
-            mTextView.setText(ToolbarHelper.fromJson(jsonString));
-            mTextView.post(new Runnable() {
-                @Override
-                public void run() {
-                    postSetText(EditorPreviewActivity.this, mTextView, getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
-                }
-            });
-        }
+        mTextView.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
+        mTextView.post(new Runnable() {
+            @Override
+            public void run() {
+                postSetText(EditorPreviewActivity.this, mTextView, getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
+            }
+        });
     }
 
 }

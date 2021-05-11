@@ -28,7 +28,6 @@ import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.postSetText;
 
 public class MainActivity extends AppCompatActivity {
-
     private static final int REQUEST_CODE_PERMISSIONS = 1;
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
 
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private String mJsonText = "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}";
 
     private TextView mTextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

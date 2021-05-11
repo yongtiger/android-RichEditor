@@ -6,28 +6,30 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
 
 public class HtmlEditorActivity extends AppCompatActivity {
-
     private EditText mEditText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null) {
+            Toast.makeText(this, R.string.error_the_parameters_cannot_be_null, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_html_editor);
 
         mEditText = findViewById(R.id.et_edit_text);
 
-
-        /* -------------- ///[startActivityForResult#Activity获取数据] -------------- */
-        final Intent intent = getIntent();
-        final String htmlTextString = intent.getStringExtra(KEY_TEXT);
-        if (htmlTextString != null) {
-            mEditText.setText(htmlTextString);
-        }
+        mEditText.setText(getIntent().getStringExtra(KEY_TEXT));
     }
 
 
