@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.2.01",   ///v2.2.01#getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null
-                versionCode: 20201
+                versionName: "2.2.02",   ///v2.2.02
+                versionCode: 20202
         ]
     }
 

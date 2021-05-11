@@ -2,7 +2,6 @@ package cc.brainbook.android.richeditor;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,13 +19,6 @@ public class EditorPreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null) {
-            Toast.makeText(this, R.string.error_the_parameters_cannot_be_null, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
         setContentView(R.layout.activity_editor_preview);
 
         mTextView = findViewById(R.id.tv_editor_preview);

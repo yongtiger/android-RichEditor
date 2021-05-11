@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.Date;
@@ -40,13 +39,6 @@ public class EditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("TAG", "onCreate: =========================");
         super.onCreate(savedInstanceState);
-
-        if (getIntent() == null || getIntent().getStringExtra(KEY_TEXT) == null) {
-            Toast.makeText(this, R.string.error_the_parameters_cannot_be_null, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
         setContentView(R.layout.activity_editor);
 
         mRichEditorToolbar = (RichEditorToolbar) findViewById(R.id.rich_editor_tool_bar);
