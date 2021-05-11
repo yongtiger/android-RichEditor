@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.3.0'
 
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0

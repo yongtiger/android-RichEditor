@@ -20,7 +20,6 @@ public class HtmlEditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_html_editor);
 
         mEditText = findViewById(R.id.et_edit_text);
-
         mEditText.setText(getIntent().getStringExtra(KEY_TEXT));
     }
 
@@ -28,9 +27,7 @@ public class HtmlEditorActivity extends AppCompatActivity {
     public void btnClickSave(View view) {
         ///[startActivityForResult#setResult()返回数据]
         final Intent intent = new Intent();
-
         intent.putExtra(KEY_RESULT, mEditText.getText().toString());
-
         setResult(RESULT_OK, intent);
 
         finish();
