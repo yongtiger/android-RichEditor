@@ -1,2 +1,2 @@
 include ':app', ':richeditortoolbar'
-rootProject.name='android-project-RichEditor'
+rootProject.name='android-RichEditor'

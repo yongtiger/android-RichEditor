@@ -32,7 +32,7 @@ dependencies {
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0
     implementation 'com.google.android:flexbox:2.0.1'
 
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.8.7'
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
