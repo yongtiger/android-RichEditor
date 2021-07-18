@@ -222,6 +222,14 @@ public class RichEditText extends AppCompatEditText {
                 if (!TextUtils.isEmpty(paste)) {
                     if (!didFirst) {
 
+                        ///[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：
+                        ///java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
+                        ///IndexOutOfBoundsException
+                        ///比如：aa[a{a]aa[aa]aa} replace with [a]aa[a]
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            Selection.setSelection(editable, max);
+                        }
+
                         ///如果为paint text则不执行loadSpans
                         if (withFormatting && mLoadSpansCallback != null) {
                             //////??????[BUG#ClipDescription的label总是为“host clipboard”]因此无法用label区分剪切板是否为RichEditor或其它App，只能用文本是否相同来“大约”区分
@@ -256,14 +264,6 @@ public class RichEditText extends AppCompatEditText {
 
 
     public void replace(Editable editable, int min, int max, Spannable paste) {
-        ///[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：
-        ///java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
-        ///IndexOutOfBoundsException
-        ///比如：aa[a{a]aa[aa]aa} replace with [a]aa[a]
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Selection.setSelection(editable, max);
-        }
-
         editable.replace(min, max, paste);
 
         ///调整Selection起止位置

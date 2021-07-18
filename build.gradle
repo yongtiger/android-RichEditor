@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.2.5",   ///v2.2.5
-                versionCode: 20205
+                versionName: "2.2.6",   ///v2.2.6#[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
+                versionCode: 20206
         ]
     }
 
@@ -25,7 +25,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
