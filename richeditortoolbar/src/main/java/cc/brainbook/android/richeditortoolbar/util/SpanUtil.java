@@ -181,9 +181,48 @@ public abstract class SpanUtil {
         }
     }
 
-    /**
-     * 通过Drawable获取ImageSpan
-     */
+
+    /* ------------------- ///[Attachment#ImageSpan] ------------------- */
+    @Nullable
+    public static CustomImageSpan getFirstImageSpan(Spanned spanned) {
+        if (!TextUtils.isEmpty(spanned)) {
+            final int spanStart = 0;
+            final int spanEnd = spanned.length();
+
+            int next;
+            for (int i = spanStart; i < spanEnd; i = next) {
+                next = spanned.nextSpanTransition(i, spanEnd, CustomImageSpan.class);
+
+                final CustomImageSpan[] imageSpans = spanned.getSpans(i, next, CustomImageSpan.class);
+                if (imageSpans != null && imageSpans.length > 0) {
+                    return imageSpans[0];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static void removeAllImageSpans(Spannable spannable) {
+        if (!TextUtils.isEmpty(spannable)) {
+            final int spanStart = 0;
+            final int spanEnd = spannable.length();
+
+            int next;
+            for (int i = spanStart; i < spanEnd; i = next) {
+                next = spannable.nextSpanTransition(i, spanEnd, CustomImageSpan.class);
+
+                final CustomImageSpan[] imageSpans = spannable.getSpans(i, next, CustomImageSpan.class);
+                if (imageSpans != null && imageSpans.length > 0) {
+                    for (CustomImageSpan imageSpan : imageSpans) {
+                        spannable.removeSpan(imageSpan);
+                    }
+                }
+            }
+        }
+    }
+
+    ///通过Drawable获取ImageSpan
     @Nullable
     public static CustomImageSpan getImageSpanByDrawable(Spanned spanned, Drawable drawable) {
         if (!TextUtils.isEmpty(spanned)) {

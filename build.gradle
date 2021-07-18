@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.2.6",   ///v2.2.6#[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
-                versionCode: 20206
+                versionName: "2.3.0",   ///v2.3.0#[Attachment#ImageSpan]
+                versionCode: 20300
         ]
     }
 
