@@ -206,8 +206,8 @@ public abstract class SpanUtil {
     ///[Attachment#ImageSpan]从spannable中去掉所有CustomImageSpan（尤其是也要同时去掉CustomImageSpan所占用的文字！）
     public static void removeAllImageSpans(Editable editable) {
         if (!TextUtils.isEmpty(editable)) {
-            final int start = 0;
-            final int end = editable.length();
+            int start = 0;
+            int end = editable.length();
 
             int next;
             for (int i = start; i < end; i = next) {
@@ -222,6 +222,8 @@ public abstract class SpanUtil {
                         editable.removeSpan(imageSpan);
 
                         editable.replace(spanStart, spanEnd, "");
+                        end = editable.length();
+                        next -= spanEnd - spanStart;
                     }
                 }
             }
