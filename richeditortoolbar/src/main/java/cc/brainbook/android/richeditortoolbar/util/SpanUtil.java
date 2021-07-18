@@ -203,19 +203,25 @@ public abstract class SpanUtil {
         return null;
     }
 
-    public static void removeAllImageSpans(Spannable spannable) {
-        if (!TextUtils.isEmpty(spannable)) {
-            final int spanStart = 0;
-            final int spanEnd = spannable.length();
+    ///[Attachment#ImageSpan]从spannable中去掉所有CustomImageSpan（尤其是也要同时去掉CustomImageSpan所占用的文字！）
+    public static void removeAllImageSpans(Editable editable) {
+        if (!TextUtils.isEmpty(editable)) {
+            final int start = 0;
+            final int end = editable.length();
 
             int next;
-            for (int i = spanStart; i < spanEnd; i = next) {
-                next = spannable.nextSpanTransition(i, spanEnd, CustomImageSpan.class);
+            for (int i = start; i < end; i = next) {
+                next = editable.nextSpanTransition(i, end, CustomImageSpan.class);
 
-                final CustomImageSpan[] imageSpans = spannable.getSpans(i, next, CustomImageSpan.class);
+                final CustomImageSpan[] imageSpans = editable.getSpans(i, next, CustomImageSpan.class);
                 if (imageSpans != null && imageSpans.length > 0) {
                     for (CustomImageSpan imageSpan : imageSpans) {
-                        spannable.removeSpan(imageSpan);
+                        final int spanStart = editable.getSpanStart(imageSpan);
+                        final int spanEnd = editable.getSpanEnd(imageSpan);
+
+                        editable.removeSpan(imageSpan);
+
+                        editable.replace(spanStart, spanEnd, "");
                     }
                 }
             }
