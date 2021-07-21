@@ -799,6 +799,27 @@ public abstract class ToolbarHelper {
         return spannable;
     }
 
+    @Nullable
+    public static String getTextFromJson(String src) {
+        final Gson gson = new GsonBuilder().registerTypeAdapter(String.class, new JsonDeserializer<String>() {
+            @Override
+            public String deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                if (json.isJsonObject()) {
+                    final JsonObject jsonObject = json.getAsJsonObject();
+
+                    JsonElement jsonElement = jsonObject.get("text");
+                    if (jsonElement != null) {
+                        return jsonElement.getAsString();
+                    }
+                }
+
+                return null;
+            }
+        }).create();
+
+        return gson.fromJson(src, String.class);
+    }
+
     ///[FIX#java.lang.IllegalArgumentException: field has type android.os.Parcelable, got com.google.gson.internal.LinkedTreeMap]
     ///https://www.jianshu.com/p/3108f1e44155
     ///https://www.jianshu.com/p/d62c2be60617

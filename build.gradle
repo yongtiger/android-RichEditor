@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.3.3",   ///v2.3.3#[Attachment#ImageSpan]从spannable中去掉所有CustomImageSpan（尤其是也要同时去掉CustomImageSpan所占用的文字！）
-                versionCode: 20303
+                versionName: "2.4.0",   ///v2.4.0#ToolbarHelper#getTextFromJson(String src)
+                versionCode: 20400
         ]
     }
 
