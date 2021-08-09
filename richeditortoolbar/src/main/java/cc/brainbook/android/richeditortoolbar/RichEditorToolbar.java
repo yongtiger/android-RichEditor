@@ -180,19 +180,34 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///段落span（带初始化参数）：LeadingMargin ---------------- */
     private ImageView mImageViewLeadingMargin;
+    public ImageView getImageViewLeadingMargin() {
+        return mImageViewLeadingMargin;
+    }
     private boolean enableLeadingMargin;
     private int mLeadingMarginSpanIndent = CUSTOM_LEADING_MARGIN_SPAN_DEFAULT_INDENT;
 
     /* ---------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan ---------------- */
     private ImageView mImageViewAlignNormal;
+    public ImageView getImageViewAlignNormal() {
+        return mImageViewAlignNormal;
+    }
     private boolean enableAlignNormal;
     private ImageView mImageViewAlignCenter;
+    public ImageView getImageViewAlignCenter() {
+        return mImageViewAlignCenter;
+    }
     private boolean enableAlignCenter;
     private ImageView mImageViewAlignOpposite;
+    public ImageView getImageViewAlignOpposite() {
+        return mImageViewAlignOpposite;
+    }
     private boolean enableAlignOpposite;
 
     /* ---------------- ///段落span（带初始化参数）：List ---------------- */
     private ImageView mImageViewList;
+    public ImageView getImageViewList() {
+        return mImageViewList;
+    }
     private boolean enableList;
     private int mIndicatorMargin = LIST_SPAN_DEFAULT_INDENT;
     private int mIndicatorWidth = LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
@@ -201,6 +216,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///段落span（带初始化参数）：Quote ---------------- */
     private ImageView mImageViewQuote;
+    public ImageView getImageViewQuote() {
+        return mImageViewQuote;
+    }
     private boolean enableQuote;
     private @ColorInt int mQuoteSpanColor = CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
     private int mQuoteSpanStripWidth = CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
@@ -208,78 +226,144 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* -------------- ///字符span（带参数）：Pre --------------- */
     private ImageView mImageViewPre;
+    public ImageView getImageViewPre() {
+        return mImageViewPre;
+    }
     private boolean enablePre;
 
     /* ---------------- ///段落span（带参数）：Head ---------------- */
     private TextView mTextViewHead;
+    public TextView getTextViewHead() {
+        return mTextViewHead;
+    }
     private boolean enableHead;
 
     /* ---------------- ///段落span：LineDivider ---------------- */
     private ImageView mImageViewLineDivider;
+    public ImageView getImageViewLineDivider() {
+        return mImageViewLineDivider;
+    }
     private boolean enableLineDivider;
     private int mLineDividerSpanMarginTop = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
     private int mLineDividerSpanMarginBottom = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 
     /* ---------------- ///字符span：Bold、Italic ---------------- */
     private ImageView mImageViewBold;
+    public ImageView getImageViewBold() {
+        return mImageViewBold;
+    }
     private boolean enableBold;
     private ImageView mImageViewItalic;
+    public ImageView getImageViewItalic() {
+        return mImageViewItalic;
+    }
     private boolean enableItalic;
 
     /* ---------------- ///字符span：Underline、StrikeThrough、Subscript、Superscript ---------------- */
     private ImageView mImageViewUnderline;
+    public ImageView getImageViewUnderline() {
+        return mImageViewUnderline;
+    }
     private boolean enableUnderline;
     private ImageView mImageViewStrikethrough;
+    public ImageView getImageViewStrikethrough() {
+        return mImageViewStrikethrough;
+    }
     private boolean enableStrikethrough;
     private ImageView mImageViewSubscript;
+    public ImageView getImageViewSubscript() {
+        return mImageViewSubscript;
+    }
     private boolean enableSubscript;
     private ImageView mImageViewSuperscript;
+    public ImageView getImageViewSuperscript() {
+        return mImageViewSuperscript;
+    }
     private boolean enableSuperscript;
 
     /* ---------------- ///字符span（带参数）：ForegroundColor、BackgroundColor ---------------- */
     private ImageView mImageViewForegroundColor;
+    public ImageView getImageViewForegroundColor() {
+        return mImageViewForegroundColor;
+    }
     private boolean enableForegroundColor;
     private ImageView mImageViewBackgroundColor;
+    public ImageView getImageViewBackgroundColor() {
+        return mImageViewBackgroundColor;
+    }
     private boolean enableBackgroundColor;
 
     /* ---------------- ///字符span（带参数）：FontFamily ---------------- */
     private TextView mTextViewFontFamily;
+    public TextView getTextViewFontFamily() {
+        return mTextViewFontFamily;
+    }
     private boolean enableFontFamily;
 
     /* ---------------- ///字符span（带参数）：AbsoluteSize ---------------- */
     private TextView mTextViewAbsoluteSize;
+    public TextView getImageViewAbsoluteSize() {
+        return mTextViewAbsoluteSize;
+    }
     private boolean enableAbsoluteSize;
 
     /* ---------------- ///字符span（带参数）：RelativeSize ---------------- */
     private TextView mTextViewRelativeSize;
+    public TextView getTextViewRelativeSize() {
+        return mTextViewRelativeSize;
+    }
     private boolean enableRelativeSize;
 
     /* ---------------- ///字符span（带参数）：ScaleX ---------------- */
     private TextView mTextViewScaleX;
+    public TextView getTextViewScaleX() {
+        return mTextViewScaleX;
+    }
     private boolean enableScaleX;
 
     /* ---------------- ///字符span：Code ---------------- */
     private ImageView mImageViewCode;
+    public ImageView getImageViewCode() {
+        return mImageViewCode;
+    }
     private boolean enableCode;
 
     /* ---------------- ///字符span：Block ---------------- */
     private ImageView mImageViewBlock;
+    public ImageView getImageViewBlock() {
+        return mImageViewBlock;
+    }
     private boolean enableBlock;
 
     /* ---------------- ///字符span：Border ---------------- */
     private ImageView mImageViewBorder;
+    public ImageView getImageViewBorder() {
+        return mImageViewBorder;
+    }
     private boolean enableBorder;
 
     /* ---------------- ///字符span（带参数）：URL ---------------- */
     private ImageView mImageViewUrl;
+    public ImageView getImageViewUrl() {
+        return mImageViewUrl;
+    }
     private boolean enableUrl;
 
     /* ---------------- ///字符span（带参数）：Image ---------------- */
     private ImageView mImageViewVideo;
+    public ImageView getImageViewVideo() {
+        return mImageViewVideo;
+    }
     private boolean enableVideo;
     private ImageView mImageViewAudio;
+    public ImageView getImageViewAudio() {
+        return mImageViewAudio;
+    }
     private boolean enableAudio;
     private ImageView mImageViewImage;
+    public ImageView getImageViewImage() {
+        return mImageViewImage;
+    }
     private boolean enableImage;
     private ClickImageSpanDialogBuilder mClickImageSpanDialogBuilder;
 

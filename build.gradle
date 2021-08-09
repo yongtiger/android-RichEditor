@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.4.0",   ///v2.4.0#ToolbarHelper#getTextFromJson(String src)
-                versionCode: 20400
+                versionName: "2.4.1",   ///v2.4.1#RichEditorToolbar#各个View增加getter
+                versionCode: 20401
         ]
     }
 
