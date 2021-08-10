@@ -141,6 +141,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
         UndoRedoHelper.OnPositionChangedListener, ToolbarHelper.LegacyLoadImageCallback {
+
     public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
 
