@@ -24,8 +24,8 @@ android {
     ///[FIX BUG#Static interface methods are only supported starting with Android N (--min-api 24): okhttp3.Request okhttp3.Authenticator.lambda$static$0(okhttp3.Route, okhttp3.Response)]
     ///https://github.com/square/okhttp/issues/4597
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_10
-        sourceCompatibility JavaVersion.VERSION_1_10
+        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_11
     }
 }
 
