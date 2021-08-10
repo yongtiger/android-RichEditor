@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.5.13",   ///v2.5.13
-                versionCode: 20513
+                versionName: "2.5.14",   ///v2.5.14#[ClickImageSpanDialogBuilder#OnClickImageSpanDialogReadyListener]首次打开ClickImageSpanDialog后自动启动Camera
+                versionCode: 20514
         ]
     }
 
