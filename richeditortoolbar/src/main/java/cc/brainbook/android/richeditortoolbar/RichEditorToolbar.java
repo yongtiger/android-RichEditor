@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
@@ -175,6 +177,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private LineDividerSpan.DrawBackgroundCallback mDrawBackgroundCallback;
     public void setDrawBackgroundCallback(LineDividerSpan.DrawBackgroundCallback drawBackgroundCallback) {
         mDrawBackgroundCallback = drawBackgroundCallback;
+    }
+
+    ///[OnReadyListener]
+    public interface OnReadyListener {
+        void onReady();
+    }
+    private OnReadyListener mOnReadyListener;
+    public void setOnReadyListener(OnReadyListener onReadyListener) {
+        mOnReadyListener = onReadyListener;
     }
 
 
@@ -366,11 +377,17 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
     private boolean enableImage;
     private ClickImageSpanDialogBuilder mClickImageSpanDialogBuilder;
+    public ClickImageSpanDialogBuilder getClickImageSpanDialogBuilder() {
+        return mClickImageSpanDialogBuilder;
+    }
 
     private ClickImageSpanDialogBuilder.ImageSpanCallback mImageSpanCallback;
     public void setImageSpanCallback(ClickImageSpanDialogBuilder.ImageSpanCallback imageSpanCallback) {
         mImageSpanCallback = imageSpanCallback;
     }
+
+    ///[ClickImageSpanDialogBuilder#isStartCamera]打开ClickImageSpanDialog时自动开启Camera
+    public boolean isStartCamera;
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mRequestCodeHtmlEditor == requestCode) {
@@ -999,6 +1016,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///[Undo/Redo]初始化时设置Undo/Redo各按钮的状态
         initUndoRedo();
+
+        ///[OnReadyListener]
+        if (mOnReadyListener != null) {
+            mOnReadyListener.onReady();
+        }
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
@@ -2143,9 +2165,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int width = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
+
                 mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
                 AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
-                alertDialog.show();
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
@@ -2153,6 +2175,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         mRichEditText.enableSelectionChange();
                     }
                 });
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface dialog) {
+                        if (mOnClickImageSpanDialogReadyListener != null) {
+                            mOnClickImageSpanDialogReadyListener.onReady();
+                        }
+                    }
+                });
+                alertDialog.show();
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                 mRichEditText.disableSelectionChange(true);
@@ -2165,6 +2196,16 @@ public class RichEditorToolbar extends FlexboxLayout implements
             applyCharacterStyleSpans(view, editable);
         }
     }
+
+    ///[ClickImageSpanDialogBuilder#OnClickImageSpanDialogReadyListener]
+    public interface OnClickImageSpanDialogReadyListener {
+        void onReady();
+    }
+    private OnClickImageSpanDialogReadyListener mOnClickImageSpanDialogReadyListener;
+    public void setOnClickImageSpanDialogReadyListener(OnClickImageSpanDialogReadyListener onReadyListener) {
+        mOnClickImageSpanDialogReadyListener = onReadyListener;
+    }
+
 
     ///注意：若开启LongClick，则android:tooltipText会不显示
     @Override

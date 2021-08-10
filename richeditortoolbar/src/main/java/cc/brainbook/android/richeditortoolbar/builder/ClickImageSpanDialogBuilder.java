@@ -97,6 +97,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	private Button mButtonPickFromGallery;
 	private Button mButtonPickFromCamera;
+	public Button getButtonPickFromCamera() {
+		return mButtonPickFromCamera;
+	}
+
 	private EditText mEditTextSrc;
 
 	private ImageView mImageViewPreview;
@@ -192,8 +196,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 
 	public AlertDialog build() {
-		Context context = builder.getContext();
-
 		return builder.create();
 	}
 
@@ -247,6 +249,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		});
 		return this;
 	}
+
 	public ClickImageSpanDialogBuilder setNeutralButton(CharSequence text, final OnClickListener onClickListener) {
 		builder.setNeutralButton(text, new DialogInterface.OnClickListener() {
 			@Override

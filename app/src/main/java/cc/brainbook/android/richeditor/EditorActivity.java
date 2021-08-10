@@ -154,6 +154,30 @@ public class EditorActivity extends AppCompatActivity {
             }
         });
 
+        ///[ClickImageSpanDialogBuilder#OnClickImageSpanDialogReadyListener]
+        mRichEditorToolbar.setOnReadyListener(new RichEditorToolbar.OnReadyListener() {
+            @Override
+            public void onReady() {
+                ///初始化mRichEditorToolbar时自动点击ImageViewImage
+                if (mRichEditorToolbar.getImageViewImage() != null) {
+                    mRichEditorToolbar.getImageViewImage().performClick();
+                }
+
+                mRichEditorToolbar.setOnClickImageSpanDialogReadyListener(new RichEditorToolbar.OnClickImageSpanDialogReadyListener() {
+                    @Override
+                    public void onReady() {
+                        ///首次打开ClickImageSpanDialog后自动启动Camera
+                        mRichEditorToolbar.setOnClickImageSpanDialogReadyListener(null);
+
+                        if (mRichEditorToolbar.getClickImageSpanDialogBuilder() != null
+                                && mRichEditorToolbar.getClickImageSpanDialogBuilder().getButtonPickFromCamera() != null) {
+                            mRichEditorToolbar.getClickImageSpanDialogBuilder().getButtonPickFromCamera().performClick();
+                        }
+                    }
+                });
+            }
+        });
+
         ///（必选）初始化
         mRichEditorToolbar.init();
     }

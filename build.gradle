@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.5.0",   ///v2.5.0#update gradle
-                versionCode: 20500
+                versionName: "2.5.1",   ///v2.5.1#[ClickImageSpanDialogBuilder#OnClickImageSpanDialogReadyListener]首次打开ClickImageSpanDialog后自动启动Camera
+                versionCode: 20501
         ]
     }
 
