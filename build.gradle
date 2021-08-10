@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.5.9",   ///v2.5.9
-                versionCode: 20509
+                versionName: "2.5.10",   ///v2.5.10
+                versionCode: 20510
         ]
     }
 
