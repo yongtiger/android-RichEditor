@@ -16,8 +16,8 @@
             android:id="@+id/ib_decrease"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_decrease"
-            android:tooltipText="@string/tool_tip_decrease"
+            android:contentDescription="@string/tooltip_decrease"
+            android:tooltipText="@string/tooltip_decrease"
             app:srcCompat="@drawable/ic_baseline_decrease_24" />
 
         <EditText
@@ -36,8 +36,8 @@
             android:id="@+id/ib_increase"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tool_tip_increase"
-            android:tooltipText="@string/tool_tip_increase"
+            android:contentDescription="@string/tooltip_increase"
+            android:tooltipText="@string/tooltip_increase"
             app:srcCompat="@drawable/ic_baseline_increase_24" />
 
     </LinearLayout>
@@ -48,8 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ll_linear_layout"
         android:layout_margin="@dimen/global_dimen"
-        android:contentDescription="@string/tool_tip_reverse"
-        android:tooltipText="@string/tool_tip_reverse"
+        android:contentDescription="@string/tooltip_reverse"
+        android:tooltipText="@string/tooltip_reverse"
         android:text="@string/list_span_reverse" />
 
 </RelativeLayout>
