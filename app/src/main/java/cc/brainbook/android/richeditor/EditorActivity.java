@@ -158,6 +158,10 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setOnReadyListener(new RichEditorToolbar.OnReadyListener() {
             @Override
             public void onReady() {
+                if (savedInstanceState != null) {
+                    return;
+                }
+
                 ///初始化mRichEditorToolbar时自动点击ImageViewImage
                 if (mRichEditorToolbar.getImageViewImage() != null) {
                     mRichEditorToolbar.getImageViewImage().performClick();
