@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.1",   ///v2.7.1#update gradle:7.0.2
-                versionCode: 20701
+                versionName: "2.7.2",   ///v2.7.2#[FIX#DoodleView#OutOfMemoryError]
+                versionCode: 20702
         ]
     }
 
