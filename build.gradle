@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.3",   ///v2.7.3#[FIX#Bitmap#OutOfMemoryError]
-                versionCode: 20703
+                versionName: "2.7.4",   ///v2.7.4#[FIX#Bitmap#OutOfMemoryError]
+                versionCode: 20704
         ]
     }
 
