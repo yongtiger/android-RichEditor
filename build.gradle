@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.5",   ///v2.7.5#[FIX#Bitmap#OutOfMemoryError]
-                versionCode: 20705
+                versionName: "2.7.6",   ///v2.7.6#[FIX#add vectorDrawables.useSupportLibrary = true]
+                versionCode: 20706
         ]
     }
 

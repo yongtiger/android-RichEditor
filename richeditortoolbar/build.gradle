@@ -26,6 +26,10 @@ android {
         minSdkVersion setup.minSdk
         targetSdkVersion setup.targetSdk
 
+        multiDexEnabled true
+
+        vectorDrawables.useSupportLibrary = true
+
         consumerProguardFiles "consumer-rules.pro"
     }
 
