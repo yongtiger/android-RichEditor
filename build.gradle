@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.9",   ///v2.7.9#consumer-rules.pro#Proguard configuration for Gson
-                versionCode: 20709
+                versionName: "2.7.10",   ///v2.7.10#consumer-rules.pro#Proguard configuration for Gson
+                versionCode: 20710
         ]
     }
 
