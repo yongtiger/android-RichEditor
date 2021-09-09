@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.7",   ///v2.7.7#[含有RichEditor的Activity#重启时如有对话框则不再显示，造成无法接收拍照等，暂时禁止重启！以后考虑优化]
-                versionCode: 20707
+                versionName: "2.7.8",   ///v2.7.8#OutOfMemoryError#CustomImageSpan#draw()
+                versionCode: 20708
         ]
     }
 

@@ -10,7 +10,9 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.gson.annotations.Expose;
 
@@ -100,26 +102,31 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
     @Override
     public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y,
                      int bottom, @NonNull Paint paint) {
-        if (mVerticalAlignment != ALIGN_CENTER) {
-            super.draw(canvas, text, start, end, x, top, y, bottom, paint);
-            return;
-        }
+        try {
+            if (mVerticalAlignment != ALIGN_CENTER) {
+                super.draw(canvas, text, start, end, x, top, y, bottom, paint);
+                return;
+            }
 
-        Drawable drawable = getCachedDrawable();
-        canvas.save();
-        Paint.FontMetricsInt fm = paint.getFontMetricsInt();
+            Drawable drawable = getCachedDrawable();
+            canvas.save();
+            Paint.FontMetricsInt fm = paint.getFontMetricsInt();
 //        int transY = (bottom - top) / 2 - b.getBounds().height() / 2;   //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 
-        int transY = (y + fm.descent + y + fm.ascent) / 2 - drawable.getBounds().bottom / 2;    ///实测有效！https://www.jianshu.com/p/add321678859
+            int transY = (y + fm.descent + y + fm.ascent) / 2 - drawable.getBounds().bottom / 2;    ///实测有效！https://www.jianshu.com/p/add321678859
 
-        ///https://segmentfault.com/a/1190000007133405，但存在bug！
+            ///https://segmentfault.com/a/1190000007133405，但存在bug！
 //        int fontHeight = fm.descent - fm.ascent;
 //        int centerY = y + fm.descent - fontHeight / 2;
 //        int transY = centerY - (drawable.getBounds().bottom - drawable.getBounds().top) / 2;
 
-        canvas.translate(x, transY);
-        drawable.draw(canvas);
-        canvas.restore();
+            canvas.translate(x, transY);
+            drawable.draw(canvas);
+            canvas.restore();
+        } catch (OutOfMemoryError error) {
+            error.printStackTrace();
+            Log.e("TAG", "CustomImageSpan# draw# ", error);
+        }
     }
 
     private Drawable getCachedDrawable() {
