@@ -30,7 +30,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".EditorActivity" />
+        <!--//////??????[含有RichEditor的Activity#重启时如有对话框则不再显示，造成无法接收拍照等，暂时禁止重启！以后考虑优化]-->
+        <!--///含有RichEditor的Activity都必须设置android:screenOrientation="portrait"和android:configChanges="uiMode|orientation|keyboard|screenSize"-->
+        <activity android:name=".EditorActivity"
+            android:configChanges="uiMode|orientation|keyboard|screenSize"
+            android:screenOrientation="portrait" />
 
         <activity android:name=".HtmlEditorActivity" />
 

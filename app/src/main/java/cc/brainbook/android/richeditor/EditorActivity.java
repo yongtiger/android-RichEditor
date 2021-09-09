@@ -1,10 +1,13 @@
 package cc.brainbook.android.richeditor;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.util.Pair;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -224,6 +227,17 @@ public class EditorActivity extends AppCompatActivity {
         if (mRichEditorToolbar != null) {
             mRichEditorToolbar.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    ///当设置了android:configChanges="smallestScreenSize|screenLayout|orientation|keyboardHidden|screenSize"不会重启Activity，将调用onConfigurationChanged()
+    ///但必须在onConfigurationChanged(Configuration newConfig)中根据新的newConfig来配置新布局中各个控件！
+    ///Note: To use android:configChanges attribute is also not recommended by Android!
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        //////??????[含有RichEditor的Activity#重启时如有对话框则不再显示，造成无法接收拍照等，暂时禁止重启！以后考虑优化]
+//        recreate();
     }
 
 

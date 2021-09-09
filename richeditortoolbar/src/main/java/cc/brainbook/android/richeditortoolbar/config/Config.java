@@ -12,8 +12,8 @@ public abstract class Config {
     public static final int IMAGE_MAX_DISPLAY_DIGITS = 4;
 
     /////??????Android设备最大尺寸（目前为3040）
-    public static final int IMAGE_MAX_WIDTH = 5000;
-    public static final int IMAGE_MAX_HEIGHT = 5000;
+    public static final int IMAGE_MAX_WIDTH = 1024;
+    public static final int IMAGE_MAX_HEIGHT = 1024;
 
     ///ColorDrawable.getWidth()/getHeight()均为-1，此时设置为缺省数值
     public static final int IMAGE_DEFAULT_WIDTH = 200;
