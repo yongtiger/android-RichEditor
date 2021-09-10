@@ -53,6 +53,8 @@ import cn.hzw.doodle.DoodleParams;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
@@ -540,106 +542,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final String src = s.toString();
 				Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# src: " + src);
 
-				///Glide下载图片（使用已经缓存的图片）给imageView
-				///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
-				//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
-				final RequestOptions options = new RequestOptions();
-
-				///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
-				///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
-				///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-					final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
-							///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
-//                    		R.drawable.layer_list_placeholder,
-							R.drawable.placeholder,
-							mContext.getTheme());
-
-					options.placeholder(placeholderDrawable);
-				} else {
-					options.placeholder(R.drawable.layer_list_placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
-				}
-
-				///获取图片真正的宽高
-				///https://www.jianshu.com/p/299b637afe7c
-				Glide.with(mContext.getApplicationContext())
-//						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
-						.load(src)
-						.apply(options)
-
-//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
-//						.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-//						.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
-
-						///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
-						///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
-						///https://github.com/bumptech/glide/issues/3304
-//						.into(new SimpleTarget<Bitmap>() { ... }
-						.into(new CustomTarget<Drawable>() {
-							@Override
-							public void onLoadStarted(@Nullable Drawable placeholder) {
-								mImageViewPreview.setImageDrawable(placeholder);
-
-								enableEditTextDisplayChangedListener = false;
-								mEditTextDisplayWidth.setText(null);
-								mEditTextDisplayHeight.setText(null);
-								enableEditTextDisplayChangedListener = true;
-
-								mSliderDisplayWidth.setEnabled(false);
-								mSliderDisplayHeight.setEnabled(false);
-								mEditTextDisplayWidth.setEnabled(false);
-								mEditTextDisplayHeight.setEnabled(false);
-								mCheckBoxDisplayConstrainWidth.setEnabled(false);
-								mCheckBoxDisplayConstrainHeight.setEnabled(false);
-								mImageButtonDisplayRestore.setEnabled(false);
-								mImageButtonZoomOut.setEnabled(false);
-								mImageButtonZoomIn.setEnabled(false);
-
-								///先设置Crop和Draw为false
-								mButtonCrop.setEnabled(false);
-								mButtonDraw.setEnabled(false);
-							}
-
-							@Override
-							public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
-								///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-								Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
-								final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
-								mImageWidth = pair.first; mImageHeight = pair.second;
-								Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
-
-								///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
-								mOriginalDrawable = drawable;
-								setDrawable(drawable, mImageWidth, mImageHeight);
-
-								if (!(drawable instanceof GifDrawable)) {
-									///除GifDrawable保持禁止之外，其它都允许Crop和Draw
-									mButtonCrop.setEnabled(true);
-									mButtonDraw.setEnabled(true);
-								}
-
-								enableEditTextDisplayChangedListener = false;
-								mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-								mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
-								enableEditTextDisplayChangedListener = true;
-
-								mSliderDisplayWidth.setEnabled(true);
-								mSliderDisplayHeight.setEnabled(true);
-								mEditTextDisplayWidth.setEnabled(true);
-								mEditTextDisplayHeight.setEnabled(true);
-								mCheckBoxDisplayConstrainWidth.setEnabled(true);
-								mCheckBoxDisplayConstrainHeight.setEnabled(true);
-								mImageButtonDisplayRestore.setEnabled(true);
-								mImageButtonZoomOut.setEnabled(true);
-								mImageButtonZoomIn.setEnabled(true);
-							}
-
-							@Override
-							public void onLoadFailed(@Nullable Drawable errorDrawable) {}
-
-							@Override
-							public void onLoadCleared(@Nullable Drawable placeholder) {}
-						});
+				aaa(src);
 			}
 
 			@Override
@@ -820,6 +723,129 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
 	}
 
+	private void aaa(String src) {
+		///Glide下载图片（使用已经缓存的图片）给imageView
+		///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
+		//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
+		final RequestOptions options = new RequestOptions();
+
+		///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
+		///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
+		///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+			final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+					///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
+//                    		R.drawable.layer_list_placeholder,
+					R.drawable.placeholder,
+					mContext.getTheme());
+
+			options.placeholder(placeholderDrawable);
+		} else {
+			options.placeholder(R.drawable.layer_list_placeholder);	///options.placeholder(new ColorDrawable(Color.BLACK));	// 或者可以直接使用ColorDrawable
+		}
+
+		///获取图片真正的宽高
+		///https://www.jianshu.com/p/299b637afe7c
+		Glide.with(mContext.getApplicationContext())
+//						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
+				.load(src)
+				.apply(options)
+
+//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
+//						.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+				.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+
+				///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
+				///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
+				///https://github.com/bumptech/glide/issues/3304
+//						.into(new SimpleTarget<Bitmap>() { ... }
+				.into(new CustomTarget<Drawable>() {
+					@Override
+					public void onLoadStarted(@Nullable Drawable placeholder) {
+						mImageViewPreview.setImageDrawable(placeholder);
+
+						enableEditTextDisplayChangedListener = false;
+						mEditTextDisplayWidth.setText(null);
+						mEditTextDisplayHeight.setText(null);
+						enableEditTextDisplayChangedListener = true;
+
+						mSliderDisplayWidth.setEnabled(false);
+						mSliderDisplayHeight.setEnabled(false);
+						mEditTextDisplayWidth.setEnabled(false);
+						mEditTextDisplayHeight.setEnabled(false);
+						mCheckBoxDisplayConstrainWidth.setEnabled(false);
+						mCheckBoxDisplayConstrainHeight.setEnabled(false);
+						mImageButtonDisplayRestore.setEnabled(false);
+						mImageButtonDisplayRestore.setVisibility(View.INVISIBLE);
+						mImageButtonZoomOut.setEnabled(false);
+						mImageButtonZoomOut.setVisibility(View.INVISIBLE);
+						mImageButtonZoomIn.setEnabled(false);
+						mImageButtonZoomIn.setVisibility(View.INVISIBLE);
+
+						///先设置Crop和Draw为false
+						mButtonCrop.setEnabled(false);
+						mButtonDraw.setEnabled(false);
+					}
+
+					@Override
+					public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
+						///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
+						final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
+						mImageWidth = pair.first; mImageHeight = pair.second;
+						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
+
+						int width = mImageWidth, height = mImageHeight;
+						float ratio = (float) mImageWidth / mImageHeight;
+						if (width > height) {
+							if (width > IMAGE_MAX_WIDTH) {
+								width = IMAGE_MAX_WIDTH;
+								height = Math.round(width / ratio);
+							}
+						} else {
+							if (height > IMAGE_MAX_HEIGHT) {
+								height = IMAGE_MAX_HEIGHT;
+								width = Math.round(height * ratio);
+							}
+						}
+
+						///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+						mOriginalDrawable = drawable;
+						setDrawable(drawable, width, height);
+
+						enableEditTextDisplayChangedListener = false;
+						mEditTextDisplayWidth.setText(String.valueOf(width));
+						mEditTextDisplayHeight.setText(String.valueOf(height));
+						enableEditTextDisplayChangedListener = true;
+
+						if (!(drawable instanceof GifDrawable)) {
+							///除GifDrawable保持禁止之外，其它都允许Crop和Draw
+							mButtonCrop.setEnabled(true);
+							mButtonDraw.setEnabled(true);
+						}
+
+						mSliderDisplayWidth.setEnabled(true);
+						mSliderDisplayHeight.setEnabled(true);
+						mEditTextDisplayWidth.setEnabled(true);
+						mEditTextDisplayHeight.setEnabled(true);
+						mCheckBoxDisplayConstrainWidth.setEnabled(true);
+						mCheckBoxDisplayConstrainHeight.setEnabled(true);
+						mImageButtonDisplayRestore.setEnabled(true);
+						mImageButtonDisplayRestore.setVisibility(View.VISIBLE);
+						mImageButtonZoomOut.setEnabled(true);
+						mImageButtonZoomOut.setVisibility(View.VISIBLE);
+						mImageButtonZoomIn.setEnabled(true);
+						mImageButtonZoomIn.setVisibility(View.VISIBLE);
+					}
+
+					@Override
+					public void onLoadFailed(@Nullable Drawable errorDrawable) {}
+
+					@Override
+					public void onLoadCleared(@Nullable Drawable placeholder) {}
+				});
+	}
+
 	///https://www.jianshu.com/p/5b5cef2ffff2
 	private final InputFilter[] inputFilters = new InputFilter[] {
 			/**
@@ -857,7 +883,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			return;
 		}
 
-		drawable.setBounds(0, 0, width, height);
+		///[ImageViewPreview居中显示]
+		final int left = mImageViewPreview.getWidth() / 2 - width / 2;
+		drawable.setBounds(left, 0, left + width, height);
 		mImageViewPreview.setImageDrawable(drawable);
 
 		///[ImageSpan#Glide#GifDrawable]

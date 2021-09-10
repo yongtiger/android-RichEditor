@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.12",   ///v2.7.12#ClickImageSpanDialogBuilder#更新click_image_span_dialog.xml
-                versionCode: 20712
+                versionName: "2.7.13",   ///v2.7.13#ClickImageSpanDialogBuilder#[ImageViewPreview居中显示]
+                versionCode: 20713
         ]
     }
 
