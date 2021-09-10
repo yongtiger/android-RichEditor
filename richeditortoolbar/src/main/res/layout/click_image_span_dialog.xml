@@ -85,16 +85,6 @@
             android:inputType="textWebEmailAddress|textUri"
             app:layout_constraintTop_toBottomOf="@+id/btn_pickup_from_gallery" />
 
-        <ImageView
-            android:id="@+id/iv_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@null"
-            app:layout_constraintTop_toBottomOf="@+id/et_src"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
         <ImageButton
             android:id="@+id/ib_display_restore"
             android:layout_width="@dimen/global_dimen_4"
@@ -102,7 +92,7 @@
             android:layout_margin="@dimen/global_dimen"
             android:contentDescription="@string/image_span_tooltip_display_restore"
             android:tooltipText="@string/image_span_tooltip_display_restore"
-            app:layout_constraintTop_toBottomOf="@+id/iv_preview"
+            app:layout_constraintTop_toBottomOf="@+id/et_src"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_baseline_1x_mobiledata_24" />
@@ -199,65 +189,26 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_display_x"
             app:layout_constraintStart_toEndOf="@+id/et_display_height" />
 
-        <Button
-            android:id="@+id/btn_crop"
+        <ImageView
+            android:id="@+id/iv_preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="@dimen/global_dimen"
             android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tooltip_crop"
-            android:tooltipText="@string/image_span_tooltip_crop"
-            android:text="@string/image_span_crop"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toTopOf="@+id/iv_preview"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_draw"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/global_dimen"
-            android:contentDescription="@string/image_span_tooltip_draw"
-            android:tooltipText="@string/image_span_tooltip_draw"
-            android:text="@string/image_span_draw"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            android:contentDescription="@null"
+            android:fitsSystemWindows="true"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_x"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/slider_display_width"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/global_dimen"
-            android:layout_marginStart="@dimen/global_dimen"
-            android:layout_marginLeft="@dimen/global_dimen"
-            android:layout_marginEnd="@dimen/global_dimen"
-            android:layout_marginRight="@dimen/global_dimen"
-            android:valueFrom="-1.0"
-            android:valueTo="0.0"
-            android:stepSize="0.25"
-            android:value="0.0"
-            app:layout_constraintTop_toBottomOf="@+id/tv_display_x" />
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/slider_display_height"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/global_dimen"
-            android:layout_marginLeft="@dimen/global_dimen"
-            android:layout_marginEnd="@dimen/global_dimen"
-            android:layout_marginRight="@dimen/global_dimen"
-            android:valueFrom="-1.0"
-            android:valueTo="0.0"
-            android:stepSize="0.25"
-            android:value="0.0"
-            app:layout_constraintTop_toBottomOf="@+id/slider_display_width" />
 
         <RadioGroup
             android:id="@+id/rg_align"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            app:layout_constraintTop_toBottomOf="@+id/slider_display_height">
+            app:layout_constraintTop_toBottomOf="@+id/iv_preview">
 
             <RadioButton
                 android:id="@+id/rb_align_bottom"
@@ -284,6 +235,59 @@
                 android:tooltipText="@string/image_span_align_center" />
 
         </RadioGroup>
+
+        <Button
+            android:id="@+id/btn_crop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/global_dimen_2"
+            android:contentDescription="@string/image_span_tooltip_crop"
+            android:tooltipText="@string/image_span_tooltip_crop"
+            android:text="@string/image_span_crop"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_draw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/global_dimen_2"
+            android:contentDescription="@string/image_span_tooltip_draw"
+            android:tooltipText="@string/image_span_tooltip_draw"
+            android:text="@string/image_span_draw"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            app:layout_constraintTop_toTopOf="@+id/iv_preview"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_display_width"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/global_dimen"
+            android:layout_marginStart="@dimen/global_dimen"
+            android:layout_marginLeft="@dimen/global_dimen"
+            android:layout_marginEnd="@dimen/global_dimen"
+            android:layout_marginRight="@dimen/global_dimen"
+            android:valueFrom="-1.0"
+            android:valueTo="0.0"
+            android:stepSize="0.25"
+            android:value="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/btn_crop" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/slider_display_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/global_dimen"
+            android:layout_marginLeft="@dimen/global_dimen"
+            android:layout_marginEnd="@dimen/global_dimen"
+            android:layout_marginRight="@dimen/global_dimen"
+            android:valueFrom="-1.0"
+            android:valueTo="0.0"
+            android:stepSize="0.25"
+            android:value="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/slider_display_width" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

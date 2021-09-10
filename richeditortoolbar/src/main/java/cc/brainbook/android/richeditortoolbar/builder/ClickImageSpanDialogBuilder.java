@@ -857,17 +857,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			return;
 		}
 
+		drawable.setBounds(0, 0, width, height);
+		mImageViewPreview.setImageDrawable(drawable);
+
 		///[ImageSpan#Glide#GifDrawable]
 		///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
 		if (drawable instanceof GifDrawable) {
-			drawable.setBounds(0, 0, width, height);
-			mImageViewPreview.setImageDrawable(drawable);
-
 			((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
 			((GifDrawable) drawable).start();
-		} else {
-			drawable.setBounds(0, 0, width, height);
-			mImageViewPreview.setImageDrawable(drawable);
 		}
 	}
 
