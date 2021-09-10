@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.7.10",   ///v2.7.10#consumer-rules.pro#Proguard configuration for Gson
-                versionCode: 20710
+                versionName: "2.7.11",   ///v2.7.11#ClickImageSpanDialogBuilder#setDrawable()
+                versionCode: 20711
         ]
     }
 
