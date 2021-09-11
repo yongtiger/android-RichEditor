@@ -46,4 +46,13 @@
 
     </declare-styleable>
 
+    <!--///https://juejin.cn/post/6844903670174351374-->
+    <declare-styleable name="ImageViewExt">
+        <attr name="ive_scale_type_matrix_ext" format="enum">
+            <enum name="left_crop" value="1"/>
+            <enum name="right_crop" value="2"/>
+            <enum name="center_crop" value="3"/>
+        </attr>
+    </declare-styleable>
+
 </resources>

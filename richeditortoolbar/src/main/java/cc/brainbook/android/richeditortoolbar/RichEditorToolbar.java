@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
@@ -106,6 +104,8 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_LEADIN
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
@@ -362,6 +362,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
     private boolean enableUrl;
 
     /* ---------------- ///字符span（带参数）：Image ---------------- */
+    private int mImageMaxWidth = DEFAULT_IMAGE_MAX_WIDTH;
+    public int getImageMaxWidth() {
+        return mImageMaxWidth;
+    }
+    public void setImageMaxWidth(int imageMaxWidth) {
+        mImageMaxWidth = imageMaxWidth;
+    }
+    private int mImageMaxHeight = DEFAULT_IMAGE_MAX_HEIGHT;
+    public int getImageMaxHeight() {
+        return mImageMaxHeight;
+    }
+    public void setImageMaxHeight(int imageMaxHeight) {
+        mImageMaxHeight = imageMaxHeight;
+    }
+
     private ImageView mImageViewVideo;
     public ImageView getImageViewVideo() {
         return mImageViewVideo;
@@ -513,6 +528,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
                     null, -1,
+                    getImageMaxWidth(), getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
                     this, null, this);
         }
@@ -577,6 +593,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(pasteEditable, bytes),
                     pasteEditable, pasteOffset,
+                    getImageMaxWidth(), getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
                     this, null, this);
         } catch (IOException e) {
@@ -1036,6 +1053,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ToolbarHelper.postLoadSpans(mContext, editable,
                 ToolbarHelper.fromSpanBeans(spanBeans, editable),
                 null, -1,
+                getImageMaxWidth(), getImageMaxHeight(),
                 mPlaceholderDrawable, mPlaceholderResourceId,
                 this, null, this);
     }
@@ -1215,6 +1233,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 ToolbarHelper.postLoadSpans(mContext, editable,
                         ToolbarHelper.fromSpanBeans(spanBeans, editable),
                         null, -1,
+                        getImageMaxWidth(), getImageMaxHeight(),
                         mPlaceholderDrawable, mPlaceholderResourceId,
                         this, null, this);
 
@@ -2167,6 +2186,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
 
+                mClickImageSpanDialogBuilder.setRichEditorToolbar(this);
                 mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
                 AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -3126,6 +3146,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             ///[ImageSpan#Glide#GifDrawable]
                             ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
                                     viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
+                                    getImageMaxWidth(), getImageMaxHeight(),
                                     mPlaceholderDrawable, mPlaceholderResourceId,
                                     this, null, this);
                         }
@@ -3199,6 +3220,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         ///[ImageSpan#Glide#GifDrawable]
                         ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
                                 viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
+                                getImageMaxWidth(), getImageMaxHeight(),
                                 mPlaceholderDrawable, mPlaceholderResourceId,
                                 this, null, this);
                     }

@@ -53,8 +53,6 @@ import cn.hzw.doodle.DoodleParams;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
@@ -152,8 +150,12 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageHeight = height;
 		Log.d("TAG-ClickImageSpan", "initial()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
-		mEditTextUri.setText(uriString);
-		mEditTextSrc.setText(src);
+		if (!TextUtils.isEmpty(src)) {
+			mEditTextUri.setText(uriString);
+		}
+		if (!TextUtils.isEmpty(src)) {
+			mEditTextSrc.setText(src);
+		}
 
 		mVerticalAlignment = align;
 		if (align == ALIGN_BOTTOM) {
@@ -172,14 +174,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	private ClickImageSpanDialogBuilder(@NonNull Context context, int theme, int mediaType) {
-        mContext = context;
-
 		mMediaType = mediaType;
 
 		final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		final View layout = inflater.inflate(R.layout.click_image_span_dialog, null);
 
 		initView(layout);
+		resetViews();
 
 		builder = new AlertDialog.Builder(context, theme);
 		builder.setView(layout);
@@ -305,7 +306,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							if (mImageSpanCallback != null) {
 								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(builder.getContext(), resultUri);
 								if (videoCoverFile != null) {
 									mImageWidth = 0;
 									mImageHeight = 0;
@@ -315,19 +316,19 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 						}
 					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
-						Toast.makeText(mContext.getApplicationContext(),
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Toast.makeText(builder.getContext().getApplicationContext(),
 								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(),
+				Toast.makeText(builder.getContext().getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed));
-				Toast.makeText(mContext.getApplicationContext(),
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -344,7 +345,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
 							if (mImageSpanCallback != null) {
 								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(mContext, resultUri);
+								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(builder.getContext(), resultUri);
 								if (videoCoverFile != null) {
 									mImageWidth = 0;
 									mImageHeight = 0;
@@ -354,19 +355,19 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 						}
 					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
-						Toast.makeText(mContext.getApplicationContext(),
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Toast.makeText(builder.getContext().getApplicationContext(),
 								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(),
+				Toast.makeText(builder.getContext().getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed));
-				Toast.makeText(mContext.getApplicationContext(),
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(),
 						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -381,15 +382,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mImageHeight = 0;
 						mEditTextSrc.setText(selectedUri.toString());
 					} else {
-						Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_cannot_retrieve_image));
-						Toast.makeText(mContext.getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_cannot_retrieve_image));
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_select_failed));
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_select_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -403,10 +404,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					enableDeleteOldSrcFile = true;
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_capture_failed));
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_capture_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -424,7 +425,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final Throwable cropError = UCrop.getError(data);
 				if (cropError != null) {
 					Log.e("TAG-ClickImageSpan", cropError.getMessage());
-					Toast.makeText(mContext.getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext().getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
@@ -441,8 +442,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						enableDeleteOldSrcFile = true;
 					}
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
-					Log.e("TAG-ClickImageSpan", mContext.getString(R.string.message_image_draw_failed));
-					Toast.makeText(mContext.getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
+					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_draw_failed));
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
@@ -542,7 +543,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final String src = s.toString();
 				Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# src: " + src);
 
-				aaa(src);
+				loadImage(src);
 			}
 
 			@Override
@@ -679,10 +680,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, ACTION_CROP, src);
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_CROP, src);
 
 				if (pair.first != null && pair.second != null) {
-					startCrop((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+					final Activity activity = getActivity(builder.getContext());
+					if (activity != null) {
+						startCrop(activity, pair.first, pair.second.getAbsolutePath());
+					} else {
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+					}
 				}
 			}
 		});
@@ -697,10 +703,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(mContext, ACTION_DRAW, src);
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_DRAW, src);
 
 				if (pair.first != null && pair.second != null) {
-					startDraw((Activity) mContext, pair.first, pair.second.getAbsolutePath());
+					final Activity activity = getActivity(builder.getContext());
+					if (activity != null) {
+						startDraw(activity, pair.first, pair.second.getAbsolutePath());
+					} else {
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+					}
 				}
 			}
 		});
@@ -723,7 +734,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mRadioButtonAlignCenter = (RadioButton) layout.findViewById(R.id.rb_align_center);
 	}
 
-	private void aaa(String src) {
+	private void loadImage(String src) {
 		///Glide下载图片（使用已经缓存的图片）给imageView
 		///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
 		//////??????placeholder（占位符）、error（错误符）、fallback（后备回调符）
@@ -733,11 +744,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		///https://stackoverflow.com/questions/34417843/how-to-use-vectordrawables-in-android-api-lower-than-21
 		///https://stackoverflow.com/questions/39419596/resourcesnotfoundexception-file-res-drawable-abc-ic-ab-back-material-xml/41965285
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-			final Drawable placeholderDrawable = VectorDrawableCompat.create(mContext.getResources(),
+			final Drawable placeholderDrawable = VectorDrawableCompat.create(builder.getContext().getResources(),
 					///[FIX#Android KITKAT 4.4 (API 19及以下)使用layer-list Drawable出现异常：org.xmlpull.v1.XmlPullParserException: Binary XML file line #2<vector> tag requires viewportWidth > 0
 //                    		R.drawable.layer_list_placeholder,
 					R.drawable.placeholder,
-					mContext.getTheme());
+					builder.getContext().getTheme());
 
 			options.placeholder(placeholderDrawable);
 		} else {
@@ -746,14 +757,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		///获取图片真正的宽高
 		///https://www.jianshu.com/p/299b637afe7c
-		Glide.with(mContext.getApplicationContext())
+		Glide.with(builder.getContext().getApplicationContext())
 //						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
 				.load(src)
 				.apply(options)
 
-//						.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
-//						.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-				.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+//				.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
+//				.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//				.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
 
 				///SimpleTarget deprecated. Use CustomViewTarget if loading the content into a view
 				///http://bumptech.github.io/glide/javadocs/490/com/bumptech/glide/request/target/SimpleTarget.html
@@ -764,58 +775,34 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					public void onLoadStarted(@Nullable Drawable placeholder) {
 						mImageViewPreview.setImageDrawable(placeholder);
 
-						enableEditTextDisplayChangedListener = false;
-						mEditTextDisplayWidth.setText(null);
-						mEditTextDisplayHeight.setText(null);
-						enableEditTextDisplayChangedListener = true;
-
-						mSliderDisplayWidth.setEnabled(false);
-						mSliderDisplayHeight.setEnabled(false);
-						mEditTextDisplayWidth.setEnabled(false);
-						mEditTextDisplayHeight.setEnabled(false);
-						mCheckBoxDisplayConstrainWidth.setEnabled(false);
-						mCheckBoxDisplayConstrainHeight.setEnabled(false);
-						mImageButtonDisplayRestore.setEnabled(false);
-						mImageButtonDisplayRestore.setVisibility(View.INVISIBLE);
-						mImageButtonZoomOut.setEnabled(false);
-						mImageButtonZoomOut.setVisibility(View.INVISIBLE);
-						mImageButtonZoomIn.setEnabled(false);
-						mImageButtonZoomIn.setVisibility(View.INVISIBLE);
-
-						///先设置Crop和Draw为false
-						mButtonCrop.setEnabled(false);
-						mButtonDraw.setEnabled(false);
+						resetViews();
 					}
 
 					@Override
 					public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
 						///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
 						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
-						final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable, mImageWidth, mImageHeight, mLegacyLoadImageCallback);
+						final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable,
+								mImageWidth, mImageHeight,
+								getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight(),
+								mLegacyLoadImageCallback);
 						mImageWidth = pair.first; mImageHeight = pair.second;
 						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
-						int width = mImageWidth, height = mImageHeight;
-						float ratio = (float) mImageWidth / mImageHeight;
-						if (width > height) {
-							if (width > IMAGE_MAX_WIDTH) {
-								width = IMAGE_MAX_WIDTH;
-								height = Math.round(width / ratio);
-							}
-						} else {
-							if (height > IMAGE_MAX_HEIGHT) {
-								height = IMAGE_MAX_HEIGHT;
-								width = Math.round(height * ratio);
-							}
+						if (mImageWidth > getRichEditorToolbar().getImageMaxWidth() || mImageHeight > getRichEditorToolbar().getImageMaxHeight()) {
+							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
+									String.format(getRichEditorToolbar().getContext().getString(R.string.message_image_size_exceeds),
+											getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
+									Toast.LENGTH_LONG).show();
 						}
 
 						///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
 						mOriginalDrawable = drawable;
-						setDrawable(drawable, width, height);
+						setDrawable(drawable, mImageWidth, mImageHeight);
 
 						enableEditTextDisplayChangedListener = false;
-						mEditTextDisplayWidth.setText(String.valueOf(width));
-						mEditTextDisplayHeight.setText(String.valueOf(height));
+						mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+						mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
 						enableEditTextDisplayChangedListener = true;
 
 						if (!(drawable instanceof GifDrawable)) {
@@ -839,11 +826,49 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					}
 
 					@Override
-					public void onLoadFailed(@Nullable Drawable errorDrawable) {}
+					public void onLoadFailed(@Nullable Drawable errorDrawable) {
+						if (TextUtils.isEmpty(src)) {
+							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
+									R.string.message_please_input_image_resource,
+									Toast.LENGTH_LONG).show();
+						} else {
+							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
+									String.format(getRichEditorToolbar().getContext().getString(R.string.message_image_load_fails), src),
+									Toast.LENGTH_LONG).show();
+						}
+					}
 
 					@Override
-					public void onLoadCleared(@Nullable Drawable placeholder) {}
+					public void onLoadCleared(@Nullable Drawable placeholder) {
+//						Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
+//								String.format(getRichEditorToolbar().getContext().getString(R.string.message_image_load_is_cancelled), src),
+//								Toast.LENGTH_LONG).show();
+					}
 				});
+	}
+
+	private void resetViews() {
+		enableEditTextDisplayChangedListener = false;
+		mEditTextDisplayWidth.setText(null);
+		mEditTextDisplayHeight.setText(null);
+		enableEditTextDisplayChangedListener = true;
+
+		mSliderDisplayWidth.setEnabled(false);
+		mSliderDisplayHeight.setEnabled(false);
+		mEditTextDisplayWidth.setEnabled(false);
+		mEditTextDisplayHeight.setEnabled(false);
+		mCheckBoxDisplayConstrainWidth.setEnabled(false);
+		mCheckBoxDisplayConstrainHeight.setEnabled(false);
+		mImageButtonDisplayRestore.setEnabled(false);
+		mImageButtonDisplayRestore.setVisibility(View.INVISIBLE);
+		mImageButtonZoomOut.setEnabled(false);
+		mImageButtonZoomOut.setVisibility(View.INVISIBLE);
+		mImageButtonZoomIn.setEnabled(false);
+		mImageButtonZoomIn.setVisibility(View.INVISIBLE);
+
+		///先设置Crop和Draw为false
+		mButtonCrop.setEnabled(false);
+		mButtonDraw.setEnabled(false);
 	}
 
 	///https://www.jianshu.com/p/5b5cef2ffff2
@@ -883,9 +908,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			return;
 		}
 
-		///[ImageViewPreview居中显示]
-		final int left = mImageViewPreview.getWidth() / 2 - width / 2;
-		drawable.setBounds(left, 0, left + width, height);
+		drawable.setBounds(0, 0, width, height);
 		mImageViewPreview.setImageDrawable(drawable);
 
 		///[ImageSpan#Glide#GifDrawable]
@@ -897,7 +920,6 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	private void adjustEditTextDisplay(boolean isWidth, boolean isConstrain, float zoomFactor) {
-		///[FIX]
 		if (mEditTextDisplayWidth.getText() == null || mEditTextDisplayHeight.getText() == null) {
 			return;
 		}
@@ -909,8 +931,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		int newHeight = zoomFactor == 0.0F || isWidth && !isConstrain ? height : (int) (height * (zoomFactor + 1.0F));
 
 		final Pair<Integer, Integer> pair = isWidth ?
-				adjustWidth(newWidth, newHeight, mImageWidth, mImageHeight, isConstrain) :
-				adjustHeight(newWidth, newHeight, mImageWidth, mImageHeight, isConstrain);
+				adjustWidth(newWidth, newHeight,
+						getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight(),
+						mImageWidth, mImageHeight,
+						isConstrain) :
+				adjustHeight(newWidth, newHeight,
+						getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight(),
+						mImageWidth, mImageHeight,
+						isConstrain);
 
 		updateEditTextDisplay(width, height, pair.first, pair.second);
 
@@ -939,13 +967,18 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				.setType(mMediaType == 1 ? "video/*" : "audio/*")
 				.addCategory(Intent.CATEGORY_OPENABLE);
 
-		try {
-			((Activity) mContext).startActivityForResult(
-					Intent.createChooser(intent, mContext.getString(mMediaType == 1 ? R.string.label_select_video : R.string.label_select_audio)),
-					mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
-		} catch (ActivityNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+		final Activity activity = getActivity(builder.getContext());
+		if (activity != null) {
+			try {
+				activity.startActivityForResult(
+						Intent.createChooser(intent, builder.getContext().getString(mMediaType == 1 ? R.string.label_select_video : R.string.label_select_audio)),
+						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -957,7 +990,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
-		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
+		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(builder.getContext(), mMediaType);
 		Log.d("TAG-ClickImageSpan", "pickFromRecorder()# Uri: " + pair.first);
 
 		if (pair.first != null) {
@@ -974,12 +1007,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 			}
 
-			try {
-				((Activity) mContext).startActivityForResult(intent,
-						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			final Activity activity = getActivity(builder.getContext());
+			if (activity != null) {
+				try {
+					((Activity) builder.getContext()).startActivityForResult(intent,
+							mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
+				} catch (ActivityNotFoundException e) {
+					e.printStackTrace();
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -996,12 +1034,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
 		}
 
-		try {
-			((Activity) mContext).startActivityForResult(Intent.createChooser(intent, mContext.getString(R.string.label_select_picture)),
-					REQUEST_CODE_PICK_FROM_GALLERY);
-		} catch (ActivityNotFoundException e) {
-			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+		final Activity activity = getActivity(builder.getContext());
+		if (activity != null) {
+			try {
+				((Activity) builder.getContext()).startActivityForResult(Intent.createChooser(intent, builder.getContext().getString(R.string.label_select_picture)),
+						REQUEST_CODE_PICK_FROM_GALLERY);
+			} catch (ActivityNotFoundException e) {
+				e.printStackTrace();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1017,17 +1060,17 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		///https://stackoverflow.com/questions/64945660/consider-adding-a-queries-declaration-to-your-manifest-when-calling-this-method
 //		///Android R 11 (API 30)开始，只有预装的系统相机应用可以响应action.IMAGE_CAPTURE 等操作，
-//		///而且intent.resolveActivity(mContext.getPackageManager())会返回null
+//		///而且intent.resolveActivity(builder.getContext().getPackageManager())会返回null
 //		///https://juejin.im/post/6860370635664261128
 //		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
 //			// Ensure that there's a camera activity to handle the intent
-//			if (intent.resolveActivity(mContext.getPackageManager()) == null) {
-//				Toast.makeText(mContext.getApplicationContext(), R.string.message_system_camera_not_available, Toast.LENGTH_SHORT).show();
+//			if (intent.resolveActivity(builder.getContext().getPackageManager()) == null) {
+//				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_system_camera_not_available, Toast.LENGTH_SHORT).show();
 //				return;
 //			}
 //		}
 
-		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(mContext, mMediaType);
+		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(builder.getContext(), mMediaType);
 		mCameraResultFile = pair.second;
 		Log.d("TAG-ClickImageSpan", "pickFromCamera()# mCameraResultFile: " + pair.second);
 
@@ -1045,11 +1088,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 //				intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 //			}
 
-			try {
-				((Activity) mContext).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
-			} catch (ActivityNotFoundException e) {
-				e.printStackTrace();
-				Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			final Activity activity = getActivity(builder.getContext());
+			if (activity != null) {
+				try {
+					getActivity(builder.getContext()).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
+				} catch (ActivityNotFoundException e) {
+					e.printStackTrace();
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -1076,7 +1124,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(mContext.getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1086,14 +1134,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private void deleteOldUriFile() {
 		if (enableDeleteOldUriFile && !TextUtils.isEmpty(mEditTextUri.getText()) && !TextUtils.equals(mInitialUri, mEditTextUri.getText())) {
 			final Uri uri = Uri.parse(mEditTextUri.getText().toString());
-			final String filePath = UriUtil.getFilePathFromUri(mContext, uri);
+			final String filePath = UriUtil.getFilePathFromUri(builder.getContext(), uri);
 			deleteFile(filePath);
 		}
 	}
 	private void deleteOldSrcFile() {
 		if (enableDeleteOldSrcFile && !TextUtils.isEmpty(mEditTextSrc.getText()) && !TextUtils.equals(mInitialSrc, mEditTextSrc.getText())) {
 			final Uri uri = Uri.parse(mEditTextSrc.getText().toString());
-			final String filePath = UriUtil.getFilePathFromUri(mContext, uri);
+			final String filePath = UriUtil.getFilePathFromUri(builder.getContext(), uri);
 			deleteFile(filePath);
 		}
 	}

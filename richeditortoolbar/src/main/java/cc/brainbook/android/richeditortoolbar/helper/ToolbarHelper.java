@@ -82,10 +82,10 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_DEFAULT_WIDTH;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
@@ -1068,7 +1068,10 @@ public abstract class ToolbarHelper {
 
     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
     @NonNull
-    public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable, int width, int height, LegacyLoadImageCallback legacyLoadImageCallback) {
+    public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable,
+                                                            int width, int height,
+                                                            int imageMaxWidth, int imageMaxHeight,
+                                                            LegacyLoadImageCallback legacyLoadImageCallback) {
         ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
         ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
@@ -1081,21 +1084,21 @@ public abstract class ToolbarHelper {
 
         if ((width <= 0 || height <= 0)
                 && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
-            width = IMAGE_DEFAULT_WIDTH;
-            height = IMAGE_DEFAULT_HEIGHT;
+            width = imageMaxWidth;
+            height = imageMaxHeight;
         } else {
             if (width <= 0 && height <= 0) {
                 width = drawable.getIntrinsicWidth();
                 height = drawable.getIntrinsicHeight();
             } else if (width <= 0) {
                 width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-                if (width > IMAGE_MAX_WIDTH) {
-                    width = IMAGE_MAX_WIDTH;
+                if (width > imageMaxWidth) {
+                    width = imageMaxWidth;
                 }
             } else if (height <= 0) {
                 height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
-                if (height > IMAGE_MAX_HEIGHT) {
-                    height = IMAGE_MAX_HEIGHT;
+                if (height > imageMaxHeight) {
+                    height = imageMaxHeight;
                 }
             }
         }
@@ -1105,11 +1108,15 @@ public abstract class ToolbarHelper {
 
 
     @NonNull
-    public static Pair<Integer, Integer> adjustWidth(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+    public static Pair<Integer, Integer> adjustWidth(int width, int height,
+                                                     int imageMaxWidth, int imageMaxHeight,
+                                                     int compareWidth, int compareHeight,
+                                                     boolean isConstrain) {
         if (width <= 0) {
             width = compareWidth <= 0 || compareHeight <= 0 ? 0 : height * compareWidth / compareHeight;
             if (width > 0) {
-                final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, isConstrain);
+                final Pair<Integer, Integer> pair = adjustWidth(width, height,
+                        imageMaxWidth, imageMaxHeight, compareWidth, compareHeight, isConstrain);
                 width = pair.first;
                 height = pair.second;
             }
@@ -1117,13 +1124,14 @@ public abstract class ToolbarHelper {
             return new Pair<>(width, height);
         }
 
-        if (width > IMAGE_MAX_WIDTH) {
-            width = IMAGE_MAX_WIDTH;
+        if (width > imageMaxWidth) {
+            width = imageMaxWidth;
         }
 
         if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
             height = 0;
-            final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, true);
+            final Pair<Integer, Integer> pair = adjustHeight(width, height,
+                    imageMaxWidth, imageMaxHeight, compareWidth, compareHeight, true);
             width = pair.first;
             height = pair.second;
         }
@@ -1132,11 +1140,15 @@ public abstract class ToolbarHelper {
     }
 
     @NonNull
-    public static Pair<Integer, Integer> adjustHeight(int width, int height, int compareWidth, int compareHeight, boolean isConstrain) {
+    public static Pair<Integer, Integer> adjustHeight(int width, int height,
+                                                      int imageMaxWidth, int imageMaxHeight,
+                                                      int compareWidth, int compareHeight,
+                                                      boolean isConstrain) {
         if (height <= 0) {
             height = compareWidth <= 0 || compareHeight <= 0 ? 0 : width * compareHeight / compareWidth;
             if (height > 0) {
-                final Pair<Integer, Integer> pair = adjustHeight(width, height, compareWidth, compareHeight, isConstrain);
+                final Pair<Integer, Integer> pair = adjustHeight(width, height,
+                        imageMaxWidth, imageMaxHeight, compareWidth, compareHeight, isConstrain);
                 width = pair.first;
                 height = pair.second;
             }
@@ -1144,13 +1156,14 @@ public abstract class ToolbarHelper {
             return new Pair<>(width, height);
         }
 
-        if (height > IMAGE_MAX_HEIGHT) {
-            height = IMAGE_MAX_HEIGHT;
+        if (height > imageMaxHeight) {
+            height = imageMaxHeight;
         }
 
         if (isConstrain && (Math.abs(width * compareHeight - height * compareWidth) > compareWidth + compareHeight)) {
             width = 0;
-            final Pair<Integer, Integer> pair = adjustWidth(width, height, compareWidth, compareHeight, true);
+            final Pair<Integer, Integer> pair = adjustWidth(width, height,
+                    imageMaxWidth, imageMaxHeight, compareWidth, compareHeight, true);
             width = pair.first;
             height = pair.second;
         }
@@ -1165,13 +1178,15 @@ public abstract class ToolbarHelper {
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
-    public static void postSetText(@NonNull Context context, final TextView textView, String authority) {
+    public static void postSetText(@NonNull Context context, final TextView textView, String authority,
+                                                    final int imageMaxWidth, final int imageMaxHeight) {
         if (textView == null) {
             return;
         }
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
         ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(authority),
+                imageMaxWidth, imageMaxHeight,
                 ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
                 ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
                 new ToolbarHelper.LegacyLoadImageCallback() {
@@ -1185,6 +1200,7 @@ public abstract class ToolbarHelper {
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(@NonNull Context context, final Spannable textSpannable,
                                    CustomImageSpan.OnClickListener onClickListener,
+                                   final int imageMaxWidth, final int imageMaxHeight,
                                    LegacyLoadImageCallback legacyLoadImageCallback) {
         if (textSpannable == null) {
             return;
@@ -1194,7 +1210,9 @@ public abstract class ToolbarHelper {
         final List<IStyle> spanList = Arrays.asList(spans);
         ///执行postLoadSpans及后处理
         ToolbarHelper.postLoadSpans(context, textSpannable, spanList, null, -1,
-                null, R.drawable.layer_list_placeholder, new Drawable.Callback() {
+                imageMaxWidth, imageMaxHeight,
+                null, R.drawable.layer_list_placeholder,
+                new Drawable.Callback() {
                     ///[Drawable.Callback#ImageSpan#Glide#GifDrawable]
                     ///注意：TextView在实际使用中可能不由EditText产生并赋值，所以需要单独另行处理Glide#GifDrawable的Callback
                     @Override
@@ -1213,6 +1231,7 @@ public abstract class ToolbarHelper {
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
     public static void postLoadSpans(@NonNull Context context, Spannable spannable, List<IStyle> spans,
                                      Spannable pasteSpannable, int pasteOffset,
+                                     final int imageMaxWidth, final int imageMaxHeight,
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
@@ -1240,6 +1259,7 @@ public abstract class ToolbarHelper {
                 loadImage(context, span.getClass(), spannable, spanStart, spanEnd
                         , pasteSpannable, pasteOffset,
                         uri, source, verticalAlignment, drawableWidth, drawableHeight,
+                        imageMaxWidth, imageMaxHeight,
                         placeholderDrawable, placeholderResourceId,
                         drawableCallback, onClickListener, legacyLoadImageCallback
                         );
@@ -1250,7 +1270,9 @@ public abstract class ToolbarHelper {
     public static <T extends IStyle> void loadImage(@NonNull final Context context, @NonNull final Class<T> clazz, final Spannable spannable, final int start, final int end,
                                                     final Spannable pasteSpannable, final int pasteOffset,
                                                     final String viewTagUri, final String viewTagSrc,
-                                                    final int viewTagAlign, final int viewTagWidth, final int viewTagHeight,
+                                                    final int viewTagAlign,
+                                                    final int viewTagWidth, final int viewTagHeight,
+                                                    final int imageMaxWidth, final int imageMaxHeight,
                                                     Drawable placeholderDrawable,
                                                     @DrawableRes int placeholderResourceId,
                                                     Drawable.Callback drawableCallback,
@@ -1288,7 +1310,10 @@ public abstract class ToolbarHelper {
 
                 if (drawable != null) {
                     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                    final Pair<Integer, Integer> pair = adjustDrawableSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
+                    final Pair<Integer, Integer> pair = adjustDrawableSize(drawable,
+                            viewTagWidth, viewTagHeight,
+                            imageMaxWidth, imageMaxHeight,
+                            legacyLoadImageCallback);
 
                     drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
@@ -1304,7 +1329,10 @@ public abstract class ToolbarHelper {
             @Override
             public void onResourceReady(@NonNull Drawable drawable) {
                 ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                final Pair<Integer, Integer> pair = adjustDrawableSize(drawable, viewTagWidth, viewTagHeight, legacyLoadImageCallback);
+                final Pair<Integer, Integer> pair = adjustDrawableSize(drawable,
+                        viewTagWidth, viewTagHeight,
+                        imageMaxWidth, imageMaxHeight,
+                        legacyLoadImageCallback);
 
                 drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 

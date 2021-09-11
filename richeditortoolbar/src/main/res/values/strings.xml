@@ -127,7 +127,11 @@
     <string name="message_please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
     <string name="message_activity_not_found">Activity not found</string>
     <string name="message_system_camera_not_available">System camera not available</string>
-    
+    <string name="message_please_input_image_resource">Please input image resource.</string>
+    <string name="message_image_load_fails">Image load fails. \n%s</string>
+    <string name="message_image_load_is_cancelled">Image load is cancelled and its resources are freed. \n%s</string>
+    <string name="message_image_size_exceeds">The image size exceeds (%d X %d), it is recommended to resize it to avoid application crash.</string>
+
     <string name="undo_redo_helper_label_init">init</string>
     <string name="undo_redo_helper_label_change_text">change text</string>
     <string name="undo_redo_helper_label_restore_draft">restore draft</string>

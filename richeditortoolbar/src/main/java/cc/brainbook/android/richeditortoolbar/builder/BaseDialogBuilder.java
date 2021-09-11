@@ -1,15 +1,42 @@
 package cc.brainbook.android.richeditortoolbar.builder;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
+
 public class BaseDialogBuilder {
+    ///https://stackoverflow.com/questions/9891360/getting-activity-from-context-in-android
+    @Nullable
+    public static Activity getActivity(@Nullable Context context) {
+        if (context == null) {
+            return null;
+        } else if (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            } else {
+                return getActivity(((ContextWrapper) context).getBaseContext());
+            }
+        }
+
+        return null;
+    }
+
     protected AlertDialog.Builder builder;
 
-    ///尽量直接使用mContext，避免用view.getContext()！否则可能获取不到Activity而导致异常
-    protected Context mContext;
-
+    protected RichEditorToolbar mRichEditorToolbar;
+    public RichEditorToolbar getRichEditorToolbar() {
+        return mRichEditorToolbar;
+    }
+    public BaseDialogBuilder setRichEditorToolbar(RichEditorToolbar richEditorToolbar) {
+        mRichEditorToolbar = richEditorToolbar;
+        return this;
+    }
 
     public BaseDialogBuilder setTitle(String title) {
         builder.setTitle(title);

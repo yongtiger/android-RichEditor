@@ -2,7 +2,6 @@ package cc.brainbook.android.richeditor;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.util.Pair;
 
 import android.content.Context;
@@ -26,6 +25,8 @@ import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
 
 public class EditorActivity extends AppCompatActivity {
     public static final String FILE_PROVIDER_AUTHORITIES_SUFFIX = ".file.path.share";
@@ -184,6 +185,10 @@ public class EditorActivity extends AppCompatActivity {
                 });
             }
         });
+
+        ///（可选）设置ImageMaxWidth/Height
+        mRichEditorToolbar.setImageMaxWidth(DEFAULT_IMAGE_MAX_WIDTH);
+        mRichEditorToolbar.setImageMaxHeight(DEFAULT_IMAGE_MAX_HEIGHT);
 
         ///（必选）初始化
         mRichEditorToolbar.init();

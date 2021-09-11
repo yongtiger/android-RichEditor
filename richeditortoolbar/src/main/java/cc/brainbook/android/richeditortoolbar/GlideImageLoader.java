@@ -3,6 +3,7 @@ package cc.brainbook.android.richeditortoolbar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -108,7 +109,18 @@ public class GlideImageLoader {
                     }
 
                     @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {}
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        Toast.makeText(mContext.getApplicationContext(),
+                                String.format(mContext.getString(R.string.message_image_load_fails), viewTagSrc),
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+//                        Toast.makeText(mContext.getApplicationContext(),
+//                                String.format(mContext.getString(R.string.message_image_load_is_cancelled), viewTagSrc),
+//                                Toast.LENGTH_LONG).show();
+                    }
                 });
     }
 
