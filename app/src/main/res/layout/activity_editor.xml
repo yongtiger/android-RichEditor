@@ -15,7 +15,7 @@
     <!--///app:toolbarName="rich_editor"   ///（可选，缺省为app:toolbarName="rich_editor"）RichEditorToolbar名字，用于保存草稿等，多RichEditorToolbar中必须添加且唯一！-->
     <!--///app:toolbarLayout="@layout/editor_toolbar"  ///（必选）自定义toolbar布局]-->
     <!--///app:enableLongClick="true"  ///（可选，缺省为false）是否开启LongClick。注意：若开启LongClick，则android:tooltipText会不显示-->
-    <!--///app:enableXXX    ///是否显示某按钮-->
+    <!--///app:enableXXX    ///是否enable某按钮-->
     <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
         android:id="@+id/rich_editor_tool_bar"
         android:layout_width="match_parent"
