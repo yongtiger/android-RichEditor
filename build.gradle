@@ -10,7 +10,7 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.0",   ///v2.8.0全面测试
+                versionName: "2.8.0",   ///v2.8.0#全面测试
                 versionCode: 20800
         ]
     }
