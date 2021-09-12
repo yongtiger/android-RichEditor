@@ -18,6 +18,8 @@
         android:gravity="start"
         android:scrollbars="vertical"
         android:lineSpacingExtra="8dp"
+        android:autofillHints="HTML"
+        android:hint="HTML"
         android:textSize="24sp"
         android:inputType="textMultiLine|textImeMultiLine|textVisiblePassword" />
 
