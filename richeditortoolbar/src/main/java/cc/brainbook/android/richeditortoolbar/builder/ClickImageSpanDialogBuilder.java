@@ -452,8 +452,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						enableDeleteOldSrcFile = true;
 					}
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
-					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_doodle_failed));
-					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_doodle_failed,
+					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed));
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_doodle_failed,
 							Toast.LENGTH_SHORT).show();
 				}
 			}
