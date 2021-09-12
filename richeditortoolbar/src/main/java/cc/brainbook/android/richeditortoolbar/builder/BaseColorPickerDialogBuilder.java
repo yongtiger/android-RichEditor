@@ -227,9 +227,8 @@ public class BaseColorPickerDialogBuilder extends BaseDialogBuilder {
         return start;
     }
 
-    private int getStartColor(Integer[] colors) {
-        Integer startColor = getStartOffset(colors);
-        return startColor == null ? Color.WHITE : colors[startColor];
+    private int getStartColor(@NonNull Integer[] colors) {
+        return colors[getStartOffset(colors)];
     }
 
     private static int getDimensionAsPx(@NonNull Context context, int rid) {

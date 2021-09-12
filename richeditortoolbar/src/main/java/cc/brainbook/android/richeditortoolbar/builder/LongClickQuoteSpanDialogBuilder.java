@@ -47,7 +47,8 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mStripWidth = progress;
-				mTextViewStripWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.quote_span_strip_width), progress));
+				mTextViewStripWidth.setText(String.format(seekBar.getContext().getResources().getString(
+						R.string.long_click_quote_span_dialog_builder_text_quote_span_strip_width), progress));
 			}
 
 			@Override
@@ -60,7 +61,7 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mGapWidth = progress;
-				mTextViewGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.quote_span_gap_width), progress));
+				mTextViewGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.long_click_quote_span_dialog_builder_text_quote_span_gap_width), progress));
 			}
 
 			@Override
@@ -72,9 +73,9 @@ public class LongClickQuoteSpanDialogBuilder extends BaseColorPickerDialogBuilde
 	}
 
 	private void setupView(@NonNull Context context) {
-		mTextViewStripWidth.setText(String.format(context.getResources().getString(R.string.quote_span_strip_width), mStripWidth));
+		mTextViewStripWidth.setText(String.format(context.getResources().getString(R.string.long_click_quote_span_dialog_builder_text_quote_span_strip_width), mStripWidth));
 		mSeekBarStripWidth.setProgress(mStripWidth);
-		mTextViewGapWidth.setText(String.format(context.getResources().getString(R.string.quote_span_gap_width), mGapWidth));
+		mTextViewGapWidth.setText(String.format(context.getResources().getString(R.string.long_click_quote_span_dialog_builder_text_quote_span_gap_width), mGapWidth));
 		mSeekBarGapWidth.setProgress(mGapWidth);
 	}
 

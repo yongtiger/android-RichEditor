@@ -153,7 +153,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public static final String DEFAULT_TOOLBAR_NAME = "rich_editor";
 
 
-    ///注意：只注册View不为null的Class！
+    //////??????只注册View不为null的Class！
     ///注意：ListItemSpan必须在ListSpan之后注册
     private final LinkedHashMap<Class<? extends IStyle>, View> mClassMap = new LinkedHashMap<>();
     @Nullable
@@ -195,7 +195,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewLeadingMargin() {
         return mImageViewLeadingMargin;
     }
-    private boolean enableLeadingMargin;
     private int mLeadingMarginSpanIndent = CUSTOM_LEADING_MARGIN_SPAN_DEFAULT_INDENT;
 
     /* ---------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan ---------------- */
@@ -203,24 +202,20 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewAlignNormal() {
         return mImageViewAlignNormal;
     }
-    private boolean enableAlignNormal;
     private ImageView mImageViewAlignCenter;
     public ImageView getImageViewAlignCenter() {
         return mImageViewAlignCenter;
     }
-    private boolean enableAlignCenter;
     private ImageView mImageViewAlignOpposite;
     public ImageView getImageViewAlignOpposite() {
         return mImageViewAlignOpposite;
     }
-    private boolean enableAlignOpposite;
 
     /* ---------------- ///段落span（带初始化参数）：List ---------------- */
     private ImageView mImageViewList;
     public ImageView getImageViewList() {
         return mImageViewList;
     }
-    private boolean enableList;
     private int mIndicatorMargin = LIST_SPAN_DEFAULT_INDENT;
     private int mIndicatorWidth = LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
     private int mIndicatorGapWidth = LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
@@ -231,7 +226,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewQuote() {
         return mImageViewQuote;
     }
-    private boolean enableQuote;
     private @ColorInt int mQuoteSpanColor = CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
     private int mQuoteSpanStripWidth = CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
     private int mQuoteSpanGapWidth = CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
@@ -241,21 +235,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewPre() {
         return mImageViewPre;
     }
-    private boolean enablePre;
 
     /* ---------------- ///段落span（带参数）：Head ---------------- */
     private TextView mTextViewHead;
     public TextView getTextViewHead() {
         return mTextViewHead;
     }
-    private boolean enableHead;
 
     /* ---------------- ///段落span：LineDivider ---------------- */
     private ImageView mImageViewLineDivider;
     public ImageView getImageViewLineDivider() {
         return mImageViewLineDivider;
     }
-    private boolean enableLineDivider;
     private int mLineDividerSpanMarginTop = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
     private int mLineDividerSpanMarginBottom = LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 
@@ -264,102 +255,86 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewBold() {
         return mImageViewBold;
     }
-    private boolean enableBold;
     private ImageView mImageViewItalic;
     public ImageView getImageViewItalic() {
         return mImageViewItalic;
     }
-    private boolean enableItalic;
 
     /* ---------------- ///字符span：Underline、StrikeThrough、Subscript、Superscript ---------------- */
     private ImageView mImageViewUnderline;
     public ImageView getImageViewUnderline() {
         return mImageViewUnderline;
     }
-    private boolean enableUnderline;
     private ImageView mImageViewStrikethrough;
     public ImageView getImageViewStrikethrough() {
         return mImageViewStrikethrough;
     }
-    private boolean enableStrikethrough;
     private ImageView mImageViewSubscript;
     public ImageView getImageViewSubscript() {
         return mImageViewSubscript;
     }
-    private boolean enableSubscript;
     private ImageView mImageViewSuperscript;
     public ImageView getImageViewSuperscript() {
         return mImageViewSuperscript;
     }
-    private boolean enableSuperscript;
 
     /* ---------------- ///字符span（带参数）：ForegroundColor、BackgroundColor ---------------- */
     private ImageView mImageViewForegroundColor;
     public ImageView getImageViewForegroundColor() {
         return mImageViewForegroundColor;
     }
-    private boolean enableForegroundColor;
     private ImageView mImageViewBackgroundColor;
     public ImageView getImageViewBackgroundColor() {
         return mImageViewBackgroundColor;
     }
-    private boolean enableBackgroundColor;
 
     /* ---------------- ///字符span（带参数）：FontFamily ---------------- */
     private TextView mTextViewFontFamily;
     public TextView getTextViewFontFamily() {
         return mTextViewFontFamily;
     }
-    private boolean enableFontFamily;
 
     /* ---------------- ///字符span（带参数）：AbsoluteSize ---------------- */
     private TextView mTextViewAbsoluteSize;
     public TextView getImageViewAbsoluteSize() {
         return mTextViewAbsoluteSize;
     }
-    private boolean enableAbsoluteSize;
 
     /* ---------------- ///字符span（带参数）：RelativeSize ---------------- */
     private TextView mTextViewRelativeSize;
     public TextView getTextViewRelativeSize() {
         return mTextViewRelativeSize;
     }
-    private boolean enableRelativeSize;
 
     /* ---------------- ///字符span（带参数）：ScaleX ---------------- */
     private TextView mTextViewScaleX;
     public TextView getTextViewScaleX() {
         return mTextViewScaleX;
     }
-    private boolean enableScaleX;
 
     /* ---------------- ///字符span：Code ---------------- */
     private ImageView mImageViewCode;
     public ImageView getImageViewCode() {
         return mImageViewCode;
     }
-    private boolean enableCode;
 
     /* ---------------- ///字符span：Block ---------------- */
     private ImageView mImageViewBlock;
     public ImageView getImageViewBlock() {
         return mImageViewBlock;
     }
-    private boolean enableBlock;
 
     /* ---------------- ///字符span：Border ---------------- */
     private ImageView mImageViewBorder;
     public ImageView getImageViewBorder() {
         return mImageViewBorder;
     }
-    private boolean enableBorder;
 
     /* ---------------- ///字符span（带参数）：URL ---------------- */
     private ImageView mImageViewUrl;
     public ImageView getImageViewUrl() {
         return mImageViewUrl;
     }
-    private boolean enableUrl;
 
     /* ---------------- ///字符span（带参数）：Image ---------------- */
     private int mImageMaxWidth = DEFAULT_IMAGE_MAX_WIDTH;
@@ -381,17 +356,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     public ImageView getImageViewVideo() {
         return mImageViewVideo;
     }
-    private boolean enableVideo;
     private ImageView mImageViewAudio;
     public ImageView getImageViewAudio() {
         return mImageViewAudio;
     }
-    private boolean enableAudio;
     private ImageView mImageViewImage;
     public ImageView getImageViewImage() {
         return mImageViewImage;
     }
-    private boolean enableImage;
     private ClickImageSpanDialogBuilder mClickImageSpanDialogBuilder;
     public ClickImageSpanDialogBuilder getClickImageSpanDialogBuilder() {
         return mClickImageSpanDialogBuilder;
@@ -450,15 +422,11 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///[清除样式] ---------------- */
     private ImageView mImageViewClearStyles;
-    private boolean enableClearStyles;
 
     /* ---------------- ///[草稿Draft] ---------------- */
     private ImageView mImageViewSaveDraft;
-    private boolean enableSaveDraft;
     private ImageView mImageViewRestoreDraft;
-    private boolean enableRestoreDraft;
     private ImageView mImageViewClearDraft;
-    private boolean enableClearDraft;
 
     private boolean checkDraft() {
         final String draftText = PrefsUtil.getString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, null);
@@ -668,361 +636,287 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         /* -------------- ///段落span（带初始化参数）：LeadingMargin --------------- */
         mImageViewLeadingMargin = (ImageView) findViewById(R.id.toolbar_leading_margin);
-        enableLeadingMargin = mImageViewLeadingMargin != null && a.getBoolean(R.styleable.RichEditorToolbar_enableLeadingMargin, true);
-        if (enableLeadingMargin) {
+        if (mImageViewLeadingMargin != null) {
+            mImageViewLeadingMargin.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableLeadingMargin, true));
             mImageViewLeadingMargin.setOnClickListener(this);
             mImageViewLeadingMargin.setOnLongClickListener(enableLongClick ? this : null);
             mClassMap.put(CustomLeadingMarginSpan.class, mImageViewLeadingMargin);
-        } else if (mImageViewLeadingMargin != null) {
-            mImageViewLeadingMargin.setVisibility(GONE);
         }
 
         /* -------------- ///段落span：AlignNormalSpan、AlignCenterSpan、AlignOppositeSpan --------------- */
         mImageViewAlignNormal = (ImageView) findViewById(R.id.toolbar_align_normal);
-        enableAlignNormal = mImageViewAlignNormal != null && a.getBoolean(R.styleable.RichEditorToolbar_enableAlignNormal, true);
-        if (enableAlignNormal) {
+        if (mImageViewAlignNormal != null) {
+            mImageViewAlignNormal.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableAlignNormal, true));
             mImageViewAlignNormal.setOnClickListener(this);
             mClassMap.put(AlignNormalSpan.class, mImageViewAlignNormal);
-        } else if (mImageViewAlignNormal != null) {
-            mImageViewAlignNormal.setVisibility(GONE);
         }
 
         mImageViewAlignCenter = (ImageView) findViewById(R.id.toolbar_align_center);
-        enableAlignCenter = mImageViewAlignCenter != null && a.getBoolean(R.styleable.RichEditorToolbar_enableAlignCenter, true);
-        if (enableAlignCenter) {
+        if (mImageViewAlignCenter != null) {
+            mImageViewAlignCenter.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableAlignCenter, true));
             mImageViewAlignCenter.setOnClickListener(this);
             mClassMap.put(AlignCenterSpan.class, mImageViewAlignCenter);
-        } else if (mImageViewAlignCenter != null) {
-            mImageViewAlignCenter.setVisibility(GONE);
         }
 
         mImageViewAlignOpposite = (ImageView) findViewById(R.id.toolbar_align_opposite);
-        enableAlignOpposite = mImageViewAlignOpposite != null && a.getBoolean(R.styleable.RichEditorToolbar_enableAlignOpposite, true);
-        if (enableAlignOpposite) {
+        if (mImageViewAlignOpposite != null) {
+            mImageViewAlignOpposite.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableAlignOpposite, true));
             mImageViewAlignOpposite.setOnClickListener(this);
             mClassMap.put(AlignOppositeSpan.class, mImageViewAlignOpposite);
-        } else if (mImageViewAlignOpposite != null) {
-            mImageViewAlignOpposite.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带初始化参数）：List --------------- */
         mImageViewList = (ImageView) findViewById(R.id.toolbar_list);
-        enableList = mImageViewList != null && a.getBoolean(R.styleable.RichEditorToolbar_enableList, true);
-        if (enableList) {
+        if (mImageViewList != null) {
+            mImageViewList.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableList, true));
             mImageViewList.setOnClickListener(this);
             mImageViewList.setOnLongClickListener(enableLongClick ? this : null);
             mClassMap.put(ListSpan.class, mImageViewList);
-        } else if (mImageViewList != null) {
-            mImageViewList.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带初始化参数）：Quote --------------- */
         mImageViewQuote = (ImageView) findViewById(R.id.toolbar_quote);
-        enableQuote = mImageViewQuote != null && a.getBoolean(R.styleable.RichEditorToolbar_enableQuote, true);
-        if (enableQuote) {
+        if (mImageViewQuote != null) {
+            mImageViewQuote.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableQuote, true));
             mImageViewQuote.setOnClickListener(this);
             mImageViewQuote.setOnLongClickListener(enableLongClick ? this : null);
             mClassMap.put(CustomQuoteSpan.class, mImageViewQuote);
-        } else if (mImageViewQuote != null) {
-            mImageViewQuote.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：Pre --------------- */
         mImageViewPre = (ImageView) findViewById(R.id.toolbar_pre);
-        enablePre = mImageViewPre != null && a.getBoolean(R.styleable.RichEditorToolbar_enablePre, true);
-        if (enablePre) {
+        if (mImageViewPre != null) {
+            mImageViewPre.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enablePre, true));
             mImageViewPre.setOnClickListener(this);
             mClassMap.put(PreSpan.class, mImageViewPre);
-        } else if (mImageViewPre != null) {
-            mImageViewPre.setVisibility(GONE);
         }
 
         /* -------------- ///段落span（带参数）：Head --------------- */
         mTextViewHead = (TextView) findViewById(R.id.toolbar_head);
-        enableHead = mTextViewHead != null && a.getBoolean(R.styleable.RichEditorToolbar_enableHead, true);
-        if (enableHead) {
+        if (mTextViewHead != null) {
+            mTextViewHead.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableHead, true));
             mTextViewHead.setOnClickListener(this);
             mClassMap.put(HeadSpan.class, mTextViewHead);
-        } else if (mTextViewHead != null) {
-            mTextViewHead.setVisibility(GONE);
         }
 
         /* -------------- ///段落span：LineDivider --------------- */
         mImageViewLineDivider = (ImageView) findViewById(R.id.toolbar_line_divider);
-        enableLineDivider = mImageViewLineDivider != null && a.getBoolean(R.styleable.RichEditorToolbar_enableLineDivider, true);
-        if (enableLineDivider) {
+        if (mImageViewLineDivider != null) {
+            mImageViewLineDivider.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableLineDivider, true));
             mImageViewLineDivider.setOnClickListener(this);
             mImageViewLineDivider.setOnLongClickListener(enableLongClick ? this : null);
             mClassMap.put(LineDividerSpan.class, mImageViewLineDivider);
-        } else if (mImageViewLineDivider != null) {
-            mImageViewLineDivider.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Bold、Italic --------------- */
         mImageViewBold = (ImageView) findViewById(R.id.toolbar_bold);
-        enableBold = mImageViewBold != null && a.getBoolean(R.styleable.RichEditorToolbar_enableBold, true);
-        if (enableBold) {
+        if (mImageViewBold != null) {
+            mImageViewBold.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableBold, true));
             mImageViewBold.setOnClickListener(this);
             mClassMap.put(BoldSpan.class, mImageViewBold);
-        } else if (mImageViewBold != null) {
-            mImageViewBold.setVisibility(GONE);
         }
 
         mImageViewItalic = (ImageView) findViewById(R.id.toolbar_italic);
-        enableItalic = mImageViewItalic != null && a.getBoolean(R.styleable.RichEditorToolbar_enableItalic, true);
-        if (enableItalic) {
+        if (mImageViewItalic != null) {
+            mImageViewItalic.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableItalic, true));
             mImageViewItalic.setOnClickListener(this);
             mClassMap.put(ItalicSpan.class, mImageViewItalic);
-        } else if (mImageViewItalic != null) {
-            mImageViewItalic.setVisibility(GONE);
         }
 
         /* ------------ ///字符span：Underline、StrikeThrough、Subscript、Superscript ------------ */
         mImageViewUnderline = (ImageView) findViewById(R.id.toolbar_underline);
-        enableUnderline = mImageViewUnderline != null && a.getBoolean(R.styleable.RichEditorToolbar_enableUnderline, true);
-        if (enableUnderline) {
+        if (mImageViewUnderline != null) {
+            mImageViewUnderline.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableUnderline, true));
             mImageViewUnderline.setOnClickListener(this);
             mClassMap.put(CustomUnderlineSpan.class, mImageViewUnderline);
-        } else if (mImageViewUnderline != null) {
-            mImageViewUnderline.setVisibility(GONE);
         }
 
         mImageViewStrikethrough = (ImageView) findViewById(R.id.toolbar_strikethrough);
-        enableStrikethrough = mImageViewStrikethrough != null && a.getBoolean(R.styleable.RichEditorToolbar_enableStrikethrough, true);
-        if (enableStrikethrough) {
+        if (mImageViewStrikethrough != null) {
+            mImageViewStrikethrough.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableStrikethrough, true));
             mImageViewStrikethrough.setOnClickListener(this);
             mClassMap.put(CustomStrikethroughSpan.class, mImageViewStrikethrough);
-        } else if (mImageViewStrikethrough != null) {
-            mImageViewStrikethrough.setVisibility(GONE);
         }
 
         mImageViewSuperscript = (ImageView) findViewById(R.id.toolbar_superscript);
-        enableSuperscript = mImageViewSuperscript != null && a.getBoolean(R.styleable.RichEditorToolbar_enableSuperscript, true);
-        if (enableSuperscript) {
+        if (mImageViewSuperscript != null) {
+            mImageViewSuperscript.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableSuperscript, true));
             mImageViewSuperscript.setOnClickListener(this);
             mClassMap.put(CustomSuperscriptSpan.class, mImageViewSuperscript);
-        } else if (mImageViewSuperscript != null) {
-            mImageViewSuperscript.setVisibility(GONE);
         }
 
         mImageViewSubscript = (ImageView) findViewById(R.id.toolbar_subscript);
-        enableSubscript = mImageViewSubscript != null && a.getBoolean(R.styleable.RichEditorToolbar_enableSubscript, true);
-        if (enableSubscript) {
+        if (mImageViewSubscript != null) {
+            mImageViewSubscript.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableSubscript, true));
             mImageViewSubscript.setOnClickListener(this);
             mClassMap.put(CustomSubscriptSpan.class, mImageViewSubscript);
-        } else if (mImageViewSubscript != null) {
-            mImageViewSubscript.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：ForegroundColor、BackgroundColor --------------- */
         mImageViewForegroundColor = (ImageView) findViewById(R.id.toolbar_foreground_color);
-        enableForegroundColor = mImageViewForegroundColor != null && a.getBoolean(R.styleable.RichEditorToolbar_enableForegroundColor, true);
-        if (enableForegroundColor) {
+        if (mImageViewForegroundColor != null) {
+            mImageViewForegroundColor.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableForegroundColor, true));
             mImageViewForegroundColor.setOnClickListener(this);
             mClassMap.put(CustomForegroundColorSpan.class, mImageViewForegroundColor);
-        } else if (mImageViewForegroundColor != null) {
-            mImageViewForegroundColor.setVisibility(GONE);
         }
 
         mImageViewBackgroundColor = (ImageView) findViewById(R.id.toolbar_background_color);
-        enableBackgroundColor = mImageViewBackgroundColor != null && a.getBoolean(R.styleable.RichEditorToolbar_enableBackgroundColor, true);
-        if (enableBackgroundColor) {
+        if (mImageViewBackgroundColor != null) {
+            mImageViewBackgroundColor.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableBackgroundColor, true));
             mImageViewBackgroundColor.setOnClickListener(this);
             mClassMap.put(CustomBackgroundColorSpan.class, mImageViewBackgroundColor);
-        } else if (mImageViewBackgroundColor != null) {
-            mImageViewBackgroundColor.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：FontFamily --------------- */
         mTextViewFontFamily = (TextView) findViewById(R.id.toolbar_font_family);
-        enableFontFamily = mTextViewFontFamily != null && a.getBoolean(R.styleable.RichEditorToolbar_enableFontFamily, true);
-        if (enableFontFamily) {
+        if (mTextViewFontFamily != null) {
+            mTextViewFontFamily.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableFontFamily, true));
             mTextViewFontFamily.setOnClickListener(this);
             mClassMap.put(CustomFontFamilySpan.class, mTextViewFontFamily);
-        } else if (mTextViewFontFamily != null) {
-            mTextViewFontFamily.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：AbsoluteSize --------------- */
         mTextViewAbsoluteSize = (TextView) findViewById(R.id.toolbar_absolute_size);
-        enableAbsoluteSize = mTextViewAbsoluteSize != null && a.getBoolean(R.styleable.RichEditorToolbar_enableAbsoluteSize, true);
-        if (enableAbsoluteSize) {
+        if (mTextViewAbsoluteSize != null) {
+            mTextViewAbsoluteSize.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableAbsoluteSize, true));
             mTextViewAbsoluteSize.setOnClickListener(this);
             mClassMap.put(CustomAbsoluteSizeSpan.class, mTextViewAbsoluteSize);
-        } else if (mTextViewAbsoluteSize != null) {
-            mTextViewAbsoluteSize.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：RelativeSize --------------- */
         mTextViewRelativeSize = (TextView) findViewById(R.id.toolbar_relative_size);
-        enableRelativeSize = mTextViewRelativeSize != null && a.getBoolean(R.styleable.RichEditorToolbar_enableRelativeSize, true);
-        if (enableRelativeSize) {
+        if (mTextViewRelativeSize != null) {
+            mTextViewRelativeSize.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableRelativeSize, true));
             mTextViewRelativeSize.setOnClickListener(this);
             mClassMap.put(CustomRelativeSizeSpan.class, mTextViewRelativeSize);
-        } else if (mTextViewRelativeSize != null) {
-            mTextViewRelativeSize.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：ScaleX --------------- */
         mTextViewScaleX = (TextView) findViewById(R.id.toolbar_scale_x);
-        enableScaleX = mTextViewScaleX != null && a.getBoolean(R.styleable.RichEditorToolbar_enableScaleX, true);
-        if (enableScaleX) {
+        if (mTextViewScaleX != null) {
+            mTextViewScaleX.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableScaleX, true));
             mTextViewScaleX.setOnClickListener(this);
             mClassMap.put(CustomScaleXSpan.class, mTextViewScaleX);
-        } else if (mTextViewScaleX != null) {
-            mTextViewScaleX.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Code --------------- */
         mImageViewCode = (ImageView) findViewById(R.id.toolbar_code);
-        enableCode = mImageViewCode != null && a.getBoolean(R.styleable.RichEditorToolbar_enableCode, true);
-        if (enableCode) {
+        if (mImageViewCode != null) {
+            mImageViewCode.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableCode, true));
             mImageViewCode.setOnClickListener(this);
             mClassMap.put(CodeSpan.class, mImageViewCode);
-        } else if (mImageViewCode != null) {
-            mImageViewCode.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Block --------------- */
         mImageViewBlock = (ImageView) findViewById(R.id.toolbar_block);
-        enableBlock = mImageViewBlock != null && a.getBoolean(R.styleable.RichEditorToolbar_enableBlock, true);
-        if (enableBlock) {
+        if (mImageViewBlock != null) {
+            mImageViewBlock.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableBlock, true));
             mImageViewBlock.setOnClickListener(this);
             mClassMap.put(BlockSpan.class, mImageViewBlock);
-        } else if (mImageViewBlock != null) {
-            mImageViewBlock.setVisibility(GONE);
         }
 
         /* -------------- ///字符span：Border --------------- */
         mImageViewBorder = (ImageView) findViewById(R.id.toolbar_border);
-        enableBorder = mImageViewBorder != null && a.getBoolean(R.styleable.RichEditorToolbar_enableBorder, true);
-        if (enableBorder) {
+        if (mImageViewBorder != null) {
+            mImageViewBorder.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableBorder, true));
             mImageViewBorder.setOnClickListener(this);
             mClassMap.put(BorderSpan.class, mImageViewBorder);
-        } else if (mImageViewBorder != null) {
-            mImageViewBorder.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：URL --------------- */
         mImageViewUrl = (ImageView) findViewById(R.id.toolbar_url);
-        enableUrl = mImageViewUrl != null && a.getBoolean(R.styleable.RichEditorToolbar_enableUrl, true);
-        if (enableUrl) {
+        if (mImageViewUrl != null) {
+            mImageViewUrl.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableUrl, true));
             mImageViewUrl.setOnClickListener(this);
             mClassMap.put(CustomURLSpan.class, mImageViewUrl);
-        } else if (mImageViewUrl != null) {
-            mImageViewUrl.setVisibility(GONE);
         }
 
         /* -------------- ///字符span（带参数）：Image --------------- */
         mImageViewVideo = (ImageView) findViewById(R.id.toolbar_video);
-        enableVideo = mImageViewVideo != null && a.getBoolean(R.styleable.RichEditorToolbar_enableVideo, true);
-        if (enableVideo) {
+        if (mImageViewVideo != null) {
+            mImageViewVideo.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableVideo, true));
             mImageViewVideo.setOnClickListener(this);
             mClassMap.put(VideoSpan.class, mImageViewVideo);
-        } else if (mImageViewVideo != null) {
-            mImageViewVideo.setVisibility(GONE);
         }
 
         mImageViewAudio = (ImageView) findViewById(R.id.toolbar_audio);
-        enableAudio = mImageViewAudio != null && a.getBoolean(R.styleable.RichEditorToolbar_enableAudio, true);
-        if (enableAudio) {
+        if (mImageViewAudio != null) {
+            mImageViewAudio.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableAudio, true));
             mImageViewAudio.setOnClickListener(this);
             mClassMap.put(AudioSpan.class, mImageViewAudio);
-        } else if (mImageViewAudio != null) {
-            mImageViewAudio.setVisibility(GONE);
         }
 
         mImageViewImage = (ImageView) findViewById(R.id.toolbar_image);
-        enableImage = mImageViewImage != null && a.getBoolean(R.styleable.RichEditorToolbar_enableImage, true);
-        if (enableImage) {
+        if (mImageViewImage != null) {
+            mImageViewImage.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableImage, true));
             mImageViewImage.setOnClickListener(this);
             mClassMap.put(CustomImageSpan.class, mImageViewImage);
-        } else if (mImageViewImage != null) {
-            mImageViewImage.setVisibility(GONE);
         }
 
 
         /* -------------- ///[清除样式] --------------- */
         mImageViewClearStyles = (ImageView) findViewById(R.id.toolbar_clear_styles);
-        enableClearStyles = mImageViewClearStyles != null && a.getBoolean(R.styleable.RichEditorToolbar_enableClearStyles, true);
-        if (enableClearStyles) {
+        if (mImageViewClearStyles != null) {
+            mImageViewClearStyles.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableClearStyles, true));
             mImageViewClearStyles.setOnClickListener(this);
-        } else if (mImageViewClearStyles != null) {
-            mImageViewClearStyles.setVisibility(GONE);
         }
 
         /* -------------- ///[草稿Draft] --------------- */
         mImageViewSaveDraft = (ImageView) findViewById(R.id.toolbar_save_draft);
-        enableSaveDraft = mImageViewSaveDraft != null && a.getBoolean(R.styleable.RichEditorToolbar_enableSaveDraft, true);
-        if (enableSaveDraft) {
+        if (mImageViewSaveDraft != null) {
+            mImageViewSaveDraft.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableSaveDraft, true));
             mImageViewSaveDraft.setOnClickListener(this);
-        } else if (mImageViewSaveDraft != null) {
-            mImageViewSaveDraft.setVisibility(GONE);
         }
 
         mImageViewRestoreDraft = (ImageView) findViewById(R.id.toolbar_restore_draft);
-        enableRestoreDraft = mImageViewRestoreDraft != null && a.getBoolean(R.styleable.RichEditorToolbar_enableRestoreDraft, true);
-        if (enableRestoreDraft) {
+        if (mImageViewRestoreDraft != null) {
+            mImageViewRestoreDraft.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableRestoreDraft, true));
             mImageViewRestoreDraft.setOnClickListener(this);
-        } else if (mImageViewRestoreDraft != null) {
-            mImageViewRestoreDraft.setVisibility(GONE);
         }
 
         mImageViewClearDraft = (ImageView) findViewById(R.id.toolbar_clear_draft);
-        enableClearDraft = mImageViewClearDraft != null && a.getBoolean(R.styleable.RichEditorToolbar_enableClearDraft, true);
-        if (enableClearDraft) {
+        if (mImageViewClearDraft != null) {
+            mImageViewClearDraft.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableClearDraft, true));
             mImageViewClearDraft.setOnClickListener(this);
-        } else if (mImageViewClearDraft != null) {
-            mImageViewClearDraft.setVisibility(GONE);
         }
 
         ///初始化时检查有无草稿Draft
-        if (enableSaveDraft && enableRestoreDraft && enableClearDraft && checkDraft()) {
-            Toast.makeText(mContext.getApplicationContext(), R.string.message_has_draft, Toast.LENGTH_SHORT).show();
+        if (mImageViewSaveDraft.isEnabled() && mImageViewRestoreDraft.isEnabled() && mImageViewClearDraft.isEnabled() && checkDraft()) {
+            Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_has_draft, Toast.LENGTH_SHORT).show();
         }
 
         /* ------------------- ///[Undo/Redo/Save] ------------------- */
         mImageViewUndo = (ImageView) findViewById(R.id.toolbar_undo);
-        enableUndo = mImageViewUndo != null && a.getBoolean(R.styleable.RichEditorToolbar_enableUndo, true);
-        if (enableUndo) {
+        if (mImageViewUndo != null) {
+            mImageViewUndo.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableUndo, true));
             mImageViewUndo.setOnClickListener(this);
-        } else if (mImageViewUndo != null) {
-            mImageViewUndo.setVisibility(GONE);
         }
 
         mImageViewRedo = (ImageView) findViewById(R.id.toolbar_redo);
-        enableRedo = mImageViewRedo != null && a.getBoolean(R.styleable.RichEditorToolbar_enableRedo, true);
-        if (enableRedo) {
+        if (mImageViewRedo != null) {
+            mImageViewRedo.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableRedo, true));
             mImageViewRedo.setOnClickListener(this);
-        } else if (mImageViewRedo != null) {
-            mImageViewRedo.setVisibility(GONE);
         }
 
         mImageViewSave = (ImageView) findViewById(R.id.toolbar_save);
-        enableSave = mImageViewSave != null && a.getBoolean(R.styleable.RichEditorToolbar_enableSave, true);
-        if (enableSave) {
+        if (mImageViewSave != null) {
+            mImageViewSave.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableSave, true));
             mImageViewSave.setOnClickListener(this);
-        } else if (mImageViewSave != null) {
-            mImageViewSave.setVisibility(GONE);
         }
 
         /* -------------- ///[Preview] --------------- */
         mImageViewPreview = (ImageView) findViewById(R.id.iv_preview);
-        enablePreview = mImageViewPreview != null && a.getBoolean(R.styleable.RichEditorToolbar_enablePreview, true);
-        if (enablePreview) {
+        if (mImageViewPreview != null) {
+            mImageViewPreview.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enablePreview, true));
             mImageViewPreview.setOnClickListener(this);
-        } else if (mImageViewPreview != null) {
-            mImageViewPreview.setVisibility(GONE);
         }
 
         /* -------------- ///[Html] --------------- */
         mImageViewHtml = (ImageView) findViewById(R.id.toolbar_html);
-        enableHtml = mImageViewHtml != null && a.getBoolean(R.styleable.RichEditorToolbar_enableHtml, true);
-        if (enableHtml) {
+        if (mImageViewHtml != null) {
+            mImageViewHtml.setEnabled(a.getBoolean(R.styleable.RichEditorToolbar_enableHtml, true));
             mImageViewHtml.setOnClickListener(this);
             mImageViewHtml.setOnLongClickListener(enableLongClick ? this : null);
-        } else if (mImageViewHtml != null) {
-            mImageViewHtml.setVisibility(GONE);
         }
     }
 
@@ -1193,9 +1087,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             PrefsUtil.putString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
             if (checkDraft()) {
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_save_draft_successful, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_save_draft_failed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_save_draft_failed, Toast.LENGTH_SHORT).show();
             }
 
             return;
@@ -1242,7 +1136,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
                         ToolbarHelper.toByteArray(editable, 0, editable.length(), false));
 
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_restore_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_restore_draft_successful, Toast.LENGTH_SHORT).show();
             }
 
             return;
@@ -1250,9 +1144,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             PrefsUtil.clear(mContext, mToolbarName);
 
             if (!checkDraft()) {
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_clear_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_clear_draft_successful, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext.getApplicationContext(), R.string.message_clear_draft_failed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext.getApplicationContext(), R.string.rich_editor_toolbar_msg_clear_draft_failed, Toast.LENGTH_SHORT).show();
             }
 
             return;
@@ -1369,7 +1263,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1494,7 +1388,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1535,7 +1429,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///段落span（带参数）：Head
             else if (view == mTextViewHead) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = view.getTag() == null ? -1 : (int) view.getTag();
+                final int checkedItem = view.getTag() == null ? -1 : (Integer) view.getTag();
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.head_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1546,7 +1440,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///当view text不为用户选择参数时更新view text
                                 ///注意：如果相同则不更新！提高效率
-                                if (view.getTag() == null || which != (int) view.getTag()) {
+                                if (view.getTag() == null || which != (Integer) view.getTag()) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1566,7 +1460,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1585,7 +1479,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(null);
 
                                 ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.head));
+                                ((TextView) view).setText(mContext.getString(R.string.layout_toolbar_text_head));
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1688,7 +1582,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1731,7 +1625,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///字符span（带参数）：FontFamily
             else if (view == mTextViewFontFamily) {
                 ///checkedItem：由view tag决定checkedItem，如无tag，checkedItem则为-1
-                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.font_family_items, (String) view.getTag());
+                final int checkedItem = ArrayUtil.getStringIndex(mContext, R.array.font_family_items, (String.valueOf(view.getTag())));
 
                 new AlertDialog.Builder(mContext)
                         .setSingleChoiceItems(R.array.font_family_items, checkedItem, new DialogInterface.OnClickListener() {
@@ -1743,7 +1637,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 ///由用户选择项which获取对应的选择参数
                                 final String family = ArrayUtil.getStringItem(mContext, R.array.font_family_items, which);
 
-                                if (!TextUtils.equals(family, (String) view.getTag())) {
+                                if (!TextUtils.equals(family, String.valueOf(view.getTag()))) {
                                     ///如果view未选中则选中view
                                     ///注意：如果view已经选中了则不再进行view选中操作！提高效率
                                     if (!view.isSelected()) {
@@ -1763,7 +1657,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1782,7 +1676,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(null);
 
                                 ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.font_family));
+                                ((TextView) view).setText(mContext.getString(R.string.layout_toolbar_text_font_family));
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1835,7 +1729,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1854,7 +1748,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(null);
 
                                 ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.absolute_size));
+                                ((TextView) view).setText(mContext.getString(R.string.layout_toolbar_text_absolute_size));
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1907,7 +1801,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1926,7 +1820,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(null);
 
                                 ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.relative_size));
+                                ((TextView) view).setText(mContext.getString(R.string.layout_toolbar_text_relative_size));
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -1979,7 +1873,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -1998,7 +1892,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 view.setTag(null);
 
                                 ///更新view text
-                                ((TextView) view).setText(mContext.getString(R.string.scale_x));
+                                ((TextView) view).setText(mContext.getString(R.string.layout_toolbar_text_scale_x));
                             }
                         })
                         .setNegativeButton(android.R.string.cancel, null)
@@ -2055,7 +1949,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -2124,11 +2018,13 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                 }
 
                                 ///把width\height\align保存到text中
+                                final String w = width == 0 ? "" : String.valueOf(width);
+                                final String h = height == 0 ? "" : String.valueOf(height);
                                 final String text = view == mImageViewImage ?
-                                        String.format(getContext().getResources().getString(R.string.image_span_text), src,
-                                                width == 0 ? "" : String.valueOf(width), height == 0 ? "" : String.valueOf(height), align)
-                                        : String.format(getContext().getResources().getString(R.string.image_span_media_text), uri, src,
-                                                width == 0 ? "" : String.valueOf(width), height == 0 ? "" : String.valueOf(height), align);
+                                        String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_text), src,
+                                                w, h, align)
+                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
+                                        w, h, align);
 
                                 ///保存参数到view tag
                                 view.setTag(R.id.view_tag_image_text, text);
@@ -2143,7 +2039,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -3464,7 +3360,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int level = ((HeadSpan) compareSpan).getLevel();
                 newSpan = new HeadSpan(level);
             } else if (view != null && view.getTag() != null) {
-                final int level = (int) view.getTag();
+                final int level = (Integer) view.getTag();
                 newSpan = new HeadSpan(level);
             }
         }
@@ -3501,7 +3397,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final String family = ((CustomFontFamilySpan) compareSpan).getFamily();
                 newSpan = new CustomFontFamilySpan(family);
             } else if (view != null && view.getTag() != null) {
-                final String family = (String) view.getTag();
+                final String family = String.valueOf(view.getTag());
                 newSpan = new CustomFontFamilySpan(family);
             }
         }
@@ -3512,7 +3408,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int size = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
                 newSpan = new CustomAbsoluteSizeSpan(size);
             } else if (view != null && view.getTag() != null) {
-                final int size = (int) view.getTag();
+                final int size = Integer.parseInt(String.valueOf(view.getTag()));
                 newSpan = new CustomAbsoluteSizeSpan(size);
             }
         }
@@ -3523,7 +3419,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final float sizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             } else if (view != null && view.getTag() != null) {
-                final float sizeChange = Float.parseFloat((String) view.getTag());/////////////////////(float) view.getTag()
+                final float sizeChange = Float.parseFloat(String.valueOf(view.getTag()));
                 newSpan = new CustomRelativeSizeSpan(sizeChange);
             }
         }
@@ -3534,7 +3430,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final float scaleX = ((CustomScaleXSpan) compareSpan).getScaleX();
                 newSpan = new CustomScaleXSpan(scaleX);
             } else if (view != null && view.getTag() != null) {
-                final float scaleX = Float.parseFloat((String) view.getTag());;
+                final float scaleX = Float.parseFloat(String.valueOf(view.getTag()));
                 newSpan = new CustomScaleXSpan(scaleX);
             }
 

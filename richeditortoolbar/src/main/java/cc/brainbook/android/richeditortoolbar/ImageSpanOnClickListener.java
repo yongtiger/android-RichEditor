@@ -44,7 +44,7 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
-            Toast.makeText(context.getApplicationContext(), cc.brainbook.android.richeditortoolbar.R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context.getApplicationContext(), cc.brainbook.android.richeditortoolbar.R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -16,8 +16,8 @@
             android:id="@+id/ib_decrease"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tooltip_decrease"
-            android:tooltipText="@string/tooltip_decrease"
+            android:contentDescription="@string/layout_click_list_span_dialog_desc_decrease"
+            android:tooltipText="@string/layout_click_list_span_dialog_desc_decrease"
             app:srcCompat="@drawable/ic_baseline_decrease_24" />
 
         <EditText
@@ -26,8 +26,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
             android:gravity="center"
-            android:autofillHints="@string/list_span_start"
-            android:hint="@string/list_span_start"
+            android:autofillHints="@string/layout_click_list_span_dialog_hint_start"
+            android:hint="@string/layout_click_list_span_dialog_hint_start"
             android:inputType="number"
             android:maxLines="1"
             android:singleLine="true" />
@@ -36,8 +36,8 @@
             android:id="@+id/ib_increase"
             android:layout_width="@dimen/global_dimen_4"
             android:layout_height="@dimen/global_dimen_4"
-            android:contentDescription="@string/tooltip_increase"
-            android:tooltipText="@string/tooltip_increase"
+            android:contentDescription="@string/layout_click_list_span_dialog_desc_increase"
+            android:tooltipText="@string/layout_click_list_span_dialog_desc_increase"
             app:srcCompat="@drawable/ic_baseline_increase_24" />
 
     </LinearLayout>
@@ -48,8 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ll_linear_layout"
         android:layout_margin="@dimen/global_dimen"
-        android:contentDescription="@string/tooltip_reverse"
-        android:tooltipText="@string/tooltip_reverse"
-        android:text="@string/list_span_reverse" />
+        android:contentDescription="@string/layout_click_list_span_dialog_desc_reverse"
+        android:tooltipText="@string/layout_click_list_span_dialog_desc_reverse"
+        android:text="@string/layout_click_list_span_dialog_text_reverse" />
 
 </RelativeLayout>

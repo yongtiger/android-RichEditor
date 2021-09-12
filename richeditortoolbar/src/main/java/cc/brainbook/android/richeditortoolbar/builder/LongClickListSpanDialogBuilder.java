@@ -62,7 +62,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mIndicatorMargin = progress;
-				mTextViewIndicatorMargin.setText(String.format(seekBar.getContext().getResources().getString(R.string.list_span_indicator_margin), progress));
+				mTextViewIndicatorMargin.setText(String.format(seekBar.getContext().getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_margin), progress));
 			}
 
 			@Override
@@ -75,7 +75,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mIndicatorWidth = progress;
-				mTextViewIndicatorWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.list_span_indicator_width), progress));
+				mTextViewIndicatorWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_width), progress));
 			}
 
 			@Override
@@ -88,7 +88,7 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mIndicatorGapWidth = progress;
-				mTextViewIndicatorGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.list_span_indicator_gap_width), progress));
+				mTextViewIndicatorGapWidth.setText(String.format(seekBar.getContext().getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_gap_width), progress));
 			}
 
 			@Override
@@ -100,11 +100,11 @@ public class LongClickListSpanDialogBuilder extends BaseColorPickerDialogBuilder
 	}
 
 	private void setupView(@NonNull Context context) {
-		mTextViewIndicatorMargin.setText(String.format(context.getResources().getString(R.string.list_span_indicator_margin), mIndicatorMargin));
+		mTextViewIndicatorMargin.setText(String.format(context.getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_margin), mIndicatorMargin));
 		mSeekBarIndicatorMargin.setProgress(mIndicatorMargin);
-		mTextViewIndicatorWidth.setText(String.format(context.getResources().getString(R.string.list_span_indicator_width), mIndicatorWidth));
+		mTextViewIndicatorWidth.setText(String.format(context.getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_width), mIndicatorWidth));
 		mSeekBarIndicatorWidth.setProgress(mIndicatorWidth);
-		mTextViewIndicatorGapWidth.setText(String.format(context.getResources().getString(R.string.list_span_indicator_gap_width), mIndicatorGapWidth));
+		mTextViewIndicatorGapWidth.setText(String.format(context.getResources().getString(R.string.long_click_list_span_dialog_builder_text_list_span_indicator_gap_width), mIndicatorGapWidth));
 		mSeekIndicatorGapWidth.setProgress(mIndicatorGapWidth);
 	}
 

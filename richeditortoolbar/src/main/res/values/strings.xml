@@ -1,137 +1,104 @@
 <resources>
 
-    <string name="tooltip_leading_margin">Leading margin</string>
-    <string name="tooltip_align_normal">Align normal</string>
-    <string name="tooltip_align_center">Align center</string>
-    <string name="tooltip_align_opposite">Align opposite</string>
-    <string name="tooltip_list">List</string>
-    <string name="tooltip_quote">Quote</string>
-    <string name="tooltip_pre">Pre</string>
-    <string name="tooltip_head">Head</string>
-    <string name="tooltip_line_divider">Line divider</string>
-    <string name="tooltip_bold">Bold</string>
-    <string name="tooltip_italic">Italic</string>
-    <string name="tooltip_underline">Underline</string>
-    <string name="tooltip_strike_through">Strike through</string>
-    <string name="tooltip_subscript">Subscript</string>
-    <string name="tooltip_superscript">Superscript</string>
-    <string name="tooltip_foreground_color">Foreground color</string>
-    <string name="tooltip_background_color">Background color</string>
-    <string name="tooltip_font_family">Font family</string>
-    <string name="tooltip_absolute_size">Absolute size</string>
-    <string name="tooltip_relative_size">Relative size</string>
-    <string name="tooltip_scale_x">Scale x</string>
-    <string name="tooltip_code">Code</string>
-    <string name="tooltip_block">Block</string>
-    <string name="tooltip_border">Border</string>
-    <string name="tooltip_url">Url</string>
-    <string name="tooltip_image">Image</string>
-    <string name="tooltip_video">Video</string>
-    <string name="tooltip_audio">Audio</string>
-    <string name="tooltip_clear_styles">Clear styles</string>
-    <string name="tooltip_save_draft">Save draft</string>
-    <string name="tooltip_restore_draft">Restore draft</string>
-    <string name="tooltip_clear_draft">Clear draft</string>
-    <string name="tooltip_undo">Undo</string>
-    <string name="tooltip_redo">Redo</string>
-    <string name="tooltip_save">Save</string>
-    <string name="tooltip_preview">Preview</string>
-    <string name="tooltip_html">Html</string>
+    <!--///layout/toolbar.xml-->
+    <string name="layout_toolbar_desc_leading_margin">Leading margin</string>
+    <string name="layout_toolbar_desc_align_normal">Align normal</string>
+    <string name="layout_toolbar_desc_align_center">Align center</string>
+    <string name="layout_toolbar_desc_align_opposite">Align opposite</string>
+    <string name="layout_toolbar_desc_list">List</string>
+    <string name="layout_toolbar_desc_quote">Quote</string>
+    <string name="layout_toolbar_desc_pre">Pre</string>
+    <string name="layout_toolbar_desc_head">Head</string>
+    <string name="layout_toolbar_text_head">H</string>
+    <string name="layout_toolbar_desc_line_divider">Line divider</string>
+    <string name="layout_toolbar_desc_bold">Bold</string>
+    <string name="layout_toolbar_desc_italic">Italic</string>
+    <string name="layout_toolbar_desc_underline">Underline</string>
+    <string name="layout_toolbar_desc_strike_through">Strike through</string>
+    <string name="layout_toolbar_desc_subscript">Subscript</string>
+    <string name="layout_toolbar_desc_superscript">Superscript</string>
+    <string name="layout_toolbar_desc_foreground_color">Foreground color</string>
+    <string name="layout_toolbar_desc_background_color">Background color</string>
+    <string name="layout_toolbar_desc_font_family">Font family</string>
+    <string name="layout_toolbar_text_font_family">Font</string>
+    <string name="layout_toolbar_desc_absolute_size">Absolute size</string>
+    <string name="layout_toolbar_text_absolute_size">Size</string>
+    <string name="layout_toolbar_desc_relative_size">Relative size</string>
+    <string name="layout_toolbar_text_relative_size">Scale</string>
+    <string name="layout_toolbar_desc_scale_x">Scale x direction</string>
+    <string name="layout_toolbar_text_scale_x">ScaleX</string>
+    <string name="layout_toolbar_desc_code">Code</string>
+    <string name="layout_toolbar_desc_block">Block</string>
+    <string name="layout_toolbar_desc_border">Border</string>
+    <string name="layout_toolbar_desc_url">Url</string>
+    <string name="layout_toolbar_desc_image">Image</string>
+    <string name="layout_toolbar_desc_video">Video</string>
+    <string name="layout_toolbar_desc_audio">Audio</string>
+    <string name="layout_toolbar_desc_clear_styles">Clear styles</string>
+    <string name="layout_toolbar_desc_save_draft">Save draft</string>
+    <string name="layout_toolbar_desc_restore_draft">Restore draft</string>
+    <string name="layout_toolbar_desc_clear_draft">Clear draft</string>
+    <string name="layout_toolbar_desc_undo">Undo</string>
+    <string name="layout_toolbar_desc_redo">Redo</string>
+    <string name="layout_toolbar_desc_save">Save</string>
+    <string name="layout_toolbar_desc_preview">Preview</string>
+    <string name="layout_toolbar_desc_html">Html</string>
 
-    <string name="message_save_draft_successful">Save draft successful</string>
-    <string name="message_save_draft_failed">Save draft failed</string>
-    <string name="message_restore_draft_successful">Restore draft successful</string>
-    <string name="message_restore_draft_failed">Restore draft failed</string>
-    <string name="message_clear_draft_successful">Clear draft successful</string>
-    <string name="message_clear_draft_failed">Clear draft failed</string>
-    <string name="message_has_draft">Has draft</string>
 
-    <string name="clear">Clear</string>
-    <string name="insert">Insert</string>
-    <string name="head">H</string>
-    <string name="font_family">Font</string>
-    <string name="absolute_size">Size(px)</string>
-    <string name="relative_size">Size(X)</string>
-    <string name="scale_x">ScaleX</string>
+    <!--///layout/click_image_span_dialog.xml-->
+    <string name="layout_click_image_span_dialog_desc_media">Pickup from media</string>
+    <string name="layout_click_image_span_dialog_text_media">Media</string>
+    <string name="layout_click_image_span_dialog_desc_recorder">Pickup from recorder</string>
+    <string name="layout_click_image_span_dialog_text_recorder">Recorder</string>
+    <string name="layout_click_image_span_dialog_hint_uri">Audio/Video source (local or network address)</string>
 
-    <string name="url_span_text">Text</string>
-    <string name="url_span_url">Url</string>
+    <string name="layout_click_image_span_dialog_desc_gallery">Pickup from gallery</string>
+    <string name="layout_click_image_span_dialog_text_gallery">Gallery</string>
+    <string name="layout_click_image_span_dialog_desc_camera">Pickup from camera</string>
+    <string name="layout_click_image_span_dialog_text_camera">Camera</string>
+    <string name="layout_click_image_span_dialog_hint_src">Image source (local or network address)</string>
 
-    <string name="quote_span_strip_width">Strip width: %1$d</string>
-    <string name="quote_span_gap_width">Gap width: %1$d</string>
+    <string name="layout_click_image_span_dialog_desc_constrain_by_width">Constrain aspect ratio by width</string>
+    <string name="layout_click_image_span_dialog_hint_display_width">Width</string>
+    <string name="layout_click_image_span_dialog_desc_display_x">Setup width and height</string>
+    <string name="layout_click_image_span_dialog_hint_display_height">Height</string>
+    <string name="layout_click_image_span_dialog_desc_constrain_by_height">Constrain aspect ratio by height</string>
 
-    <string name="leading_margin_span_indent">Indent: %1$d</string>
+    <string name="layout_click_image_span_dialog_desc_preview">Image preview</string>
 
-    <string name="list_span_indicator_margin">Indicator margin: %1$d</string>
-    <string name="list_span_indicator_width">Indicator width: %1$d</string>
-    <string name="list_span_indicator_gap_width">Indicator gap width: %1$d</string>
-    <string name="list_span_start">Start</string>
-    <string name="tooltip_decrease">Decrease</string>
-    <string name="tooltip_increase">Increase</string>
-    <string name="tooltip_zoom_out">Zoom out</string>
-    <string name="tooltip_zoom_in">Zoom in</string>
-    <string name="list_span_reverse">Reverse</string>
-    <string name="tooltip_reverse">Reverse</string>
+    <string name="layout_click_image_span_dialog_desc_align_bottom">Align bottom</string>
+    <string name="layout_click_image_span_dialog_text_align_bottom">Align bottom</string>
+    <string name="layout_click_image_span_dialog_desc_align_baseline">Align baseline</string>
+    <string name="layout_click_image_span_dialog_text_align_baseline">Align baseline</string>
+    <string name="layout_click_image_span_dialog_desc_align_center">Align center</string>
+    <string name="layout_click_image_span_dialog_text_align_center">Align center</string>
 
-    <string name="line_divider_span_margin_top">Margin top: %1$d</string>
-    <string name="line_divider_span_margin_bottom">Margin bottom: %1$d</string>
+    <string name="layout_click_image_span_dialog_desc_crop">Crop</string>
+    <string name="layout_click_image_span_dialog_text_crop">Crop</string>
+    <string name="layout_click_image_span_dialog_desc_doodle">Doodle</string>
+    <string name="layout_click_image_span_dialog_text_doodle">Doodle</string>
 
-    <string name="image_span_media">Media</string>
-    <string name="image_span_recorder">Recorder</string>
-    <string name="image_span_gallery">Gallery</string>
-    <string name="image_span_camera">Camera</string>
-    <string name="image_span_uri_hint">Audio/Video source (local or network address)</string>
-    <string name="image_span_src_hint">Image source (local or network address)</string>
-    <string name="image_span_text">[img src="%1$s" width=%2$s height=%3$s align=%4$d]</string>
-    <string name="image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$s height=%4$s align=%5$d]</string>
-    <string name="image_span_hint_display_width">Width</string>
-    <string name="image_span_hint_display_height">Height</string>
-    <string name="image_span_tooltip_display_x">Setup width and height</string>
-    <string name="image_span_constrain_by_width">Constrain aspect ratio by width</string>
-    <string name="image_span_constrain_by_height">Constrain aspect ratio by height</string>
-    <string name="image_span_crop">Crop</string>
-    <string name="image_span_draw">Draw</string>
-    <string name="image_span_align_bottom">Align bottom</string>
-    <string name="image_span_align_baseline">Align baseline</string>
-    <string name="image_span_align_center">Align center</string>
-    <string name="image_span_tooltip_pickup_from_media">Click to pickup from media</string>
-    <string name="image_span_tooltip_pickup_from_recorder">Click to pickup from recorder</string>
-    <string name="image_span_tooltip_pickup_from_gallery">Click to pickup from gallery</string>
-    <string name="image_span_tooltip_pickup_from_camera">Click to pickup from camera</string>
-    <string name="image_span_tooltip_display_restore">Click to restore original size</string>
-    <string name="image_span_tooltip_crop">Click to crop</string>
-    <string name="image_span_tooltip_draw">Click to draw</string>
+    <string name="layout_click_image_span_dialog_desc_display_restore">Restore original size</string>
+    <string name="layout_click_image_span_dialog_desc_zoom_out">Zoom out</string>
+    <string name="layout_click_image_span_dialog_desc_zoom_in">Zoom in</string>
 
-    <string name="label_select_video">Select Video</string>
-    <string name="label_select_audio">Select Audio</string>
-    <string name="label_select_picture">Select Picture</string>
 
-    <string name="message_image_select_cancelled">Image select cancelled</string>
-    <string name="message_image_select_failed">Image select failed</string>
-    <string name="message_image_capture_cancelled">Image capture cancelled</string>
-    <string name="message_image_capture_failed">Image capture failed</string>
-    <string name="message_cannot_retrieve_image">Cannot retrieve image</string>
-    <string name="message_video_select_cancelled">Video select cancelled</string>
-    <string name="message_video_select_failed">Video select failed</string>
-    <string name="message_video_capture_cancelled">Video capture cancelled</string>
-    <string name="message_video_capture_failed">Video capture failed</string>
-    <string name="message_cannot_retrieve_video">Cannot retrieve video</string>
-    <string name="message_audio_select_cancelled">Audio select cancelled</string>
-    <string name="message_audio_select_failed">Audio select failed</string>
-    <string name="message_audio_capture_cancelled">Audio capture cancelled</string>
-    <string name="message_audio_capture_failed">Audio capture failed</string>
-    <string name="message_cannot_retrieve_audio">Cannot retrieve audio</string>
-    <string name="message_image_draw_failed">Image draw failed</string>
-    <string name="message_failed_to_cut_to_clipboard">Failed to cut to clipboard</string>
-    <string name="message_failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
-    <string name="message_please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
-    <string name="message_activity_not_found">Activity not found</string>
-    <string name="message_system_camera_not_available">System camera not available</string>
-    <string name="message_please_input_image_resource">Please input image resource.</string>
-    <string name="message_image_load_fails">Image load fails. \n%s</string>
-    <string name="message_image_load_is_cancelled">Image load is cancelled and its resources are freed. \n%s</string>
-    <string name="message_image_size_exceeds">The image size exceeds (%d X %d), it is recommended to resize it to avoid application crash.</string>
+    <!--///layout/click_list_span_dialog.xml-->
+    <string name="layout_click_list_span_dialog_desc_decrease">Decrease</string>
+    <string name="layout_click_list_span_dialog_desc_increase">Increase</string>
 
+    <string name="layout_click_list_span_dialog_hint_start">Start</string>
+
+    <string name="layout_click_list_span_dialog_desc_reverse">Reverse</string>
+    <string name="layout_click_list_span_dialog_text_reverse">Reverse</string>
+
+
+    <!--///layout/click_url_span_dialog.xml-->
+    <string name="layout_click_url_span_dialog_hint_text">Text</string>
+    <string name="layout_click_url_span_dialog_hint_url">Url</string>
+
+
+    <!--///UndoRedoHelper.java-->
     <string name="undo_redo_helper_label_init">init</string>
     <string name="undo_redo_helper_label_change_text">change text</string>
     <string name="undo_redo_helper_label_restore_draft">restore draft</string>
@@ -167,7 +134,74 @@
     <string name="undo_redo_helper_label_change_video_span">change video span</string>
     <string name="undo_redo_helper_label_change_audio_span">change audio span</string>
 
-    <string name="undo_redo_helper_undo">"Undo: %s"</string>
-    <string name="undo_redo_helper_redo">"Redo: %s"</string>
+    <string name="undo_redo_helper_msg_undo">"Undo: %s"</string>
+    <string name="undo_redo_helper_msg_redo">"Redo: %s"</string>
+
+
+    <!--///ClickImageSpanDialogBuilder.java-->
+    <string name="click_image_span_dialog_builder_msg_image_select_cancelled">Image select cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_image_select_failed">Image select failed</string>
+    <string name="click_image_span_dialog_builder_msg_image_capture_cancelled">Image capture cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_image_capture_failed">Image capture failed</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_image">Cannot retrieve image</string>
+    <string name="click_image_span_dialog_builder_msg_video_select_cancelled">Video select cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_video_select_failed">Video select failed</string>
+    <string name="click_image_span_dialog_builder_msg_video_capture_cancelled">Video capture cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_video_capture_failed">Video capture failed</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_video">Cannot retrieve video</string>
+    <string name="click_image_span_dialog_builder_msg_audio_select_cancelled">Audio select cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_audio_select_failed">Audio select failed</string>
+    <string name="click_image_span_dialog_builder_msg_audio_capture_cancelled">Audio capture cancelled</string>
+    <string name="click_image_span_dialog_builder_msg_audio_capture_failed">Audio capture failed</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_audio">Cannot retrieve audio</string>
+    <string name="click_image_span_dialog_builder_msg_image_doodle_failed">Image draw failed</string>
+    <string name="click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard">Failed to cut to clipboard</string>
+    <string name="click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
+    <string name="click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
+    <string name="click_image_span_dialog_builder_msg_activity_not_found">Activity not found</string>
+    <string name="click_image_span_dialog_builder_msg_system_camera_not_available">System camera not available</string>
+    <string name="click_image_span_dialog_builder_msg_please_input_image_resource">Please input image resource</string>
+    <string name="click_image_span_dialog_builder_msg_image_load_fails">Image load fails. \n%s</string>
+    <string name="click_image_span_dialog_builder_msg_image_load_is_cancelled">Image load is cancelled and its resources are freed. \n%s</string>
+    <string name="click_image_span_dialog_builder_msg_image_size_exceeds">The image size exceeds (%d X %d), it is recommended to resize it to avoid application crash.</string>
+
+    <string name="click_image_span_dialog_builder_title_select_video">Select Video</string>
+    <string name="click_image_span_dialog_builder_title_select_audio">Select Audio</string>
+    <string name="click_image_span_dialog_builder_title_select_picture">Select Picture</string>
+
+
+    <!--///RichEditorToolbar.java-->
+    <string name="rich_editor_toolbar_image_span_text">[img src="%1$s" width=%2$s height=%3$s align=%4$d]</string>
+    <string name="rich_editor_toolbar_image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$s height=%4$s align=%5$d]</string>
+
+    <string name="rich_editor_toolbar_msg_save_draft_successful">Save draft successful</string>
+    <string name="rich_editor_toolbar_msg_save_draft_failed">Save draft failed</string>
+    <string name="rich_editor_toolbar_msg_restore_draft_successful">Restore draft successful</string>
+    <string name="rich_editor_toolbar_msg_restore_draft_failed">Restore draft failed</string>
+    <string name="rich_editor_toolbar_msg_clear_draft_successful">Clear draft successful</string>
+    <string name="rich_editor_toolbar_msg_clear_draft_failed">Clear draft failed</string>
+    <string name="rich_editor_toolbar_msg_has_draft">Has draft</string>
+
+    <string name="rich_editor_toolbar_text_clear">Clear</string>
+
+
+    <!--///LongClickQuoteSpanDialogBuilder.java-->
+    <string name="long_click_quote_span_dialog_builder_text_quote_span_strip_width">Strip width: %1$d</string>
+    <string name="long_click_quote_span_dialog_builder_text_quote_span_gap_width">Gap width: %1$d</string>
+
+
+    <!--///LongClickLeadingMarginSpanDialogBuilder.java-->
+    <string name="long_click_leading_margin_span_dialog_builder_text_leading_margin_span_indent">Indent: %1$d</string>
+
+
+    <!--///LongClickListSpanDialogBuilder.java-->
+    <string name="long_click_list_span_dialog_builder_text_list_span_indicator_margin">Indicator margin: %1$d</string>
+    <string name="long_click_list_span_dialog_builder_text_list_span_indicator_width">Indicator width: %1$d</string>
+    <string name="long_click_list_span_dialog_builder_text_list_span_indicator_gap_width">Indicator gap width: %1$d</string>
+
+
+    <!--///LongClickLineDividerDialogBuilder.java-->
+    <string name="long_click_line_divider_dialog_builder_text_line_divider_span_margin_top">Margin top: %1$d</string>
+    <string name="long_click_line_divider_dialog_builder_text_line_divider_span_margin_bottom">Margin bottom: %1$d</string>
 
 </resources>

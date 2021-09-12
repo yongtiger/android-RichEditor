@@ -14,8 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:autofillHints="@string/url_span_text"
-            android:hint="@string/url_span_text"
+            android:autofillHints="@string/layout_click_url_span_dialog_hint_text"
+            android:hint="@string/layout_click_url_span_dialog_hint_text"
             android:inputType="text" />
 
         <EditText
@@ -23,8 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/global_dimen"
-            android:autofillHints="@string/url_span_url"
-            android:hint="@string/url_span_url"
+            android:autofillHints="@string/layout_click_url_span_dialog_hint_url"
+            android:hint="@string/layout_click_url_span_dialog_hint_url"
             android:inputType="textWebEmailAddress|textUri" />
 
     </LinearLayout>

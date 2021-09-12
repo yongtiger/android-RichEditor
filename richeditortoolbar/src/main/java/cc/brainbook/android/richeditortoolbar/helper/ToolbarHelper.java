@@ -82,10 +82,6 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_WIDTH;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
@@ -207,7 +203,7 @@ public abstract class ToolbarHelper {
         ///设置为缺省文字
         ///段落span（带参数）：Head
         if (clazz == HeadSpan.class) {
-            ((TextView) view).setText(context.getString(R.string.head));
+            ((TextView) view).setText(context.getString(R.string.layout_toolbar_text_head));
         }
 
     }
@@ -348,22 +344,22 @@ public abstract class ToolbarHelper {
 
         ///字符span（带参数）：FontFamily
         else if (clazz == CustomFontFamilySpan.class) {
-            ((TextView) view).setText(context.getString(R.string.font_family));
+            ((TextView) view).setText(context.getString(R.string.layout_toolbar_text_font_family));
         }
 
         ///字符span（带参数）：AbsoluteSize
         else if (clazz == CustomAbsoluteSizeSpan.class) {
-            ((TextView) view).setText(context.getString(R.string.absolute_size));
+            ((TextView) view).setText(context.getString(R.string.layout_toolbar_text_absolute_size));
         }
 
         ///字符span（带参数）：RelativeSize
         else if (clazz == CustomRelativeSizeSpan.class) {
-            ((TextView) view).setText(context.getString(R.string.relative_size));
+            ((TextView) view).setText(context.getString(R.string.layout_toolbar_text_relative_size));
         }
 
         ///字符span（带参数）：ScaleX
         else if (clazz == CustomScaleXSpan.class) {
-            ((TextView) view).setText(context.getString(R.string.scale_x));
+            ((TextView) view).setText(context.getString(R.string.layout_toolbar_text_scale_x));
         }
 
         else {
@@ -381,7 +377,7 @@ public abstract class ToolbarHelper {
                 return false;
             }
             final int spanLevel = ((HeadSpan) span).getLevel();
-            final int viewTagLevel = Integer.parseInt((String) view.getTag());
+            final int viewTagLevel = (Integer) view.getTag();
             return spanLevel == viewTagLevel;
         }
 
@@ -427,7 +423,7 @@ public abstract class ToolbarHelper {
                 return false;
             }
             final int spanSize = ((CustomAbsoluteSizeSpan) span).getSize();
-            final int viewTagAbsoluteSize = Integer.parseInt((String) view.getTag());
+            final int viewTagAbsoluteSize = Integer.parseInt(String.valueOf(view.getTag()));
             return spanSize == viewTagAbsoluteSize;
         }
 
@@ -437,7 +433,7 @@ public abstract class ToolbarHelper {
                 return false;
             }
             final float spanSizeChange = ((CustomRelativeSizeSpan) span).getSizeChange();
-            final float viewTagRelativeSize = Float.parseFloat((String) view.getTag());
+            final float viewTagRelativeSize = Float.parseFloat(String.valueOf(view.getTag()));
             return spanSizeChange == viewTagRelativeSize;
         }
 
@@ -447,7 +443,7 @@ public abstract class ToolbarHelper {
                 return false;
             }
             final float spanScaleX = ((CustomScaleXSpan) span).getScaleX();
-            final float viewTagScaleX = Float.parseFloat((String) view.getTag());
+            final float viewTagScaleX = Float.parseFloat(String.valueOf(view.getTag()));
             return spanScaleX == viewTagScaleX;
         }
 
@@ -496,7 +492,7 @@ public abstract class ToolbarHelper {
         else if (clazz == CustomAbsoluteSizeSpan.class) {
             final int spanSize = ((CustomAbsoluteSizeSpan) span).getSize();
             if (compareSpan == null) {
-                final int viewTagSize = Integer.parseInt((String) view.getTag());
+                final int viewTagSize = Integer.parseInt(String.valueOf(view.getTag()));
                 return spanSize == viewTagSize ? span : null;
             } else {
                 final int compareSpanSize = ((CustomAbsoluteSizeSpan) compareSpan).getSize();
@@ -508,7 +504,7 @@ public abstract class ToolbarHelper {
         else if (clazz == CustomRelativeSizeSpan.class) {
             final float spanSizeChange = ((CustomRelativeSizeSpan) span).getSizeChange();
             if (compareSpan == null) {
-                final float viewTagSizeChange = Float.parseFloat((String) view.getTag());
+                final float viewTagSizeChange = Float.parseFloat(String.valueOf(view.getTag()));
                 return spanSizeChange == viewTagSizeChange ? span : null;
             } else {
                 final float compareSpanSizeChange = ((CustomRelativeSizeSpan) compareSpan).getSizeChange();
@@ -520,7 +516,7 @@ public abstract class ToolbarHelper {
         else if (clazz == CustomScaleXSpan.class) {
             final float spanScaleX = ((CustomScaleXSpan) span).getScaleX();
             if (compareSpan == null) {
-                final float viewTagScaleX = Float.parseFloat((String) view.getTag());
+                final float viewTagScaleX = Float.parseFloat(String.valueOf(view.getTag()));
                 return spanScaleX == viewTagScaleX ? span : null;
             } else {
                 final float compareSpanScaleX = ((CustomScaleXSpan) compareSpan).getScaleX();

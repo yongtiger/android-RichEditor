@@ -41,7 +41,8 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mMarginTop = progress;
-                mTextViewMarginTop.setText(String.format(seekBar.getContext().getResources().getString(R.string.line_divider_span_margin_top), progress));
+                mTextViewMarginTop.setText(String.format(seekBar.getContext().getResources().getString(
+                        R.string.long_click_line_divider_dialog_builder_text_line_divider_span_margin_top), progress));
             }
 
             @Override
@@ -57,7 +58,7 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mMarginBottom = progress;
-                mTextViewMarginBottom.setText(String.format(seekBar.getContext().getResources().getString(R.string.line_divider_span_margin_bottom), progress));
+                mTextViewMarginBottom.setText(String.format(seekBar.getContext().getResources().getString(R.string.long_click_line_divider_dialog_builder_text_line_divider_span_margin_bottom), progress));
             }
 
             @Override
@@ -69,9 +70,9 @@ public class LongClickLineDividerDialogBuilder extends BaseDialogBuilder {
     }
 
     private void setupView(@NonNull Context context) {
-        mTextViewMarginTop.setText(String.format(context.getResources().getString(R.string.line_divider_span_margin_top), mMarginTop));
+        mTextViewMarginTop.setText(String.format(context.getResources().getString(R.string.long_click_line_divider_dialog_builder_text_line_divider_span_margin_top), mMarginTop));
         mSeekBarMarginTop.setProgress(mMarginTop);
-        mTextViewMarginBottom.setText(String.format(context.getResources().getString(R.string.line_divider_span_margin_bottom), mMarginBottom));
+        mTextViewMarginBottom.setText(String.format(context.getResources().getString(R.string.long_click_line_divider_dialog_builder_text_line_divider_span_margin_bottom), mMarginBottom));
         mSeekBarMarginBottom.setProgress(mMarginBottom);
     }
 

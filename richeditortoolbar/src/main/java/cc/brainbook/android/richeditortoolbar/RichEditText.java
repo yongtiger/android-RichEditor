@@ -139,9 +139,9 @@ public class RichEditText extends AppCompatEditText {
 
                     editable.delete(min, max);
                 } else {
-                    Log.e("TAG-RichEditText", getContext().getString(R.string.message_failed_to_cut_to_clipboard));
+                    Log.e("TAG-RichEditText", getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard));
                     Toast.makeText(getContext(),
-                            R.string.message_failed_to_cut_to_clipboard,
+                            R.string.click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard,
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -164,9 +164,9 @@ public class RichEditText extends AppCompatEditText {
                     //////??????如何关闭TextContextMenuItem
 
                 } else {
-                    Log.e("TAG-RichEditText", getContext().getString(R.string.message_failed_to_copy_to_clipboard));
+                    Log.e("TAG-RichEditText", getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard));
                     Toast.makeText(getContext(),
-                            R.string.message_failed_to_copy_to_clipboard,
+                            R.string.click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard,
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -180,13 +180,13 @@ public class RichEditText extends AppCompatEditText {
             case android.R.id.undo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.message_please_try_undo_redo_in_toolbar,
+                        R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar,
                         Toast.LENGTH_SHORT).show();
                 return true;
             case android.R.id.redo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.message_please_try_undo_redo_in_toolbar,
+                        R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar,
                         Toast.LENGTH_SHORT).show();
                 return true;
             default:
@@ -267,6 +267,7 @@ public class RichEditText extends AppCompatEditText {
         editable.replace(min, max, paste);
 
         ///调整Selection起止位置
+        Selection.removeSelection(editable);  ///[FIX#避免replace前后Selection相同导致不更新View]
         Selection.setSelection(editable, min, min + paste.length());
     }
 

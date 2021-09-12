@@ -38,6 +38,7 @@ public class EditorActivity extends AppCompatActivity {
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
 
+    private boolean enableAddItemWithCamera = false;    ///test: if enableAddItemWithCamera
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,9 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setRichEditText(mRichEditText);
 
         ///（可选）设置初始文本
-        mRichEditText.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
+        if (getIntent().getStringExtra(KEY_TEXT) != null) {
+            mRichEditText.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
+        }
 
 
         /* --------------///[ImageSpan]-------------- */
@@ -162,7 +165,7 @@ public class EditorActivity extends AppCompatActivity {
         mRichEditorToolbar.setOnReadyListener(new RichEditorToolbar.OnReadyListener() {
             @Override
             public void onReady() {
-                if (savedInstanceState != null) {
+                if (!enableAddItemWithCamera || savedInstanceState != null) {
                     return;
                 }
 

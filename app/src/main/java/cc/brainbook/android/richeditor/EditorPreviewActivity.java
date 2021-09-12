@@ -38,7 +38,10 @@ public class EditorPreviewActivity extends AppCompatActivity {
         mTextView.setClickable(false);
         mTextView.setLongClickable(false);
 
-        mTextView.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
+        if (getIntent().getStringExtra(KEY_TEXT) != null) {
+            mTextView.setText(ToolbarHelper.fromJson(getIntent().getStringExtra(KEY_TEXT)));
+        }
+
         mTextView.post(new Runnable() {
             @Override
             public void run() {

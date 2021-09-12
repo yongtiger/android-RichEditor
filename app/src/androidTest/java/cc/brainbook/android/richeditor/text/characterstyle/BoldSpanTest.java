@@ -1,5 +1,6 @@
 package cc.brainbook.android.richeditor.text.characterstyle;
 
+import android.os.Build;
 import android.text.Selection;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -95,9 +96,17 @@ public class BoldSpanTest {
         mActivityRule.getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 ///[动作：替换text文本]参考RichEditText
-
                 final int min = Selection.getSelectionStart(mRichEditText.getText());
                 final int max = Selection.getSelectionEnd(mRichEditText.getText());
+
+                ///[FIX#必须加入Selection.setSelection()，否则，在API 26及以上会出现异常：
+                ///java.lang.IllegalArgumentException: Invalid offset: XXX. Valid range is [0, X]
+                ///IndexOutOfBoundsException
+                ///比如：aa[a{a]aa[aa]aa} replace with [a]aa[a]
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Selection.setSelection(mRichEditText.getText(), max);
+                }
+
                 mRichEditText.replace(mRichEditText.getText(), min, max, fromJson(replaceJsonString));
 
                 ///[Lock to synchronize access]

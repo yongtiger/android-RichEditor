@@ -36,7 +36,8 @@ public class LongClickLeadingMarginSpanDialogBuilder extends BaseDialogBuilder {
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				mIndent = progress;
-				mTextViewIndent.setText(String.format(seekBar.getContext().getResources().getString(R.string.leading_margin_span_indent), progress));
+				mTextViewIndent.setText(String.format(seekBar.getContext().getResources().getString(
+						R.string.long_click_leading_margin_span_dialog_builder_text_leading_margin_span_indent), progress));
 			}
 
 			@Override
@@ -48,7 +49,8 @@ public class LongClickLeadingMarginSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
 	private void setupView(@NonNull Context context) {
-		mTextViewIndent.setText(String.format(context.getResources().getString(R.string.leading_margin_span_indent), mIndent));
+		mTextViewIndent.setText(String.format(context.getResources().getString(
+				R.string.long_click_leading_margin_span_dialog_builder_text_leading_margin_span_indent), mIndent));
 		mSeekBarIndent.setProgress(mIndent);
 	}
 

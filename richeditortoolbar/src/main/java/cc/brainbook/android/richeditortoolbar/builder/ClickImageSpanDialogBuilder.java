@@ -71,10 +71,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final int REQUEST_CODE_PICK_FROM_AUDIO_RECORDER = 4;
 	private static final int REQUEST_CODE_PICK_FROM_GALLERY = 5;
 	private static final int REQUEST_CODE_PICK_FROM_CAMERA = 6;
-	private static final int REQUEST_CODE_DRAW = 10;
+	private static final int REQUEST_CODE_DOODLE = 10;
 
 	private static final String ACTION_CROP = "crop";
-	private static final String ACTION_DRAW= "draw";
+	private static final String ACTION_DOODLE = "doodle";
 
 	private int mMediaType;	///0: image; 1: video; 2: audio
 
@@ -115,7 +115,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private Slider mSliderDisplayHeight;
 
     private Button mButtonCrop;
-    private Button mButtonDraw;
+    private Button mButtonDoodle;
 
 	private RadioGroup mRadioGroup;
 	private RadioButton mRadioButtonAlignBottom;
@@ -316,20 +316,23 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 						}
 					} else {
-						Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(
+								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
 						Toast.makeText(builder.getContext().getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
+								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(builder.getContext().getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_cancelled : R.string.message_audio_select_cancelled,
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_cancelled : R.string.click_image_span_dialog_builder_msg_audio_select_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed));
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_failed : R.string.click_image_span_dialog_builder_msg_audio_select_failed));
 				Toast.makeText(builder.getContext().getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_select_failed : R.string.message_audio_select_failed, Toast.LENGTH_SHORT).show();
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_failed : R.string.click_image_span_dialog_builder_msg_audio_select_failed,
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -355,20 +358,23 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							}
 						}
 					} else {
-						Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio));
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(
+								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
 						Toast.makeText(builder.getContext().getApplicationContext(),
-								mMediaType == 1 ? R.string.message_cannot_retrieve_video : R.string.message_cannot_retrieve_audio,
+								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio,
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(builder.getContext().getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_capture_cancelled : R.string.message_audio_capture_cancelled,
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_cancelled : R.string.click_image_span_dialog_builder_msg_audio_capture_cancelled,
 						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", builder.getContext().getString(mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed));
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_failed : R.string.click_image_span_dialog_builder_msg_audio_capture_failed));
 				Toast.makeText(builder.getContext().getApplicationContext(),
-						mMediaType == 1 ? R.string.message_video_capture_failed : R.string.message_audio_capture_failed, Toast.LENGTH_SHORT).show();
+						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_failed : R.string.click_image_span_dialog_builder_msg_audio_capture_failed,
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -382,15 +388,18 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mImageHeight = 0;
 						mEditTextSrc.setText(selectedUri.toString());
 					} else {
-						Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_cannot_retrieve_image));
-						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_cannot_retrieve_image, Toast.LENGTH_SHORT).show();
+						Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image));
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image,
+								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_select_cancelled, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_select_cancelled,
+						Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_select_failed));
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_select_failed, Toast.LENGTH_SHORT).show();
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_select_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_select_failed,
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -404,10 +413,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					enableDeleteOldSrcFile = true;
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_capture_cancelled, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_capture_cancelled, Toast.LENGTH_SHORT).show();
 			} else {
-				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_capture_failed));
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_capture_failed, Toast.LENGTH_SHORT).show();
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_capture_failed));
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_capture_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -425,13 +434,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final Throwable cropError = UCrop.getError(data);
 				if (cropError != null) {
 					Log.e("TAG-ClickImageSpan", cropError.getMessage());
-					Toast.makeText(builder.getContext().getApplicationContext(), cropError.getMessage(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext().getApplicationContext(), cropError.getMessage(),
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
 
 		///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
-		else if (requestCode == REQUEST_CODE_DRAW) {
+		else if (requestCode == REQUEST_CODE_DOODLE) {
 			if (data != null) {
 				if (resultCode == DoodleActivity.RESULT_OK) {
 					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
@@ -442,8 +452,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						enableDeleteOldSrcFile = true;
 					}
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
-					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.message_image_draw_failed));
-					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_image_draw_failed, Toast.LENGTH_SHORT).show();
+					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_doodle_failed));
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_image_doodle_failed,
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		}
@@ -454,7 +465,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		super.clear();
 
 		mButtonCrop = null;
-		mButtonDraw = null;
+		mButtonDoodle = null;
 		mImageButtonDisplayRestore = null;
 		mImageButtonZoomOut = null;
 		mImageButtonZoomIn = null;
@@ -687,14 +698,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					if (activity != null) {
 						startCrop(activity, pair.first, pair.second.getAbsolutePath());
 					} else {
-						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
+								Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
 		});
 
-		mButtonDraw = (Button) layout.findViewById(R.id.btn_draw);
-		mButtonDraw.setOnClickListener(new View.OnClickListener() {
+		mButtonDoodle = (Button) layout.findViewById(R.id.btn_doodle);
+		mButtonDoodle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				if (mImageSpanCallback == null) {
@@ -703,14 +715,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_DRAW, src);
+				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_DOODLE, src);
 
 				if (pair.first != null && pair.second != null) {
 					final Activity activity = getActivity(builder.getContext());
 					if (activity != null) {
-						startDraw(activity, pair.first, pair.second.getAbsolutePath());
+						startDoodle(activity, pair.first, pair.second.getAbsolutePath());
 					} else {
-						Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
+								Toast.LENGTH_SHORT).show();
 					}
 				}
 			}
@@ -791,7 +804,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						if (mImageWidth > getRichEditorToolbar().getImageMaxWidth() || mImageHeight > getRichEditorToolbar().getImageMaxHeight()) {
 							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
-									String.format(getRichEditorToolbar().getContext().getString(R.string.message_image_size_exceeds),
+									String.format(getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds),
 											getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
 									Toast.LENGTH_LONG).show();
 						}
@@ -808,7 +821,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (!(drawable instanceof GifDrawable)) {
 							///除GifDrawable保持禁止之外，其它都允许Crop和Draw
 							mButtonCrop.setEnabled(true);
-							mButtonDraw.setEnabled(true);
+							mButtonDoodle.setEnabled(true);
 						}
 
 						mSliderDisplayWidth.setEnabled(true);
@@ -829,11 +842,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					public void onLoadFailed(@Nullable Drawable errorDrawable) {
 						if (TextUtils.isEmpty(src)) {
 							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
-									R.string.message_please_input_image_resource,
+									R.string.click_image_span_dialog_builder_msg_please_input_image_resource,
 									Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(getRichEditorToolbar().getContext().getApplicationContext(),
-									String.format(getRichEditorToolbar().getContext().getString(R.string.message_image_load_fails), src),
+									String.format(getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_load_fails), src),
 									Toast.LENGTH_LONG).show();
 						}
 					}
@@ -866,9 +879,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageButtonZoomIn.setEnabled(false);
 		mImageButtonZoomIn.setVisibility(View.INVISIBLE);
 
-		///先设置Crop和Draw为false
+		///先设置Crop和Doodle为false
 		mButtonCrop.setEnabled(false);
-		mButtonDraw.setEnabled(false);
+		mButtonDoodle.setEnabled(false);
 	}
 
 	///https://www.jianshu.com/p/5b5cef2ffff2
@@ -971,14 +984,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		if (activity != null) {
 			try {
 				activity.startActivityForResult(
-						Intent.createChooser(intent, builder.getContext().getString(mMediaType == 1 ? R.string.label_select_video : R.string.label_select_audio)),
+						Intent.createChooser(intent, builder.getContext().getString(
+								mMediaType == 1 ? R.string.click_image_span_dialog_builder_title_select_video : R.string.click_image_span_dialog_builder_title_select_audio)),
 						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1010,14 +1024,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			final Activity activity = getActivity(builder.getContext());
 			if (activity != null) {
 				try {
-					((Activity) builder.getContext()).startActivityForResult(intent,
+					getActivity(builder.getContext()).startActivityForResult(intent,
 							mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 				}
 			} else {
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -1037,14 +1051,14 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		final Activity activity = getActivity(builder.getContext());
 		if (activity != null) {
 			try {
-				((Activity) builder.getContext()).startActivityForResult(Intent.createChooser(intent, builder.getContext().getString(R.string.label_select_picture)),
+				getActivity(builder.getContext()).startActivityForResult(Intent.createChooser(intent, builder.getContext().getString(R.string.click_image_span_dialog_builder_title_select_picture)),
 						REQUEST_CODE_PICK_FROM_GALLERY);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1094,10 +1108,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					getActivity(builder.getContext()).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 				}
 			} else {
-				Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -1115,16 +1129,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
     }
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
-	private void startDraw(@NonNull Activity activity, @NonNull Uri imageUri, String savePath) {
+	private void startDoodle(@NonNull Activity activity, @NonNull Uri imageUri, String savePath) {
         final DoodleParams params = new DoodleParams();
 		params.mImageUri = imageUri;
 		params.mSavePath = savePath;
 
 		try {
-			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DRAW);
+			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DOODLE);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(builder.getContext().getApplicationContext(), R.string.message_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 		}
 	}
 
