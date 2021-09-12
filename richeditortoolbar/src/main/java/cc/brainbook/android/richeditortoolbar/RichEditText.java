@@ -267,7 +267,6 @@ public class RichEditText extends AppCompatEditText {
         editable.replace(min, max, paste);
 
         ///调整Selection起止位置
-        Selection.removeSelection(editable);  ///[FIX#避免replace前后Selection相同导致不更新View]
         Selection.setSelection(editable, min, min + paste.length());
     }
 
