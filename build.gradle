@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.3",   ///v2.8.3#upgrade to 'com.github.yongtiger:android-DoodleDraw:v17.1.0'
-                versionCode: 20803
+                versionName: "2.8.4",   ///v2.8.4#Proguard configuration for Gson
+                versionCode: 20804
         ]
     }
 
