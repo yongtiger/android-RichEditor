@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.6",   ///v2.8.6#ClickImageSpanDialogBuilder#Glide#override(getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight())
-                versionCode: 20806
+                versionName: "2.8.7",   ///v2.8.7
+                versionCode: 20807
         ]
     }
 
