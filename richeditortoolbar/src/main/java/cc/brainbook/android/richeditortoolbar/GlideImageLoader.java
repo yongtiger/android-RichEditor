@@ -19,6 +19,8 @@ import com.bumptech.glide.request.transition.Transition;
 public class GlideImageLoader {
 
     private final Context mContext;
+    private int mImageMaxWidth = 1024;
+    private int mImageMaxHeight = 1024;
 
     @Nullable
     private Drawable mPlaceholderDrawable;
@@ -31,8 +33,10 @@ public class GlideImageLoader {
         mPlaceholderResourceId = placeholderResourceId;
     }
 
-    public GlideImageLoader(Context context) {
+    public GlideImageLoader(Context context, int imageMaxWidth, int imageMaxHeight) {
         mContext = context;
+        mImageMaxWidth = imageMaxWidth;
+        mImageMaxHeight = imageMaxHeight;
     }
 
     public interface Callback {
@@ -77,7 +81,7 @@ public class GlideImageLoader {
         Glide.with(mContext)
                 .load(viewTagSrc)
                 .apply(options)
-//                .override(200, 200) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
+                .override(mImageMaxWidth, mImageMaxHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
 //                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
 //                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
                 .into(new CustomTarget<Drawable>() {

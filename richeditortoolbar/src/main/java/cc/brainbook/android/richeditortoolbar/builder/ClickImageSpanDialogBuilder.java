@@ -775,7 +775,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				.load(src)
 				.apply(options)
 
-//				.override(mImageOverrideWidth, mImageOverrideHeight) // resize the image to these dimensions (in pixel). does not respect aspect ratio
+				.override(getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()) // resize the image to these dimensions (in pixel). does not respect aspect ratio
 //				.centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
 //				.fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
 

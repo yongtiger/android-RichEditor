@@ -1278,7 +1278,7 @@ public abstract class ToolbarHelper {
             return;
         }
 
-        final GlideImageLoader glideImageLoader = new GlideImageLoader(context);
+        final GlideImageLoader glideImageLoader = new GlideImageLoader(context, imageMaxWidth, imageMaxHeight);
 
         ///注意：mPlaceholderDrawable和mPlaceholderResourceId如都设置则mPlaceholderDrawable优先
         if (placeholderDrawable == null && placeholderResourceId == 0) {
