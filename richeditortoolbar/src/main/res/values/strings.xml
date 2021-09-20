@@ -164,6 +164,7 @@
     <string name="click_image_span_dialog_builder_msg_image_load_fails">Image load fails. \n%s</string>
     <string name="click_image_span_dialog_builder_msg_image_load_is_cancelled">Image load is cancelled and its resources are freed. \n%s</string>
     <string name="click_image_span_dialog_builder_msg_image_size_exceeds">The image size exceeds (%d X %d), it is recommended to resize it to avoid application crash.\n\nTip: Use DOODLE or CROP for size adjustment.</string>
+    <string name="click_image_span_dialog_builder_msg_image_does_not_exist">Image does not exist, or the read and write permissions are not authorized. %s</string>
 
     <string name="click_image_span_dialog_builder_title_select_video">Select Video</string>
     <string name="click_image_span_dialog_builder_title_select_audio">Select Audio</string>

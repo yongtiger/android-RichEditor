@@ -383,7 +383,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
 					final Uri selectedUri = data.getData();
-					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
+//					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {//////////////////
+					if (selectedUri != null) {
 						mImageWidth = 0;
 						mImageHeight = 0;
 						mEditTextSrc.setText(selectedUri.toString());
@@ -406,7 +407,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		///[图片选择器#相机拍照]
 		else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
 			if (resultCode == RESULT_OK) {
-				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
+//				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {//////////////////
+				if (mCameraResultFile != null) {
 					mImageWidth = 0;
 					mImageHeight = 0;
 					mEditTextSrc.setText(mCameraResultFile.getAbsolutePath());
@@ -424,7 +426,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		else if (requestCode == UCrop.REQUEST_CROP) {
 			if (resultCode == RESULT_OK) {
 				final String resultString = UCrop.getOutput(data);
-				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+//				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {////////////////
+				if (!TextUtils.isEmpty(resultString)) {
 					mImageWidth = 0;
 					mImageHeight = 0;
 					mEditTextSrc.setText(resultString);
@@ -445,7 +448,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			if (data != null) {
 				if (resultCode == DoodleActivity.RESULT_OK) {
 					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
-					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+//					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {///////////////
+					if (!TextUtils.isEmpty(resultString)) {
 						mImageWidth = 0;
 						mImageHeight = 0;
 						mEditTextSrc.setText(resultString);
@@ -701,6 +705,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
 								Toast.LENGTH_SHORT).show();
 					}
+				} else {
+					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
+					Toast.makeText(builder.getContext().getApplicationContext(),
+							String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist), src), Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -725,6 +733,10 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
 								Toast.LENGTH_SHORT).show();
 					}
+				} else {
+					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
+					Toast.makeText(builder.getContext().getApplicationContext(),
+							String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist), src), Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -1007,7 +1019,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(builder.getContext(), mMediaType);
 		Log.d("TAG-ClickImageSpan", "pickFromRecorder()# Uri: " + pair.first);
 
-		if (pair.first != null) {
+		if (pair.first != null && pair.second != null) {
 			///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, pair.first);
 
@@ -1033,6 +1045,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			} else {
 				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
+		} else {
+			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
+			Toast.makeText(builder.getContext().getApplicationContext(),
+					String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist),
+							pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1088,7 +1105,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mCameraResultFile = pair.second;
 		Log.d("TAG-ClickImageSpan", "pickFromCamera()# mCameraResultFile: " + pair.second);
 
-		if (pair.first != null) {
+		if (pair.first != null && pair.second != null) {
 			///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
 			///如果指定了保存路径，则照片保存到指定文件（此时，Intent返回null）
 			///另外，不建议用uri！这种FileProvider内容提供者的uri很难获得File文件目录进行文件操作！
@@ -1113,6 +1130,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			} else {
 				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
+		} else {
+			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
+			Toast.makeText(builder.getContext().getApplicationContext(),
+					String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist),
+							pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
 		}
 	}
 

@@ -212,14 +212,13 @@ public abstract class UriUtil {
             }
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
-
                 final String id = DocumentsContract.getDocumentId(uri);
                 if (!TextUtils.isEmpty(id)) {
                     try {
                         final Uri contentUri = ContentUris.withAppendedId(
                                 Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
                         return getDataColumn(context, contentUri, null, null);
-                    } catch (NumberFormatException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         return null;
                     }
@@ -246,7 +245,12 @@ public abstract class UriUtil {
                         split[1]
                 };
 
-                return getDataColumn(context, contentUri, selection, selectionArgs);
+                try {
+                    return getDataColumn(context, contentUri, selection, selectionArgs);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
             }
         }
 
@@ -264,12 +268,17 @@ public abstract class UriUtil {
                 return uri.getLastPathSegment();
             }
 
-            String path = getDataColumn(context, uri, null, null);
-            if (path == null) { //如果getDataColumn()返回null，则尝试获取FileProvider Uri的path
-                ///例如：content://cc.brainbook.android.richeditor.file.path.share/external_files_path/Movies/20201003185042.mp4
-                path = getFilePathFromFileProviderUri(context, uri);
+            try {
+                String path = getDataColumn(context, uri, null, null);
+                if (path == null) { //如果getDataColumn()返回null，则尝试获取FileProvider Uri的path
+                    ///例如：content://cc.brainbook.android.richeditor.file.path.share/external_files_path/Movies/20201003185042.mp4
+                    path = getFilePathFromFileProviderUri(context, uri);
+                }
+                return path;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
-            return path;
         }
 
         // File
@@ -308,7 +317,7 @@ public abstract class UriUtil {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) { ///当未授权读写外部存储空间时，产生异常SecurityException
             e.printStackTrace();
         } finally {
             if (cursor != null) {

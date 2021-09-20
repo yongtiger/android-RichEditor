@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.7",   ///v2.8.7
-                versionCode: 20807
+                versionName: "2.8.8",   ///v2.8.8#[FIX#未授权读写外部存储卡时出现异常]
+                versionCode: 20808
         ]
     }
 
