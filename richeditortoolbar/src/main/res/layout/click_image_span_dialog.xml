@@ -101,7 +101,7 @@
         <EditText
             android:id="@+id/et_display_width"
             android:layout_width="@dimen/global_dimen_8"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/global_dimen_6"
             android:gravity="center"
             android:layout_margin="@dimen/global_dimen"
             android:autofillHints="@string/layout_click_image_span_dialog_hint_display_width"
@@ -128,7 +128,7 @@
         <EditText
             android:id="@+id/et_display_height"
             android:layout_width="@dimen/global_dimen_8"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/global_dimen_6"
             android:gravity="center"
             android:layout_margin="@dimen/global_dimen"
             android:autofillHints="@string/layout_click_image_span_dialog_hint_display_height"
