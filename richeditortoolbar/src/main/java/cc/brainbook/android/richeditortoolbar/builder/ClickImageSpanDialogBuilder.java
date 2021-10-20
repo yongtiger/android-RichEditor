@@ -999,7 +999,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Intent.createChooser(intent, builder.getContext().getString(
 								mMediaType == 1 ? R.string.click_image_span_dialog_builder_title_select_video : R.string.click_image_span_dialog_builder_title_select_audio)),
 						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
-			} catch (ActivityNotFoundException e) {
+			///[FIX#Amazon Kindle#App requires rear camera]
+//			} catch (ActivityNotFoundException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
@@ -1038,7 +1040,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				try {
 					getActivity(builder.getContext()).startActivityForResult(intent,
 							mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
-				} catch (ActivityNotFoundException e) {
+				///[FIX#Amazon Kindle#App requires rear camera]
+//				} catch (ActivityNotFoundException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 				}
@@ -1070,7 +1074,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			try {
 				getActivity(builder.getContext()).startActivityForResult(Intent.createChooser(intent, builder.getContext().getString(R.string.click_image_span_dialog_builder_title_select_picture)),
 						REQUEST_CODE_PICK_FROM_GALLERY);
-			} catch (ActivityNotFoundException e) {
+			///[FIX#Amazon Kindle#App requires rear camera]
+//			} catch (ActivityNotFoundException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 			}
@@ -1123,7 +1129,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			if (activity != null) {
 				try {
 					getActivity(builder.getContext()).startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
-				} catch (ActivityNotFoundException e) {
+				///[FIX#Amazon Kindle#App requires rear camera]
+//				} catch (ActivityNotFoundException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 				}
@@ -1158,7 +1166,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		try {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DOODLE);
-		} catch (ActivityNotFoundException e) {
+		///[FIX#Amazon Kindle#App requires rear camera]
+//		} catch (ActivityNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
 		}

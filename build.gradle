@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.10",   ///v2.8.10
-                versionCode: 20810
+                versionName: "2.8.11",   ///v2.8.11#[FIX#Amazon Kindle#App requires rear camera]
+                versionCode: 20811
         ]
     }
 
@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'com.android.tools.build:gradle:7.0.3'
 
         ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
         ///https://www.shangmayuan.com/a/12c08d0e68c3421cb2d547ee.html
