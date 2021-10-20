@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "2.8.11",   ///v2.8.11#[FIX#Amazon Kindle#App requires rear camera]
-                versionCode: 20811
+                versionName: "2.8.12",   ///v2.8.12#[FIX#Amazon Kindle#App requires rear camera]
+                versionCode: 20812
         ]
     }
 
