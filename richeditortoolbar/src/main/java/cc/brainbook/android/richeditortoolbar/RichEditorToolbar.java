@@ -439,11 +439,8 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
     /* ---------------- ///[Undo/Redo] ---------------- */
     private ImageView mImageViewUndo;
-    private boolean enableUndo;
     private ImageView mImageViewRedo;
-    private boolean enableRedo;
     private ImageView mImageViewSave;
-    private boolean enableSave;
 
     public interface SaveCallback {
         void save(String jsonString);
