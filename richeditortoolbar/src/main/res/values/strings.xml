@@ -134,8 +134,8 @@
     <string name="undo_redo_helper_label_change_video_span">change video span</string>
     <string name="undo_redo_helper_label_change_audio_span">change audio span</string>
 
-    <string name="undo_redo_helper_msg_undo">"Undo: %s"</string>
-    <string name="undo_redo_helper_msg_redo">"Redo: %s"</string>
+    <string name="undo_redo_helper_msg_undo">Undo: %s</string>
+    <string name="undo_redo_helper_msg_redo">Redo: %s</string>
 
 
     <!--///ClickImageSpanDialogBuilder.java-->

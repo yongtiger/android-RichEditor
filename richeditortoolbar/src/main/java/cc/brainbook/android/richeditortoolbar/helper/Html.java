@@ -910,10 +910,10 @@ class HtmlToSpannedConverter implements ContentHandler {
             for (int i = start; i < length; i++) {
                 sb.append(ch[i]);
             }
-            characters = sb.toString().trim().toCharArray();
+            characters = sb.toString().toCharArray();
 
             if (characters.length > 0) {
-                if (!isCharacterStyleTag) {    ///不在CharacterStyle tag中
+                if (hasParagraphStyle) {    ///不在CharacterStyle tag中
                     addNewLine(mSpannableStringBuilder, false);
                 }
 
@@ -936,7 +936,6 @@ class HtmlToSpannedConverter implements ContentHandler {
     /* ---------------------------------------------------------------------------------- */
     private final ArrayList<ListSpan> updateListSpans = new ArrayList<>();
     private boolean hasParagraphStyle = false;
-    private boolean isCharacterStyleTag = false;
 
     public Spanned convert() {
         mReader.setContentHandler(this);
@@ -990,6 +989,8 @@ class HtmlToSpannedConverter implements ContentHandler {
     }
 
     private void handleStartTag(@NonNull String tag, Attributes attributes) {
+        hasParagraphStyle = false;
+
         ///[UPGRADE#android.text.Html#添加'\n'#添加ParagraphStyle tags之前]
         if (tag.equalsIgnoreCase("p")
                 || tag.equalsIgnoreCase("div")
@@ -1001,8 +1002,6 @@ class HtmlToSpannedConverter implements ContentHandler {
                 || tag.equalsIgnoreCase("hr")
                 || isHeadTag(tag)) {
             addNewLine(mSpannableStringBuilder, true);
-        } else {
-            isCharacterStyleTag = true;
         }
 
         mLinkedList.add(new LL(mSpannableStringBuilder.length()));
@@ -1236,7 +1235,6 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
 
         mLinkedList.removeLast();
-        isCharacterStyleTag = false;
     }
 
 
