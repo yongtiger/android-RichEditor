@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.0.0",   ///v3.0.0#update gradle:7.0.4#RTL适配
-                versionCode: 30000
+                versionName: "3.0.1",   ///v3.0.1#com.github.yongtiger:android-uCrop:v13.2.1
+                versionCode: 30001
         ]
     }
 
