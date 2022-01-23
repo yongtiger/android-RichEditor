@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--///[替换android:autoMirrored以适配API19以下]-->
+    <!--///https://stackoverflow.com/questions/40201451/rtl-support-for-vector-drawable-for-below-api-19-->
+    <!--///https://material.io/design/usability/bidirectionality.html#mirroring-layout-->
+    <integer name="rtl_automirror_scale">-1</integer>
+</resources>

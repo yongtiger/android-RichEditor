@@ -48,8 +48,8 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
 
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0
     ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
@@ -58,7 +58,7 @@ dependencies {
 //    implementation 'com.google.android:flexbox:flexbox:3.0.0'
     implementation 'com.github.google:flexbox-layout:3.0.0'
 
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.8.9'
 
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
@@ -66,17 +66,17 @@ dependencies {
     implementation "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 //    implementation "org.jsoup:jsoup:1.11.3"
 
-    implementation 'com.github.yongtiger:android-ColorPicker:v1.1.3'
+    implementation 'com.github.yongtiger:android-ColorPicker:v1.1.4'
 
     ///注意：manifest合并规则#使用本库者需在清单中设置tools:node="replace"，所以这里必须用api！
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
 //    implementation 'com.github.yalantis:ucrop:2.2.6' ///lightweight general solution
 //    implementation 'com.github.yalantis:ucrop:2.2.6-native' ///get power of the native code to preserve image quality (+ about 1.5 MB to an apk size)
-    api 'com.github.yongtiger:android-uCrop:v13.1.4'
+    api 'com.github.yongtiger:android-uCrop:v13.2.0'
 
     ///注意：manifest合并规则#使用本库者需在清单中设置tools:node="replace"，所以这里必须用api！
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 //    implementation 'com.github.1993hzw:Doodle:5.5.4'
-    api 'com.github.yongtiger:android-DoodleDraw:v17.1.1'
+    api 'com.github.yongtiger:android-DoodleDraw:v17.2.0'
 
 }

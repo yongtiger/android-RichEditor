@@ -3,15 +3,15 @@
 buildscript {
     ext {
         setup = [
-                compileSdk : 30,
-                buildTools : "30.0.3",
+                compileSdk : 31,
+                buildTools : "31.0.0",
                 minSdk     : 15,
-                targetSdk  : 30
+                targetSdk  : 31
         ]
 
         release = [
-                versionName: "2.9.0",   ///v2.9.0#[FIX#Html]
-                versionCode: 20900
+                versionName: "3.0.0",   ///v3.0.0#update gradle:7.0.4#RTL适配
+                versionCode: 30000
         ]
     }
 

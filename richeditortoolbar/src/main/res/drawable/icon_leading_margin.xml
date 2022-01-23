@@ -4,7 +4,14 @@
     android:viewportWidth="24.0"
     android:viewportHeight="24.0"
     android:tint="?attr/colorControlNormal">
-    <path
-        android:fillColor="@android:color/white"
-        android:pathData="M3,21h18v-2L3,19v2zM3,8v8l4,-4 -4,-4zM11,17h10v-2L11,15v2zM3,3v2h18L21,3L3,3zM11,9h10L21,7L11,7v2zM11,13h10v-2L11,11v2z"/>
+    <!--///[替换android:autoMirrored以适配API19以下]-->
+    <!--///https://stackoverflow.com/questions/40201451/rtl-support-for-vector-drawable-for-below-api-19-->
+    <!--///https://material.io/design/usability/bidirectionality.html#mirroring-layout-->
+    <group
+        android:pivotX="12"
+        android:scaleX="@integer/rtl_automirror_scale">
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M3,21h18v-2L3,19v2zM3,8v8l4,-4 -4,-4zM11,17h10v-2L11,15v2zM3,3v2h18L21,3L3,3zM11,9h10L21,7L11,7v2zM11,13h10v-2L11,11v2z"/>
+    </group>
 </vector>
