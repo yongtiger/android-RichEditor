@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.android.tools.build:gradle:7.1.0'
 
         ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
         ///https://www.shangmayuan.com/a/12c08d0e68c3421cb2d547ee.html
