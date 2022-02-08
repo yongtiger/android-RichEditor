@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.0.2",   ///v3.0.2#com.github.yongtiger:android-uCrop:v13.2.2
-                versionCode: 30002
+                versionName: "3.0.3",   ///v3.0.3#fix#android:inputType="textVisiblePassword"无法输入中文
+                versionCode: 30003
         ]
     }
 

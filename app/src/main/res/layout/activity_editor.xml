@@ -28,7 +28,7 @@
         app:toolbarLayout="@layout/editor_toolbar"
         app:enableLongClick="true" />
 
-    <!--///android:inputType="textVisiblePassword"：解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失！-->
+    <!--android:inputType="textVisiblePassword"：虽然解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失，但无法输入中文！-->
     <!--///android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
     <!--///android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
     <!--///注意：EditText有缺省padding为4dp!-->
@@ -45,6 +45,6 @@
         android:lineSpacingExtra="8dp"
         android:textSize="24sp"
         android:imeOptions="flagNoExtractUi"
-        android:inputType="textMultiLine|textImeMultiLine|textVisiblePassword" />
+        android:inputType="textMultiLine|textImeMultiLine" />
 
 </LinearLayout>
