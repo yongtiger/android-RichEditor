@@ -306,6 +306,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						///[FIX#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
 						///https://stackoverflow.com/questions/19834842/android-gallery-on-android-4-4-kitkat-returns-different-uri-for-intent-action
+						//////??????https://stackoverflow.com/questions/46785237/permission-for-an-image-from-gallery-is-lost-after-re-launch
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 							final int takeFlags = data.getFlags()
 									& (Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -401,6 +402,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						///[FIX#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
 						///https://stackoverflow.com/questions/19834842/android-gallery-on-android-4-4-kitkat-returns-different-uri-for-intent-action
+						//////??????https://stackoverflow.com/questions/46785237/permission-for-an-image-from-gallery-is-lost-after-re-launch
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 							final int takeFlags = data.getFlags()
 								& (Intent.FLAG_GRANT_READ_URI_PERMISSION
