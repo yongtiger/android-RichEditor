@@ -1061,11 +1061,18 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 	///[图片选择器#相册图库]
 	private void pickFromGallery() {
-		final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-				.setType("image/*")
-				.addCategory(Intent.CATEGORY_OPENABLE);
+		///[FIX#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
+		///https://stackoverflow.com/questions/22178041/getting-permission-denial-exception
+		final Intent intent;
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+			intent = new Intent();
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			intent.setType("image/*");
+		} else {
+			intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			intent.setType("image/*");
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			///https://stackoverflow.com/questions/23385520/android-available-mime-types
 			final String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png", "image/bmp", "image/gif"};//////??????相册不支持"image/bmp"
 			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);

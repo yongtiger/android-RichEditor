@@ -3,15 +3,15 @@
 buildscript {
     ext {
         setup = [
-                compileSdk : 31,
-                buildTools : "31.0.0",
+                compileSdk : 32,
+//                buildTools : "31.0.0",
                 minSdk     : 15,
-                targetSdk  : 31
+                targetSdk  : 32
         ]
 
         release = [
-                versionName: "3.0.3",   ///v3.0.3#fix#android:inputType="textVisiblePassword"无法输入中文
-                versionCode: 30003
+                versionName: "3.0.4",   ///v3.0.4#[FIX#ClickImageSpanDialogBuilder#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
+                versionCode: 30004
         ]
     }
 
@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.0'
+        classpath 'com.android.tools.build:gradle:7.1.2'
 
         ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
         ///https://www.shangmayuan.com/a/12c08d0e68c3421cb2d547ee.html
