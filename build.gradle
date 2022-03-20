@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.0.4",   ///v3.0.4#[FIX#ClickImageSpanDialogBuilder#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
-                versionCode: 30004
+                versionName: "3.0.5",   ///v3.0.5#UriUtil#startShowImageActivity()
+                versionCode: 30005
         ]
     }
 

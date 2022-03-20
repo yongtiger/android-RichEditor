@@ -2,6 +2,7 @@ package cc.brainbook.android.richeditortoolbar.util;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -361,6 +362,30 @@ public abstract class UriUtil {
      */
     public static boolean isGooglePhotosUri(@NonNull Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param context       The context.
+     * @param imageUri The Uri to show image.
+     */
+    public static final String IMAGE_TYPE = "image/*";
+    public static final String AUDIO_TYPE = "audio/*";
+    public static final String VIDEO_TYPE = "video/*";
+    public static void startShowImageActivity(@NonNull Context context, @NonNull Uri uri, String type) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+
+        intent.setDataAndType(uri, type);
+
+        try {
+            context.startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

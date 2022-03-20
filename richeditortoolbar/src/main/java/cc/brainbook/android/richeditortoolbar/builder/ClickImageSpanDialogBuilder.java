@@ -57,6 +57,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FA
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
+import static cc.brainbook.android.richeditortoolbar.util.UriUtil.IMAGE_TYPE;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
@@ -303,6 +304,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					if (resultUri != null) {
 						mEditTextUri.setText(resultUri.toString());
 
+						///[FIX#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
+						///https://stackoverflow.com/questions/19834842/android-gallery-on-android-4-4-kitkat-returns-different-uri-for-intent-action
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+							final int takeFlags = data.getFlags()
+									& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+									| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							builder.getContext().getContentResolver().takePersistableUriPermission(resultUri, takeFlags);
+						}
+
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							if (mImageSpanCallback != null) {
 								///生成视频的第一帧图片
@@ -388,6 +398,15 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mImageWidth = 0;
 						mImageHeight = 0;
 						mEditTextSrc.setText(selectedUri.toString());
+
+						///[FIX#java.lang.SecurityException: Permission Denial: opening provider com.android.providers.media.MediaDocumentsProvider requires that you obtain access using ACTION_OPEN_DOCUMENT or related APIs]
+						///https://stackoverflow.com/questions/19834842/android-gallery-on-android-4-4-kitkat-returns-different-uri-for-intent-action
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+							final int takeFlags = data.getFlags()
+								& (Intent.FLAG_GRANT_READ_URI_PERMISSION
+								| Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+							builder.getContext().getContentResolver().takePersistableUriPermission(selectedUri, takeFlags);
+						}
 					} else {
 						Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image));
 						Toast.makeText(builder.getContext().getApplicationContext(), R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image,
@@ -1067,16 +1086,20 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 			intent = new Intent();
 			intent.setAction(Intent.ACTION_GET_CONTENT);
-			intent.setType("image/*");
+			intent.setType(IMAGE_TYPE);
 		} else {
 			intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 			intent.addCategory(Intent.CATEGORY_OPENABLE);
-			intent.setType("image/*");
+			intent.setType(IMAGE_TYPE);
 
 			///https://stackoverflow.com/questions/23385520/android-available-mime-types
 			final String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png", "image/bmp", "image/gif"};//////??????相册不支持"image/bmp"
 			intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+
+			intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
+			intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
 		}
+		intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
 		final Activity activity = getActivity(builder.getContext());
 		if (activity != null) {
