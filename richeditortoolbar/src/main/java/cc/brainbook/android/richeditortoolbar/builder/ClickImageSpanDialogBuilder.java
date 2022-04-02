@@ -446,7 +446,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				final Throwable cropError = UCrop.getError(data);
 				if (cropError != null) {
 					Log.e("TAG-ClickImageSpan", cropError.getMessage());
-					Toast.makeText(builder.getContext(), cropError.getMessage(),
+					Toast.makeText(builder.getContext(), cropError.getLocalizedMessage(),
 							Toast.LENGTH_SHORT).show();
 				}
 			}
