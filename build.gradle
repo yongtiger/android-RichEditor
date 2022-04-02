@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.0.6",   ///v3.0.6#UriUtil#startShowImageActivity()
-                versionCode: 30006
+                versionName: "3.0.7",   ///v3.0.7#UriUtil#grantReadPermissionToUri()
+                versionCode: 30007
         ]
     }
 
