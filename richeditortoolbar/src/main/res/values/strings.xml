@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!--///layout/toolbar.xml-->
@@ -9,7 +10,7 @@
     <string name="layout_toolbar_desc_quote">Quote</string>
     <string name="layout_toolbar_desc_pre">Pre</string>
     <string name="layout_toolbar_desc_head">Head</string>
-    <string name="layout_toolbar_text_head">H</string>
+    <string name="layout_toolbar_text_head" translatable="false">H</string>
     <string name="layout_toolbar_desc_line_divider">Line divider</string>
     <string name="layout_toolbar_desc_bold">Bold</string>
     <string name="layout_toolbar_desc_italic">Italic</string>
@@ -172,8 +173,8 @@
 
 
     <!--///RichEditorToolbar.java-->
-    <string name="rich_editor_toolbar_image_span_text">[img src="%1$s" width=%2$s height=%3$s align=%4$d]</string>
-    <string name="rich_editor_toolbar_image_span_media_text">[media uri="%1$s" src="%2$s" width=%3$s height=%4$s align=%5$d]</string>
+    <string name="rich_editor_toolbar_image_span_text" translatable="false">[img src="%1$s" width=%2$s height=%3$s align=%4$d]</string>
+    <string name="rich_editor_toolbar_image_span_media_text" translatable="false">[media uri="%1$s" src="%2$s" width=%3$s height=%4$s align=%5$d]</string>
 
     <string name="rich_editor_toolbar_msg_save_draft_successful">Save draft successful</string>
     <string name="rich_editor_toolbar_msg_save_draft_failed">Save draft failed</string>

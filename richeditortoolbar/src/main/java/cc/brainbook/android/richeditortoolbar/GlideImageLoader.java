@@ -115,7 +115,7 @@ public class GlideImageLoader {
                     @Override
                     public void onLoadFailed(@Nullable Drawable errorDrawable) {
                         Toast.makeText(mContext.getApplicationContext(),
-                                String.format(mContext.getString(R.string.click_image_span_dialog_builder_msg_image_load_fails), viewTagSrc),
+                                mContext.getString(R.string.click_image_span_dialog_builder_msg_image_load_fails, viewTagSrc),
                                 Toast.LENGTH_LONG).show();
                     }
 

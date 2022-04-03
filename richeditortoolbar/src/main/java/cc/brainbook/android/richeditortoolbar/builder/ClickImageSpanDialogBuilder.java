@@ -717,7 +717,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				} else {
 					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
 					Toast.makeText(builder.getContext(),
-							String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist), src), Toast.LENGTH_SHORT).show();
+							builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist, src), Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -745,7 +745,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				} else {
 					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
 					Toast.makeText(builder.getContext(),
-							String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist), src), Toast.LENGTH_SHORT).show();
+							builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist, src), Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -825,7 +825,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 						if (mImageWidth > getRichEditorToolbar().getImageMaxWidth() || mImageHeight > getRichEditorToolbar().getImageMaxHeight()) {
 							Toast.makeText(getRichEditorToolbar().getContext(),
-									String.format(getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds),
+									getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds,
 											getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
 									Toast.LENGTH_LONG).show();
 						}
@@ -867,7 +867,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 									Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(getRichEditorToolbar().getContext(),
-									String.format(getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_load_fails), src),
+									getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_load_fails, src),
 									Toast.LENGTH_LONG).show();
 						}
 					}
@@ -1063,7 +1063,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
 			Toast.makeText(builder.getContext(),
-					String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist),
+					builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist,
 							pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
 		}
 	}
@@ -1165,7 +1165,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
 			Toast.makeText(builder.getContext(),
-					String.format(builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist),
+					builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist,
 							pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
 		}
 	}

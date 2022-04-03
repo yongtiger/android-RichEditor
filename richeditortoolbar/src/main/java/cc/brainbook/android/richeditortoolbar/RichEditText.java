@@ -141,7 +141,7 @@ public class RichEditText extends AppCompatEditText {
                 } else {
                     Log.e("TAG-RichEditText", getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard));
                     Toast.makeText(getContext(),
-                            R.string.click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard,
+                            getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard),
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -166,7 +166,7 @@ public class RichEditText extends AppCompatEditText {
                 } else {
                     Log.e("TAG-RichEditText", getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard));
                     Toast.makeText(getContext(),
-                            R.string.click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard,
+                            getContext().getString(R.string.click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard),
                             Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -180,13 +180,13 @@ public class RichEditText extends AppCompatEditText {
             case android.R.id.undo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar,
+                        getContext().getString(R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar),
                         Toast.LENGTH_SHORT).show();
                 return true;
             case android.R.id.redo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
-                        R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar,
+                        getContext().getString(R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar),
                         Toast.LENGTH_SHORT).show();
                 return true;
             default:

@@ -879,7 +879,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
         ///初始化时检查有无草稿Draft
         if (mImageViewSaveDraft.isEnabled() && mImageViewRestoreDraft.isEnabled() && mImageViewClearDraft.isEnabled() && checkDraft()) {
-            Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_has_draft, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_has_draft), Toast.LENGTH_SHORT).show();
         }
 
         /* ------------------- ///[Undo/Redo/Save] ------------------- */
@@ -1084,9 +1084,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             PrefsUtil.putString(mContext, mToolbarName, SHARED_PREFERENCES_KEY_DRAFT_TEXT, Base64.encodeToString(bytes, 0));
 
             if (checkDraft()) {
-                Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_save_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_save_draft_successful), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_save_draft_failed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_save_draft_failed), Toast.LENGTH_SHORT).show();
             }
 
             return;
@@ -1133,7 +1133,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 mUndoRedoHelper.addHistory(UndoRedoHelper.RESTORE_DRAFT_ACTION, 0, beforeChange, editable.toString(),
                         ToolbarHelper.toByteArray(editable, 0, editable.length(), false));
 
-                Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_restore_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_restore_draft_successful), Toast.LENGTH_SHORT).show();
             }
 
             return;
@@ -1141,9 +1141,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
             PrefsUtil.clear(mContext, mToolbarName);
 
             if (!checkDraft()) {
-                Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_clear_draft_successful, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_clear_draft_successful), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(mContext, R.string.rich_editor_toolbar_msg_clear_draft_failed, Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mContext.getString(R.string.rich_editor_toolbar_msg_clear_draft_failed), Toast.LENGTH_SHORT).show();
             }
 
             return;
