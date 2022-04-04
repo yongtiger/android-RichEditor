@@ -75,7 +75,7 @@ public abstract class UriUtil {
             filePath = fileProviderUri.getPath();
         }
 
-        if (TextUtils.isEmpty(filePath)) {
+        if (filePath == null || TextUtils.isEmpty(filePath)) {
             return null;
         }
         return new File(filePath);
@@ -158,7 +158,7 @@ public abstract class UriUtil {
      */
     @Nullable
     public static Uri parseToUri(@NonNull Context context, String uriString, String authorities) {
-        if (TextUtils.isEmpty(uriString)) {
+        if (uriString == null || TextUtils.isEmpty(uriString)) {
             return null;
         }
 
@@ -173,7 +173,7 @@ public abstract class UriUtil {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, uri)) {
             //////??????暂时将DocumentUri转换为FileProviderUri，以后考虑改为API读写DocumentUri
             final String filePath = UriUtil.getFilePathFromUri(context, uri);
-            if (TextUtils.isEmpty(filePath)) {
+            if (filePath == null || TextUtils.isEmpty(filePath)) {
                 return null;
             } else {
                 return UriUtil.getFileProviderUriFromFile(context, new File(filePath), authorities);
