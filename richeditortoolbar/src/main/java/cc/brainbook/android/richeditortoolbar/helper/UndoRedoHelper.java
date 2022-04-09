@@ -212,7 +212,7 @@ public class UndoRedoHelper {
 
         replace(currentAction, currentAction.mAfter, currentAction.mBefore);
 
-        Toast.makeText(mContext.getApplicationContext(),
+        Toast.makeText(mContext,
                 mContext.getString(R.string.undo_redo_helper_msg_undo,
                         getLabel(currentAction.getId())), Toast.LENGTH_SHORT).show();
     }
@@ -229,7 +229,7 @@ public class UndoRedoHelper {
 
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
 
-        Toast.makeText(mContext.getApplicationContext(), mContext.getString(R.string.undo_redo_helper_msg_redo, getLabel(nextAction.getId())), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, mContext.getString(R.string.undo_redo_helper_msg_redo, getLabel(nextAction.getId())), Toast.LENGTH_SHORT).show();
     }
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {

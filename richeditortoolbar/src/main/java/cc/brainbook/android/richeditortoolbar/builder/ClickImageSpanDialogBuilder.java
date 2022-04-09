@@ -326,19 +326,19 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Log.e("TAG-ClickImageSpan", builder.getContext().getString(
 								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
 						Toast.makeText(builder.getContext(),
-								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio,
+								mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio),
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(builder.getContext(),
-						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_cancelled : R.string.click_image_span_dialog_builder_msg_audio_select_cancelled,
+						mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_video_select_cancelled) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_audio_select_cancelled),
 						Toast.LENGTH_SHORT).show();
 			} else {
 				Log.e("TAG-ClickImageSpan", builder.getContext().getString(
 						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_failed : R.string.click_image_span_dialog_builder_msg_audio_select_failed));
 				Toast.makeText(builder.getContext(),
-						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_failed : R.string.click_image_span_dialog_builder_msg_audio_select_failed,
+						mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_video_select_failed) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_audio_select_failed),
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -368,19 +368,19 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Log.e("TAG-ClickImageSpan", builder.getContext().getString(
 								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
 						Toast.makeText(builder.getContext(),
-								mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio,
+								mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio),
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
 				Toast.makeText(builder.getContext(),
-						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_cancelled : R.string.click_image_span_dialog_builder_msg_audio_capture_cancelled,
+						mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_video_capture_cancelled) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_audio_capture_cancelled),
 						Toast.LENGTH_SHORT).show();
 			} else {
 				Log.e("TAG-ClickImageSpan", builder.getContext().getString(
 						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_failed : R.string.click_image_span_dialog_builder_msg_audio_capture_failed));
 				Toast.makeText(builder.getContext(),
-						mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_failed : R.string.click_image_span_dialog_builder_msg_audio_capture_failed,
+						mMediaType == 1 ? builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_video_capture_failed) : builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_audio_capture_failed),
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -399,16 +399,16 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						UriUtil.grantReadPermissionToUri(builder.getContext(), selectedUri, data.getFlags());
 					} else {
 						Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image));
-						Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image,
+						Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image),
 								Toast.LENGTH_SHORT).show();
 					}
 				}
 			} else if (resultCode == RESULT_CANCELED) {
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_image_select_cancelled,
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_select_cancelled),
 						Toast.LENGTH_SHORT).show();
 			} else {
 				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_select_failed));
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_image_select_failed,
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_select_failed),
 						Toast.LENGTH_SHORT).show();
 			}
 		}
@@ -427,7 +427,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_image_capture_cancelled, Toast.LENGTH_SHORT).show();
 			} else {
 				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_capture_failed));
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_image_capture_failed, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_image_capture_failed), Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -466,7 +466,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					}
 				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
 					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed));
-					Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_doodle_failed,
+					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed),
 							Toast.LENGTH_SHORT).show();
 				}
 			}
@@ -711,7 +711,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					if (activity != null) {
 						startCrop(activity, pair.first, pair.second.getAbsolutePath());
 					} else {
-						Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
+						Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found),
 								Toast.LENGTH_SHORT).show();
 					}
 				} else {
@@ -739,7 +739,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					if (activity != null) {
 						startDoodle(activity, pair.first, pair.second.getAbsolutePath());
 					} else {
-						Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found,
+						Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found),
 								Toast.LENGTH_SHORT).show();
 					}
 				} else {
@@ -863,7 +863,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					public void onLoadFailed(@Nullable Drawable errorDrawable) {
 						if (TextUtils.isEmpty(src)) {
 							Toast.makeText(getRichEditorToolbar().getContext(),
-									R.string.click_image_span_dialog_builder_msg_please_input_image_resource,
+									getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_please_input_image_resource),
 									Toast.LENGTH_LONG).show();
 						} else {
 							Toast.makeText(getRichEditorToolbar().getContext(),
@@ -1010,13 +1010,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 				e.printStackTrace();
 				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1052,13 +1052,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 					e.printStackTrace();
 					Toast.makeText(activity, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				}
 			} else {
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
@@ -1098,13 +1098,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						REQUEST_CODE_PICK_FROM_GALLERY);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 				e.printStackTrace();
 				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1154,13 +1154,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					activity.startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 					e.printStackTrace();
 					Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				}
 			} else {
-				Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
@@ -1192,7 +1192,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DOODLE);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(builder.getContext(), R.string.click_image_span_dialog_builder_msg_activity_not_found, Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 		} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 			e.printStackTrace();
 			Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
