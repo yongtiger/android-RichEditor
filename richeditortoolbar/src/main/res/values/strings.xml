@@ -15,7 +15,7 @@
     <string name="layout_toolbar_desc_bold">Bold</string>
     <string name="layout_toolbar_desc_italic">Italic</string>
     <string name="layout_toolbar_desc_underline">Underline</string>
-    <string name="layout_toolbar_desc_strike_through">Strike through</string>
+    <string name="layout_toolbar_desc_strikethrough">Strikethrough</string>
     <string name="layout_toolbar_desc_subscript">Subscript</string>
     <string name="layout_toolbar_desc_superscript">Superscript</string>
     <string name="layout_toolbar_desc_foreground_color">Foreground color</string>
@@ -27,7 +27,7 @@
     <string name="layout_toolbar_desc_relative_size">Relative size</string>
     <string name="layout_toolbar_text_relative_size">Scale</string>
     <string name="layout_toolbar_desc_scale_x">Scale x direction</string>
-    <string name="layout_toolbar_text_scale_x">ScaleX</string>
+    <string name="layout_toolbar_text_scale_x">Scale_X</string>
     <string name="layout_toolbar_desc_code">Code</string>
     <string name="layout_toolbar_desc_block">Block</string>
     <string name="layout_toolbar_desc_border">Border</string>
@@ -101,42 +101,8 @@
 
     <!--///UndoRedoHelper.java-->
     <string name="undo_redo_helper_label_init">init</string>
-    <string name="undo_redo_helper_label_change_text">change text</string>
-    <string name="undo_redo_helper_label_restore_draft">restore draft</string>
-    <string name="undo_redo_helper_label_clear_styles">clear styles</string>
-
-    <string name="undo_redo_helper_label_change_align_normal_span">change align normal span</string>
-    <string name="undo_redo_helper_label_change_align_center_span">change align center span</string>
-    <string name="undo_redo_helper_label_change_align_opposite_span">change align opposite span</string>
-    <string name="undo_redo_helper_label_change_leading_margin_span">change leading margin span</string>
-    <string name="undo_redo_helper_label_change_quote_span">change quote span</string>
-    <string name="undo_redo_helper_label_change_list_span">change list span</string>
-    <string name="undo_redo_helper_label_change_head_span">change head span</string>
-    <string name="undo_redo_helper_label_change_pre_span">change pre span</string>
-    <string name="undo_redo_helper_label_change_line_divider_span">change line divider span</string>
-
-    <string name="undo_redo_helper_label_change_bold_span">change bold span</string>
-    <string name="undo_redo_helper_label_change_italic_span">change italic span</string>
-    <string name="undo_redo_helper_label_change_underline_span">change underline span</string>
-    <string name="undo_redo_helper_label_change_strike_through_span">change strike through span</string>
-    <string name="undo_redo_helper_label_change_subscript_span">change subscript span</string>
-    <string name="undo_redo_helper_label_change_superscript_span">change superscript span</string>
-    <string name="undo_redo_helper_label_change_foreground_color_span">change foreground color span</string>
-    <string name="undo_redo_helper_label_change_background_color_span">change background color span</string>
-    <string name="undo_redo_helper_label_change_font_family_span">change font family span</string>
-    <string name="undo_redo_helper_label_change_absolute_size_span">change absolute size span</string>
-    <string name="undo_redo_helper_label_change_relative_size_span">change relative size span</string>
-    <string name="undo_redo_helper_label_change_scale_x_span">change scale x span</string>
-    <string name="undo_redo_helper_label_change_code_span">change code span</string>
-    <string name="undo_redo_helper_label_change_block_span">change block span</string>
-    <string name="undo_redo_helper_label_change_border_span">change border span</string>
-    <string name="undo_redo_helper_label_change_url_span">change url span</string>
-    <string name="undo_redo_helper_label_change_image_span">change image span</string>
-    <string name="undo_redo_helper_label_change_video_span">change video span</string>
-    <string name="undo_redo_helper_label_change_audio_span">change audio span</string>
-
-    <string name="undo_redo_helper_msg_undo">Undo: %s</string>
-    <string name="undo_redo_helper_msg_redo">Redo: %s</string>
+    <string name="undo_redo_helper_msg_undo">%1$s: %2$s</string>
+    <string name="undo_redo_helper_msg_redo">%1$s: %2$s</string>
 
 
     <!--///ClickImageSpanDialogBuilder.java-->

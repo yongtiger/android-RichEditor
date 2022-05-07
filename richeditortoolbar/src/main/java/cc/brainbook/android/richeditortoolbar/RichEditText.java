@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Build;
 import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.Selection;
@@ -178,11 +179,6 @@ public class RichEditText extends AppCompatEditText {
                 return true;
 
             case android.R.id.undo:
-                ///屏蔽掉系统Undo/Redo
-                Toast.makeText(getContext(),
-                        getContext().getString(R.string.click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar),
-                        Toast.LENGTH_SHORT).show();
-                return true;
             case android.R.id.redo:
                 ///屏蔽掉系统Undo/Redo
                 Toast.makeText(getContext(),
@@ -263,7 +259,7 @@ public class RichEditText extends AppCompatEditText {
     }
 
 
-    public void replace(Editable editable, int min, int max, Spannable paste) {
+    public void replace(@NonNull Editable editable, int min, int max, Spannable paste) {
         editable.replace(min, max, paste);
 
         ///调整Selection起止位置

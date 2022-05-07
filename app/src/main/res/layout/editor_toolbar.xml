@@ -105,8 +105,8 @@
 
     <ImageView
         android:id="@+id/toolbar_strikethrough"
-        android:contentDescription="@string/layout_toolbar_desc_strike_through"
-        android:tooltipText="@string/layout_toolbar_desc_strike_through"
+        android:contentDescription="@string/layout_toolbar_desc_strikethrough"
+        android:tooltipText="@string/layout_toolbar_desc_strikethrough"
         app:tint="@color/selector_view"
         app:srcCompat="@drawable/icon_strikethrough"
         style="@style/ImageView" />

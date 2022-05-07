@@ -84,69 +84,69 @@ public class UndoRedoHelper {
             case INIT_ACTION:
                 return mContext.getString(R.string.undo_redo_helper_label_init);
             case CHANGE_TEXT_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_text);
+                return mContext.getString(R.string.layout_click_url_span_dialog_hint_text);
             case RESTORE_DRAFT_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_restore_draft);
+                return mContext.getString(R.string.layout_toolbar_desc_restore_draft);
             case CLEAR_STYLES_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_clear_styles);
+                return mContext.getString(R.string.layout_toolbar_desc_clear_styles);
 
             case CHANGE_ALIGN_NORMAL_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_align_normal_span);
+                return mContext.getString(R.string.layout_toolbar_desc_align_normal);
             case CHANGE_ALIGN_CENTER_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_align_center_span);
+                return mContext.getString(R.string.layout_toolbar_desc_align_center);
             case CHANGE_ALIGN_OPPOSITE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_align_opposite_span);
+                return mContext.getString(R.string.layout_toolbar_desc_align_opposite);
             case CHANGE_LEADING_MARGIN_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_leading_margin_span);
+                return mContext.getString(R.string.layout_toolbar_desc_leading_margin);
             case CHANGE_QUOTE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_quote_span);
+                return mContext.getString(R.string.layout_toolbar_desc_quote);
             case CHANGE_LIST_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_list_span);
+                return mContext.getString(R.string.layout_toolbar_desc_list);
             case CHANGE_HEAD_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_head_span);
+                return mContext.getString(R.string.layout_toolbar_desc_head);
             case CHANGE_PRE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_pre_span);
+                return mContext.getString(R.string.layout_toolbar_desc_pre);
             case CHANGE_LINE_DIVIDER_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_line_divider_span);
+                return mContext.getString(R.string.layout_toolbar_desc_line_divider);
 
             case CHANGE_BOLD_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_bold_span);
+                return mContext.getString(R.string.layout_toolbar_desc_bold);
             case CHANGE_ITALIC_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_italic_span);
+                return mContext.getString(R.string.layout_toolbar_desc_italic);
             case CHANGE_UNDERLINE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_underline_span);
+                return mContext.getString(R.string.layout_toolbar_desc_underline);
             case CHANGE_STRIKE_THROUGH_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_strike_through_span);
+                return mContext.getString(R.string.layout_toolbar_desc_strikethrough);
             case CHANGE_SUBSCRIPT_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_subscript_span);
+                return mContext.getString(R.string.layout_toolbar_desc_subscript);
             case CHANGE_SUPERSCRIPT_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_superscript_span);
+                return mContext.getString(R.string.layout_toolbar_desc_superscript);
             case CHANGE_FOREGROUND_COLOR_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_foreground_color_span);
+                return mContext.getString(R.string.layout_toolbar_desc_foreground_color);
             case CHANGE_BACKGROUND_COLOR_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_background_color_span);
+                return mContext.getString(R.string.layout_toolbar_desc_background_color);
             case CHANGE_FONT_FAMILY_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_font_family_span);
+                return mContext.getString(R.string.layout_toolbar_text_font_family);
             case CHANGE_ABSOLUTE_SIZE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_absolute_size_span);
+                return mContext.getString(R.string.layout_toolbar_text_absolute_size);
             case CHANGE_RELATIVE_SIZE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_relative_size_span);
+                return mContext.getString(R.string.layout_toolbar_text_relative_size);
             case CHANGE_SCALE_X_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_scale_x_span);
+                return mContext.getString(R.string.layout_toolbar_text_scale_x);
             case CHANGE_CODE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_code_span);
+                return mContext.getString(R.string.layout_toolbar_desc_code);
             case CHANGE_BLOCK_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_block_span);
+                return mContext.getString(R.string.layout_toolbar_desc_block);
             case CHANGE_BORDER_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_border_span);
+                return mContext.getString(R.string.layout_toolbar_desc_border);
             case CHANGE_URL_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_url_span);
+                return mContext.getString(R.string.layout_toolbar_desc_url);
             case CHANGE_IMAGE_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_image_span);
+                return mContext.getString(R.string.layout_toolbar_desc_image);
             case CHANGE_VIDEO_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_video_span);
+                return mContext.getString(R.string.layout_toolbar_desc_video);
             case CHANGE_AUDIO_SPAN_ACTION:
-                return mContext.getString(R.string.undo_redo_helper_label_change_audio_span);
+                return mContext.getString(R.string.layout_toolbar_desc_audio);
 
             default:
                 return null;
@@ -214,7 +214,9 @@ public class UndoRedoHelper {
 
         Toast.makeText(mContext,
                 mContext.getString(R.string.undo_redo_helper_msg_undo,
-                        getLabel(currentAction.getId())), Toast.LENGTH_SHORT).show();
+                        mContext.getString(R.string.layout_toolbar_desc_undo),
+                        getLabel(currentAction.getId())),
+                Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -229,7 +231,11 @@ public class UndoRedoHelper {
 
         replace(nextAction, nextAction.mBefore, nextAction.mAfter);
 
-        Toast.makeText(mContext, mContext.getString(R.string.undo_redo_helper_msg_redo, getLabel(nextAction.getId())), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext,
+                mContext.getString(R.string.undo_redo_helper_msg_redo,
+                        mContext.getString(R.string.layout_toolbar_desc_redo),
+                        getLabel(nextAction.getId())),
+                Toast.LENGTH_SHORT).show();
     }
 
     private void replace(Action action, CharSequence originalText, CharSequence newText) {
