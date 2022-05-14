@@ -106,21 +106,24 @@
 
 
     <!--///ClickImageSpanDialogBuilder.java-->
-    <string name="click_image_span_dialog_builder_msg_image_select_cancelled">Image select cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_image_select_failed">Image select failed</string>
-    <string name="click_image_span_dialog_builder_msg_image_capture_cancelled">Image capture cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_image_capture_failed">Image capture failed</string>
-    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_image">Cannot retrieve image</string>
-    <string name="click_image_span_dialog_builder_msg_video_select_cancelled">Video select cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_video_select_failed">Video select failed</string>
-    <string name="click_image_span_dialog_builder_msg_video_capture_cancelled">Video capture cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_video_capture_failed">Video capture failed</string>
-    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_video">Cannot retrieve video</string>
-    <string name="click_image_span_dialog_builder_msg_audio_select_cancelled">Audio select cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_audio_select_failed">Audio select failed</string>
-    <string name="click_image_span_dialog_builder_msg_audio_capture_cancelled">Audio capture cancelled</string>
-    <string name="click_image_span_dialog_builder_msg_audio_capture_failed">Audio capture failed</string>
-    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_audio">Cannot retrieve audio</string>
+    <string name="click_image_span_dialog_builder_msg_image_select_cancelled">Canceled to select image</string>
+    <string name="click_image_span_dialog_builder_msg_image_select_failed">Failed to select image</string>
+    <string name="click_image_span_dialog_builder_msg_image_capture_cancelled">Canceled to capture</string>
+    <string name="click_image_span_dialog_builder_msg_image_capture_failed">Failed to capture image</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_image">Unable to retrieve image</string>
+
+    <string name="click_image_span_dialog_builder_msg_video_select_cancelled">Canceled to select video</string>
+    <string name="click_image_span_dialog_builder_msg_video_select_failed">Failed to select video</string>
+    <string name="click_image_span_dialog_builder_msg_video_capture_cancelled">Canceled to record video</string>
+    <string name="click_image_span_dialog_builder_msg_video_capture_failed">Failed to record video</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_video">Unable to retrieve video</string>
+
+    <string name="click_image_span_dialog_builder_msg_audio_select_cancelled">Canceled to select audio</string>
+    <string name="click_image_span_dialog_builder_msg_audio_select_failed">Failed to select audio</string>
+    <string name="click_image_span_dialog_builder_msg_audio_capture_cancelled">Canceled to record audio</string>
+    <string name="click_image_span_dialog_builder_msg_audio_capture_failed">Failed to record audio</string>
+    <string name="click_image_span_dialog_builder_msg_cannot_retrieve_audio">Unable to retrieve audio</string>
+
     <string name="click_image_span_dialog_builder_msg_doodle_failed">Doodle failed</string>
     <string name="click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard">Failed to cut to clipboard</string>
     <string name="click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard">Failed to copy to clipboard</string>

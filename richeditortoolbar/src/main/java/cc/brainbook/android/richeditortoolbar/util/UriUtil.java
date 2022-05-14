@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -416,6 +417,32 @@ public abstract class UriUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+    ///https://stackoverflow.com/questions/5568874/how-to-extract-the-file-name-from-uri-returned-from-intent-action-get-content
+    ///https://developer.android.com/training/secure-file-sharing/retrieve-info
+    public static String getFilenameFromUri(@NonNull Context context, @NonNull Uri uri) {
+        String result = null;
+
+        if (uri.getScheme().equals("content")) {
+            try (Cursor cursor = context.getContentResolver().query(uri, null, null, null, null)) {
+                final int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+
+                if (cursor.moveToFirst()) {
+                    result = cursor.getString(columnIndex);
+                }
+            }
+        }
+
+        if (result == null) {
+            result = uri.getPath();
+            final int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+
+        return result;
     }
 
 }
