@@ -46,6 +46,9 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
     public String getUri() {
         return mUri;
     }
+    public void setUri(String uri) {
+        mUri = uri;
+    }
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
@@ -54,7 +57,9 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
     public String getSource() {
         return mSource;
     }
-
+    public void setSource(String source) {
+        mSource = source;
+    }
     private WeakReference<Drawable> mDrawableRef;
 
 

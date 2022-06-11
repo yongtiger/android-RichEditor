@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.4.0",   ///v3.4.0#update gradle
-                versionCode: 30400
+                versionName: "3.5.0",   ///v3.5.0#update gradle; CustomImageSpan#setSource()/setUri()
+                versionCode: 30500
         ]
     }
 
@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath 'com.android.tools.build:gradle:7.2.1'
 
         ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
         ///https://www.shangmayuan.com/a/12c08d0e68c3421cb2d547ee.html
