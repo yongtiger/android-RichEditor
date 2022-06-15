@@ -1,18 +1,15 @@
 package cc.brainbook.android.richeditor;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.text.Spannable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -25,8 +22,8 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.postSetText;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_RICH_EDITOR = 100;
 
     ///[权限申请]
-    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     ///设置初始文本
     private String mJsonText = "{\"spans\":[{\"span\":{\"mMarginBottom\":0,\"mMarginTop\":0},\"spanClassName\":\"LineDividerSpan\",\"spanEnd\":1,\"spanFlags\":17,\"spanStart\":0}],\"text\":\"\\n\"}";
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 postSetText(MainActivity.this, mTextView,
                         getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                        DEFAULT_IMAGE_MAX_WIDTH, DEFAULT_IMAGE_MAX_HEIGHT);
+                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
             }
         });
 
@@ -109,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.setText(ToolbarHelper.fromJson(mJsonText));
                         postSetText(MainActivity.this, mTextView,
                                 getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                                DEFAULT_IMAGE_MAX_WIDTH, DEFAULT_IMAGE_MAX_HEIGHT);
+                                DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
                     }
                 }
             }

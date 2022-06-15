@@ -9,20 +9,20 @@ import androidx.annotation.IntRange;
 public abstract class Config {
 
     /* --------------///[ClickImageSpan]-------------- */
-    public static final int IMAGE_MAX_DISPLAY_DIGITS = 4;
 
     /////??????Android设备最大尺寸（目前为3040）
-    public static final int DEFAULT_IMAGE_MAX_WIDTH = 1024;
-    public static final int DEFAULT_IMAGE_MAX_HEIGHT = 1024;
+    public static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
+    public static final int DEFAULT_MAX_IMAGE_HEIGHT = 1024;
+    public static final int IMAGE_COMPRESS = 60;
 
-    ///ColorDrawable.getWidth()/getHeight()均为-1，此时设置为缺省数值
-    public static final int DEFAULT_IMAGE_WIDTH = 200;
-    public static final int DEFAULT_IMAGE_HEIGHT = 200;
+    public static final int IMAGE_MAX_DISPLAY_DIGITS = 4;
 
     ///缩放因子（放大：1+0.5F；缩小：1-0.5F）
     public static final float IMAGE_ZOOM_FACTOR = 0.5F;
 
     @DrawableRes public static int PLACE_HOLDER_DRAWABLE = android.R.drawable.picture_frame;
+    @DrawableRes public static int AUDIO_DRAWABLE = android.R.drawable.presence_audio_online;
+    @DrawableRes public static int VIDEO_DRAWABLE = android.R.drawable.presence_video_online;
 
     /* --------------///[PreSpan]-------------- */
     @ColorInt public static final int PRE_SPAN_BACKGROUND_COLOR = Color.GRAY;

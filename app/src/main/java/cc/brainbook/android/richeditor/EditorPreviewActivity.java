@@ -10,8 +10,8 @@ import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.postSetText;
 
 public class EditorPreviewActivity extends AppCompatActivity {
@@ -47,7 +47,7 @@ public class EditorPreviewActivity extends AppCompatActivity {
             public void run() {
                 postSetText(EditorPreviewActivity.this, mTextView,
                         getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                        DEFAULT_IMAGE_MAX_WIDTH, DEFAULT_IMAGE_MAX_HEIGHT);
+                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
             }
         });
     }

@@ -544,11 +544,11 @@ public class Html {
 
                 if (style[j] instanceof CustomForegroundColorSpan) {
                     int color = ((CustomForegroundColorSpan) style[j]).getForegroundColor();
-                    out.append(String.format("<span style=\"color:#%06X;\">", 0xFFFFFF & color));
+                    out.append(String.format(Locale.ENGLISH, "<span style=\"color:#%06X;\">", 0xFFFFFF & color));
                 } else
                 if (style[j] instanceof CustomBackgroundColorSpan) {
                     int color = ((CustomBackgroundColorSpan) style[j]).getBackgroundColor();
-                    out.append(String.format("<span style=\"background-color:#%06X;\">",
+                    out.append(String.format(Locale.ENGLISH, "<span style=\"background-color:#%06X;\">",
                             0xFFFFFF & color));
                 } else
 
@@ -577,7 +577,7 @@ public class Html {
                     }
 
                     // px in CSS is the equivalance of dip in Android
-                    out.append(String.format("<span style=\"font-size:%.0fpx\";>", sizeDip));
+                    out.append(String.format(Locale.ENGLISH, "<span style=\"font-size:%.0fpx\";>", sizeDip));
                 } else
                 if (style[j] instanceof CustomRelativeSizeSpan) {
                     float sizeEm = ((CustomRelativeSizeSpan) style[j]).getSizeChange();
@@ -586,7 +586,7 @@ public class Html {
                     } else if (sizeEm == 0.8f) {
                         out.append("<small>");
                     } else {
-                        out.append(String.format("<span style=\"font-size:%.2fem;\">", sizeEm));
+                        out.append(String.format(Locale.ENGLISH, "<span style=\"font-size:%.2fem;\">", sizeEm));
                     }
                 } else
 
@@ -606,8 +606,8 @@ public class Html {
                     } else {
                         out.append("<img src=\"").append(((CustomImageSpan) style[j]).getSource()).append("\"");
                     }
-                    out.append(" width=\"").append(((CustomImageSpan) style[j]).getDrawableWidth()).append("\"");
-                    out.append(" height=\"").append(((CustomImageSpan) style[j]).getDrawableHeight()).append("\"");
+                    out.append(" width=\"").append(((CustomImageSpan) style[j]).getImageWidth()).append("\"");
+                    out.append(" height=\"").append(((CustomImageSpan) style[j]).getImageHeight()).append("\"");
                     out.append(" align=\"").append(((CustomImageSpan) style[j]).getVerticalAlignment()).append("\"");
                     out.append(" />");
 
@@ -732,7 +732,7 @@ public class Html {
     }
 
 
-    private static ArrayList<Object> sRemovedSpans = new ArrayList<>();
+    private static final ArrayList<Object> sRemovedSpans = new ArrayList<>();
     private static IParagraphStyle getNextParagraphStyleSpan(Spanned text, int where, IParagraphStyle compareSpan) {
         IParagraphStyle resultSpan = null;
 
@@ -1496,7 +1496,7 @@ class HtmlToSpannedConverter implements ContentHandler {
         }
     }
 
-    private void startA(Editable text, Attributes attributes) {
+    private void startA(Editable text, @NonNull Attributes attributes) {
         String href = attributes.getValue("", "href");
         start(text, new Href(href));
     }
@@ -1577,14 +1577,14 @@ class HtmlToSpannedConverter implements ContentHandler {
 //        text.append("\uFFFC");
 //        text.append(String.format(Resources.getSystem().getString(R.string.image_span_text), src, ///Note: Resources.getSystem() can only support system resources!
             if ("img".equals(type)) {
-                text.append(String.format("[img src=\"%1$s\" width=%2$s height=%3$s align=%4$d]", source,
-                        span.getDrawableWidth() == 0 ? "" : String.valueOf(span.getDrawableWidth()),
-                        span.getDrawableHeight() == 0 ? "" : String.valueOf(span.getDrawableHeight()),
+                text.append(String.format(Locale.ENGLISH, "[img src=\"%1$s\" width=%2$s height=%3$s align=%4$d]", source,
+                        span.getImageWidth() == 0 ? "" : String.valueOf(span.getImageWidth()),
+                        span.getImageHeight() == 0 ? "" : String.valueOf(span.getImageHeight()),
                         span.getVerticalAlignment()));
             } else {
-                text.append(String.format("[media uri=\"%1$s\" src=\"%2$s\" width=%3$s height=%4$s align=%5$d]", uri, source,
-                        span.getDrawableWidth() == 0 ? "" : String.valueOf(span.getDrawableWidth()),
-                        span.getDrawableHeight() == 0 ? "" : String.valueOf(span.getDrawableHeight()),
+                text.append(String.format(Locale.ENGLISH, "[media uri=\"%1$s\" src=\"%2$s\" width=%3$s height=%4$s align=%5$d]", uri, source,
+                        span.getImageWidth() == 0 ? "" : String.valueOf(span.getImageWidth()),
+                        span.getImageHeight() == 0 ? "" : String.valueOf(span.getImageHeight()),
                         span.getVerticalAlignment()));
             }
 

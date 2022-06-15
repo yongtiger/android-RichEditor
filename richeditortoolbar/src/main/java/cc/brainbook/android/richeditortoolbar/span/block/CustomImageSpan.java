@@ -28,20 +28,9 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
     public static final int ALIGN_CENTER = 2;
 
 
-    @Expose
-    private final int mDrawableWidth, mDrawableHeight;    ///保存drawable的宽高到Parcel
-    public int getDrawableWidth() {
-        return mDrawableWidth;
-    }
-    public int getDrawableHeight() {
-        return mDrawableHeight;
-    }
-    @Expose
-    private final int mVerticalAlignment;
-
     @Nullable
     @Expose
-    private String mUri;    ///media source
+    private String mUri;    ///若MEDIA_TYPE为0（图像）则空，否则为media的Uri
     @Nullable
     public String getUri() {
         return mUri;
@@ -53,7 +42,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose
     @Expose
-    private String mSource;
+    private String mSource; ///image source，若MEDIA_TYPE不为0，则代表封面图片的source
     public String getSource() {
         return mSource;
     }
@@ -61,6 +50,27 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
         mSource = source;
     }
     private WeakReference<Drawable> mDrawableRef;
+
+
+    @Expose
+    private final int mImageWidth, mImageHeight;    ///实际存储的Image宽高
+    public int getImageWidth() {
+        return mImageWidth;
+    }
+    public int getImageHeight() {
+        return mImageHeight;
+    }
+
+    @Expose
+    private final int mDrawableWidth, mDrawableHeight;    ///实际绘制图像宽高，仅供显示，不影响mImageWidth, mImageHeight
+    public int getDrawableWidth() {
+        return mDrawableWidth;
+    }
+    public int getDrawableHeight() {
+        return mDrawableHeight;
+    }
+    @Expose
+    private final int mVerticalAlignment;
 
 
     public CustomImageSpan(@NonNull Drawable drawable, @NonNull String source) {
@@ -78,6 +88,20 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
         mDrawableWidth = drawable.getBounds().right;
         mDrawableHeight = drawable.getBounds().bottom;
         mVerticalAlignment = verticalAlignment;
+        mImageWidth = mDrawableWidth;
+        mImageHeight = mDrawableHeight;
+    }
+
+    public CustomImageSpan(@NonNull Drawable drawable, @Nullable String uri, @NonNull String source, int verticalAlignment,
+                           int imageWidth, int imageHeight) {
+        super(drawable, source, verticalAlignment);
+        mUri = uri;
+        mSource = source;
+        mDrawableWidth = drawable.getBounds().right;
+        mDrawableHeight = drawable.getBounds().bottom;
+        mVerticalAlignment = verticalAlignment;
+        mImageWidth = imageWidth;
+        mImageHeight = imageHeight;
     }
 
     ///https://segmentfault.com/a/1190000007133405
@@ -158,6 +182,10 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
             final String source = in.readString();
             final int verticalAlignment = in.readInt();
 
+            ///获取Parcel中保存的Image宽高
+            final int imageWidth = in.readInt();
+            final int imageHeight = in.readInt();
+
             ///获取Parcel中保存的drawable宽高
             final int drawableWidth = in.readInt();
             final int drawableHeight = in.readInt();
@@ -169,7 +197,7 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
             drawable.setBounds(0, 0, drawableWidth, drawableHeight);
 
             assert source != null;
-            return new CustomImageSpan(drawable, uri, source, verticalAlignment);
+            return new CustomImageSpan(drawable, uri, source, verticalAlignment, imageWidth, imageHeight);
         }
 
         @Override
@@ -189,6 +217,10 @@ public class CustomImageSpan extends ImageSpan implements Clickable, IBlockChara
         dest.writeString(mUri);
         dest.writeString(mSource);
         dest.writeInt(mVerticalAlignment);
+
+        ///保存Image的宽高到Parcel
+        dest.writeInt(mImageWidth);
+        dest.writeInt(mImageHeight);
 
         ///保存drawable的宽高到Parcel
         dest.writeInt(mDrawableWidth);

@@ -128,7 +128,6 @@
     <string name="click_image_span_dialog_builder_msg_failed_to_cut_to_clipboard">Failed to cut to clipboard</string>
     <string name="click_image_span_dialog_builder_msg_failed_to_copy_to_clipboard">Failed to copy to clipboard</string>
     <string name="click_image_span_dialog_builder_msg_please_try_undo_redo_in_toolbar">Please try undo/redo in toolbar</string>
-    <string name="click_image_span_dialog_builder_msg_activity_not_found">Activity not found</string>
     <string name="click_image_span_dialog_builder_msg_system_camera_not_available">System camera not available</string>
     <string name="click_image_span_dialog_builder_msg_please_input_image_resource">Please input image resource</string>
     <string name="click_image_span_dialog_builder_msg_image_load_fails">Image load fails. \n%s</string>

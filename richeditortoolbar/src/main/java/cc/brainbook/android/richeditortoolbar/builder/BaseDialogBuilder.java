@@ -68,12 +68,13 @@ public class BaseDialogBuilder {
         return this;
     }
 
-    public BaseDialogBuilder setNeutralButton(int textId, DialogInterface.OnClickListener onClickListener) {
-        builder.setNeutralButton(textId, onClickListener);
-        return this;
-    }
     public BaseDialogBuilder setNeutralButton(CharSequence text, DialogInterface.OnClickListener onClickListener) {
         builder.setNeutralButton(text, onClickListener);
+        return this;
+    }
+
+    public BaseDialogBuilder setNeutralButton(int textId, DialogInterface.OnClickListener onClickListener) {
+        builder.setNeutralButton(textId, onClickListener);
         return this;
     }
 

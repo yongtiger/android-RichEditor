@@ -1,8 +1,12 @@
 package cc.brainbook.android.richeditortoolbar;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
@@ -19,8 +23,8 @@ import com.bumptech.glide.request.transition.Transition;
 public class GlideImageLoader {
 
     private final Context mContext;
-    private int mImageMaxWidth = 1024;
-    private int mImageMaxHeight = 1024;
+    private int mImageMaxWidth = DEFAULT_MAX_IMAGE_WIDTH;
+    private int mImageMaxHeight = DEFAULT_MAX_IMAGE_HEIGHT;
 
     @Nullable
     private Drawable mPlaceholderDrawable;
@@ -54,6 +58,26 @@ public class GlideImageLoader {
     }
 
     public void loadImage(final String viewTagSrc) {
+        Glide.with(mContext)
+            .load(viewTagSrc)
+            .apply(getRequestOptions())
+            .override(mImageMaxWidth, mImageMaxHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
+//                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+            .into(getCustomTarget(viewTagSrc));
+    }
+    public void loadImageByDrawable(final Drawable drawable) {
+        Glide.with(mContext)
+                .load(drawable)
+                .apply(getRequestOptions())
+                .override(mImageMaxWidth, mImageMaxHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
+//                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
+//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
+                .into(getCustomTarget(null));
+    }
+
+    @NonNull
+    private RequestOptions getRequestOptions() {
         ///Glide下载图片（使用已经缓存的图片）给imageView
         ///https://muyangmin.github.io/glide-docs-cn/doc/getting-started.html
         //////??????placeholer（占位符）、error（错误符）、fallback（后备回调符）
@@ -78,54 +102,54 @@ public class GlideImageLoader {
             options.placeholder(mPlaceholderResourceId);
         }
 
-        Glide.with(mContext)
-                .load(viewTagSrc)
-                .apply(options)
-                .override(mImageMaxWidth, mImageMaxHeight) // resizes the image to these dimensions (in pixel). does not respect aspect ratio
-//                .centerCrop() // this cropping technique scales the image so that it fills the requested bounds and then crops the extra.
-//                .fitCenter()    ///fitCenter()会缩放图片让两边都相等或小于ImageView的所需求的边框。图片会被完整显示，可能不能完全填充整个ImageView。
-                .into(new CustomTarget<Drawable>() {
-                    @Override
-                    public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
-                        if (mCallback != null) {
-                            mCallback.onLoadStarted(placeholder);
-                        }
+        return options;
+    }
+
+    private CustomTarget<Drawable> getCustomTarget(String viewTagSrc) {
+        return new CustomTarget<Drawable>() {
+            @Override
+            public void onLoadStarted(@Nullable Drawable placeholder) {	///placeholder
+                if (mCallback != null) {
+                    mCallback.onLoadStarted(placeholder);
+                }
+            }
+
+            @Override
+            public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
+                if (mCallback != null) {
+                    mCallback.onResourceReady(drawable);
+                }
+
+                ///[ImageSpan#Glide#GifDrawable]
+                ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
+                if (drawable instanceof GifDrawable) {
+                    ((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
+                    ((GifDrawable) drawable).start();
+
+                    ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
+                    ///https://github.com/koral--/android-gif-drawable/issues/516
+                    if (mDrawableCallback != null) {
+                        drawable.setCallback(mDrawableCallback);
                     }
+                }
+            }
 
-                    @Override
-                    public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
-                        if (mCallback != null) {
-                            mCallback.onResourceReady(drawable);
-                        }
+            @Override
+            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                if (!TextUtils.isEmpty(viewTagSrc)) {
+                    Toast.makeText(mContext,
+                            mContext.getString(R.string.click_image_span_dialog_builder_msg_image_load_fails, viewTagSrc),
+                            Toast.LENGTH_LONG).show();
+                }
+            }
 
-                        ///[ImageSpan#Glide#GifDrawable]
-                        ///https://muyangmin.github.io/glide-docs-cn/doc/targets.html
-                        if (drawable instanceof GifDrawable) {
-                            ((GifDrawable) drawable).setLoopCount(GifDrawable.LOOP_FOREVER);
-                            ((GifDrawable) drawable).start();
-
-                            ///For animated GIFs inside span you need to assign bounds and callback (which is TextView holding that span) to GifDrawable
-                            ///https://github.com/koral--/android-gif-drawable/issues/516
-                            if (mDrawableCallback != null) {
-                                drawable.setCallback(mDrawableCallback);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                        Toast.makeText(mContext,
-                                mContext.getString(R.string.click_image_span_dialog_builder_msg_image_load_fails, viewTagSrc),
-                                Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
 //                        Toast.makeText(mContext.getApplicationContext(),
 //                                String.format(mContext.getString(R.string.message_image_load_is_cancelled), viewTagSrc),
 //                                Toast.LENGTH_LONG).show();
-                    }
-                });
+            }
+        };
     }
 
 }

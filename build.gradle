@@ -5,13 +5,13 @@ buildscript {
         setup = [
                 compileSdk : 32,
 //                buildTools : "31.0.0",
-                minSdk     : 15,
+                minSdk     : 16,
                 targetSdk  : 32
         ]
 
         release = [
-                versionName: "3.5.0",   ///v3.5.0#update gradle; CustomImageSpan#setSource()/setUri()
-                versionCode: 30500
+                versionName: "3.6.0",   ///v3.6.0#ContentUriUtil\FileProviderUtil
+                versionCode: 30600
         ]
     }
 

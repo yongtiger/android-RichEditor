@@ -104,8 +104,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_LEADIN
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_STRIPE_WIDTH_PX;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_HEIGHT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
@@ -113,6 +112,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPA
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_SPAN_DEFAULT_INDENT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.createChildrenListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.removeChildrenListItemSpans;
@@ -140,7 +140,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
         View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,
         RichEditText.SaveSpansCallback, RichEditText.LoadSpansCallback,
-        UndoRedoHelper.OnPositionChangedListener, ToolbarHelper.LegacyLoadImageCallback {
+        UndoRedoHelper.OnPositionChangedListener {
 
     public static final String KEY_TEXT = "key_text";
     public static final String KEY_RESULT = "key_result";
@@ -337,14 +337,14 @@ public class RichEditorToolbar extends FlexboxLayout implements
     }
 
     /* ---------------- ///字符span（带参数）：Image ---------------- */
-    private int mImageMaxWidth = DEFAULT_IMAGE_MAX_WIDTH;
+    private int mImageMaxWidth = DEFAULT_MAX_IMAGE_WIDTH;
     public int getImageMaxWidth() {
         return mImageMaxWidth;
     }
     public void setImageMaxWidth(int imageMaxWidth) {
         mImageMaxWidth = imageMaxWidth;
     }
-    private int mImageMaxHeight = DEFAULT_IMAGE_MAX_HEIGHT;
+    private int mImageMaxHeight = DEFAULT_MAX_IMAGE_HEIGHT;
     public int getImageMaxHeight() {
         return mImageMaxHeight;
     }
@@ -493,9 +493,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(mRichEditText.getText(), action.getBytes()),
                     null, -1,
-                    getImageMaxWidth(), getImageMaxHeight(),
+
+                    ///FIX#宽度不能超过屏幕宽度！
+                    ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                    ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                    Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                    getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
-                    this, null, this);
+                    this, null);
         }
     }
 
@@ -558,9 +564,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ToolbarHelper.postLoadSpans(mContext, mRichEditText.getText(),
                     ToolbarHelper.fromByteArray(pasteEditable, bytes),
                     pasteEditable, pasteOffset,
-                    getImageMaxWidth(), getImageMaxHeight(),
+
+                    ///FIX#宽度不能超过屏幕宽度！
+                    ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                    ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                    Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                    getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
-                    this, null, this);
+                    this, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -944,9 +956,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
         ToolbarHelper.postLoadSpans(mContext, editable,
                 ToolbarHelper.fromSpanBeans(spanBeans, editable),
                 null, -1,
-                getImageMaxWidth(), getImageMaxHeight(),
+
+                ///FIX#宽度不能超过屏幕宽度！
+                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                getImageMaxHeight(),
                 mPlaceholderDrawable, mPlaceholderResourceId,
-                this, null, this);
+                this, null);
     }
 
     private int getActionId(View view) {
@@ -1124,9 +1142,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 ToolbarHelper.postLoadSpans(mContext, editable,
                         ToolbarHelper.fromSpanBeans(spanBeans, editable),
                         null, -1,
-                        getImageMaxWidth(), getImageMaxHeight(),
+
+                        ///FIX#宽度不能超过屏幕宽度！
+                        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                        Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                        getImageMaxHeight(),
                         mPlaceholderDrawable, mPlaceholderResourceId,
-                        this, null, this);
+                        this, null);
 
                 ///[Undo/Redo]
                 assert editable != null;
@@ -1971,7 +1995,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final String text = (String) view.getTag(R.id.view_tag_url_text);
                 final String url = (String) view.getTag(R.id.view_tag_url_url);
 
-                AlertDialog alertDialog = clickUrlSpanDialogBuilder.initial(text, url).build();
+                final AlertDialog alertDialog = clickUrlSpanDialogBuilder.initial(text, url).build();
                 alertDialog.show();
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -2004,7 +2028,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理n
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
-                                if (view != mImageViewImage && uri.length() == 0 || src.length() == 0) {
+                                if (view != mImageViewImage && uri.length() == 0 || view == mImageViewImage && src.length() == 0) {
                                     return;
                                 }
 
@@ -2036,9 +2060,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                             }
                         })
                         ///清除样式
-                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new DialogInterface.OnClickListener() {
+                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new ClickImageSpanDialogBuilder.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                 mRichEditText.enableSelectionChange();
 
@@ -2065,9 +2089,9 @@ public class RichEditorToolbar extends FlexboxLayout implements
                         })
                         ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
 //                        .setNegativeButton(android.R.string.cancel, null)
-                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(android.R.string.cancel, new ClickImageSpanDialogBuilder.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
                                 ///避免内存泄漏
                                 mClickImageSpanDialogBuilder.clear();
                             }
@@ -2080,7 +2104,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
 
                 mClickImageSpanDialogBuilder.setRichEditorToolbar(this);
-                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align, this);
+                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align);
                 AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -3038,10 +3062,18 @@ public class RichEditorToolbar extends FlexboxLayout implements
 
                             ///[ImageSpan#Glide#GifDrawable]
                             ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                    viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
-                                    getImageMaxWidth(), getImageMaxHeight(),
+                                    viewTagUri, viewTagSrc, viewTagAlign,
+                                    viewTagWidth, viewTagHeight,
+                                    viewTagWidth, viewTagHeight,
+
+                                    ///FIX#宽度不能超过屏幕宽度！
+                                    ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                                    ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                                    Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                                    getImageMaxHeight(),
                                     mPlaceholderDrawable, mPlaceholderResourceId,
-                                    this, null, this);
+                                    this, null);
                         }
                     }
                 }
@@ -3109,13 +3141,21 @@ public class RichEditorToolbar extends FlexboxLayout implements
                     Selection.setSelection(editable, start, start + viewTagText.length());
                     isSkipUndoRedo = false;
                 } else {
-                    if (!TextUtils.isEmpty(viewTagSrc) && start < end) {
+                    if (start < end) {
                         ///[ImageSpan#Glide#GifDrawable]
                         ToolbarHelper.loadImage(mContext, clazz, editable, start, end, null, -1,
-                                viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight,
-                                getImageMaxWidth(), getImageMaxHeight(),
+                                viewTagUri, viewTagSrc, viewTagAlign,
+                                viewTagWidth, viewTagHeight,
+                                viewTagWidth, viewTagHeight,
+
+                                ///FIX#宽度不能超过屏幕宽度！
+                                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
+                                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
+                                Math.min(getImageMaxWidth(), mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight()),
+
+                                getImageMaxHeight(),
                                 mPlaceholderDrawable, mPlaceholderResourceId,
-                                this, null, this);
+                                this, null);
                     }
                 }
             }
@@ -3481,13 +3521,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 }
             }
         }
-    }
-
-    ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-    ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-    @Override
-    public int getMaxWidth() {
-        return mRichEditText.getWidth() - mRichEditText.getTotalPaddingLeft() - mRichEditText.getTotalPaddingRight();
     }
 
 }

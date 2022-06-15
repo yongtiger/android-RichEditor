@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -81,8 +80,10 @@ import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
+import static cc.brainbook.android.richeditortoolbar.config.Config.AUDIO_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
+import static cc.brainbook.android.richeditortoolbar.config.Config.VIDEO_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
@@ -1066,18 +1067,7 @@ public abstract class ToolbarHelper {
     @NonNull
     public static Pair<Integer, Integer> adjustDrawableSize(Drawable drawable,
                                                             int width, int height,
-                                                            int imageMaxWidth, int imageMaxHeight,
-                                                            LegacyLoadImageCallback legacyLoadImageCallback) {
-        ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-        ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && legacyLoadImageCallback != null) {
-            final int maxWidth = legacyLoadImageCallback.getMaxWidth();
-            if (width > maxWidth) {
-                width = maxWidth;
-                height = 0;
-            }
-        }
-
+                                                            int imageMaxWidth, int imageMaxHeight) {
         if ((width <= 0 || height <= 0)
                 && (drawable.getIntrinsicWidth() == -1 || drawable.getIntrinsicHeight() == -1)) {  ///注意：ColorDrawable.getIntrinsicWidth/Height()返回-1
             width = imageMaxWidth;
@@ -1088,13 +1078,26 @@ public abstract class ToolbarHelper {
                 height = drawable.getIntrinsicHeight();
             } else if (width <= 0) {
                 width = drawable.getIntrinsicWidth() * height / drawable.getIntrinsicHeight();
-                if (width > imageMaxWidth) {
-                    width = imageMaxWidth;
-                }
             } else if (height <= 0) {
                 height = drawable.getIntrinsicHeight() * width / drawable.getIntrinsicWidth();
+            }
+        }
+
+        if (width > imageMaxWidth || height > imageMaxHeight) {
+            final double ratio = (double) width / height;
+            if (ratio > 1.0D) {
+                width = imageMaxWidth;
+                height = (int) (width / ratio);
                 if (height > imageMaxHeight) {
                     height = imageMaxHeight;
+                    width = (int) (height * ratio);
+                }
+            } else {
+                height = imageMaxHeight;
+                width = (int) (height * ratio);
+                if (width > imageMaxWidth) {
+                    width = imageMaxWidth;
+                    height = (int) (width / ratio);
                 }
             }
         }
@@ -1169,10 +1172,6 @@ public abstract class ToolbarHelper {
 
 
     /* --------------------------------------------------------------------------------------- */
-    public interface LegacyLoadImageCallback {
-        int getMaxWidth();
-    }
-
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(@NonNull Context context, final TextView textView, String authority,
                                                     final int imageMaxWidth, final int imageMaxHeight) {
@@ -1182,22 +1181,13 @@ public abstract class ToolbarHelper {
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
         ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(authority),
-                imageMaxWidth, imageMaxHeight,
-                ///[ImageSpan#调整宽高#FIX#Android KITKAT 4.4 (API 19及以下)图片大于容器宽度时导致出现两个图片！]解决：如果图片大于容器宽度则应先缩小后再drawable.setBounds()
-                ///https://stackoverflow.com/questions/31421141/duplicate-images-appear-in-edittext-after-insert-one-imagespan-in-android-4-x
-                new ToolbarHelper.LegacyLoadImageCallback() {
-                    @Override
-                    public int getMaxWidth() {
-                        return textView.getWidth() - textView.getTotalPaddingLeft() - textView.getTotalPaddingRight();
-                    }
-                });
+                imageMaxWidth, imageMaxHeight);
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(@NonNull Context context, final Spannable textSpannable,
                                    CustomImageSpan.OnClickListener onClickListener,
-                                   final int imageMaxWidth, final int imageMaxHeight,
-                                   LegacyLoadImageCallback legacyLoadImageCallback) {
+                                   final int imageMaxWidth, final int imageMaxHeight) {
         if (textSpannable == null) {
             return;
         }
@@ -1221,7 +1211,7 @@ public abstract class ToolbarHelper {
 
                     @Override
                     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
-                },  onClickListener, legacyLoadImageCallback);
+                },  onClickListener);
     }
 
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
@@ -1231,8 +1221,7 @@ public abstract class ToolbarHelper {
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
-                                     CustomImageSpan.OnClickListener onClickListener,
-                                     LegacyLoadImageCallback legacyLoadImageCallback
+                                     CustomImageSpan.OnClickListener onClickListener
     ) {
         if (spannable == null && pasteSpannable == null || spans == null || spans.isEmpty()) {
             return;
@@ -1243,6 +1232,8 @@ public abstract class ToolbarHelper {
                 final String uri = ((CustomImageSpan) span).getUri();
                 final String source = ((CustomImageSpan) span).getSource();
                 final int verticalAlignment = ((CustomImageSpan) span).getVerticalAlignment();
+                final int imageWidth = ((CustomImageSpan) span).getImageWidth();
+                final int imageHeight = ((CustomImageSpan) span).getImageHeight();
                 final int drawableWidth = ((CustomImageSpan) span).getDrawableWidth();
                 final int drawableHeight = ((CustomImageSpan) span).getDrawableHeight();
 
@@ -1254,11 +1245,12 @@ public abstract class ToolbarHelper {
                 ///[ImageSpan#Glide#GifDrawable]
                 loadImage(context, span.getClass(), spannable, spanStart, spanEnd
                         , pasteSpannable, pasteOffset,
-                        uri, source, verticalAlignment, drawableWidth, drawableHeight,
+                        uri, source, verticalAlignment,
+                        imageWidth, imageHeight,
+                        drawableWidth, drawableHeight,
                         imageMaxWidth, imageMaxHeight,
                         placeholderDrawable, placeholderResourceId,
-                        drawableCallback, onClickListener, legacyLoadImageCallback
-                        );
+                        drawableCallback, onClickListener);
             }
         }
     }
@@ -1268,12 +1260,12 @@ public abstract class ToolbarHelper {
                                                     final String viewTagUri, final String viewTagSrc,
                                                     final int viewTagAlign,
                                                     final int viewTagWidth, final int viewTagHeight,
+                                                    final int drawableWidth, final int drawableHeight,
                                                     final int imageMaxWidth, final int imageMaxHeight,
                                                     Drawable placeholderDrawable,
                                                     @DrawableRes int placeholderResourceId,
                                                     Drawable.Callback drawableCallback,
-                                                    final CustomImageSpan.OnClickListener onClickListener,
-                                                    final LegacyLoadImageCallback legacyLoadImageCallback) {
+                                                    final CustomImageSpan.OnClickListener onClickListener) {
         if (spannable == null && pasteSpannable == null) {
             return;
         }
@@ -1307,18 +1299,21 @@ public abstract class ToolbarHelper {
                 if (drawable != null) {
                     ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
                     final Pair<Integer, Integer> pair = adjustDrawableSize(drawable,
-                            viewTagWidth, viewTagHeight,
-                            imageMaxWidth, imageMaxHeight,
-                            legacyLoadImageCallback);
+                            drawableWidth, drawableHeight,
+                            imageMaxWidth, imageMaxHeight);
 
                     drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
-                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                    mImagePlaceholderSpan = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight)
                             : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+                            : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight);
 
-                    (pasteSpannable == null ? spannable : pasteSpannable)
-                            .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
+                    try {
+                        (pasteSpannable == null ? spannable : pasteSpannable)
+                                .setSpan(mImagePlaceholderSpan, start, end, getSpanFlags(mImagePlaceholderSpan));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -1326,24 +1321,25 @@ public abstract class ToolbarHelper {
             public void onResourceReady(@NonNull Drawable drawable) {
                 ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
                 final Pair<Integer, Integer> pair = adjustDrawableSize(drawable,
-                        viewTagWidth, viewTagHeight,
-                        imageMaxWidth, imageMaxHeight,
-                        legacyLoadImageCallback);
+                        drawableWidth, drawableHeight,
+                        imageMaxWidth, imageMaxHeight);
 
                 drawable.setBounds(0, 0, pair.first, pair.second);  ///注意：Drawable必须设置Bounds才能显示
 
-                final CustomImageSpan span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
+                final CustomImageSpan span = clazz == VideoSpan.class ? new VideoSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight)
                         : clazz == AudioSpan.class ? new AudioSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign)
-                        : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign);
+                        : new CustomImageSpan(drawable, viewTagUri, viewTagSrc, viewTagAlign, viewTagWidth, viewTagHeight);
 
                 if (isAsync || pasteSpannable == null) {
-                    if (mImagePlaceholderSpan != null) {
-                        spannable.removeSpan(mImagePlaceholderSpan);
+                    if (spannable != null) {
+                        if (mImagePlaceholderSpan != null) {
+                            spannable.removeSpan(mImagePlaceholderSpan);
+                        }
+                        spannable.setSpan(span,
+                                pasteSpannable == null ? start : start + pasteOffset,
+                                pasteSpannable == null ? end : end + pasteOffset,
+                                getSpanFlags(span));
                     }
-                    spannable.setSpan(span,
-                            pasteSpannable == null ? start : start + pasteOffset,
-                            pasteSpannable == null ? end : end + pasteOffset,
-                            getSpanFlags(span));
                 } else {
                     if (mImagePlaceholderSpan != null) {
                         pasteSpannable.removeSpan(mImagePlaceholderSpan);
@@ -1358,7 +1354,15 @@ public abstract class ToolbarHelper {
         });
 
         ///[ImageSpan#Glide#loadImage()]
-        glideImageLoader.loadImage(viewTagSrc);
+        if (viewTagSrc.isEmpty()) {
+            if (clazz == AudioSpan.class) {
+                glideImageLoader.loadImageByDrawable(ResourcesCompat.getDrawable(Resources.getSystem(), AUDIO_DRAWABLE, null));
+            } else if (clazz == VideoSpan.class) {
+                glideImageLoader.loadImageByDrawable(ResourcesCompat.getDrawable(Resources.getSystem(), VIDEO_DRAWABLE, null));
+            }
+        } else {
+            glideImageLoader.loadImage(viewTagSrc);
+        }
     }
 
     public static void setImageSpan(Spannable spannable, @NonNull Drawable drawable) {

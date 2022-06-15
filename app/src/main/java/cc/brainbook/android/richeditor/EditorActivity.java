@@ -10,7 +10,6 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 
@@ -21,24 +20,25 @@ import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
-import cc.brainbook.android.richeditortoolbar.util.UriUtil;
+import cc.brainbook.android.richeditortoolbar.util.DirUtil;
+import cc.brainbook.android.richeditortoolbar.util.FileProviderUtil;
 
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_HEIGHT;
-import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_IMAGE_MAX_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_COMPRESS;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_HEIGHT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.AUDIO_FILE_SUFFIX;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.IMAGE_FILE_SUFFIX;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.VIDEO_FILE_SUFFIX;
 
 public class EditorActivity extends AppCompatActivity {
     public static final String FILE_PROVIDER_AUTHORITIES_SUFFIX = ".file.path.share";
 
-    private static final String IMAGE_FILE_SUFFIX = ".jpg";
-    private static final String VIDEO_FILE_SUFFIX = ".mp4";
-    private static final String AUDIO_FILE_SUFFIX = ".3gp";
-
     private RichEditText mRichEditText;
     private RichEditorToolbar mRichEditorToolbar;
 
-    private boolean enableAddItemWithCamera = false;    ///test: if enableAddItemWithCamera
+    private final boolean enableAddItemWithCamera = false;    ///test: if enableAddItemWithCamera
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,43 +70,32 @@ public class EditorActivity extends AppCompatActivity {
 
         /* --------------///[ImageSpan]-------------- */
         ///（如enableVideo/enableAudio/enableImage为true，则必选）设置存放图片/音频、视频文件的目录（必须非null、且存在、且可写入）
-        final File imageFileDir, videoFileDir, audioFileDir;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable()) {
-            ///外部存储可用
-            ///注意：Android 10 Q (API 29) 访问公共外部存储必须MediaStore API！而11 R (API 30)则恢复29之前，即照常访问
-//            imageFilePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            imageFileDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-            videoFileDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            audioFileDir = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-        } else {
-            ///外部存储不可用
-            imageFileDir = new File(getFilesDir(), Environment.DIRECTORY_PICTURES);
-            videoFileDir = new File(getFilesDir(), Environment.DIRECTORY_MOVIES);
-            audioFileDir = new File(getFilesDir(), Environment.DIRECTORY_MUSIC);
-        }
+        final File imageFileDir = DirUtil.getPictureFilesDir(this);
+        final File videoFileDir = DirUtil.getVideoFilesDir(this);
+        final File audioFileDir = DirUtil.getAudioFilesDir(this);
+
         mRichEditorToolbar.setImageSpanCallback(new ClickImageSpanDialogBuilder.ImageSpanCallback() {
             @Override
-            public Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src) {
-                final Uri source = UriUtil.parseToUri(context, src, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
+            public Pair<Uri, File> generateActionSourceAndFile(Context context, String action, String src) {
+                final Uri source = FileProviderUtil.parseToUri(context, src, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 final File file = new File(imageFileDir, action + "_" + Util.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
                 return new Pair<>(source, file);
             }
 
             @Override
-            public Pair<Uri, File> getMediaTypeSourceAndFile(Context context, int mediaType) {
+            public Pair<Uri, File> generateMediaTypeSourceAndFile(Context context, int mediaType) {
                 final File file = new File(mediaType == 0 ? imageFileDir : mediaType == 1 ? videoFileDir : audioFileDir,
 				Util.getDateFormat(new Date()) + (mediaType == 0 ? IMAGE_FILE_SUFFIX : mediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
-		        final Uri source = UriUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
+		        final Uri source = FileProviderUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 return new Pair<>(source, file);
             }
 
             @Override
-            public File getVideoCoverFile(Context context, Uri uri) {
+            public File generateVideoCoverFile(Context context, Uri uri) {
                 final String videoCoverFileName = Util.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
                 final File videoCoverFile = new File(imageFileDir, videoCoverFileName);
                 ///生成视频的第一帧图片
-                Util.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, 90);
+                Util.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
 
                 return videoCoverFile;
             }
@@ -190,8 +179,8 @@ public class EditorActivity extends AppCompatActivity {
         });
 
         ///（可选）设置ImageMaxWidth/Height
-        mRichEditorToolbar.setImageMaxWidth(DEFAULT_IMAGE_MAX_WIDTH);
-        mRichEditorToolbar.setImageMaxHeight(DEFAULT_IMAGE_MAX_HEIGHT);
+        mRichEditorToolbar.setImageMaxWidth(DEFAULT_MAX_IMAGE_WIDTH);
+        mRichEditorToolbar.setImageMaxHeight(DEFAULT_MAX_IMAGE_HEIGHT);
 
         ///（必选）初始化
         mRichEditorToolbar.init();

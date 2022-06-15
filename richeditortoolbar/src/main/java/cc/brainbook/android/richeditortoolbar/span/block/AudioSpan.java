@@ -18,6 +18,11 @@ public class AudioSpan extends CustomImageSpan implements IBlockCharacterStyle {
         super(drawable, uri, source, verticalAlignment);
     }
 
+    public AudioSpan(@NonNull Drawable drawable, @NonNull String uri, @NonNull String source, int verticalAlignment,
+                     int imageWidth, int imageHeight) {
+        super(drawable, uri, source, verticalAlignment, imageWidth, imageHeight);
+    }
+
 
     public static final Creator<AudioSpan> CREATOR = new Creator<AudioSpan>() {
         @Override
@@ -26,6 +31,10 @@ public class AudioSpan extends CustomImageSpan implements IBlockCharacterStyle {
             final String uri = in.readString(); ///media source
             final String source = in.readString();  ///thumbnail
             final int verticalAlignment = in.readInt();
+
+            ///获取Parcel中保存的Image宽高
+            final int imageWidth = in.readInt();
+            final int imageHeight = in.readInt();
 
             ///获取Parcel中保存的drawable宽高
             final int drawableWidth = in.readInt();
@@ -37,7 +46,7 @@ public class AudioSpan extends CustomImageSpan implements IBlockCharacterStyle {
             ///注意：Drawable必须设置Bounds才能显示
             drawable.setBounds(0, 0, drawableWidth, drawableHeight);
 
-            return new AudioSpan(drawable, uri, source, verticalAlignment);
+            return new AudioSpan(drawable, uri, source, verticalAlignment, imageWidth, imageHeight);
         }
 
         @Override

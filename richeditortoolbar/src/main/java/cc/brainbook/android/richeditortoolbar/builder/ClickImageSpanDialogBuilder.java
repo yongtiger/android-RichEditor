@@ -54,10 +54,12 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.AUDIO_TYPE;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.IMAGE_TYPE;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.VIDEO_TYPE;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustHeight;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.adjustWidth;
 import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
-import static cc.brainbook.android.richeditortoolbar.util.UriUtil.IMAGE_TYPE;
 
 public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
@@ -77,7 +79,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private static final String ACTION_CROP = "crop";
 	private static final String ACTION_DOODLE = "doodle";
 
-	private int mMediaType;	///0: image; 1: video; 2: audio
+	private final int mMediaType;	///0: image; 1: video; 2: audio
 
 	private String mInitialUri;	///初始化时的uri
 	private String mInitialSrc;	///初始化时的src
@@ -125,9 +127,9 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 
 	public interface ImageSpanCallback {
-		Pair<Uri, File> getActionSourceAndFile(Context context, String action, String src);
-		Pair<Uri, File> getMediaTypeSourceAndFile(Context context, int mediaType);
-		File getVideoCoverFile(Context context, Uri uri);
+		Pair<Uri, File> generateActionSourceAndFile(Context context, String action, String src);
+		Pair<Uri, File> generateMediaTypeSourceAndFile(Context context, int mediaType);
+		File generateVideoCoverFile(Context context, Uri uri);
 	}
 	private ImageSpanCallback mImageSpanCallback;
 	public ClickImageSpanDialogBuilder setImageSpanCallback(ImageSpanCallback imageSpanCallback) {
@@ -139,11 +141,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		void onClick(DialogInterface d, String uri, String src, int width, int height, int align);
 	}
 
-	private ToolbarHelper.LegacyLoadImageCallback mLegacyLoadImageCallback;
-	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align,
-											   ToolbarHelper.LegacyLoadImageCallback legacyLoadImageCallback) {
-		mLegacyLoadImageCallback = legacyLoadImageCallback;
-
+	public ClickImageSpanDialogBuilder initial(String uriString, String src, int width, int height, int align) {
 		mInitialUri = uriString;
 		mInitialSrc = src;
 
@@ -151,7 +149,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		mImageHeight = height;
 		Log.d("TAG-ClickImageSpan", "initial()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
-		if (!TextUtils.isEmpty(src)) {
+		if (!TextUtils.isEmpty(uriString)) {
 			mEditTextUri.setText(uriString);
 		}
 		if (!TextUtils.isEmpty(src)) {
@@ -242,8 +240,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		return this;
 	}
 
-	public ClickImageSpanDialogBuilder setNeutralButton(int textId, final OnClickListener onClickListener) {
-		builder.setNeutralButton(textId, new DialogInterface.OnClickListener() {
+	public ClickImageSpanDialogBuilder setNeutralButton(CharSequence text, final OnClickListener onClickListener) {
+		builder.setNeutralButton(text, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
@@ -252,8 +250,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		return this;
 	}
 
-	public ClickImageSpanDialogBuilder setNeutralButton(CharSequence text, final OnClickListener onClickListener) {
-		builder.setNeutralButton(text, new DialogInterface.OnClickListener() {
+	public ClickImageSpanDialogBuilder setNeutralButton(int textId, final OnClickListener onClickListener) {
+		builder.setNeutralButton(textId, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				doNeutralAction(onClickListener, dialog);
@@ -313,7 +311,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
 							if (mImageSpanCallback != null) {
 								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(builder.getContext(), resultUri);
+								final File videoCoverFile = mImageSpanCallback.generateVideoCoverFile(builder.getContext(), resultUri);
 								if (videoCoverFile != null) {
 									mImageWidth = 0;
 									mImageHeight = 0;
@@ -355,7 +353,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
 							if (mImageSpanCallback != null) {
 								///生成视频的第一帧图片
-								final File videoCoverFile = mImageSpanCallback.getVideoCoverFile(builder.getContext(), resultUri);
+								final File videoCoverFile = mImageSpanCallback.generateVideoCoverFile(builder.getContext(), resultUri);
 								if (videoCoverFile != null) {
 									mImageWidth = 0;
 									mImageHeight = 0;
@@ -389,8 +387,8 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		else if (requestCode == REQUEST_CODE_PICK_FROM_GALLERY) {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
-					final Uri selectedUri = data.getData();
-//					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {//////////////////
+					final Uri selectedUri = data.getData();	///content://com.android.providers.media.documents/document/image%3A46
+//					if (selectedUri != null && !TextUtils.equals(selectedUri.toString(), mEditTextSrc.getText())) {
 					if (selectedUri != null) {
 						mImageWidth = 0;
 						mImageHeight = 0;
@@ -416,7 +414,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		///[图片选择器#相机拍照]
 		else if (requestCode == REQUEST_CODE_PICK_FROM_CAMERA) {
 			if (resultCode == RESULT_OK) {
-//				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {//////////////////
+//				if (mCameraResultFile != null && !TextUtils.equals(mCameraResultFile.getAbsolutePath(), mEditTextSrc.getText())) {
 				if (mCameraResultFile != null) {
 					mImageWidth = 0;
 					mImageHeight = 0;
@@ -435,7 +433,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 		else if (requestCode == UCrop.REQUEST_CROP) {
 			if (resultCode == RESULT_OK) {
 				final String resultString = UCrop.getOutput(data);
-//				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {////////////////
+//				if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
 				if (!TextUtils.isEmpty(resultString)) {
 					mImageWidth = 0;
 					mImageHeight = 0;
@@ -449,26 +447,34 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					Toast.makeText(builder.getContext(), cropError.getLocalizedMessage(),
 							Toast.LENGTH_SHORT).show();
 				}
+			} else if (resultCode == RESULT_CANCELED) {
+				if (mTempCropFile != null && mTempCropFile.isFile() && mTempCropFile.exists()) {
+					mTempCropFile.delete();
+					mTempCropFile = null;
+				}
 			}
 		}
 
 		///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
 		else if (requestCode == REQUEST_CODE_DOODLE) {
-			if (data != null) {
-				if (resultCode == DoodleActivity.RESULT_OK) {
-					final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
-//					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {///////////////
-					if (!TextUtils.isEmpty(resultString)) {
-						mImageWidth = 0;
-						mImageHeight = 0;
-						mEditTextSrc.setText(resultString);
-						enableDeleteOldSrcFile = true;
-					}
-				} else if (resultCode == DoodleActivity.RESULT_ERROR) {
-					Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed));
-					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed),
-							Toast.LENGTH_SHORT).show();
+			if (data == null || resultCode == RESULT_CANCELED) {
+				if (mTempDoodleFile != null && mTempDoodleFile.isFile() && mTempDoodleFile.exists()) {
+					mTempDoodleFile.delete();
+					mTempDoodleFile = null;
 				}
+			} else if (resultCode == DoodleActivity.RESULT_OK) {
+				final String resultString = data.getStringExtra(DoodleActivity.KEY_IMAGE_PATH);
+//					if (!TextUtils.isEmpty(resultString) && !TextUtils.equals(resultString, mEditTextSrc.getText())) {
+				if (!TextUtils.isEmpty(resultString)) {
+					mImageWidth = 0;
+					mImageHeight = 0;
+					mEditTextSrc.setText(resultString);
+					enableDeleteOldSrcFile = true;
+				}
+			} else if (resultCode == DoodleActivity.RESULT_ERROR) {
+				Log.e("TAG-ClickImageSpan", builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed));
+				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed),
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -704,15 +710,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_CROP, src);
+				final Pair<Uri, File> pair = mImageSpanCallback.generateActionSourceAndFile(builder.getContext(), ACTION_CROP, src);
 
 				if (pair.first != null && pair.second != null) {
 					final Activity activity = getActivity(builder.getContext());
 					if (activity != null) {
+						mTempCropFile = pair.second;
 						startCrop(activity, pair.first, pair.second.getAbsolutePath());
-					} else {
-						Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found),
-								Toast.LENGTH_SHORT).show();
 					}
 				} else {
 					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
@@ -732,15 +736,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 				final String src = mEditTextSrc.getText().toString();
 
-				final Pair<Uri, File> pair = mImageSpanCallback.getActionSourceAndFile(builder.getContext(), ACTION_DOODLE, src);
+				final Pair<Uri, File> pair = mImageSpanCallback.generateActionSourceAndFile(builder.getContext(), ACTION_DOODLE, src);
 
 				if (pair.first != null && pair.second != null) {
 					final Activity activity = getActivity(builder.getContext());
 					if (activity != null) {
+						mTempDoodleFile = pair.second;
 						startDoodle(activity, pair.first, pair.second.getAbsolutePath());
-					} else {
-						Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found),
-								Toast.LENGTH_SHORT).show();
 					}
 				} else {
 					Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
@@ -818,12 +820,13 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 						final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable,
 								mImageWidth, mImageHeight,
-								getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight(),
-								mLegacyLoadImageCallback);
+								getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight());
 						mImageWidth = pair.first; mImageHeight = pair.second;
 						Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
-						if (mImageWidth > getRichEditorToolbar().getImageMaxWidth() || mImageHeight > getRichEditorToolbar().getImageMaxHeight()) {
+						if (mImageWidth > getRichEditorToolbar().getImageMaxWidth()
+//								|| mImageHeight > getRichEditorToolbar().getImageMaxHeight()	///只检测宽度！
+						) {
 							Toast.makeText(getRichEditorToolbar().getContext(),
 									getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds,
 											getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
@@ -998,7 +1001,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	///[媒体选择器#Autio/Video媒体库]
 	private void pickFromMedia() {
 		final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-				.setType(mMediaType == 1 ? "video/*" : "audio/*")
+				.setType(mMediaType == 1 ? VIDEO_TYPE : AUDIO_TYPE)
 				.addCategory(Intent.CATEGORY_OPENABLE);
 
 		final Activity activity = getActivity(builder.getContext());
@@ -1010,13 +1013,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_MEDIA : REQUEST_CODE_PICK_FROM_AUDIO_MEDIA);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 				e.printStackTrace();
 				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			}
-		} else {
-			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1028,7 +1029,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 
 		final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
-		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(builder.getContext(), mMediaType);
+		final Pair<Uri, File> pair = mImageSpanCallback.generateMediaTypeSourceAndFile(builder.getContext(), mMediaType);
 		Log.d("TAG-ClickImageSpan", "pickFromRecorder()# Uri: " + pair.first);
 
 		if (pair.first != null && pair.second != null) {
@@ -1052,13 +1053,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 							mMediaType == 1 ? REQUEST_CODE_PICK_FROM_VIDEO_RECORDER : REQUEST_CODE_PICK_FROM_AUDIO_RECORDER);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 					e.printStackTrace();
 					Toast.makeText(activity, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				}
-			} else {
-				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
@@ -1098,13 +1097,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 						REQUEST_CODE_PICK_FROM_GALLERY);
 			} catch (ActivityNotFoundException e) {
 				e.printStackTrace();
-				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
+				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 				e.printStackTrace();
 				Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 			}
-		} else {
-			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -1130,7 +1127,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 //			}
 //		}
 
-		final Pair<Uri, File> pair = mImageSpanCallback.getMediaTypeSourceAndFile(builder.getContext(), mMediaType);
+		final Pair<Uri, File> pair = mImageSpanCallback.generateMediaTypeSourceAndFile(builder.getContext(), mMediaType);
 		mCameraResultFile = pair.second;
 		Log.d("TAG-ClickImageSpan", "pickFromCamera()# mCameraResultFile: " + pair.second);
 
@@ -1154,13 +1151,11 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 					activity.startActivityForResult(intent, REQUEST_CODE_PICK_FROM_CAMERA);
 				} catch (ActivityNotFoundException e) {
 					e.printStackTrace();
-					Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
+					Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 					e.printStackTrace();
 					Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 				}
-			} else {
-				Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
@@ -1171,6 +1166,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	}
 
     ///[裁剪/压缩#Yalantis/uCrop]https://github.com/Yalantis/uCrop
+	private File mTempCropFile;
     private void startCrop(@NonNull Activity activity, @NonNull Uri source, @NonNull String destination) {
 		///建议在MyApplication中添加
 //		///[FIX#Android KITKAT 4.4 (API 19及以下)使用Vector Drawable出现异常：android.content.res.Resources$NotFoundException:  See AppCompatDelegate.setCompatVectorFromResourcesEnabled() for more info]
@@ -1183,6 +1179,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
     }
 
     ///[手绘涂鸦#1993hzw/Doodle]https://github.com/1993hzw/Doodle
+	private File mTempDoodleFile;
 	private void startDoodle(@NonNull Activity activity, @NonNull Uri imageUri, String savePath) {
         final DoodleParams params = new DoodleParams();
 		params.mImageUri = imageUri;
@@ -1192,7 +1189,7 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 			DoodleActivity.startActivityForResult(activity, params, REQUEST_CODE_DOODLE);
 		} catch (ActivityNotFoundException e) {
 			e.printStackTrace();
-			Toast.makeText(builder.getContext(), builder.getContext().getString(R.string.click_image_span_dialog_builder_msg_activity_not_found), Toast.LENGTH_SHORT).show();
+			Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
 		} catch (Exception e) {	///[FIX#Amazon Kindle#App requires rear camera]
 			e.printStackTrace();
 			Toast.makeText(builder.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
@@ -1204,23 +1201,36 @@ public class ClickImageSpanDialogBuilder extends BaseDialogBuilder {
 	private boolean enableDeleteOldSrcFile = false;
 	private void deleteOldUriFile() {
 		if (enableDeleteOldUriFile && !TextUtils.isEmpty(mEditTextUri.getText()) && !TextUtils.equals(mInitialUri, mEditTextUri.getText())) {
-			final Uri uri = Uri.parse(mEditTextUri.getText().toString());
-			final String filePath = UriUtil.getFilePathFromUri(builder.getContext(), uri);
-			deleteFile(filePath);
+			deleteFile(mEditTextUri.getText().toString());
 		}
 	}
 	private void deleteOldSrcFile() {
 		if (enableDeleteOldSrcFile && !TextUtils.isEmpty(mEditTextSrc.getText()) && !TextUtils.equals(mInitialSrc, mEditTextSrc.getText())) {
-			final Uri uri = Uri.parse(mEditTextSrc.getText().toString());
-			final String filePath = UriUtil.getFilePathFromUri(builder.getContext(), uri);
-			deleteFile(filePath);
+			deleteFile(mEditTextSrc.getText().toString());
 		}
 	}
-	private void deleteFile(String filePath) {
-		if (TextUtils.isEmpty(filePath)) {
+	private void deleteFile(String text) {
+		if (TextUtils.isEmpty(text)) {
 			return;
 		}
 
+		final Uri uri = Uri.parse(text);
+		if (uri == null) {
+			return;
+		}
+
+		///比如“/storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/20201003050111.jpg”，或无效文本
+		if (uri.getScheme() == null) {
+			innerDeleteFile(text);
+		} else
+
+		///比如“file:///storage/emulated/0/Android/data/cc.brainbook.android.richeditor/files/Pictures/20201003050111.jpg”
+		if ("file".equalsIgnoreCase(uri.getScheme())) {
+			innerDeleteFile(uri.getPath());
+		}
+	}
+
+	private void innerDeleteFile(String filePath) {
 		final File file = new File(filePath);
 		if (file.isFile() && file.exists()) {
 			if (!file.delete()) {
