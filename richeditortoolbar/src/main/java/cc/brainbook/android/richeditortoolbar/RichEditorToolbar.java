@@ -1,5 +1,7 @@
 package cc.brainbook.android.richeditortoolbar;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spanned;
@@ -2015,115 +2019,121 @@ public class RichEditorToolbar extends FlexboxLayout implements
             ///字符span（带参数）：Image
             else if (view == mImageViewImage || view == mImageViewVideo || view == mImageViewAudio) {
                 final int mediaType = view == mImageViewVideo ? 1 : view == mImageViewAudio ? 2 : 0;
-                mClickImageSpanDialogBuilder = (ClickImageSpanDialogBuilder) ClickImageSpanDialogBuilder
-                        .with(mContext, mediaType)
-                        .setImageSpanCallback(mImageSpanCallback)
-                        .setPositiveButton(android.R.string.ok, new ClickImageSpanDialogBuilder.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
-                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                                mRichEditText.enableSelectionChange();
+//                mClickImageSpanDialogBuilder = (ClickImageSpanDialogBuilder) ClickImageSpanDialogBuilder
+//                        .with(mContext, mediaType)
+//                        .setImageSpanCallback(mImageSpanCallback)
+//                        .setPositiveButton(android.R.string.ok, new ClickImageSpanDialogBuilder.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
+//                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+//                                mRichEditText.enableSelectionChange();
+//
+//                                ///避免内存泄漏
+//                                mClickImageSpanDialogBuilder.clear();
+//
+//                                ///参数校验：两项都为空则代表维持不变、不做任何处理n
+//                                ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
+//                                if (view != mImageViewImage && uri.length() == 0 || view == mImageViewImage && src.length() == 0) {
+//                                    return;
+//                                }
+//
+//                                ///如果view未选中则选中view
+//                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
+//                                if (!view.isSelected()) {
+//                                    view.setSelected(true);
+//                                }
+//
+////                                ///把width\height\align保存到text中
+////                                final String w = width == 0 ? "" : String.valueOf(width);
+////                                final String h = height == 0 ? "" : String.valueOf(height);
+////                                final String text = view == mImageViewImage ?
+////                                        String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_text), src,
+////                                                w, h, align)
+////                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
+////                                        w, h, align);
+//                                final String text = OBJECT_REPLACEMENT_TEXT;
+//
+//                                ///保存参数到view tag
+//                                view.setTag(R.id.view_tag_image_text, text);
+//                                view.setTag(R.id.view_tag_image_uri, uri);
+//                                view.setTag(R.id.view_tag_image_src, src);
+//                                view.setTag(R.id.view_tag_image_width, width);
+//                                view.setTag(R.id.view_tag_image_height, height);
+//                                view.setTag(R.id.view_tag_image_align, align);
+//
+//                                ///改变selection的span
+//                                applyCharacterStyleSpans(view, editable);
+//                            }
+//                        })
+//                        ///清除样式
+//                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new ClickImageSpanDialogBuilder.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
+//                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+//                                mRichEditText.enableSelectionChange();
+//
+//                                ///避免内存泄漏
+//                                mClickImageSpanDialogBuilder.clear();
+//
+//                                ///如果view选中则未选中view
+//                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
+//                                if (view.isSelected()) {
+//                                    view.setSelected(false);
+//                                }
+//
+//                                ///改变selection的span
+//                                applyCharacterStyleSpans(view, editable);
+//
+//                                ///清空view tag
+//                                view.setTag(R.id.view_tag_image_text, null);
+//                                view.setTag(R.id.view_tag_image_uri, null);
+//                                view.setTag(R.id.view_tag_image_src, null);
+//                                view.setTag(R.id.view_tag_image_width, null);
+//                                view.setTag(R.id.view_tag_image_height, null);
+//                                view.setTag(R.id.view_tag_image_align, null);
+//                            }
+//                        })
+//                        ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
+////                        .setNegativeButton(android.R.string.cancel, null)
+//                        .setNegativeButton(android.R.string.cancel, new ClickImageSpanDialogBuilder.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
+//                                ///避免内存泄漏
+//                                mClickImageSpanDialogBuilder.clear();
+//                            }
+//                        });
+//
+//                final String uri = (String) view.getTag(R.id.view_tag_image_uri);
+//                final String src = (String) view.getTag(R.id.view_tag_image_src);
+//                final int width = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
+//                final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
+//                final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
+//
+//                mClickImageSpanDialogBuilder.setRichEditorToolbar(this);
+//                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align);
+//                AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
+//                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                    @Override
+//                    public void onDismiss(DialogInterface dialog) {
+//                        ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
+//                        mRichEditText.enableSelectionChange();
+//                    }
+//                });
+//                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+//                    @Override
+//                    public void onShow(DialogInterface dialog) {
+//                        if (mOnClickImageSpanDialogReadyListener != null) {
+//                            mOnClickImageSpanDialogReadyListener.onReady();
+//                        }
+//                    }
+//                });
+//                alertDialog.show();
 
-                                ///避免内存泄漏
-                                mClickImageSpanDialogBuilder.clear();
 
-                                ///参数校验：两项都为空则代表维持不变、不做任何处理n
-                                ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
-                                if (view != mImageViewImage && uri.length() == 0 || view == mImageViewImage && src.length() == 0) {
-                                    return;
-                                }
-
-                                ///如果view未选中则选中view
-                                ///注意：如果view已经选中了则不再进行view选中操作！提高效率
-                                if (!view.isSelected()) {
-                                    view.setSelected(true);
-                                }
-
-//                                ///把width\height\align保存到text中
-//                                final String w = width == 0 ? "" : String.valueOf(width);
-//                                final String h = height == 0 ? "" : String.valueOf(height);
-//                                final String text = view == mImageViewImage ?
-//                                        String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_text), src,
-//                                                w, h, align)
-//                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
-//                                        w, h, align);
-                                final String text = OBJECT_REPLACEMENT_TEXT;
-
-                                ///保存参数到view tag
-                                view.setTag(R.id.view_tag_image_text, text);
-                                view.setTag(R.id.view_tag_image_uri, uri);
-                                view.setTag(R.id.view_tag_image_src, src);
-                                view.setTag(R.id.view_tag_image_width, width);
-                                view.setTag(R.id.view_tag_image_height, height);
-                                view.setTag(R.id.view_tag_image_align, align);
-
-                                ///改变selection的span
-                                applyCharacterStyleSpans(view, editable);
-                            }
-                        })
-                        ///清除样式
-                        .setNeutralButton(R.string.rich_editor_toolbar_text_clear, new ClickImageSpanDialogBuilder.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
-                                ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                                mRichEditText.enableSelectionChange();
-
-                                ///避免内存泄漏
-                                mClickImageSpanDialogBuilder.clear();
-
-                                ///如果view选中则未选中view
-                                ///注意：如果view未选中了则不再进行view未选中操作！提高效率
-                                if (view.isSelected()) {
-                                    view.setSelected(false);
-                                }
-
-                                ///改变selection的span
-                                applyCharacterStyleSpans(view, editable);
-
-                                ///清空view tag
-                                view.setTag(R.id.view_tag_image_text, null);
-                                view.setTag(R.id.view_tag_image_uri, null);
-                                view.setTag(R.id.view_tag_image_src, null);
-                                view.setTag(R.id.view_tag_image_width, null);
-                                view.setTag(R.id.view_tag_image_height, null);
-                                view.setTag(R.id.view_tag_image_align, null);
-                            }
-                        })
-                        ///注意：加入null的强转，为了避免混淆ClickImageSpanDialogBuilder和BaseDialogBuilder的setNegativeButton()方法！
-//                        .setNegativeButton(android.R.string.cancel, null)
-                        .setNegativeButton(android.R.string.cancel, new ClickImageSpanDialogBuilder.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface d, String uri, String src, int width, int height, int align) {
-                                ///避免内存泄漏
-                                mClickImageSpanDialogBuilder.clear();
-                            }
-                        });
-
-                final String uri = (String) view.getTag(R.id.view_tag_image_uri);
-                final String src = (String) view.getTag(R.id.view_tag_image_src);
-                final int width = view.getTag(R.id.view_tag_image_width) == null ? 0 : (int) view.getTag(R.id.view_tag_image_width);
-                final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
-                final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
-
-                mClickImageSpanDialogBuilder.setRichEditorToolbar(this);
-                mClickImageSpanDialogBuilder.initial(uri, src, width, height, align);
-                AlertDialog alertDialog = mClickImageSpanDialogBuilder.build();
-                alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                        mRichEditText.enableSelectionChange();
-                    }
-                });
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface dialog) {
-                        if (mOnClickImageSpanDialogReadyListener != null) {
-                            mOnClickImageSpanDialogReadyListener.onReady();
-                        }
-                    }
-                });
-                alertDialog.show();
+                final ClickImageSpanDialogFragment clickImageSpanDialogFragment = ClickImageSpanDialogFragment.newInstance("param1", "param2");
+                clickImageSpanDialogFragment.show(
+                        ((FragmentActivity) mContext).getSupportFragmentManager(), ///注意：如果在Fragment中，使用getChildFragmentManager()
+                        "ImageSpanDialog");
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                 mRichEditText.disableSelectionChange(true);

@@ -9,7 +9,6 @@
         android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="btnClickSave"
         android:text="Save"/>
 
     <!--///app:toolbarName="rich_editor"   ///（可选，缺省为app:toolbarName="rich_editor"）RichEditorToolbar名字，用于保存草稿等，多RichEditorToolbar中必须添加且唯一！-->

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.6.1",   ///v3.6.1#去掉[img src=...]，以OBJECT_REPLACEMENT_TEXT代替
-                versionCode: 30601
+                versionName: "4.0.0",   ///v4.0.0#ClickImageSpanDialogFragment
+                versionCode: 40000
         ]
     }
 
