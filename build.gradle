@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "3.6.0",   ///v3.6.0#ContentUriUtil\FileProviderUtil
-                versionCode: 30600
+                versionName: "3.6.1",   ///v3.6.1#去掉[img src=...]，以OBJECT_REPLACEMENT_TEXT代替
+                versionCode: 30601
         ]
     }
 

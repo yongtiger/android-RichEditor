@@ -113,6 +113,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPA
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_WIDTH;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_SPAN_DEFAULT_INDENT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.DEFAULT_MAX_IMAGE_WIDTH;
+import static cc.brainbook.android.richeditortoolbar.config.Config.OBJECT_REPLACEMENT_TEXT;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.createChildrenListItemSpans;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.removeChildrenListItemSpans;
@@ -2038,14 +2039,15 @@ public class RichEditorToolbar extends FlexboxLayout implements
                                     view.setSelected(true);
                                 }
 
-                                ///把width\height\align保存到text中
-                                final String w = width == 0 ? "" : String.valueOf(width);
-                                final String h = height == 0 ? "" : String.valueOf(height);
-                                final String text = view == mImageViewImage ?
-                                        String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_text), src,
-                                                w, h, align)
-                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
-                                        w, h, align);
+//                                ///把width\height\align保存到text中
+//                                final String w = width == 0 ? "" : String.valueOf(width);
+//                                final String h = height == 0 ? "" : String.valueOf(height);
+//                                final String text = view == mImageViewImage ?
+//                                        String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_text), src,
+//                                                w, h, align)
+//                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
+//                                        w, h, align);
+                                final String text = OBJECT_REPLACEMENT_TEXT;
 
                                 ///保存参数到view tag
                                 view.setTag(R.id.view_tag_image_text, text);
