@@ -29,9 +29,9 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.util.Date;
 
+import cc.brainbook.android.richeditortoolbar.ClickImageSpanDialogFragment;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
-import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.util.DirUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileProviderUtil;
@@ -211,7 +211,7 @@ public class EditorFragment extends Fragment {
         final File videoFileDir = DirUtil.getVideoFilesDir(getActivity());
         final File audioFileDir = DirUtil.getAudioFilesDir(getActivity());
 
-        mRichEditorToolbar.setImageSpanCallback(new ClickImageSpanDialogBuilder.ImageSpanCallback() {
+        mRichEditorToolbar.setImageSpanCallback(new ClickImageSpanDialogFragment.ImageSpanCallback() {
             @Override
             public Pair<Uri, File> generateActionSourceAndFile(Context context, String action, String src) {
                 final Uri source = FileProviderUtil.parseToUri(context, src, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
@@ -287,7 +287,7 @@ public class EditorFragment extends Fragment {
             }
         });
 
-        ///[ClickImageSpanDialogBuilder#OnClickImageSpanDialogReadyListener]
+        ///[ClickImageSpanDialogBuilder#OnClickImageSpanDialogFragmentReadyListener]
         mRichEditorToolbar.setOnReadyListener(new RichEditorToolbar.OnReadyListener() {
             @Override
             public void onReady() {
@@ -300,15 +300,15 @@ public class EditorFragment extends Fragment {
                     mRichEditorToolbar.getImageViewImage().performClick();
                 }
 
-                mRichEditorToolbar.setOnClickImageSpanDialogReadyListener(new RichEditorToolbar.OnClickImageSpanDialogReadyListener() {
+                mRichEditorToolbar.setOnClickImageSpanDialogReadyListener(new RichEditorToolbar.OnClickImageSpanDialogFragmentReadyListener() {
                     @Override
                     public void onReady() {
                         ///首次打开ClickImageSpanDialog后自动启动Camera
                         mRichEditorToolbar.setOnClickImageSpanDialogReadyListener(null);
 
-                        if (mRichEditorToolbar.getClickImageSpanDialogBuilder() != null
-                                && mRichEditorToolbar.getClickImageSpanDialogBuilder().getButtonPickFromCamera() != null) {
-                            mRichEditorToolbar.getClickImageSpanDialogBuilder().getButtonPickFromCamera().performClick();
+                        if (mRichEditorToolbar.getClickImageSpanDialogFragment() != null
+                                && mRichEditorToolbar.getClickImageSpanDialogFragment().getButtonPickFromCamera() != null) {
+                            mRichEditorToolbar.getClickImageSpanDialogFragment().getButtonPickFromCamera().performClick();
                         }
                     }
                 });

@@ -40,7 +40,6 @@ import cc.brainbook.android.richeditortoolbar.ImageSpanOnClickListener;
 import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
-import cc.brainbook.android.richeditortoolbar.builder.ClickImageSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -78,14 +77,12 @@ import cc.brainbook.android.richeditortoolbar.span.nest.PreSpan;
 import cc.brainbook.android.richeditortoolbar.span.block.VideoSpan;
 import cc.brainbook.android.richeditortoolbar.util.ParcelUtil;
 import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
-import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.AUDIO_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.OBJECT_REPLACEMENT_TEXT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.config.Config.VIDEO_DRAWABLE;
-import static cc.brainbook.android.richeditortoolbar.util.StringUtil.parseInt;
 
 public abstract class ToolbarHelper {
 
