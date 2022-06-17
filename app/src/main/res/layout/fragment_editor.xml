@@ -1,31 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/btn_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/global_dimen"
+        android:layout_alignParentTop="true"
         android:text="Save"/>
-
-    <!--///app:toolbarName="rich_editor"   ///（可选，缺省为app:toolbarName="rich_editor"）RichEditorToolbar名字，用于保存草稿等，多RichEditorToolbar中必须添加且唯一！-->
-    <!--///app:toolbarLayout="@layout/editor_toolbar"  ///（必选）自定义toolbar布局]-->
-    <!--///app:enableLongClick="true"  ///（可选，缺省为false）是否开启LongClick。注意：若开启LongClick，则android:tooltipText会不显示-->
-    <!--///app:enableXXX    ///是否enable某按钮-->
-    <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
-        android:id="@+id/rich_editor_tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:alignItems="flex_start"
-        app:flexDirection="row"
-        app:flexWrap="wrap"
-        app:justifyContent="flex_start"
-        app:toolbarName="editor_toolbar"
-        app:toolbarLayout="@layout/editor_toolbar"
-        app:enableLongClick="true" />
 
     <!--android:inputType="textVisiblePassword"：虽然解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失，但无法输入中文！-->
     <!--///android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
@@ -38,12 +23,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/global_dimen"
-        android:padding="@dimen/global_dimen"
         android:gravity="start"
-        android:scrollbars="vertical"
-        android:lineSpacingExtra="8dp"
-        android:textSize="24sp"
         android:imeOptions="flagNoExtractUi"
-        android:inputType="textMultiLine|textImeMultiLine" />
+        android:inputType="textMultiLine|textImeMultiLine"
+        android:lineSpacingExtra="8dp"
+        android:padding="@dimen/global_dimen"
+        android:scrollbars="vertical"
+        android:textSize="24sp"
+        android:layout_below="@+id/btn_save"
+        android:layout_above="@+id/sv_scroll_view"/>
 
-</LinearLayout>
+    <HorizontalScrollView
+        android:id="@+id/sv_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/global_dimen"
+        android:layout_alignParentBottom="true">
+
+        <!--///app:toolbarName="rich_editor"   ///（可选，缺省为app:toolbarName="rich_editor"）RichEditorToolbar名字，用于保存草稿等，多RichEditorToolbar中必须添加且唯一！-->
+        <!--///app:toolbarLayout="@layout/editor_toolbar"  ///（必选）自定义toolbar布局]-->
+        <!--///app:enableLongClick="true"  ///（可选，缺省为false）是否开启LongClick。注意：若开启LongClick，则android:tooltipText会不显示-->
+        <!--///app:enableXXX    ///是否enable某按钮-->
+        <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
+            android:id="@+id/rich_editor_tool_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:toolbarName="editor_toolbar"
+            app:toolbarLayout="@layout/editor_toolbar"
+            app:enableLongClick="true" />
+
+    </HorizontalScrollView>
+
+</RelativeLayout>

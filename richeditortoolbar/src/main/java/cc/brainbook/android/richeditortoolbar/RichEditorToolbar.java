@@ -31,13 +31,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.flexbox.FlexDirection;
-import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayout;
 
 import java.io.File;
 import java.io.IOException;
@@ -136,7 +133,7 @@ import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidPara
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class RichEditorToolbar extends FlexboxLayout implements
+public class RichEditorToolbar extends LinearLayout implements
         Drawable.Callback, View.OnClickListener,
         View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,
@@ -622,9 +619,6 @@ public class RichEditorToolbar extends FlexboxLayout implements
         mClipboardFile = new File(mContext.getCacheDir() + File.separator + CLIPBOARD_FILE_NAME);
 
         mUndoRedoHelper = new UndoRedoHelper(mContext, this);
-
-        setFlexDirection(FlexDirection.ROW);
-        setFlexWrap(FlexWrap.WRAP);
 
         ///RichEditorToolbar名字，用于保存草稿等
         ///注意：多RichEditorToolbar中必须添加且唯一！同样，mRequestCodeHtmlEditor也要唯一
