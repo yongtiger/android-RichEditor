@@ -35,6 +35,8 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.util.DirUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileProviderUtil;
+import cc.brainbook.android.richeditortoolbar.util.FileUtil;
+import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public class EditorFragment extends Fragment {
 
@@ -216,24 +218,24 @@ public class EditorFragment extends Fragment {
             @Override
             public Pair<Uri, File> generateActionSourceAndFile(Context context, String action, String src) {
                 final Uri source = FileProviderUtil.parseToUri(context, src, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
-                final File file = new File(imageFileDir, action + "_" + Util.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
+                final File file = new File(imageFileDir, action + "_" + StringUtil.getDateFormat(new Date()) + IMAGE_FILE_SUFFIX);
                 return new Pair<>(source, file);
             }
 
             @Override
             public Pair<Uri, File> generateMediaTypeSourceAndFile(Context context, int mediaType) {
                 final File file = new File(mediaType == 0 ? imageFileDir : mediaType == 1 ? videoFileDir : audioFileDir,
-                        Util.getDateFormat(new Date()) + (mediaType == 0 ? IMAGE_FILE_SUFFIX : mediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
+                        StringUtil.getDateFormat(new Date()) + (mediaType == 0 ? IMAGE_FILE_SUFFIX : mediaType == 1 ? VIDEO_FILE_SUFFIX : AUDIO_FILE_SUFFIX));
                 final Uri source = FileProviderUtil.getFileProviderUriFromFile(context, file, context.getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX);
                 return new Pair<>(source, file);
             }
 
             @Override
             public File generateVideoCoverFile(Context context, Uri uri) {
-                final String videoCoverFileName = Util.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
+                final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
                 final File videoCoverFile = new File(imageFileDir, videoCoverFileName);
                 ///生成视频的第一帧图片
-                Util.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
+                FileUtil.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
 
                 return videoCoverFile;
             }
