@@ -36,6 +36,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.flexbox.FlexboxLayout;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -133,6 +135,7 @@ import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidPara
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+//public class RichEditorToolbar extends FlexboxLayout implements
 public class RichEditorToolbar extends LinearLayout implements
         Drawable.Callback, View.OnClickListener,
         View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示

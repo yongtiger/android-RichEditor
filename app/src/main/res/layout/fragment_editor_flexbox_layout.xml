@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"/>
+
+    <!--///app:toolbarName="rich_editor"   ///（可选，缺省为app:toolbarName="rich_editor"）RichEditorToolbar名字，用于保存草稿等，多RichEditorToolbar中必须添加且唯一！-->
+    <!--///app:toolbarLayout="@layout/editor_toolbar"  ///（必选）自定义toolbar布局]-->
+    <!--///app:enableLongClick="true"  ///（可选，缺省为false）是否开启LongClick。注意：若开启LongClick，则android:tooltipText会不显示-->
+    <!--///app:enableXXX    ///是否enable某按钮-->
+    <cc.brainbook.android.richeditortoolbar.RichEditorToolbar
+        android:id="@+id/rich_editor_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:alignItems="flex_start"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        app:toolbarName="editor_toolbar"
+        app:toolbarLayout="@layout/editor_toolbar"
+        app:enableLongClick="true" />
+
+    <!--android:inputType="textVisiblePassword"：虽然解决语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）：android:background="@null"，但selection选择整行时最左面的图标消失，但无法输入中文！-->
+    <!--///android:background="@null"去掉EditText输入框下面的下划线，但selection选择整行时最左面的图标消失！-->
+    <!--///android:inputType="textMultiLine|textNoSuggestions"去掉字符红色提示下划线，如果只android:inputType="textNoSuggestions"则IME的换行键消失、用android:imeOptions="actionNone"也无效！-->
+    <!--///注意：EditText有缺省padding为4dp!-->
+    <!--///[禁止横屏时软键盘全屏显示]
+    同时,这个属性还能控件软键盘右下角按键的显示内容,默认情况下为回车键 android:imeOptions="actionNone" //输入框右侧不带任何提示 android:imeOptions="actionGo" //右下角按键内容为'开始' android:imeOptions="actionSearch" //右下角按键为放大镜图片，搜索 android:imeOptions="actionSend" //右下角按键内容为'发送' android:imeOptions="actionNext" //右下角按键内容为'下一步' android:imeOptions="actionDone" //右下角按键内容为'完成'-->
+    <cc.brainbook.android.richeditortoolbar.RichEditText
+        android:id="@+id/et_rich_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/global_dimen"
+        android:padding="@dimen/global_dimen"
+        android:gravity="start"
+        android:scrollbars="vertical"
+        android:lineSpacingExtra="8dp"
+        android:textSize="24sp"
+        android:imeOptions="flagNoExtractUi"
+        android:inputType="textMultiLine|textImeMultiLine" />
+
+</LinearLayout>
