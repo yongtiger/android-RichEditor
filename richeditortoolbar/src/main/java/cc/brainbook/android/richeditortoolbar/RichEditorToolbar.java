@@ -2024,7 +2024,7 @@ public class RichEditorToolbar extends FlexboxLayout implements
                 clickImageSpanDialogFragment.setImageSpanCallback(mImageSpanCallback);
 
                 ///OK
-                clickImageSpanDialogFragment.setOnCompleteListener(new ClickImageSpanDialogFragment.OnCompleteListener() {
+                clickImageSpanDialogFragment.setOnFinishListener(new ClickImageSpanDialogFragment.OnFinishListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]

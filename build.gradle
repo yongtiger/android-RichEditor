@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.0.0",   ///v4.0.0#ClickImageSpanDialogFragment
-                versionCode: 40000
+                versionName: "4.0.1",   ///v4.0.1#ClickImageSpanDialogFragment#改为分页布局
+                versionCode: 40001
         ]
     }
 

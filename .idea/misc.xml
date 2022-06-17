@@ -9,13 +9,23 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_1x_mobiledata_24.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_arrow_circle_left_24.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_arrow_circle_right_24.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_clear_24.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_close_24.xml" value="0.3325" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_decrease_24.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.3325" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/ic_baseline_increase_24.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_align_center.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_align_normal.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_align_opposite.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_audio.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_background_color.xml" value="0.3325" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_block.xml" value="0.3697916666666667" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_bold.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_border.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_clear_draft.xml" value="0.3325" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_clear_styles.xml" value="0.3325" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_code.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_foreground_color.xml" value="0.3697916666666667" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/drawable/icon_leading_margin.xml" value="0.3697916666666667" />
@@ -39,6 +49,7 @@
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/layout/long_click_line_divider_span_dialog.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/layout/long_click_list_span_dialog.xml" value="0.3536458333333333" />
         <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/layout/long_click_quote_span_dialog.xml" value="0.3536458333333333" />
+        <entry key="..\:/AndroidStudioProjects/_module/android-RichEditor/richeditortoolbar/src/main/res/layout/toolbar.xml" value="0.3536458333333333" />
       </map>
     </option>
   </component>

@@ -48,12 +48,18 @@ public abstract class FileProviderUtil {
      * @param authorities
      * @return  FileProviderUri
      */
+    @Nullable
     public static Uri getFileProviderUriFromFile(@NonNull Context context, @NonNull File file, String authorities) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return FileProvider.getUriForFile(context, authorities, file);
-        } else {
-            return Uri.fromFile(file);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                return FileProvider.getUriForFile(context, authorities, file);
+            } else {
+                return Uri.fromFile(file);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
     @Nullable
     public static File getFileFromFileProviderUri(@NonNull Context context, @NonNull Uri fileProviderUri) {

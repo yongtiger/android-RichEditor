@@ -46,7 +46,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.util.Pair;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
@@ -78,12 +80,12 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
 
     ///Button
-    public interface OnCompleteListener {
+    public interface OnFinishListener {
         void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align);
     }
-    private OnCompleteListener mOnCompleteListener;
-    public void setOnCompleteListener(OnCompleteListener onCompleteListener) {
-        mOnCompleteListener = onCompleteListener;
+    private OnFinishListener mOnFinishListener;
+    public void setOnFinishListener(OnFinishListener onFinishListener) {
+        mOnFinishListener = onFinishListener;
     }
 
     private DialogInterface.OnClickListener mOnClearListener;
@@ -107,8 +109,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         mOnShowListener = onShowListener;
     }
 
-    public void doCompleteAction() {
-        if (mOnCompleteListener == null) {
+    public void doFinishAction() {
+        if (mOnFinishListener == null) {
             return;
         }
 
@@ -125,7 +127,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             height = 0;
         }
 
-        mOnCompleteListener.onClick(getDialog(),
+        mOnFinishListener.onClick(getDialog(),
                 uri,
                 src,
                 width,
@@ -262,6 +264,39 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     private RadioButton mRadioButtonAlignBottom;
     private RadioButton mRadioButtonAlignBaseline;
     private RadioButton mRadioButtonAlignCenter;
+
+    private Group mGroupMedia;
+    private Group mGroupGallery;
+    private NestedScrollView mNestedScrollView;
+    private ImageButton mImageButtonPrev;
+    private ImageButton mImageButtonNext;
+
+    private int mCurrentPageNumber;
+    private void showPage() {
+        hideAll();
+        if (mCurrentPageNumber == 1) {
+            mNestedScrollView.setVisibility(View.VISIBLE);
+            mImageButtonPrev.setVisibility(View.VISIBLE);
+            mImageButtonNext.setVisibility(View.VISIBLE);
+        } else if (mCurrentPageNumber == 2) {
+            mRadioGroup.setVisibility(View.VISIBLE);
+            mImageButtonPrev.setVisibility(View.VISIBLE);
+        } else {
+            if (mMediaType == 1 || mMediaType == 2) {
+                mGroupMedia.setVisibility(View.VISIBLE);
+            }
+            mGroupGallery.setVisibility(View.VISIBLE);
+            mImageButtonNext.setVisibility(View.VISIBLE);
+        }
+    }
+    private void hideAll() {
+        mGroupMedia.setVisibility(View.GONE);
+        mGroupGallery.setVisibility(View.GONE);
+        mNestedScrollView.setVisibility(View.GONE);
+        mRadioGroup.setVisibility(View.GONE);
+        mImageButtonPrev.setVisibility(View.GONE);
+        mImageButtonNext.setVisibility(View.GONE);
+    }
 
 
     @Override
@@ -641,10 +676,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
 
     private void initView(@NonNull View view) {
-        view.findViewById(R.id.btn_ok).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_finish).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                doCompleteAction();
+                doFinishAction();
 
                 dismiss();
             }
@@ -657,7 +692,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-        view.findViewById(R.id.btn_cancel).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.btn_close).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doCancelAction();
@@ -696,10 +731,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        mButtonPickFromMedia.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
-        mButtonPickFromRecorder.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
-        mEditTextUri.setVisibility(mMediaType == 0 ? View.GONE : View.VISIBLE);
 
         mButtonPickFromGallery = (Button) view.findViewById(R.id.btn_pickup_from_gallery);
         mButtonPickFromGallery.setOnClickListener(new View.OnClickListener() {
@@ -919,6 +950,33 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         mRadioButtonAlignBottom = (RadioButton) view.findViewById(R.id.rb_align_bottom);
         mRadioButtonAlignBaseline = (RadioButton) view.findViewById(R.id.rb_align_baseline);
         mRadioButtonAlignCenter = (RadioButton) view.findViewById(R.id.rb_align_center);
+
+        mGroupMedia = (Group) view.findViewById(R.id.group_media);
+        mGroupGallery = (Group) view.findViewById(R.id.group_gallery);
+        mNestedScrollView = (NestedScrollView) view.findViewById(R.id.nsc_scroll_view);
+
+        mImageButtonPrev = (ImageButton) view.findViewById(R.id.btn_prev);
+        mImageButtonPrev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentPageNumber > 0) {
+                    mCurrentPageNumber--;
+                }
+                showPage();
+            }
+        });
+        mImageButtonNext = (ImageButton) view.findViewById(R.id.btn_next);
+        mImageButtonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCurrentPageNumber < 2) {
+                    mCurrentPageNumber++;
+                }
+                showPage();
+            }
+        });
+
+        showPage();
     }
 
     private void loadImage(String src) {
@@ -1010,11 +1068,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                         mCheckBoxDisplayConstrainWidth.setEnabled(true);
                         mCheckBoxDisplayConstrainHeight.setEnabled(true);
                         mImageButtonDisplayRestore.setEnabled(true);
-                        mImageButtonDisplayRestore.setVisibility(View.VISIBLE);
                         mImageButtonZoomOut.setEnabled(true);
-                        mImageButtonZoomOut.setVisibility(View.VISIBLE);
                         mImageButtonZoomIn.setEnabled(true);
-                        mImageButtonZoomIn.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -1052,11 +1107,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         mCheckBoxDisplayConstrainWidth.setEnabled(false);
         mCheckBoxDisplayConstrainHeight.setEnabled(false);
         mImageButtonDisplayRestore.setEnabled(false);
-        mImageButtonDisplayRestore.setVisibility(View.INVISIBLE);
         mImageButtonZoomOut.setEnabled(false);
-        mImageButtonZoomOut.setVisibility(View.INVISIBLE);
         mImageButtonZoomIn.setEnabled(false);
-        mImageButtonZoomIn.setVisibility(View.INVISIBLE);
 
         ///先设置Crop和Doodle为false
         mButtonCrop.setEnabled(false);
