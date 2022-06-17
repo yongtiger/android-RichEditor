@@ -97,8 +97,8 @@ public class EditorFragment extends Fragment {
         Log.d("TAG", "onCreateView()# ");
         super.onCreateView(inflater, container, savedInstanceState);
 
-        return inflater.inflate(R.layout.fragment_editor_flexbox_layout, container, false);
-//        return inflater.inflate(R.layout.fragment_editor_linear_layout, container, false);
+////??????        return inflater.inflate(R.layout.fragment_editor_flexbox_layout, container, false);
+        return inflater.inflate(R.layout.fragment_editor_linear_layout, container, false);
     }
 
     @Override

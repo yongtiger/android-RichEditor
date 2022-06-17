@@ -135,8 +135,8 @@ import static java.lang.Math.min;
 
 import com.google.android.flexbox.FlexboxLayout;
 
-public class RichEditorToolbar extends FlexboxLayout implements
-//public class RichEditorToolbar extends LinearLayout implements
+////??????public class RichEditorToolbar extends FlexboxLayout implements
+public class RichEditorToolbar extends LinearLayout implements
         Drawable.Callback, View.OnClickListener,
         View.OnLongClickListener,   ///注意：若开启LongClick，则android:tooltipText会不显示
         RichEditText.OnSelectionChanged,

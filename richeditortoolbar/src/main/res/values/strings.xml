@@ -58,6 +58,7 @@
     <string name="layout_click_image_span_dialog_desc_camera">Pickup from camera</string>
     <string name="layout_click_image_span_dialog_text_camera">Camera</string>
     <string name="layout_click_image_span_dialog_hint_src">Image source (local or network address)</string>
+    <string name="note_media">(If empty, the default cover image is used)</string>
 
     <string name="layout_click_image_span_dialog_desc_constrain_by_width">Constrain aspect ratio by width</string>
     <string name="layout_click_image_span_dialog_hint_display_width">Width</string>

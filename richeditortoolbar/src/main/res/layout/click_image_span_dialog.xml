@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="btn_pickup_from_media,btn_pickup_from_recorder,et_uri" />
+        app:constraint_referenced_ids="btn_pickup_from_media,btn_pickup_from_recorder,et_uri,note_media" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_gallery"
@@ -104,6 +104,14 @@
         android:inputType="textWebEmailAddress|textUri"
         app:layout_constraintTop_toBottomOf="@+id/btn_pickup_from_gallery"
         app:layout_constraintBottom_toTopOf="@+id/id_barrier_top" />
+
+    <TextView
+        android:id="@+id/note_media"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/global_dimen"
+        android:text="@string/note_media"
+        app:layout_constraintTop_toBottomOf="@+id/et_src" />
 
     <!--///注意：如果子控件有滚动功能（如RecyclerView）则产生滚动冲突问题，此时应使用NestScrollView-->
     <!--///[FIX#使用属性fillViewport解决布局不能撑满全屏的问题（比如嵌套 LinearLayout，使用layout_weight无效）]-->
