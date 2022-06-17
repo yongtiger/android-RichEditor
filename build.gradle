@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.1.0",   ///v4.1.0#RichEditorToolbar extends LinearLayout
-                versionCode: 40100
+                versionName: "4.1.1",   ///v4.1.1#语言环境为english时，存在before/count/after都大于0的情况！此时start为单词开始处（以空格或换行分割）。例如：整个单词整体变粗体
+                versionCode: 40101
         ]
     }
 
