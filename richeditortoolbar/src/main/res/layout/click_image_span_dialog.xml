@@ -24,7 +24,6 @@
 
     <Button
         android:id="@+id/btn_pickup_from_media"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/global_dimen"
@@ -39,7 +38,6 @@
 
     <Button
         android:id="@+id/btn_pickup_from_recorder"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/global_dimen"

@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.1.3",   ///v4.1.3#Util
-                versionCode: 40103
+                versionName: "4.1.4",   ///v4.1.4#初始化mCurrentPageNumber
+                versionCode: 40104
         ]
     }
 

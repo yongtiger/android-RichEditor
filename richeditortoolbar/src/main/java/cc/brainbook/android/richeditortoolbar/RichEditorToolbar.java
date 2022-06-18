@@ -51,6 +51,7 @@ import cc.brainbook.android.richeditortoolbar.builder.LongClickLeadingMarginSpan
 import cc.brainbook.android.richeditortoolbar.builder.LongClickLineDividerDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickListSpanDialogBuilder;
 import cc.brainbook.android.richeditortoolbar.builder.LongClickQuoteSpanDialogBuilder;
+import cc.brainbook.android.richeditortoolbar.fragment.ClickImageSpanDialogFragment;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
@@ -132,8 +133,6 @@ import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.update
 import static cc.brainbook.android.richeditortoolbar.util.SpanUtil.isInvalidParagraph;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
-
-import com.google.android.flexbox.FlexboxLayout;
 
 ////??????public class RichEditorToolbar extends FlexboxLayout implements
 public class RichEditorToolbar extends LinearLayout implements

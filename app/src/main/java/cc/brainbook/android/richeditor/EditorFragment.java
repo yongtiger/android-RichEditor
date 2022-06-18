@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.util.Date;
 
-import cc.brainbook.android.richeditortoolbar.ClickImageSpanDialogFragment;
+import cc.brainbook.android.richeditortoolbar.fragment.ClickImageSpanDialogFragment;
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;

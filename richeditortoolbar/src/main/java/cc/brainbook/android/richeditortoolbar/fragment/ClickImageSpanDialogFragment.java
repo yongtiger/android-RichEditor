@@ -1,4 +1,4 @@
-package cc.brainbook.android.richeditortoolbar;
+package cc.brainbook.android.richeditortoolbar.fragment;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -62,6 +62,8 @@ import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 
+import cc.brainbook.android.richeditortoolbar.R;
+import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 import cc.brainbook.android.richeditortoolbar.util.UriUtil;
 import cn.hzw.doodle.DoodleActivity;
@@ -976,6 +978,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             }
         });
 
+        ///初始化mCurrentPageNumber
+        mCurrentPageNumber = mUri == null && mSrc == null ?  0 : 1;
         showPage();
     }
 
