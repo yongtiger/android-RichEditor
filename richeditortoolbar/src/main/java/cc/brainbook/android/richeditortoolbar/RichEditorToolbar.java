@@ -1037,6 +1037,7 @@ public class RichEditorToolbar extends LinearLayout implements
 
 
     /* ----------------- ///[onClick] ------------------ */
+    private boolean enableClick = true; ///[防止重复点击]
     @Override
     public void onClick(final View view) {
         ///[Html]
@@ -1211,7 +1212,6 @@ public class RichEditorToolbar extends LinearLayout implements
             return;
         }
 
-
         /* --------- ///[onClick]点击更新ImageView，并且当selectionStart != selectionEnd时改变selection的span --------- */
         final Editable editable = mRichEditText.getText();
         if (editable == null) {
@@ -1222,6 +1222,13 @@ public class RichEditorToolbar extends LinearLayout implements
         final int selectionEnd = Selection.getSelectionEnd(editable);
         if (selectionStart == -1 || selectionEnd == -1) {
             return;
+        }
+
+        ///[防止重复点击]
+        if (!enableClick) {
+            return;
+        } else {
+            enableClick = false;
         }
 
         final Class<? extends IStyle> clazz = getClassMapKey(view);
@@ -1319,6 +1326,9 @@ public class RichEditorToolbar extends LinearLayout implements
                             public void onDismiss(DialogInterface dialog) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                 mRichEditText.enableSelectionChange();
+
+                                ///[防止重复点击]
+                                enableClick = true;
                             }
                         });
 
@@ -1440,6 +1450,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -1511,6 +1524,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -1522,6 +1538,9 @@ public class RichEditorToolbar extends LinearLayout implements
 
             ///段落span：LineDivider
             else if (view == mImageViewLineDivider) {
+                ///[防止重复点击]
+                enableClick = true;
+
                 ///当下列情况，不能点击LineDivider：
                 ///不是单光标；或光标处于文本尾部；或光标处字符不为'\n'；或光标前一个字符不为'\n'
                 if (selectionStart < selectionEnd || selectionStart == editable.length()
@@ -1530,6 +1549,9 @@ public class RichEditorToolbar extends LinearLayout implements
                     return;
                 }
             }
+
+            ///[防止重复点击]
+            enableClick = true;
 
             view.setSelected(!view.isSelected());
 
@@ -1629,12 +1651,15 @@ public class RichEditorToolbar extends LinearLayout implements
                     colorPickerDialogBuilder.initialColor(colorDrawable.getColor());
                 }
 
-                AlertDialog alertDialog = colorPickerDialogBuilder.build();
+                final AlertDialog alertDialog = colorPickerDialogBuilder.build();
                 alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                         mRichEditText.enableSelectionChange();
+
+                        ///[防止重复点击]
+                        enableClick = true;
                     }
                 });
                 alertDialog.show();
@@ -1708,6 +1733,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -1780,6 +1808,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -1852,6 +1883,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -1924,6 +1958,9 @@ public class RichEditorToolbar extends LinearLayout implements
                                 public void onDismiss(DialogInterface dialog) {
                                     ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                     mRichEditText.enableSelectionChange();
+
+                                    ///[防止重复点击]
+                                    enableClick = true;
                                 }
                         });
 
@@ -2003,6 +2040,9 @@ public class RichEditorToolbar extends LinearLayout implements
                     public void onDismiss(DialogInterface dialog) {
                         ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                         mRichEditText.enableSelectionChange();
+
+                        ///[防止重复点击]
+                        enableClick = true;
                     }
                 });
                 alertDialog.show();
@@ -2116,6 +2156,9 @@ public class RichEditorToolbar extends LinearLayout implements
                     public void onDismiss(DialogInterface dialog) {
                         ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                         mRichEditText.enableSelectionChange();
+
+                        ///[防止重复点击]
+                        enableClick = true;
                     }
                 });
                 clickImageSpanDialogFragment.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -2135,6 +2178,9 @@ public class RichEditorToolbar extends LinearLayout implements
                 mRichEditText.disableSelectionChange(true);
 
                 return;
+            } else {
+                ///[防止重复点击]
+                enableClick = true;
             }
 
             view.setSelected(!view.isSelected());
@@ -2183,7 +2229,7 @@ public class RichEditorToolbar extends LinearLayout implements
 
         ///段落span（带初始化参数）：LeadingMargin
         else if (view == mImageViewLeadingMargin) {
-            AlertDialog alertDialog = ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
+            final AlertDialog alertDialog = ((LongClickLeadingMarginSpanDialogBuilder) LongClickLeadingMarginSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickLeadingMarginSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -2211,7 +2257,7 @@ public class RichEditorToolbar extends LinearLayout implements
 
         ///段落span（带初始化参数）：List
         else if (view == mImageViewList) {
-            AlertDialog alertDialog = ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
+            final AlertDialog alertDialog = ((LongClickListSpanDialogBuilder) LongClickListSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickListSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -2242,7 +2288,7 @@ public class RichEditorToolbar extends LinearLayout implements
 
         ///段落span（带初始化参数）：Quote
         else if (view == mImageViewQuote) {
-            AlertDialog alertDialog = ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
+            final AlertDialog alertDialog = ((LongClickQuoteSpanDialogBuilder) LongClickQuoteSpanDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickQuoteSpanDialogBuilder.OnClickListener() {
                         @Override
@@ -2272,7 +2318,7 @@ public class RichEditorToolbar extends LinearLayout implements
 
         ///段落span（带初始化参数）：LineDivider
         else if (view == mImageViewLineDivider) {
-            AlertDialog alertDialog = ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
+            final AlertDialog alertDialog = ((LongClickLineDividerDialogBuilder) LongClickLineDividerDialogBuilder
                     .with(mContext)
                     .setPositiveButton(android.R.string.ok, new LongClickLineDividerDialogBuilder.OnClickListener() {
                         @Override

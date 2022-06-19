@@ -283,7 +283,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         } else if (mCurrentPageNumber == 2) {
             mRadioGroup.setVisibility(View.VISIBLE);
             mImageButtonPrev.setVisibility(View.VISIBLE);
-        } else {
+        } else { ///0
             if (mMediaType == 1 || mMediaType == 2) {
                 mGroupMedia.setVisibility(View.VISIBLE);
             }
@@ -372,7 +372,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     }
                 }
             });
-            getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {
+            getDialog().setOnDismissListener(new DialogInterface.OnDismissListener() {  ///选返回键触发
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     ClickImageSpanDialogFragment.super.onDismiss(dialog);
@@ -683,6 +683,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 doFinishAction();
 
+                if (getDialog() != null) {
+                    getDialog().dismiss();
+                }
+
                 dismiss();
             }
         });
@@ -691,6 +695,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             public void onClick(View v) {
                 doClearAction();
 
+                if (getDialog() != null) {
+                    getDialog().dismiss();
+                }
+
                 dismiss();
             }
         });
@@ -698,6 +706,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 doCancelAction();
+
+                if (getDialog() != null) {
+                    getDialog().dismiss();
+                }
 
                 dismiss();
             }

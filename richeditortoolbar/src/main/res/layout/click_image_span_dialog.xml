@@ -12,14 +12,12 @@
         android:id="@+id/group_media"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:constraint_referenced_ids="btn_pickup_from_media,btn_pickup_from_recorder,et_uri,note_media" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/group_gallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:constraint_referenced_ids="btn_pickup_from_gallery,btn_pickup_from_camera,et_src" />
 
     <Button
@@ -119,7 +117,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/id_barrier_bottom"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -309,7 +306,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/global_dimen"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/id_barrier_bottom"
         app:layout_constraintBottom_toTopOf="@+id/id_barrier_top"
         app:layout_constraintStart_toStartOf="parent"
@@ -393,7 +389,6 @@
         android:id="@+id/btn_prev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_baseline_arrow_circle_left_24"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -403,7 +398,6 @@
         android:id="@+id/btn_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/ic_baseline_arrow_circle_right_24"
         app:layout_constraintBottom_toBottomOf="parent"
