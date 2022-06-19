@@ -1,8 +1,10 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -11,8 +13,16 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Objects;
 
 public abstract class ContentUriUtil {
 
@@ -270,9 +280,8 @@ public abstract class ContentUriUtil {
         return null;
     }
 
-
     @NonNull
-    private static String getSubFolders(@NonNull Uri uri) {
+    public static String getSubFolders(@NonNull Uri uri) {
         String replaceChars = String.valueOf(uri).replace("%2F", "/").replace("%20", " ").replace("%3A",":");
         String[] bits = replaceChars.split("/");
         String sub5 = bits[bits.length - 2];
@@ -295,6 +304,84 @@ public abstract class ContentUriUtil {
         else {
             return "";
         }
+    }
+
+
+    ///https://developer.android.com/training/data-storage/shared/documents-files?hl=zh-cn
+    @NonNull
+    public static String readTextFromUri(@NonNull Context context, Uri uri) throws IOException {
+        final StringBuilder stringBuilder = new StringBuilder();
+        try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    ///https://stackoverflow.com/questions/13133579/android-save-a-file-from-an-existing-uri
+    public static void copy(@NonNull Context context, Uri pathFrom, Uri pathTo) throws IOException {
+        try (InputStream inputStream = context.getContentResolver().openInputStream(pathFrom)) {
+            if(inputStream == null) return;
+            try (OutputStream outputStream = context.getContentResolver().openOutputStream(pathTo)) {
+                if(outputStream == null) return;
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = inputStream.read(buf)) > 0) {
+                    outputStream.write(buf, 0, len);
+                }
+            }
+        }
+    }
+
+    public static void saveBitmap(@NonNull Context context, @NonNull Bitmap bitmap, Uri imageFileUri,
+                                     Bitmap.CompressFormat format, int quality) throws IOException {
+        try (OutputStream outputStream = context.getContentResolver().openOutputStream(imageFileUri)) {
+            bitmap.compress(format, quality, outputStream);
+        }
+    }
+
+    ///虚拟文件
+    ///在 Android 7.0（API 级别 25）及更高版本中，您的应用可以使用存储访问框架提供的虚拟文件。
+    ///注意：由于应用无法使用 openInputStream() 方法直接打开虚拟文件，因此在创建包含 ACTION_OPEN_DOCUMENT 或 ACTION_OPEN_DOCUMENT_TREE 操作的 intent 时，请勿使用 CATEGORY_OPENABLE 类别。
+    ///https://developer.android.com/training/data-storage/shared/documents-files?hl=zh-cn#open-virtual-file
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static boolean isVirtualFile(@NonNull Context context, Uri uri) {
+        if (!DocumentsContract.isDocumentUri(context, uri)) {
+            return false;
+        }
+
+        final Cursor cursor = context.getContentResolver().query(
+                uri,
+                new String[] { DocumentsContract.Document.COLUMN_FLAGS },
+                null, null, null);
+
+        int flags = 0;
+        if (cursor.moveToFirst()) {
+            flags = cursor.getInt(0);
+        }
+        cursor.close();
+
+        return (flags & DocumentsContract.Document.FLAG_VIRTUAL_DOCUMENT) != 0;
+    }
+
+    public static InputStream getInputStreamForVirtualFile(@NonNull Context context, Uri uri, String mimeTypeFilter)
+            throws IOException {
+
+        final ContentResolver resolver = context.getContentResolver();
+        final String[] openableMimeTypes = resolver.getStreamTypes(uri, mimeTypeFilter);
+
+        if (openableMimeTypes == null || openableMimeTypes.length < 1) {
+            throw new FileNotFoundException();
+        }
+
+        return resolver
+                .openTypedAssetFileDescriptor(uri, openableMimeTypes[0], null)
+                .createInputStream();
     }
 
 }

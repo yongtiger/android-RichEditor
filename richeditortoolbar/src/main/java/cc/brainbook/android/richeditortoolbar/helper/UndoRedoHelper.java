@@ -55,15 +55,15 @@ public class UndoRedoHelper {
     public static final int CHANGE_AUDIO_SPAN_ACTION = 38;
 
 
-    private Context mContext;
-    private RichEditorToolbar mRichEditorToolbar;
-    private History mHistory;
+    private final Context mContext;
+    private final RichEditorToolbar mRichEditorToolbar;
+    private final History mHistory;
 
     ///[PositionChanged]
     public interface OnPositionChangedListener {
         void onPositionChangedListener(int position, Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition);
     }
-    private OnPositionChangedListener mOnPositionChangedListener;
+    private final OnPositionChangedListener mOnPositionChangedListener;
     private void onPositionChanged(boolean isSetSpans) {
         if (mOnPositionChangedListener != null) {
             mOnPositionChangedListener.onPositionChangedListener(mHistory.mPosition, mHistory.current(), isSetSpans, isCanUndo(), isCanRedo(), isSavedPosition());

@@ -448,6 +448,10 @@ public class RichEditorToolbar extends LinearLayout implements
     }
 
     private UndoRedoHelper mUndoRedoHelper;
+    private UndoRedoHelper.OnPositionChangedListener mOnPositionChangedListener;
+    public void setOnPositionChangedListener(UndoRedoHelper.OnPositionChangedListener onPositionChangedListener) {
+        mOnPositionChangedListener = onPositionChangedListener;
+    }
 
     public void initUndoRedo() {
         mUndoRedoHelper.clearHistory();
@@ -499,6 +503,10 @@ public class RichEditorToolbar extends LinearLayout implements
                     getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
                     this, null);
+        }
+
+        if (mOnPositionChangedListener != null) {
+            mOnPositionChangedListener.onPositionChangedListener(position, action, isSetSpans, isCanUndo, isCanRedo, isSavedPosition);
         }
     }
 

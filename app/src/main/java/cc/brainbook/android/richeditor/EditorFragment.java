@@ -33,9 +33,10 @@ import cc.brainbook.android.richeditortoolbar.fragment.ClickImageSpanDialogFragm
 import cc.brainbook.android.richeditortoolbar.RichEditText;
 import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.helper.UndoRedoHelper;
 import cc.brainbook.android.richeditortoolbar.util.DirUtil;
 import cc.brainbook.android.richeditortoolbar.util.FileProviderUtil;
-import cc.brainbook.android.richeditortoolbar.util.FileUtil;
+import cc.brainbook.android.richeditortoolbar.util.MediaUtil;
 import cc.brainbook.android.richeditortoolbar.util.StringUtil;
 
 public class EditorFragment extends Fragment {
@@ -235,7 +236,7 @@ public class EditorFragment extends Fragment {
                 final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
                 final File videoCoverFile = new File(imageFileDir, videoCoverFileName);
                 ///生成视频的第一帧图片
-                FileUtil.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
+                MediaUtil.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
 
                 return videoCoverFile;
             }
@@ -321,6 +322,14 @@ public class EditorFragment extends Fragment {
         ///（可选）设置ImageMaxWidth/Height
         mRichEditorToolbar.setImageMaxWidth(DEFAULT_MAX_IMAGE_WIDTH);
         mRichEditorToolbar.setImageMaxHeight(DEFAULT_MAX_IMAGE_HEIGHT);
+
+        ///（可选）设置OnPositionChangedListener
+        mRichEditorToolbar.setOnPositionChangedListener(new UndoRedoHelper.OnPositionChangedListener() {
+            @Override
+            public void onPositionChangedListener(int position, UndoRedoHelper.Action action, boolean isSetSpans, boolean isCanUndo, boolean isCanRedo, boolean isSavedPosition) {
+                // todo ...
+            }
+        });
 
         ///（必选）初始化
         mRichEditorToolbar.init();

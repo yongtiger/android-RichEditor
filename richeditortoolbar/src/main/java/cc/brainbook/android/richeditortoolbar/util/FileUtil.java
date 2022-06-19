@@ -1,11 +1,9 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
 
@@ -16,13 +14,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public abstract class FileUtil {
+
+    // url = file path or whatever suitable URL you want.
+    ///https://www.cnblogs.com/yongdaimi/p/13645719.html
+    public static String getFileMimeType(String url) {
+        String type = null;
+        String extension = getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
+    }
+    public static String getFileExtensionFromUrl(String url) {
+        return MimeTypeMap.getFileExtensionFromUrl(url);
+    }
 
     /**
      * 获取目录总大小（递归目录下的所有文件及子目录下所有文件）
@@ -117,7 +129,7 @@ public abstract class FileUtil {
      * @param path
      * @return
      */
-    public static boolean isCanWrite(String path) {
+    public static boolean isWritable(String path) {
         return new File(path).canWrite();
     }
 
@@ -142,126 +154,20 @@ public abstract class FileUtil {
         }
     }
 
-    public static boolean saveBitmap(@NonNull Context context, @NonNull Bitmap bitmap, Uri imageFileUri,
-                                     Bitmap.CompressFormat format, int quality) {
-        boolean result = true;
 
-        OutputStream outputStream = null;
-        try {
-            outputStream = context.getContentResolver().openOutputStream(imageFileUri);
-            bitmap.compress(format, quality, outputStream);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-
-            result = false;
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                result = false;
-            }
-        }
-
-        return result;
-    }
-
-    public static boolean createFileFromString(@NonNull File file, String text) {
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-        try {
-            //BufferedWriter for performance, false to overwrite to file flag
-            BufferedWriter buf = new BufferedWriter(new FileWriter(file, false));
-            buf.write(text);
-            buf.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Saves Bitmap to File
-     *
-     * @param bitmap
-     * @param file
-     * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG
-     * @param quality
-     */
-    public static void saveBitmapToFile(@NonNull Bitmap bitmap, File file, Bitmap.CompressFormat format, int quality) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            bitmap.compress(format, quality, fos);
-            fos.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Saves Drawable to File
-     *
-     * @param drawable
-     * @param file
-     * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG
-     * @param quality
-     */
-    public static void saveDrawableToFile(Drawable drawable, File file, Bitmap.CompressFormat format, int quality) {
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            ((BitmapDrawable) drawable).getBitmap().compress(format, quality, fos);
-            fos.flush();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    /* --------------- 使用信息流访问文件 --------------- */
+    /* 注意：信息流访问文件时应在后台线程而非界面线程上完成此操作 */
+    ///https://developer.android.com/training/data-storage/app-specific?hl=zh-cn#internal-access-stream
 
     @NonNull
-    public static byte[] readFile(@NonNull File file) throws IOException {
+    public static byte[] readFile(File file) throws IOException {
         return readFile(file, 4096);
     }
     @NonNull
-    public static byte[] readFile(@NonNull File file, int bufferSize) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = null;
-        FileInputStream fileInputStream = null;
-        BufferedInputStream bufferedInputStream = null;
-        try {
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            fileInputStream = new FileInputStream(file);
-            bufferedInputStream = new BufferedInputStream(fileInputStream);
+    public static byte[] readFile(File file, int bufferSize) throws IOException {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             FileInputStream fileInputStream = new FileInputStream(file);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)) {
 
             final byte[] buffer = new byte[bufferSize];
             int read;
@@ -269,22 +175,33 @@ public abstract class FileUtil {
                 byteArrayOutputStream.write(buffer, 0, read);
             }
 
-            bufferedInputStream.close();
             return byteArrayOutputStream.toByteArray();
-        } finally {
-            try {
-                if (byteArrayOutputStream != null)
-                    byteArrayOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        }
+    }
 
-            try {
-                if (bufferedInputStream != null)
-                    bufferedInputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public static void writeFile(File file, String text, boolean append) throws IOException {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, append))) {
+            bufferedWriter.write(text);
+        }
+    }
+
+    public static void writeFile(File file, @NonNull Bitmap bitmap, Bitmap.CompressFormat format, int quality) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            bitmap.compress(format, quality, outputStream);
+        }
+    }
+
+    /**
+     * Saves Drawable to File
+     *
+     * @param file
+     * @param drawable
+     * @param format    Bitmap.CompressFormat.JPEG/Bitmap.CompressFormat.PNG
+     * @param quality
+     */
+    public static void writeFile(File file, Drawable drawable, Bitmap.CompressFormat format, int quality) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            ((BitmapDrawable) drawable).getBitmap().compress(format, quality, outputStream);
         }
     }
 
@@ -293,47 +210,23 @@ public abstract class FileUtil {
 //        writeFile(file, bytes, 4096);
     }
     public static void writeFile(File file, byte[] bytes, int bufferSize) throws IOException {
-        FileOutputStream fileOutputStream = null;
-        BufferedOutputStream bufferedOutputStream = null;
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            bufferedOutputStream = bufferSize == 0 ?
-                    new BufferedOutputStream(fileOutputStream) : new BufferedOutputStream(fileOutputStream, bufferSize);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             BufferedOutputStream bufferedOutputStream = bufferSize == 0 ?
+                     new BufferedOutputStream(fileOutputStream) : new BufferedOutputStream(fileOutputStream, bufferSize);) {
+
             bufferedOutputStream.write(bytes,0, bytes.length);
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-        } finally {
-            try {
-                if (bufferedOutputStream != null)
-                    bufferedOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            bufferedOutputStream.flush();   ///https://stackoverflow.com/questions/8181318/benefits-of-using-flush-close-in-android-streams
         }
     }
 
-
-    /**
-     * 生成视频的第一帧图片
-     *
-     * @param context
-     * @param videoUri
-     * @param videoCoverFile
-     * @param format
-     * @param quality
-     */
-    public static void generateVideoCover(@NonNull Context context, @NonNull Uri videoUri, File videoCoverFile,
-                                          Bitmap.CompressFormat format, int quality) {
-        final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(context, videoUri);
-        final Bitmap bitmap = mmr.getFrameAtTime(); ///第一帧图片
-        mmr.release();
-
-        if (bitmap == null) {
-            return;
+    public static void writeFile(File file, @NonNull InputStream inputStream) throws IOException {
+        try (OutputStream outputStream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
         }
-
-        saveBitmapToFile(bitmap, videoCoverFile, format, quality);
     }
 
 }
