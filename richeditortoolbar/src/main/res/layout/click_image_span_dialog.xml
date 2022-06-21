@@ -343,7 +343,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="0dp"
         android:backgroundTint="@android:color/transparent"
-        android:src="@drawable/ic_baseline_close_24"
+        app:srcCompat="@drawable/ic_baseline_close_24"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -355,7 +355,7 @@
         android:backgroundTint="@android:color/transparent"
         android:contentDescription="@string/layout_toolbar_desc_save"
         android:tooltipText="@string/layout_toolbar_desc_save"
-        android:src="@drawable/icon_save"
+        app:srcCompat="@drawable/icon_save"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -367,7 +367,7 @@
         android:backgroundTint="@android:color/transparent"
         android:contentDescription="@string/layout_toolbar_desc_clear_styles"
         android:tooltipText="@string/layout_toolbar_desc_clear_styles"
-        android:src="@drawable/ic_baseline_clear_24"
+        app:srcCompat="@drawable/ic_baseline_clear_24"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_finish" />
 
@@ -390,7 +390,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/transparent"
-        android:src="@drawable/ic_baseline_arrow_circle_left_24"
+        app:srcCompat="@drawable/ic_baseline_arrow_circle_left_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -399,7 +399,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/transparent"
-        android:src="@drawable/ic_baseline_arrow_circle_right_24"
+        app:srcCompat="@drawable/ic_baseline_arrow_circle_right_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
