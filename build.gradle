@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.2.2",   ///v4.2.2#[FIX#android:src]
-                versionCode: 40202
+                versionName: "4.2.3",   ///v4.2.3#[FIX#OBJECT_REPLACEMENT_TEXT]
+                versionCode: 40203
         ]
     }
 
