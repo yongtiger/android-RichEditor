@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,22 +22,34 @@ public abstract class MediaUtil {
      * @param format
      * @param quality
      */
-    public static void generateVideoCover(@NonNull Context context, @NonNull Uri videoUri, File videoCoverFile,
+    @Nullable
+    public static File generateVideoCover(@NonNull Context context, @NonNull Uri videoUri, File videoCoverFile,
                                           Bitmap.CompressFormat format, int quality) {
-        final MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(context, videoUri);
-        final Bitmap bitmap = mmr.getFrameAtTime(); ///第一帧图片
-        mmr.release();
-
-        if (bitmap == null) {
-            return;
-        }
-
+        Bitmap bitmap = null;
+        MediaMetadataRetriever mmr = null;
         try {
-            FileUtil.writeFile(videoCoverFile, bitmap, format, quality);
-        } catch (IOException e) {
+            mmr = new MediaMetadataRetriever();
+            mmr.setDataSource(context, videoUri);
+            bitmap = mmr.getFrameAtTime(); ///第一帧图片
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (mmr != null) {
+                mmr.release();
+            }
         }
+
+        if (bitmap != null) {
+            try {
+                FileUtil.writeFile(videoCoverFile, bitmap, format, quality);
+
+                return videoCoverFile;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
     }
 
 }

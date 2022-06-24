@@ -452,19 +452,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                         mEditTextUri.setText(resultUri.toString());
 
                         UriUtil.grantReadPermissionToUri(getActivity(), resultUri, data.getFlags());
-
-                        if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA) {
-                            if (mImageSpanCallback != null) {
-                                ///生成视频的第一帧图片
-                                final File videoCoverFile = mImageSpanCallback.generateVideoCoverFile(getActivity(), resultUri);
-                                if (videoCoverFile != null) {
-                                    mImageWidth = 0;
-                                    mImageHeight = 0;
-                                    mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-                                    enableDeleteOldSrcFile = true;
-                                }
-                            }
-                        }
                     } else {
                         Log.e("TAG-ClickImageSpan", getActivity().getString(
                                 mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
@@ -494,19 +481,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     if (resultUri != null) {
                         mEditTextUri.setText(resultUri.toString());
                         enableDeleteOldUriFile = true;
-
-                        if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_RECORDER) {
-                            if (mImageSpanCallback != null) {
-                                ///生成视频的第一帧图片
-                                final File videoCoverFile = mImageSpanCallback.generateVideoCoverFile(getActivity(), resultUri);
-                                if (videoCoverFile != null) {
-                                    mImageWidth = 0;
-                                    mImageHeight = 0;
-                                    mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
-                                    enableDeleteOldSrcFile = true;
-                                }
-                            }
-                        }
                     } else {
                         Log.e("TAG-ClickImageSpan", getActivity().getString(
                                 mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
@@ -740,7 +714,23 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (mImageSpanCallback != null) {
+                    final Uri uri = Uri.parse(mEditTextUri.getText().toString());
+                    if (uri == null) {
+                        return;
+                    }
+
+                    ///生成视频的第一帧图片
+                    final File videoCoverFile = mImageSpanCallback.generateVideoCoverFile(getActivity(), uri);
+                    if (videoCoverFile != null && videoCoverFile.isFile() && videoCoverFile.exists()) {
+                        mImageWidth = 0;
+                        mImageHeight = 0;
+                        mEditTextSrc.setText(videoCoverFile.getAbsolutePath());
+                        enableDeleteOldSrcFile = true;
+                    }
+                }
+            }
 
             @Override
             public void afterTextChanged(Editable s) {}

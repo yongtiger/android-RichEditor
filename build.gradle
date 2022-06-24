@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.4.0",   ///v4.4.0#[FIX#RichEditorToolbar#mClickImageSpanDialogFragment]
-                versionCode: 40400
+                versionName: "4.5.0",   ///v4.5.0#[FIX#ClickImageSpanDialogFragment#生成视频的第一帧图片]
+                versionCode: 40500
         ]
     }
 

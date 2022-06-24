@@ -236,9 +236,7 @@ public class EditorFragment extends Fragment {
                 final String videoCoverFileName = StringUtil.getDateFormat(new Date()) + "_cover" + IMAGE_FILE_SUFFIX;
                 final File videoCoverFile = new File(imageFileDir, videoCoverFileName);
                 ///生成视频的第一帧图片
-                MediaUtil.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
-
-                return videoCoverFile;
+                return MediaUtil.generateVideoCover(context, uri, videoCoverFile, Bitmap.CompressFormat.JPEG, IMAGE_COMPRESS);
             }
         });
 
