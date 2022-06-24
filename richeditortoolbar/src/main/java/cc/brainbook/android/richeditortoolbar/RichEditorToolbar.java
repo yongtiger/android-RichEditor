@@ -2062,20 +2062,20 @@ public class RichEditorToolbar extends LinearLayout implements
                 final int height = view.getTag(R.id.view_tag_image_height) == null ? 0 : (int) view.getTag(R.id.view_tag_image_height);
                 final int align = view.getTag(R.id.view_tag_image_align) == null ? ClickImageSpanDialogFragment.DEFAULT_ALIGN : (int) view.getTag(R.id.view_tag_image_align);
 
-                final ClickImageSpanDialogFragment clickImageSpanDialogFragment = ClickImageSpanDialogFragment.newInstance(mediaType,
+                mClickImageSpanDialogFragment = ClickImageSpanDialogFragment.newInstance(mediaType,
                         uri, src, width, height, align);
-                clickImageSpanDialogFragment.setRichEditorToolbar(this);
-                clickImageSpanDialogFragment.setImageSpanCallback(mImageSpanCallback);
+                mClickImageSpanDialogFragment.setRichEditorToolbar(this);
+                mClickImageSpanDialogFragment.setImageSpanCallback(mImageSpanCallback);
 
                 ///OK
-                clickImageSpanDialogFragment.setOnFinishListener(new ClickImageSpanDialogFragment.OnFinishListener() {
+                mClickImageSpanDialogFragment.setOnFinishListener(new ClickImageSpanDialogFragment.OnFinishListener() {
                             @Override
                             public void onClick(DialogInterface dialog, String uri, String src, int width, int height, int align) {
                                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                                 mRichEditText.enableSelectionChange();
 
                                 ///避免内存泄漏
-                                clickImageSpanDialogFragment.clear();
+                                mClickImageSpanDialogFragment.clear();
 
                                 ///参数校验：两项都为空则代表维持不变、不做任何处理n
                                 ///注意：某项为空、或值相同即代表该项维持不变，不为空且值不同则代表该项改变
@@ -2113,14 +2113,14 @@ public class RichEditorToolbar extends LinearLayout implements
                         });
 
                 ///清除样式
-                clickImageSpanDialogFragment.setOnClearListener(new DialogInterface.OnClickListener() {
+                mClickImageSpanDialogFragment.setOnClearListener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
                         mRichEditText.enableSelectionChange();
 
                         ///避免内存泄漏
-                        clickImageSpanDialogFragment.clear();
+                        mClickImageSpanDialogFragment.clear();
 
                         ///如果view选中则未选中view
                         ///注意：如果view未选中了则不再进行view未选中操作！提高效率
@@ -2142,16 +2142,16 @@ public class RichEditorToolbar extends LinearLayout implements
                 });
 
                 ///Cancel
-                clickImageSpanDialogFragment.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                mClickImageSpanDialogFragment.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
                         ///避免内存泄漏
-                        clickImageSpanDialogFragment.clear();
+                        mClickImageSpanDialogFragment.clear();
                     }
                 });
 
                 ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
-                clickImageSpanDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                mClickImageSpanDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
                         ///[FIX#平板SAMSUNG SM-T377A弹出对话框后自动设置Selection为选中所选区间的末尾！应该保持原来所选区间]
@@ -2161,7 +2161,7 @@ public class RichEditorToolbar extends LinearLayout implements
                         enableClick = true;
                     }
                 });
-                clickImageSpanDialogFragment.setOnShowListener(new DialogInterface.OnShowListener() {
+                mClickImageSpanDialogFragment.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
                     public void onShow(DialogInterface dialog) {
                         if (mOnClickImageSpanDialogFragmentReadyListener != null) {
@@ -2170,7 +2170,7 @@ public class RichEditorToolbar extends LinearLayout implements
                     }
                 });
 
-                clickImageSpanDialogFragment.show(
+                mClickImageSpanDialogFragment.show(
                         ((FragmentActivity) mContext).getSupportFragmentManager(), ///注意：如果在Fragment中，使用getChildFragmentManager()
                         "ImageSpanDialog");
 
