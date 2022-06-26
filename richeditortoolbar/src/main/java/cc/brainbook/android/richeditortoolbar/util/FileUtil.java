@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -21,6 +22,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public abstract class FileUtil {
+
+    @Nullable
+    public static String getFileParent(@NonNull String path, int prefixLength) {
+        int index = path.lastIndexOf(File.separatorChar);
+        if (index < prefixLength) {
+            if (prefixLength > 0 && path.length() > prefixLength)
+                return path.substring(0, prefixLength);
+            return null;
+        }
+        return path.substring(0, index);
+    }
+
+    @NonNull
+    public static String getFilename(@NonNull String path) {
+        return path.substring(path.lastIndexOf(File.separatorChar) + 1);
+    }
 
     // url = file path or whatever suitable URL you want.
     ///https://www.cnblogs.com/yongdaimi/p/13645719.html
