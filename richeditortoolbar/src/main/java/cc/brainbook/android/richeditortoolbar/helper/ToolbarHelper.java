@@ -81,6 +81,7 @@ import cc.brainbook.android.richeditortoolbar.util.SpanUtil;
 import static cc.brainbook.android.richeditortoolbar.config.Config.AUDIO_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_LABELS;
 //import static cc.brainbook.android.richeditortoolbar.config.Config.OBJECT_REPLACEMENT_TEXT;
+import static cc.brainbook.android.richeditortoolbar.config.Config.OBJECT_REPLACEMENT_TEXT;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PLACE_HOLDER_DRAWABLE;
 import static cc.brainbook.android.richeditortoolbar.config.Config.VIDEO_DRAWABLE;
 
@@ -238,19 +239,11 @@ public abstract class ToolbarHelper {
                 else if (clazz == CustomImageSpan.class || clazz == VideoSpan.class || clazz == AudioSpan.class) {
                     if (start == end || spans.size() == 1) {    ///注意：不是filter之前的spans的length为1！要考虑忽略getSpans()获取的子类（不是clazz本身）
                         final String text = String.valueOf(spannable.toString().toCharArray(), spanStart, spanEnd - spanStart);
-//                        final String text = OBJECT_REPLACEMENT_TEXT;
+//                        final String text = OBJECT_REPLACEMENT_TEXT;/////////////////OBJECT_REPLACEMENT_TEXT
 
                         final String uri = clazz == CustomImageSpan.class ? null :
                                 clazz == VideoSpan.class ? ((VideoSpan) span).getUri() : ((AudioSpan) span).getUri();
                         final String src = ((CustomImageSpan) span).getSource();
-
-//                        ///从text中解析出width\height\align
-//                        final String strWidth = StringUtil.getParameter(text, "width=", " ");
-//                        final String strHeight = StringUtil.getParameter(text, "height=", " ");
-//                        final String strAlign = StringUtil.getParameter(text, "align=", "]");
-//                        final int width = parseInt(strWidth);
-//                        final int height = parseInt(strHeight);
-//                        final int align = strAlign == null ? ClickImageSpanDialogBuilder.DEFAULT_ALIGN : Integer.parseInt(strAlign);
                         final int width = ((CustomImageSpan) span).getImageWidth();
                         final int height = ((CustomImageSpan) span).getImageHeight();
                         final int align = ((CustomImageSpan) span).getVerticalAlignment();
