@@ -10,7 +10,7 @@ public abstract class Config {
 
     /* --------------///[ClickImageSpan]-------------- */
 //    public static final String OBJECT_REPLACEMENT_TEXT = "\uFFFC";
-    public static final String OBJECT_REPLACEMENT_TEXT = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    public static final String OBJECT_REPLACEMENT_TEXT = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
     /////??????Android设备最大尺寸（目前为3040）
     public static final int DEFAULT_MAX_IMAGE_WIDTH = 1024;
