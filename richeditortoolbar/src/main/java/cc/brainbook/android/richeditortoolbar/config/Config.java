@@ -9,7 +9,7 @@ import androidx.annotation.IntRange;
 public abstract class Config {
 
     /* --------------///[ClickImageSpan]-------------- */
-    public static final String OBJECT_REPLACEMENT_TEXT = "\uFFFC";
+//    public static final String OBJECT_REPLACEMENT_TEXT = "\uFFFC";
 //    public static final String OBJECT_REPLACEMENT_TEXT = " ";
 
     /////??????Android设备最大尺寸（目前为3040）
