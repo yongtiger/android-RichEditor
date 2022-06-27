@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.8.0",   ///v4.8.0#[BUG#不能太短！否则图片可能覆盖文字！]
-                versionCode: 40800
+                versionName: "4.8.1",   ///v4.8.1#[BUG#不能太短！否则图片可能覆盖文字！]
+                versionCode: 40801
         ]
     }
 
