@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.6.3",   ///v4.6.3#[FIX#ClickImageSpanDialogFragment#getActivity() == null || getActivity().isFinishing()]
-                versionCode: 40603
+                versionName: "4.6.4",   ///v4.6.4#OBJECT_REPLACEMENT_TEXT = uFFFC
+                versionCode: 40604
         ]
     }
 
