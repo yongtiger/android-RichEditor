@@ -439,7 +439,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     ///[ClickImageSpanDialogBuilder#onActivityResult()]
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mEditTextUri == null || mEditTextSrc == null || getActivity() == null) {
+        if (mEditTextUri == null || mEditTextSrc == null || getActivity() == null || getActivity().isFinishing()) {
             return;
         }
 
@@ -986,7 +986,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
 
     private void loadImage(String src) {
-        if (getActivity() == null) {
+        if (getActivity() == null || getActivity().isFinishing() || getRichEditorToolbar() == null) {
             return;
         }
 
@@ -1213,7 +1213,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     ///[媒体选择器#Autio/Video媒体库]
     private void pickFromMedia() {
-        if (getActivity() == null) {
+        if (getActivity() == null || getActivity().isFinishing()) {
             return;
         }
 
@@ -1237,7 +1237,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     ///[媒体选择器#Autio/Video媒体录制]
     private void pickFromRecorder() {
-        if (mImageSpanCallback == null || getActivity() == null) {
+        if (mImageSpanCallback == null || getActivity() == null || getActivity().isFinishing()) {
             return;
         }
 
@@ -1280,7 +1280,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     ///[图片选择器#相册图库]
     private void pickFromGallery() {
-        if (getActivity() == null) {
+        if (getActivity() == null || getActivity().isFinishing()) {
             return;
         }
 
@@ -1320,7 +1320,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     ///[图片选择器#相机拍照]
     private File mCameraResultFile;
     private void pickFromCamera() {
-        if (mImageSpanCallback == null || getActivity() == null) {
+        if (mImageSpanCallback == null || getActivity() == null || getActivity().isFinishing()) {
             return;
         }
 
