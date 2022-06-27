@@ -1576,7 +1576,7 @@ class HtmlToSpannedConverter implements ContentHandler {
             }
 
             ///[UPGRADE#android.text.Html]把width\height\align保存到text中
-            text.append(OBJECT_REPLACEMENT_TEXT);/////////////////OBJECT_REPLACEMENT_TEXT
+            text.append(OBJECT_REPLACEMENT_TEXT);
 ////        text.append(String.format(Resources.getSystem().getString(R.string.image_span_text), src, ///Note: Resources.getSystem() can only support system resources!
 //            if ("img".equals(type)) {
 //                text.append(String.format(Locale.ENGLISH, "[img src=\"%1$s\" width=%2$s height=%3$s align=%4$d]", source,

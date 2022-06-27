@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.7.0",   ///v4.7.0#OBJECT_REPLACEMENT_TEXT = uFFFC
-                versionCode: 40700
+                versionName: "4.7.1",   ///v4.7.1
+                versionCode: 40701
         ]
     }
 

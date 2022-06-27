@@ -2098,7 +2098,7 @@ public class RichEditorToolbar extends LinearLayout implements
 //                                                w, h, align)
 //                                        : String.format(getContext().getResources().getString(R.string.rich_editor_toolbar_image_span_media_text), uri, src,
 //                                        w, h, align);
-                                final String text = OBJECT_REPLACEMENT_TEXT;/////////////////OBJECT_REPLACEMENT_TEXT
+                                final String text = OBJECT_REPLACEMENT_TEXT;
 
                                 ///保存参数到view tag
                                 view.setTag(R.id.view_tag_image_text, text);
