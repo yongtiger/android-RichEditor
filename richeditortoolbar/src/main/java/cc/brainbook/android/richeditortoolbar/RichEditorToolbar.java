@@ -986,7 +986,7 @@ public class RichEditorToolbar extends LinearLayout implements
                     @Override
                     public void onResourceReady(CustomImageSpan span) {
                         ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
-                        invalidate();
+                        mRichEditText.invalidate();
                     }
                 });
     }
