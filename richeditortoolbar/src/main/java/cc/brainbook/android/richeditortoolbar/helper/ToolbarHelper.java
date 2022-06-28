@@ -40,6 +40,7 @@ import cc.brainbook.android.richeditortoolbar.ImageSpanOnClickListener;
 import cc.brainbook.android.richeditortoolbar.R;
 import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.bean.TextBean;
+import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
@@ -1165,20 +1166,22 @@ public abstract class ToolbarHelper {
     /* --------------------------------------------------------------------------------------- */
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(@NonNull Context context, final TextView textView, String authority,
-                                                    final int imageMaxWidth, final int imageMaxHeight) {
+                                   final int imageMaxWidth, final int imageMaxHeight,
+                                   final LoadImageCallback loadImageCallback) {
         if (textView == null) {
             return;
         }
 
         ///[postSetText#显示ImageSpan/VideoSpan/AudioSpan]如果自定义，则使用ToolbarHelper.postLoadSpans()
         ToolbarHelper.postSetText(context, (Spannable) textView.getText(), new ImageSpanOnClickListener(authority),
-                imageMaxWidth, imageMaxHeight);
+                imageMaxWidth, imageMaxHeight, loadImageCallback);
     }
 
     ///[postSetText#执行postLoadSpans及后处理，否则ImageSpan/VideoSpan/AudioSpan不会显示！]
     public static void postSetText(@NonNull Context context, final Spannable textSpannable,
                                    CustomImageSpan.OnClickListener onClickListener,
-                                   final int imageMaxWidth, final int imageMaxHeight) {
+                                   final int imageMaxWidth, final int imageMaxHeight,
+                                   final LoadImageCallback loadImageCallback) {
         if (textSpannable == null) {
             return;
         }
@@ -1202,7 +1205,7 @@ public abstract class ToolbarHelper {
 
                     @Override
                     public void unscheduleDrawable(@NonNull Drawable drawable, @NonNull Runnable runnable) {}
-                },  onClickListener);
+                },  onClickListener, loadImageCallback);
     }
 
     ///执行postLoadSpans后处理（比如：ImageSpan的Glide异步加载图片等）
@@ -1212,7 +1215,8 @@ public abstract class ToolbarHelper {
                                      Drawable placeholderDrawable,
                                      @DrawableRes int placeholderResourceId,
                                      Drawable.Callback drawableCallback,
-                                     CustomImageSpan.OnClickListener onClickListener
+                                     CustomImageSpan.OnClickListener onClickListener,
+                                     final LoadImageCallback loadImageCallback
     ) {
         if (spannable == null && pasteSpannable == null || spans == null || spans.isEmpty()) {
             return;
@@ -1241,7 +1245,7 @@ public abstract class ToolbarHelper {
                         drawableWidth, drawableHeight,
                         imageMaxWidth, imageMaxHeight,
                         placeholderDrawable, placeholderResourceId,
-                        drawableCallback, onClickListener);
+                        drawableCallback, onClickListener, loadImageCallback);
             }
         }
     }
@@ -1256,7 +1260,8 @@ public abstract class ToolbarHelper {
                                                     Drawable placeholderDrawable,
                                                     @DrawableRes int placeholderResourceId,
                                                     Drawable.Callback drawableCallback,
-                                                    final CustomImageSpan.OnClickListener onClickListener) {
+                                                    final CustomImageSpan.OnClickListener onClickListener,
+                                                    final LoadImageCallback loadImageCallback) {
         if (spannable == null && pasteSpannable == null) {
             return;
         }
@@ -1340,8 +1345,11 @@ public abstract class ToolbarHelper {
 
                 ///[CustomImageSpan.OnClickListener]
                 span.setOnClickListener(onClickListener);
-            }
 
+                if (loadImageCallback !=  null) {
+                    loadImageCallback.onResourceReady(span);
+                }
+            }
         });
 
         ///[ImageSpan#Glide#loadImage()]
@@ -1368,6 +1376,11 @@ public abstract class ToolbarHelper {
 //                spannable.removeSpan(imageSpan);
             spannable.setSpan(imageSpan, spanStart, spanEnd, getSpanFlags(imageSpan));
         }
+    }
+
+
+    public interface LoadImageCallback {
+        void onResourceReady(CustomImageSpan span);
     }
 
 }

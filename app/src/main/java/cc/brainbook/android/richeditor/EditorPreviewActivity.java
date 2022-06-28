@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_TEXT;
@@ -47,7 +48,14 @@ public class EditorPreviewActivity extends AppCompatActivity {
             public void run() {
                 postSetText(EditorPreviewActivity.this, mTextView,
                         getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
+                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT,
+                        new ToolbarHelper.LoadImageCallback() {
+                            @Override
+                            public void onResourceReady(CustomImageSpan span) {
+                                ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                mTextView.invalidate();
+                            }
+                        });
             }
         });
     }

@@ -503,7 +503,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                     getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
-                    this, null);
+                    this, null,
+                    new ToolbarHelper.LoadImageCallback() {
+                        @Override
+                        public void onResourceReady(CustomImageSpan span) {
+                            ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                            invalidate();
+                        }
+                    });
         }
 
         if (mOnPositionChangedListener != null) {
@@ -578,7 +585,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                     getImageMaxHeight(),
                     mPlaceholderDrawable, mPlaceholderResourceId,
-                    this, null);
+                    this, null,
+                    new ToolbarHelper.LoadImageCallback() {
+                        @Override
+                        public void onResourceReady(CustomImageSpan span) {
+                            ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                            invalidate();
+                        }
+                    });
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -967,7 +981,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                 getImageMaxHeight(),
                 mPlaceholderDrawable, mPlaceholderResourceId,
-                this, null);
+                this, null,
+                new ToolbarHelper.LoadImageCallback() {
+                    @Override
+                    public void onResourceReady(CustomImageSpan span) {
+                        ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                        invalidate();
+                    }
+                });
     }
 
     private int getActionId(View view) {
@@ -1154,7 +1175,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                         getImageMaxHeight(),
                         mPlaceholderDrawable, mPlaceholderResourceId,
-                        this, null);
+                        this, null,
+                        new ToolbarHelper.LoadImageCallback() {
+                            @Override
+                            public void onResourceReady(CustomImageSpan span) {
+                                ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                invalidate();
+                            }
+                        });
 
                 ///[Undo/Redo]
                 assert editable != null;
@@ -3128,7 +3156,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                                     getImageMaxHeight(),
                                     mPlaceholderDrawable, mPlaceholderResourceId,
-                                    this, null);
+                                    this, null,
+                                    new ToolbarHelper.LoadImageCallback() {
+                                        @Override
+                                        public void onResourceReady(CustomImageSpan span) {
+                                            ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                            invalidate();
+                                        }
+                                    });
                         }
                     }
                 }
@@ -3210,7 +3245,14 @@ public class RichEditorToolbar extends LinearLayout implements
 
                                 getImageMaxHeight(),
                                 mPlaceholderDrawable, mPlaceholderResourceId,
-                                this, null);
+                                this, null,
+                                new ToolbarHelper.LoadImageCallback() {
+                                    @Override
+                                    public void onResourceReady(CustomImageSpan span) {
+                                        ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                        invalidate();
+                                    }
+                                });
                     }
                 }
             }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import cc.brainbook.android.richeditortoolbar.ClickableMovementMethod;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
+import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 
 import static cc.brainbook.android.richeditor.EditorActivity.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.RichEditorToolbar.KEY_RESULT;
@@ -77,7 +78,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 postSetText(MainActivity.this, mTextView,
                         getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
+                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT,
+                        new ToolbarHelper.LoadImageCallback() {
+                            @Override
+                            public void onResourceReady(CustomImageSpan span) {
+                                ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                mTextView.invalidate();
+                            }
+                        });
             }
         });
 
@@ -106,7 +114,14 @@ public class MainActivity extends AppCompatActivity {
                         mTextView.setText(ToolbarHelper.fromJson(mJsonText));
                         postSetText(MainActivity.this, mTextView,
                                 getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                                DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT);
+                                DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT,
+                                new ToolbarHelper.LoadImageCallback() {
+                                    @Override
+                                    public void onResourceReady(CustomImageSpan span) {
+                                        ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                                        mTextView.invalidate();
+                                    }
+                                });
                     }
                 }
             }

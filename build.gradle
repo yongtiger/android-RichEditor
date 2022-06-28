@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.8.3",   ///v4.8.3#[BUG#不能太短！否则图片可能覆盖文字！]
-                versionCode: 40803
+                versionName: "4.9.0",   ///v4.9.0#[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                versionCode: 40900
         ]
     }
 
