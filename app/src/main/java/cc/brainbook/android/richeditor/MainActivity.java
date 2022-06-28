@@ -73,19 +73,27 @@ public class MainActivity extends AppCompatActivity {
         mTextView.setLongClickable(false);
 
         mTextView.setText(ToolbarHelper.fromJson(mJsonText));
+
+        ///注意：postSetText()不必放在mTextView.post()中！
+        postSetText(MainActivity.this, mTextView,
+                getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
+                DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT,
+                new ToolbarHelper.LoadImageCallback() {
+                    @Override
+                    public void onResourceReady(CustomImageSpan span) {
+                        //////??????test
+                        ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                        mTextView.postInvalidate(); ///在非UI线程中，可直接使用postInvalidate方法
+                    }
+                });
         mTextView.post(new Runnable() {
             @Override
             public void run() {
-                postSetText(MainActivity.this, mTextView,
-                        getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX,
-                        DEFAULT_MAX_IMAGE_WIDTH, DEFAULT_MAX_IMAGE_HEIGHT,
-                        new ToolbarHelper.LoadImageCallback() {
-                            @Override
-                            public void onResourceReady(CustomImageSpan span) {
-                                ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
-                                mTextView.invalidate();
-                            }
-                        });
+                //////??????test
+                ///[FIX#OBJECT_REPLACEMENT_TEXT太短时图片可能覆盖文字！]
+                ///调用invalidate方法只会执行onDraw方法；调用requestLayout方法只会执行onMeasure方法和onLayout方法，并不会执行onDraw方法
+                mTextView.invalidate();
+//                mTextView.requestLayout();
             }
         });
 
