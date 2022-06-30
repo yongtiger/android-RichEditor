@@ -1170,7 +1170,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
 
     private void adjustEditTextDisplay(boolean isWidth, boolean isConstrain, float zoomFactor) {
-        if (mEditTextDisplayWidth.getText() == null || mEditTextDisplayHeight.getText() == null) {
+        if (mEditTextDisplayWidth.getText() == null || mEditTextDisplayHeight.getText() == null || getRichEditorToolbar() == null) {
             return;
         }
 
