@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.10.1",   ///v4.10.1#[FIX#ImageSpanOnClickListener#startActivity(intent)#java.lang.SecurityException]
-                versionCode: 41001
+                versionName: "4.10.2",   ///v4.10.2#[FIX#ImageSpanOnClickListener#startActivity(intent)#java.lang.SecurityException]
+                versionCode: 41002
         ]
     }
 
