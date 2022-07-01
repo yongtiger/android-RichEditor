@@ -4,6 +4,7 @@ import static cc.brainbook.android.richeditortoolbar.constant.Constant.AUDIO_TYP
 import static cc.brainbook.android.richeditortoolbar.constant.Constant.IMAGE_TYPE;
 import static cc.brainbook.android.richeditortoolbar.constant.Constant.VIDEO_TYPE;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -55,6 +56,8 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
 
         try {
             context.startActivity(intent);
+            ///[FIX#java.lang.SecurityException]
+//        } catch (ActivityNotFoundException e) {
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
