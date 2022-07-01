@@ -2,6 +2,9 @@ package cc.brainbook.android.richeditortoolbar.fragment;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.constant.Constant.AUDIO_TYPE;
@@ -1257,7 +1260,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
             ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION | FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             }
 
             try {
@@ -1301,9 +1304,9 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
 
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
-            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         }
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION);
 
         try {
             startActivityForResult(Intent.createChooser(intent, getActivity().getString(R.string.click_image_span_dialog_builder_title_select_picture)),

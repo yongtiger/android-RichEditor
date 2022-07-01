@@ -49,7 +49,7 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
 
         ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         }
 
         intent.setDataAndType(mediaUri, mediaType);
