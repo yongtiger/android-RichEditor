@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.10.0",   ///v4.10.0#[FIX#ClickImageSpanDialogFragment#adjustEditTextDisplay#getRichEditorToolbar() is null]
-                versionCode: 41000
+                versionName: "4.10.1",   ///v4.10.1#[FIX#ImageSpanOnClickListener#startActivity(intent)#Exception]
+                versionCode: 41001
         ]
     }
 
