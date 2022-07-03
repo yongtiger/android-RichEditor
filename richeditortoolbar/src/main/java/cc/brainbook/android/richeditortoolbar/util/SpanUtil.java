@@ -6,6 +6,9 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,13 +16,19 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+
+import cc.brainbook.android.richeditortoolbar.bean.SpanBean;
 import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IStyle;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BoldSpan;
+import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
+import cc.brainbook.android.richeditortoolbar.span.paragraph.HeadSpan;
 
 public abstract class SpanUtil {
     /**
@@ -245,6 +254,40 @@ public abstract class SpanUtil {
         }
 
         return null;
+    }
+
+    @Nullable
+    public static SpanBean[] getOrderedSpecialSpanBeans(@Nullable List<SpanBean> spanBeans) {
+        if (spanBeans == null) {
+            return null;
+        }
+
+        final ArrayList<SpanBean> spanBeanList = new ArrayList<>();
+
+        for (SpanBean spanBean: spanBeans) {
+            ///SpecialSpan供语音朗读使用，包括：加粗、标题；前景色、背景色；下划线、边框
+            if (spanBean.getSpan() instanceof HeadSpan
+                    || spanBean.getSpan() instanceof BoldSpan
+                    || spanBean.getSpan() instanceof UnderlineSpan
+                    || spanBean.getSpan() instanceof BorderSpan
+                    || spanBean.getSpan() instanceof ForegroundColorSpan
+                    || spanBean.getSpan() instanceof BackgroundColorSpan
+            ) {
+                spanBeanList.add(spanBean);
+            }
+        }
+
+        final SpanBean[] spanBeanArray = new SpanBean[spanBeanList.size()];
+        spanBeanList.toArray(spanBeanArray);
+
+        Arrays.sort(spanBeanList.toArray(spanBeanArray), new Comparator<SpanBean>() {
+            @Override
+            public int compare(SpanBean o1, SpanBean o2) {
+                return Integer.compare(o1.getSpanStart(), o2.getSpanStart());
+            }
+        });
+
+        return spanBeanArray;
     }
 
 }
