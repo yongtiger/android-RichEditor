@@ -1,14 +1,12 @@
 package cc.brainbook.android.richeditortoolbar.util;
 
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.UnderlineSpan;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,11 +22,8 @@ import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IStyle;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
-import cc.brainbook.android.richeditortoolbar.span.character.BoldSpan;
-import cc.brainbook.android.richeditortoolbar.span.character.BorderSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
-import cc.brainbook.android.richeditortoolbar.span.paragraph.HeadSpan;
 
 public abstract class SpanUtil {
     /**
@@ -257,7 +252,7 @@ public abstract class SpanUtil {
     }
 
     @Nullable
-    public static SpanBean[] getOrderedSpecialSpanBeans(@Nullable List<SpanBean> spanBeans) {
+    public static SpanBean[] getOrderedSpecialSpanBeans(@Nullable List<SpanBean> spanBeans, SpecialSpanCallback specialSpanCallback) {
         if (spanBeans == null) {
             return null;
         }
@@ -265,14 +260,11 @@ public abstract class SpanUtil {
         final ArrayList<SpanBean> spanBeanList = new ArrayList<>();
 
         for (SpanBean spanBean: spanBeans) {
-            ///SpecialSpan供语音朗读使用，包括：加粗、标题；前景色、背景色；下划线、边框
-            if (spanBean.getSpan() instanceof HeadSpan
-                    || spanBean.getSpan() instanceof BoldSpan
-                    || spanBean.getSpan() instanceof UnderlineSpan
-                    || spanBean.getSpan() instanceof BorderSpan
-                    || spanBean.getSpan() instanceof ForegroundColorSpan
-                    || spanBean.getSpan() instanceof BackgroundColorSpan
-            ) {
+            if (specialSpanCallback != null) {
+                if (specialSpanCallback.isSpecialSpan(spanBean.getSpan())) {
+                    spanBeanList.add(spanBean);
+                }
+            } else {
                 spanBeanList.add(spanBean);
             }
         }
@@ -288,6 +280,10 @@ public abstract class SpanUtil {
         });
 
         return spanBeanArray;
+    }
+
+    public interface SpecialSpanCallback {
+        boolean isSpecialSpan (Parcelable span);
     }
 
 }

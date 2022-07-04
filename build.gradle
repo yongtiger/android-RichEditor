@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.11.0",   ///v4.11.0#SpanUtil#getOrderedSpecialSpanBeans()
-                versionCode: 41100
+                versionName: "4.11.1",   ///v4.11.1#SpanUtil#getOrderedSpecialSpanBeans()#SpecialSpanCallback
+                versionCode: 41101
         ]
     }
 
