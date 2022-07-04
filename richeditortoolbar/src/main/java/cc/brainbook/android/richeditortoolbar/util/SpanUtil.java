@@ -252,20 +252,21 @@ public abstract class SpanUtil {
     }
 
     @Nullable
-    public static SpanBean[] getOrderedSpecialSpanBeans(@Nullable List<SpanBean> spanBeans, SpecialSpanCallback specialSpanCallback) {
+    public static SpanBean[] filterOrderedSpanBeans(@Nullable List<SpanBean> spanBeans, FilterSpanCallback filterSpanCallback) {
         if (spanBeans == null) {
             return null;
         }
 
-        final ArrayList<SpanBean> spanBeanList = new ArrayList<>();
+        final List<SpanBean> spanBeanList;
 
-        for (SpanBean spanBean: spanBeans) {
-            if (specialSpanCallback != null) {
-                if (specialSpanCallback.isSpecialSpan(spanBean.getSpan())) {
+        if (filterSpanCallback == null) {
+            spanBeanList = spanBeans;
+        } else {
+            spanBeanList = new ArrayList<>();
+            for (SpanBean spanBean: spanBeans) {
+                if (filterSpanCallback.isNeedFilter(spanBean.getSpan())) {
                     spanBeanList.add(spanBean);
                 }
-            } else {
-                spanBeanList.add(spanBean);
             }
         }
 
@@ -282,8 +283,8 @@ public abstract class SpanUtil {
         return spanBeanArray;
     }
 
-    public interface SpecialSpanCallback {
-        boolean isSpecialSpan (Parcelable span);
+    public interface FilterSpanCallback {
+        boolean isNeedFilter(Parcelable span);
     }
 
 }
