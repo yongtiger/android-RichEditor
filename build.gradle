@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.11.2",   ///v4.11.2#SpanUtil#filterOrderedSpanBeans()
-                versionCode: 41102
+                versionName: "4.12.0",   ///v4.12.0#com.android.tools.build:gradle:7.2.2
+                versionCode: 41200
         ]
     }
 
@@ -21,7 +21,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        classpath 'com.android.tools.build:gradle:7.2.2'
 
         ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
         ///https://www.shangmayuan.com/a/12c08d0e68c3421cb2d547ee.html
