@@ -2,6 +2,8 @@ package cc.brainbook.android.richeditortoolbar.constant;
 
 public abstract class Constant {
 
+    public static final String EMPTY_TEXT_JSON = "{\"spans\":[],\"text\":\"\"}";
+    
     public static final String IMAGE_TYPE = "image/*";
     public static final String AUDIO_TYPE = "audio/*";
     public static final String VIDEO_TYPE = "video/*";

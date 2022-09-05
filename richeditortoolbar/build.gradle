@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'com.google.android.material:material:1.6.1'
 
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0
@@ -58,7 +58,7 @@ dependencies {
 //    implementation 'com.google.android:flexbox:flexbox:3.0.0'
     implementation 'com.github.google:flexbox-layout:3.0.0'
 
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     implementation 'com.github.bumptech.glide:glide:4.13.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'

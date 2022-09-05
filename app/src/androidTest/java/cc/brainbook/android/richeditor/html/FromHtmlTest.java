@@ -17,6 +17,7 @@ import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static org.junit.Assert.*;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.EMPTY_TEXT_JSON;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -48,23 +49,23 @@ public class FromHtmlTest {
     @Test
     public void testEmpty() {
         check("",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         ///忽略空格和'\n'
         check(" ",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("  ",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("\n",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("\n\n",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("\n \n",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("\n  \n",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("\n\n  \n\n",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
     }
 
     @Test
@@ -147,21 +148,21 @@ public class FromHtmlTest {
     @Test
     public void testTagP() {
         check("<p></p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p> </p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p>  </p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p>\n</p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p>\n\n</p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p> \n \n </p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p>  \n  \n  </p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check("<p>  \n\n  \n\n  </p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<p><br></p>",
                 "{\"spans\":[],\"text\":\"\\n\"}");
@@ -186,9 +187,9 @@ public class FromHtmlTest {
                 "{\"spans\":[],\"text\":\"a\\na\"}");
 
         check(" <p></p> ",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check(" <p> </p> ",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
         check(" <p>a</p> ",
                 "{\"spans\":[],\"text\":\"a\"}");
 
@@ -222,7 +223,7 @@ public class FromHtmlTest {
 
 //        ///注意：spanStart == spanEnd的span会被SpanUtil.getFilteredSpans()删除！
         check("<p style=\"color:darkgray;text-decoration:line-through;\"></p>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<p style=\"color:darkgray;text-decoration:line-through;\">a</p>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0},{\"span\":{\"mColor\":-12303292},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -491,7 +492,7 @@ public class FromHtmlTest {
     @Test
     public void testTagSpan() {
         check("<span style=\"color:blue\"></span>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<span style=\"color:blue\">a</span>",
                 "{\"spans\":[{\"span\":{\"mColor\":-16776961},\"spanClassName\":\"CustomForegroundColorSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -504,7 +505,7 @@ public class FromHtmlTest {
     @Test
     public void testTagB() {
         check("<b></b>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<b>a</b>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -514,7 +515,7 @@ public class FromHtmlTest {
     @Test
     public void testTagI() {
         check("<i></i>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<i>a</i>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"ItalicSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -523,7 +524,7 @@ public class FromHtmlTest {
     @Test
     public void testTagU() {
         check("<u></u>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<u>a</u>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomUnderlineSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -533,7 +534,7 @@ public class FromHtmlTest {
     @Test
     public void testTagS() {
         check("<s></s>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<s>a</s>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomStrikethroughSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -542,7 +543,7 @@ public class FromHtmlTest {
     @Test
     public void testTagSup() {
         check("<sup></sup>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<sup>a</sup>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSuperscriptSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -551,7 +552,7 @@ public class FromHtmlTest {
     @Test
     public void testTagSub() {
         check("<sub></sub>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<sub>a</sub>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CustomSubscriptSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -560,7 +561,7 @@ public class FromHtmlTest {
     @Test
     public void testTagCode() {
         check("<code></code>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<code>a</code>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"CodeSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -569,7 +570,7 @@ public class FromHtmlTest {
     @Test
     public void testTt() {
         check("<tt></tt>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<tt>a</tt>",
                 "{\"spans\":[{\"span\":{\"mFamily\":\"monospace\"},\"spanClassName\":\"CustomFontFamilySpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -616,7 +617,7 @@ public class FromHtmlTest {
     @Test
     public void testTagBig() {
         check("<big></big>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<big>a</big>",
                 "{\"spans\":[{\"span\":{\"mProportion\":1.25},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -625,7 +626,7 @@ public class FromHtmlTest {
     @Test
     public void testTagSmall() {
         check("<small></small>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<small>a</small>",
                 "{\"spans\":[{\"span\":{\"mProportion\":0.8},\"spanClassName\":\"CustomRelativeSizeSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -634,7 +635,7 @@ public class FromHtmlTest {
     @Test
     public void testTagA() {
         check("<a href=\"http://www.google.com\"></a>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<a href=\"http://www.google.com\">a</a>",
                 "{\"spans\":[{\"span\":{\"mURL\":\"http://www.google.com\"},\"spanClassName\":\"CustomURLSpan\",\"spanEnd\":1,\"spanFlags\":33,\"spanStart\":0}],\"text\":\"a\"}");
@@ -673,7 +674,7 @@ public class FromHtmlTest {
     @Test
     public void testTagBlock() {
         check("<block></block>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<block>a</block>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BlockSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");
@@ -682,7 +683,7 @@ public class FromHtmlTest {
     @Test
     public void testTagBorder() {
         check("<border></border>",
-                "{\"spans\":[],\"text\":\"\"}");
+                EMPTY_TEXT_JSON);
 
         check("<border>a</border>",
                 "{\"spans\":[{\"span\":{},\"spanClassName\":\"BorderSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}");

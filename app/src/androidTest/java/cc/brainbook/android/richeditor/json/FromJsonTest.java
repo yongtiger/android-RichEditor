@@ -16,6 +16,7 @@ import cc.brainbook.android.richeditortoolbar.RichEditorToolbar;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static org.junit.Assert.*;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.EMPTY_TEXT_JSON;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -44,7 +45,7 @@ public class FromJsonTest {
 
     @Test
     public void testEmpty() {
-        check("{\"spans\":[],\"text\":\"\"}");
+        check(EMPTY_TEXT_JSON);
     }
 
     @Test

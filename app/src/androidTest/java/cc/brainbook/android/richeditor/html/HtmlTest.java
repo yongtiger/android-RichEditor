@@ -21,6 +21,7 @@ import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper;
 
 import static org.junit.Assert.assertEquals;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.EMPTY_TEXT_JSON;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -58,37 +59,37 @@ public class HtmlTest {
     @Test
     public void testEmpty() {
         check("",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
         ///忽略空格和'\n'
         check(" ",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("  ",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("\n",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("\n\n",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("\n \n",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("\n  \n",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("\n\n  \n\n",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
     }
@@ -206,31 +207,31 @@ public class HtmlTest {
     @Test
     public void testTagP() {
         check("<p> </p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p>  </p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p>\n</p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p>\n\n</p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p> \n \n </p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p>  \n  \n  </p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check("<p>  \n\n  \n\n  </p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -299,11 +300,11 @@ public class HtmlTest {
                         "a</p>\n");
 
         check(" <p></p> ",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check(" <p> </p> ",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
         check(" <p>a</p> ",
@@ -387,7 +388,7 @@ public class HtmlTest {
                         "a</p>\n");
 
         check("<p style=\"color:darkgray;text-decoration:line-through;\"></p>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1470,7 +1471,7 @@ public class HtmlTest {
     @Test
     public void testTagSpan() {
         check("<span style=\"color:blue\"></span>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1489,7 +1490,7 @@ public class HtmlTest {
     @Test
     public void testTagB() {
         check("<b></b>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1503,7 +1504,7 @@ public class HtmlTest {
     @Test
     public void testTagI() {
         check("<i></i>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1516,7 +1517,7 @@ public class HtmlTest {
     @Test
     public void testTagU() {
         check("<u></u>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1530,7 +1531,7 @@ public class HtmlTest {
     @Test
     public void testTagS() {
         check("<s></s>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1543,7 +1544,7 @@ public class HtmlTest {
     @Test
     public void testTagSup() {
         check("<sup></sup>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1556,7 +1557,7 @@ public class HtmlTest {
     @Test
     public void testTagSub() {
         check("<sub></sub>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1569,7 +1570,7 @@ public class HtmlTest {
     @Test
     public void testTagCode() {
         check("<code></code>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1582,7 +1583,7 @@ public class HtmlTest {
     @Test
     public void testTt() {
         check("<tt></tt>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1648,7 +1649,7 @@ public class HtmlTest {
     @Test
     public void testTagBig() {
         check("<big></big>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1661,7 +1662,7 @@ public class HtmlTest {
     @Test
     public void testTagSmall() {
         check("<small></small>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1674,7 +1675,7 @@ public class HtmlTest {
     @Test
     public void testTagA() {
         check("<a href=\"http://www.google.com\"></a>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1727,7 +1728,7 @@ public class HtmlTest {
     @Test
     public void testTagBlock() {
         check("<block></block>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 
@@ -1740,7 +1741,7 @@ public class HtmlTest {
     @Test
     public void testTagBorder() {
         check("<border></border>",
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 "",
                 "");
 

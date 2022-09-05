@@ -22,6 +22,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.EMPTY_TEXT_JSON;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.fromJson;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -108,9 +109,9 @@ public class BoldSpanTest {
     @Test
     public void testCase000() {
         ///[init]
-        mInitJsonString = "{\"spans\":[],\"text\":\"\"}";
+        mInitJsonString = EMPTY_TEXT_JSON;
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
-        check("{\"spans\":[],\"text\":\"\"}", true);
+        check(EMPTY_TEXT_JSON, true);
     }
 
     /**
@@ -188,9 +189,9 @@ public class BoldSpanTest {
     @Test
     public void testCase010() {
         ///[init]
-        mInitJsonString = "{\"spans\":[],\"text\":\"\"}";
+        mInitJsonString = EMPTY_TEXT_JSON;
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
-        check("{\"spans\":[],\"text\":\"\"}", true);
+        check(EMPTY_TEXT_JSON, true);
 
         onView(withId(R.id.toolbar_bold)).perform(click());
         ///检查是否Selected

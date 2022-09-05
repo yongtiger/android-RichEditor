@@ -22,6 +22,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static cc.brainbook.android.richeditortoolbar.constant.Constant.EMPTY_TEXT_JSON;
 import static cc.brainbook.android.richeditortoolbar.helper.ToolbarHelper.fromJson;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
@@ -138,7 +139,7 @@ public class BoldSpanTest {
     }
 
 
-    private String mReplaceJsonString0 = "{\"spans\":[],\"text\":\"\"}";///
+    private String mReplaceJsonString0 = EMPTY_TEXT_JSON;///
     private String mReplaceJsonString1 = "{\"spans\":[],\"text\":\"a\"}";///a
     private String mReplaceJsonString2 = "{\"spans\":[],\"text\":\"\\n\"}";///\n
     private String mReplaceJsonString3 = "{\"spans\":[{\"span\":{},\"spanClassName\":\"BoldSpan\",\"spanEnd\":1,\"spanFlags\":34,\"spanStart\":0}],\"text\":\"a\"}";///[a]
@@ -157,7 +158,7 @@ public class BoldSpanTest {
     @Test
     public void testCase000() {
         ///[init]
-        mInitJsonString = "{\"spans\":[],\"text\":\"\"}";
+        mInitJsonString = EMPTY_TEXT_JSON;
         mInitSelectionStart = 0; mInitSelectionEnd = 0; mExpectInitSelected = false;
 
         /* ----------------------- replace with:{} ------------------------ */
@@ -1001,7 +1002,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -1596,7 +1597,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -2389,7 +2390,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -2455,7 +2456,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -2521,7 +2522,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -2587,7 +2588,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
@@ -2653,7 +2654,7 @@ public class BoldSpanTest {
 
         /* ----------------------- replace with:{} ------------------------ */
         check(mReplaceJsonString0,
-                "{\"spans\":[],\"text\":\"\"}",
+                EMPTY_TEXT_JSON,
                 0, 0, false);
 
         /* ----------------------- replace with:{a} ------------------------ */
