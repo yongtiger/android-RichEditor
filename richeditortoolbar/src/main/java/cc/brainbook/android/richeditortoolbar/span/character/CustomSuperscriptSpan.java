@@ -6,8 +6,9 @@ import android.text.style.SuperscriptSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class CustomSuperscriptSpan extends SuperscriptSpan implements ICharacterStyle {
+public class CustomSuperscriptSpan extends SuperscriptSpan implements ICharacterStyle, IReadableStyle {
 
     public static final Creator<CustomSuperscriptSpan> CREATOR = new Creator<CustomSuperscriptSpan>() {
         @Override

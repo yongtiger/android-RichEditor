@@ -8,11 +8,12 @@ import android.text.style.ReplacementSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.BORDER_SPAN_COLOR;
 
 ///https://www.jianshu.com/p/deb28c22852a
-public class BorderSpan  extends ReplacementSpan implements ICharacterStyle {
+public class BorderSpan  extends ReplacementSpan implements ICharacterStyle, IReadableStyle {
 
     private final Paint mPaint;
     private int mWidth;

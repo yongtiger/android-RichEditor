@@ -9,8 +9,9 @@ import androidx.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class AlignCenterSpan implements AlignmentSpan, INestParagraphStyle {
+public class AlignCenterSpan implements AlignmentSpan, INestParagraphStyle, IReadableStyle {
 	///[NestingLevel]
 	@Expose
 	private int mNestingLevel;

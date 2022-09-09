@@ -7,8 +7,9 @@ import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IUnReadableStyle;
 
-public class CodeSpan extends MetricAffectingSpan implements ICharacterStyle {
+public class CodeSpan extends MetricAffectingSpan implements ICharacterStyle, IUnReadableStyle {
     @Override
     public void updateDrawState(@NonNull TextPaint tp) {
         tp.setTypeface(Typeface.MONOSPACE);

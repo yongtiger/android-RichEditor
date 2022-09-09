@@ -9,9 +9,10 @@ import androidx.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 //////??????[UPGRADE#LineMarginSpanTemp]
-public class LineMarginSpanTemp implements LineHeightSpan, INestParagraphStyle {
+public class LineMarginSpanTemp implements LineHeightSpan, INestParagraphStyle, IReadableStyle {
 
     ///[NestingLevel]
     @Expose

@@ -12,11 +12,12 @@ import android.text.style.LineBackgroundSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IUnReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.PRE_SPAN_BACKGROUND_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.PRE_SPAN_PADDING;
 
-public class PreSpan implements LineBackgroundSpan, INestParagraphStyle {
+public class PreSpan implements LineBackgroundSpan, INestParagraphStyle, IUnReadableStyle {
 
     private Rect mBgRect;
 

@@ -13,6 +13,7 @@ import android.text.style.LeadingMarginSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_SPAN_STANDARD_GAP_WIDTH_PX;
@@ -20,7 +21,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.CUSTOM_QUOTE_
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\QuoteSpan.java
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\yuruiyin-RichEditor\richeditor\src\main\java\com\yuruiyin\richeditor\span\CustomQuoteSpan.java
-public class CustomQuoteSpan implements LeadingMarginSpan, INestParagraphStyle {
+public class CustomQuoteSpan implements LeadingMarginSpan, INestParagraphStyle, IReadableStyle {
 
     ///[Gson#Exclude父类成员变量的序列化和反序列化]
     ///Exclude后父类成员变量不被序列化，因此需要重新声明并设置@Expose

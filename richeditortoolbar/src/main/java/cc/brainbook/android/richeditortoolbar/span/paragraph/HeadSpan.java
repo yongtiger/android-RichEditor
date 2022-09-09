@@ -12,13 +12,14 @@ import androidx.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_DEFAULT_MARGIN_BOTTOM;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_DEFAULT_MARGIN_TOP;
 import static cc.brainbook.android.richeditortoolbar.config.Config.HEAD_SPAN_HEADING_SIZES;
 
 ///D:\AndroidStudioProjects\_demo_module\_rich_editor\zzhoujay-RichEditor\richeditor\src\main\java\com\zzhoujay\richeditor\span\HeadSpan.java
-public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParagraphStyle {
+public class HeadSpan extends RelativeSizeSpan implements LineHeightSpan, IParagraphStyle, IReadableStyle {
 
     @Expose
     private final int mLevel;

@@ -14,6 +14,7 @@ import android.text.style.LeadingMarginSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPAN_DEFAULT_INDICATOR_GAP_WIDTH;
@@ -21,7 +22,7 @@ import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_ITEM_SPA
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.getIndicatorText;
 import static cc.brainbook.android.richeditortoolbar.helper.ListSpanHelper.isListTypeOrdered;
 
-public class ListItemSpan implements LeadingMarginSpan, INestParagraphStyle {
+public class ListItemSpan implements LeadingMarginSpan, INestParagraphStyle, IReadableStyle {
 
     @Expose
     private ListSpan mListSpan;

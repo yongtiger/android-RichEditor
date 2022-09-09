@@ -6,8 +6,9 @@ import android.text.style.StrikethroughSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class CustomStrikethroughSpan extends StrikethroughSpan implements ICharacterStyle {
+public class CustomStrikethroughSpan extends StrikethroughSpan implements ICharacterStyle, IReadableStyle {
 
     public static final Creator<CustomStrikethroughSpan> CREATOR = new Creator<CustomStrikethroughSpan>() {
         @Override

@@ -7,8 +7,9 @@ import android.text.style.StyleSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class ItalicSpan extends StyleSpan implements ICharacterStyle {
+public class ItalicSpan extends StyleSpan implements ICharacterStyle, IReadableStyle {
 
     public ItalicSpan() {
         super(Typeface.ITALIC);

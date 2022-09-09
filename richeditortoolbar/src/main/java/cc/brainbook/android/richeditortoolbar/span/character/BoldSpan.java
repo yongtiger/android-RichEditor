@@ -7,8 +7,9 @@ import android.text.style.StyleSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class BoldSpan extends StyleSpan implements ICharacterStyle {
+public class BoldSpan extends StyleSpan implements ICharacterStyle, IReadableStyle {
     public BoldSpan() {
         super(Typeface.BOLD);
     }

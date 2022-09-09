@@ -10,11 +10,12 @@ import android.text.style.ReplacementSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.BLOCK_SPAN_COLOR;
 import static cc.brainbook.android.richeditortoolbar.config.Config.BLOCK_SPAN_RADIUS;
 
-public class BlockSpan extends ReplacementSpan implements ICharacterStyle {
+public class BlockSpan extends ReplacementSpan implements ICharacterStyle, IReadableStyle {
 
     private final Drawable drawable;
     private float padding;

@@ -6,8 +6,9 @@ import android.text.style.SubscriptSpan;
 import androidx.annotation.NonNull;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.ICharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
-public class CustomSubscriptSpan extends SubscriptSpan implements ICharacterStyle {
+public class CustomSubscriptSpan extends SubscriptSpan implements ICharacterStyle, IReadableStyle {
 
     public static final Creator<CustomSubscriptSpan> CREATOR = new Creator<CustomSubscriptSpan>() {
         @Override

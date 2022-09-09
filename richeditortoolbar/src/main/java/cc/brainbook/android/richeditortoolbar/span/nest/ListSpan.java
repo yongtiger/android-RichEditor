@@ -12,10 +12,11 @@ import android.text.style.LeadingMarginSpan;
 import com.google.gson.annotations.Expose;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.LIST_SPAN_DEFAULT_INDENT;
 
-public class ListSpan implements LeadingMarginSpan, INestParagraphStyle {
+public class ListSpan implements LeadingMarginSpan, INestParagraphStyle, IReadableStyle {
 
     ///[ListType]
     @Expose

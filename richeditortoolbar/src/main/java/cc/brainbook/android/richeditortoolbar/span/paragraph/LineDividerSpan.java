@@ -13,12 +13,13 @@ import com.google.gson.annotations.Expose;
 import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IUnReadableStyle;
 
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_BOTTOM;
 import static cc.brainbook.android.richeditortoolbar.config.Config.LINE_DIVIDER_SPAN_DEFAULT_MARGIN_TOP;
 
 ///[UPGRADE#LineDividerSpan]
-public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, IParagraphStyle {
+public class LineDividerSpan implements LineHeightSpan, LineBackgroundSpan, IParagraphStyle, IUnReadableStyle {
 
     ///[implements LineHeightSpan]
     @Expose
