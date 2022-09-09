@@ -21,6 +21,7 @@ import cc.brainbook.android.richeditortoolbar.helper.Html;
 import cc.brainbook.android.richeditortoolbar.interfaces.INestParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IParagraphStyle;
 import cc.brainbook.android.richeditortoolbar.interfaces.IStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IUnReadableStyle;
 import cc.brainbook.android.richeditortoolbar.span.block.CustomImageSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListItemSpan;
 import cc.brainbook.android.richeditortoolbar.span.nest.ListSpan;
@@ -208,18 +209,18 @@ public abstract class SpanUtil {
     }
 
     ///[Attachment#ImageSpan]从spannable中去掉所有CustomImageSpan（尤其是也要同时去掉CustomImageSpan所占用的文字！）
-    public static void removeAllImageSpans(Editable editable, CharSequence text) {
+    public static void removeAllUnReadableSpans(Editable editable, CharSequence text) {
         if (!TextUtils.isEmpty(editable)) {
             int start = 0;
             int end = editable.length();
 
             int next;
             for (int i = start; i < end; i = next) {
-                next = editable.nextSpanTransition(i, end, CustomImageSpan.class);
+                next = editable.nextSpanTransition(i, end, IUnReadableStyle.class);
 
-                final CustomImageSpan[] imageSpans = editable.getSpans(i, next, CustomImageSpan.class);
+                final IUnReadableStyle[] imageSpans = editable.getSpans(i, next, IUnReadableStyle.class);
                 if (imageSpans != null && imageSpans.length > 0) {
-                    for (CustomImageSpan imageSpan : imageSpans) {
+                    for (IUnReadableStyle imageSpan : imageSpans) {
                         final int spanStart = editable.getSpanStart(imageSpan);
                         final int spanEnd = editable.getSpanEnd(imageSpan);
 

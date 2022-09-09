@@ -20,10 +20,11 @@ import java.lang.ref.WeakReference;
 
 import cc.brainbook.android.richeditortoolbar.interfaces.Clickable;
 import cc.brainbook.android.richeditortoolbar.interfaces.IBlockCharacterStyle;
+import cc.brainbook.android.richeditortoolbar.interfaces.IUnReadableStyle;
 
 //////??????注意：API29开始支持ALIGN_CENTER，但存在bug！
 ///https://developer.android.com/reference/android/text/style/DynamicDrawableSpan#ALIGN_CENTER
-public class CustomImageSpan extends ImageSpan implements Clickable, IBlockCharacterStyle {
+public class CustomImageSpan extends ImageSpan implements Clickable, IBlockCharacterStyle, IUnReadableStyle {
     public static final int MEDIA_TYPE = 0;
     public static final int ALIGN_CENTER = 2;
 

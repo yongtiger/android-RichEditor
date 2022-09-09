@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.13.0",   ///v4.13.0#update gradle
-                versionCode: 41300
+                versionName: "4.14.0",   ///v4.14.0#SpanUtil#removeAllUnReadableSpans()
+                versionCode: 41400
         ]
     }
 
