@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -47,6 +48,11 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
         }
 
         final Intent intent = new Intent(Intent.ACTION_VIEW);
+
+        ///如果Android N及以上，需要添加临时FileProvider的Uri读写权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
 
         intent.setDataAndType(mediaUri, mediaType);
 
