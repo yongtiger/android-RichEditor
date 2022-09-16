@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.15.1",   ///v4.15.1#FIX#ImageSpanOnClickListener#不用图片选择器直接打开媒体库图片时，显示无权限！
-                versionCode: 41501
+                versionName: "4.16.0",   ///v4.16.0#SpanUtil#getAllImageSpan()
+                versionCode: 41600
         ]
     }
 

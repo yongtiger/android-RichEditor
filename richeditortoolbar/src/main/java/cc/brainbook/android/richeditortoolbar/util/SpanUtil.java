@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.ArraySet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,6 +209,28 @@ public abstract class SpanUtil {
         return null;
     }
 
+    @NonNull
+    public static ArraySet<CustomImageSpan> getAllImageSpan(Spanned spanned) {
+        final ArraySet<CustomImageSpan> result = new ArraySet<>();
+
+        if (!TextUtils.isEmpty(spanned)) {
+            final int spanStart = 0;
+            final int spanEnd = spanned.length();
+
+            int next;
+            for (int i = spanStart; i < spanEnd; i = next) {
+                next = spanned.nextSpanTransition(i, spanEnd, CustomImageSpan.class);
+
+                final CustomImageSpan[] imageSpans = spanned.getSpans(i, next, CustomImageSpan.class);
+                if (imageSpans != null && imageSpans.length > 0) {
+                    result.addAll(Arrays.asList(imageSpans));
+                }
+            }
+        }
+
+        return result;
+    }
+
     ///[Attachment#ImageSpan]从spannable中去掉所有CustomImageSpan（尤其是也要同时去掉CustomImageSpan所占用的文字！）
     public static void removeAllUnReadableSpans(Editable editable, CharSequence text) {
         if (!TextUtils.isEmpty(editable)) {
@@ -239,11 +262,19 @@ public abstract class SpanUtil {
     @Nullable
     public static CustomImageSpan getImageSpanByDrawable(Spanned spanned, Drawable drawable) {
         if (!TextUtils.isEmpty(spanned)) {
-            final CustomImageSpan[] spans = spanned.getSpans(0, spanned.length(), CustomImageSpan.class);
-            if (spans != null && spans.length > 0) {
-                for (CustomImageSpan span : spans) {
-                    if (drawable == span.getDrawable()) {
-                        return span;
+            int start = 0;
+            int end = spanned.length();
+
+            int next;
+            for (int i = start; i < end; i = next) {
+                next = spanned.nextSpanTransition(i, end, CustomImageSpan.class);
+
+                final CustomImageSpan[] imageSpans = spanned.getSpans(i, next, CustomImageSpan.class);
+                if (imageSpans != null && imageSpans.length > 0) {
+                    for (CustomImageSpan imageSpan : imageSpans) {
+                        if (drawable == imageSpan.getDrawable()) {
+                            return imageSpan;
+                        }
                     }
                 }
             }
