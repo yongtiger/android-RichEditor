@@ -359,6 +359,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         initView(view);
+        resetViews();
         initData();
 
         if (getDialog() != null) {
@@ -542,6 +543,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
 
     public void initData() {
+        Log.d("TAG-ClickImageSpan", "initData()#");
         mInitialUri = mUri;
         mInitialSrc = mSrc;
 
@@ -594,6 +596,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
 
     private void initView(@NonNull View view) {
+        Log.d("TAG-ClickImageSpan", "initView()#");
         view.findViewById(R.id.btn_finish).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
