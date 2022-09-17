@@ -10,7 +10,7 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.16.0",   ///v4.16.0#SpanUtil#getAllImageSpan()
+                versionName: "4.16.0",   ///v4.16.0#SpanUtil#getAllImageSpans()
                 versionCode: 41600
         ]
     }

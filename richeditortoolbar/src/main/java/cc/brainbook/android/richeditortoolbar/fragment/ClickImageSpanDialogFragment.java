@@ -1220,9 +1220,16 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             return;
         }
 
-        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                .setType(mMediaType == 1 ? VIDEO_TYPE : AUDIO_TYPE)
-                .addCategory(Intent.CATEGORY_OPENABLE);
+        final Intent intent;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        } else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        }
+        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setType(mMediaType == 1 ? VIDEO_TYPE : AUDIO_TYPE);
 
         try {
             startActivityForResult(
@@ -1291,13 +1298,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         ///https://stackoverflow.com/questions/22178041/getting-permission-denial-exception
         final Intent intent;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            intent = new Intent();
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            intent.setType(IMAGE_TYPE);
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
         } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType(IMAGE_TYPE);
 
             ///https://stackoverflow.com/questions/23385520/android-available-mime-types
             final String[] mimeTypes = {"image/jpeg", "image/jpg", "image/png", "image/bmp", "image/gif"};//////??????相册不支持"image/bmp"
@@ -1307,6 +1311,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             intent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         }
         intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.setType(IMAGE_TYPE);
 
         try {
             startActivityForResult(Intent.createChooser(intent, getActivity().getString(R.string.click_image_span_dialog_builder_title_select_picture)),

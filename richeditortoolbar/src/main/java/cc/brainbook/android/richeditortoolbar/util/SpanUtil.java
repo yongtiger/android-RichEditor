@@ -210,7 +210,7 @@ public abstract class SpanUtil {
     }
 
     @NonNull
-    public static ArraySet<CustomImageSpan> getAllImageSpan(Spanned spanned) {
+    public static ArraySet<CustomImageSpan> getAllImageSpans(Spanned spanned) {
         final ArraySet<CustomImageSpan> result = new ArraySet<>();
 
         if (!TextUtils.isEmpty(spanned)) {
