@@ -360,7 +360,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
         initView(view);
         initData();
-        resetViews();
 
         if (getDialog() != null) {
             getDialog().setOnShowListener(new DialogInterface.OnShowListener() {

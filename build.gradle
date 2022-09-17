@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.17.6",   ///v4.17.6#fix#ClickImageSpanDialogFragment#无法编辑图片
-                versionCode: 41706
+                versionName: "4.17.7",   ///v4.17.7#fix#ClickImageSpanDialogFragment#无法编辑图片
+                versionCode: 41707
         ]
     }
 
