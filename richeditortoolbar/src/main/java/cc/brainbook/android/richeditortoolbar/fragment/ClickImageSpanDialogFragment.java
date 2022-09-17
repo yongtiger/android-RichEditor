@@ -707,6 +707,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 final String src = s.toString();
 
+                resetViews();
+
                 loadImage(src);
             }
 
@@ -969,8 +971,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     @Override
                     public void onLoadStarted(@Nullable Drawable placeholder) {
                         mImageViewPreview.setImageDrawable(placeholder);
-
-                        resetViews();
                     }
 
                     @Override
