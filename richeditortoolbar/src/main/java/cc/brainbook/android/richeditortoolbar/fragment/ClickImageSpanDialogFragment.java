@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -547,6 +548,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
         mImageWidth = mWidth;
         mImageHeight = mHeight;
+        Log.d("TAG-ClickImageSpan", "initial()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
         if (!TextUtils.isEmpty(mUri)) {
             mEditTextUri.setText(mUri);
@@ -968,50 +970,60 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onLoadStarted(@Nullable Drawable placeholder) {
+                        Log.d("TAG-ClickImageSpan", "是否主线程：onLoadStarted()# " + (Looper.getMainLooper().getThread() == Thread.currentThread()));
+
                         mImageViewPreview.setImageDrawable(placeholder);
                     }
 
                     @Override
                     public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
+                        Log.d("TAG-ClickImageSpan", "是否主线程：onResourceReady()# " + (Looper.getMainLooper().getThread() == Thread.currentThread()));
+
                         ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
+                        Log.d("TAG-ClickImageSpan", "Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
                         final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable,
                                 mImageWidth, mImageHeight,
                                 getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight());
                         mImageWidth = pair.first; mImageHeight = pair.second;
+                        Log.d("TAG-ClickImageSpan", "Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
-                        if (mImageWidth > getRichEditorToolbar().getImageMaxWidth()
+                        try {
+                            if (mImageWidth > getRichEditorToolbar().getImageMaxWidth()
 //								|| mImageHeight > getRichEditorToolbar().getImageMaxHeight()	///只检测宽度！
-                        ) {
-                            Toast.makeText(getRichEditorToolbar().getContext(),
-                                    getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds,
-                                            getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
-                                    Toast.LENGTH_LONG).show();
+                            ) {
+                                Toast.makeText(getRichEditorToolbar().getContext(),
+                                        getRichEditorToolbar().getContext().getString(R.string.click_image_span_dialog_builder_msg_image_size_exceeds,
+                                                getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight()),
+                                        Toast.LENGTH_LONG).show();
+                            }
+
+                            enableEditTextDisplayChangedListener = false;
+                            mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
+                            mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
+                            enableEditTextDisplayChangedListener = true;
+
+                            mSliderDisplayWidth.setEnabled(true);
+                            mSliderDisplayHeight.setEnabled(true);
+                            mEditTextDisplayWidth.setEnabled(true);
+                            mEditTextDisplayHeight.setEnabled(true);
+                            mCheckBoxDisplayConstrainWidth.setEnabled(true);
+                            mCheckBoxDisplayConstrainHeight.setEnabled(true);
+                            mImageButtonDisplayRestore.setEnabled(true);
+                            mImageButtonZoomOut.setEnabled(true);
+                            mImageButtonZoomIn.setEnabled(true);
+
+                            if (!(drawable instanceof GifDrawable)) {
+                                ///除GifDrawable保持禁止之外，其它都允许Crop和Draw
+                                mButtonCrop.setEnabled(true);
+                                mButtonDoodle.setEnabled(true);
+                            }
+
+                            ///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
+                            mOriginalDrawable = drawable;
+                            setDrawable(drawable, mImageWidth, mImageHeight);
+                        } catch (Exception e) {
+                            Log.e("TAG-ClickImageSpan", e.getMessage());
                         }
-
-                        enableEditTextDisplayChangedListener = false;
-                        mEditTextDisplayWidth.setText(String.valueOf(mImageWidth));
-                        mEditTextDisplayHeight.setText(String.valueOf(mImageHeight));
-                        enableEditTextDisplayChangedListener = true;
-
-                        mSliderDisplayWidth.setEnabled(true);
-                        mSliderDisplayHeight.setEnabled(true);
-                        mEditTextDisplayWidth.setEnabled(true);
-                        mEditTextDisplayHeight.setEnabled(true);
-                        mCheckBoxDisplayConstrainWidth.setEnabled(true);
-                        mCheckBoxDisplayConstrainHeight.setEnabled(true);
-                        mImageButtonDisplayRestore.setEnabled(true);
-                        mImageButtonZoomOut.setEnabled(true);
-                        mImageButtonZoomIn.setEnabled(true);
-
-                        if (!(drawable instanceof GifDrawable)) {
-                            ///除GifDrawable保持禁止之外，其它都允许Crop和Draw
-                            mButtonCrop.setEnabled(true);
-                            mButtonDoodle.setEnabled(true);
-                        }
-
-                        ///[FIX#保存原始图片，避免反复缩放过程中使用模糊图片]
-                        mOriginalDrawable = drawable;
-                        setDrawable(drawable, mImageWidth, mImageHeight);
                     }
 
                     @Override
@@ -1037,6 +1049,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
 
     private void resetViews() {
+        Log.d("TAG-ClickImageSpan", "resetViews()#");
         enableEditTextDisplayChangedListener = false;
         mEditTextDisplayWidth.setText(null);
         mEditTextDisplayHeight.setText(null);
@@ -1090,6 +1103,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     };
 
     private void setDrawable(Drawable drawable, int width, int height) {
+        Log.d("TAG-ClickImageSpan", "setDrawable()#");
         if (width == 0 || height == 0) {
             return;
         }
@@ -1383,7 +1397,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         final File file = new File(filePath);
         if (file.isFile() && file.exists()) {
             if (!file.delete()) {
-                Log.e("TAG-ClickImageSpan", "Fail to delete file: " + file.getAbsolutePath());
+                Log.w("TAG-ClickImageSpan", "Fail to delete file: " + file.getAbsolutePath());
             }
         }
     }
