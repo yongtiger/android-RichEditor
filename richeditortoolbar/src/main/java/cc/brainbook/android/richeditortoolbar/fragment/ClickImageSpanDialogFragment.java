@@ -975,12 +975,12 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     @Override
                     public void onResourceReady(@NonNull Drawable drawable, @Nullable Transition<? super Drawable> transition) {
                         ///[ImageSpan#调整宽高：考虑到宽高为0或负数的情况]
-                        Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
+                        Log.d("TAG-ClickImageSpan", "Glide.onResourceReady()# Before adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
                         final Pair<Integer, Integer> pair = ToolbarHelper.adjustDrawableSize(drawable,
                                 mImageWidth, mImageHeight,
                                 getRichEditorToolbar().getImageMaxWidth(), getRichEditorToolbar().getImageMaxHeight());
                         mImageWidth = pair.first; mImageHeight = pair.second;
-                        Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
+                        Log.d("TAG-ClickImageSpan", "Glide.onResourceReady()# After adjustDrawableSize()# mImageWidth: " + mImageWidth + ", mImageHeight: " + mImageHeight);
 
                         if (mImageWidth > getRichEditorToolbar().getImageMaxWidth()
 //								|| mImageHeight > getRichEditorToolbar().getImageMaxHeight()	///只检测宽度！
