@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -39,7 +38,6 @@ public class ImageSpanOnClickListener implements CustomImageSpan.OnClickListener
         final Uri mediaUri = FileProviderUtil.parseToUri(context, src, mAuthority);
 
         if (mediaUri == null) {
-            Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
             Toast.makeText(context,
                     context.getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist,
                             src), Toast.LENGTH_SHORT).show();

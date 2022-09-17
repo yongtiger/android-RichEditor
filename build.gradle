@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.16.0",   ///v4.16.0#SpanUtil#getAllImageSpans()
-                versionCode: 41600
+                versionName: "4.17.0",   ///v4.17.0#fix#ClickImageSpanDialogFragment#图片宽高为0导致显示错位！
+                versionCode: 41700
         ]
     }
 

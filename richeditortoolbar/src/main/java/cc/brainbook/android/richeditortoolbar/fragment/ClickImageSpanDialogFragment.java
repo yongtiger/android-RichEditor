@@ -306,7 +306,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     @Override
     public void onAttach(@NonNull Context context) {
-        Log.d("TAG", "onAttach()# ");
         super.onAttach(context);
 
         final Bundle arguments = getArguments();
@@ -322,7 +321,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d("TAG", "onCreate()# ");
         super.onCreate(savedInstanceState);
 
         ///setRetainInstance已经废弃
@@ -334,8 +332,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("TAG", "onCreateView()# ");
-
         ///[Dialog全屏]
         ///requestFeature() must be called before adding content
         if (getDialog() != null)
@@ -359,7 +355,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Log.d("TAG", "onViewCreated()# ");
         super.onViewCreated(view, savedInstanceState);
 
         initView(view);
@@ -388,50 +383,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onStart() {
-        Log.d("TAG", "onStart()# ");
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-        Log.d("TAG", "onResume()# ");
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        Log.d("TAG", "onPause()# ");
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        Log.d("TAG", "onStop()# ");
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        Log.d("TAG", "onDestroyView()# ");
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onDetach() {
-        Log.d("TAG", "onDetach()# ");
-        super.onDetach();
-    }
-
-    @Override
-    public void onDismiss(@NonNull DialogInterface dialog) {
-        Log.d("TAG", "onDismiss()# ");
-        super.onDismiss(dialog);
-    }
-
-    @Override
     public void onCancel(@NonNull DialogInterface dialog) {
-        Log.d("TAG", "onDismiss()# ");
         super.onCancel(dialog);
 
         if (mOnCancelListener != null) {
@@ -456,8 +408,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
                         UriUtil.grantReadPermissionToUri(getActivity(), resultUri, data.getFlags());
                     } else {
-                        Log.e("TAG-ClickImageSpan", getActivity().getString(
-                                mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
                         Toast.makeText(getActivity(),
                                 mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio),
                                 Toast.LENGTH_SHORT).show();
@@ -468,8 +418,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                         mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_video_select_cancelled) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_audio_select_cancelled),
                         Toast.LENGTH_SHORT).show();
             } else {
-                Log.e("TAG-ClickImageSpan", getActivity().getString(
-                        mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_select_failed : R.string.click_image_span_dialog_builder_msg_audio_select_failed));
                 Toast.makeText(getActivity(),
                         mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_video_select_failed) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_audio_select_failed),
                         Toast.LENGTH_SHORT).show();
@@ -485,8 +433,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                         mEditTextUri.setText(resultUri.toString());
                         enableDeleteOldUriFile = true;
                     } else {
-                        Log.e("TAG-ClickImageSpan", getActivity().getString(
-                                mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video : R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio));
                         Toast.makeText(getActivity(),
                                 mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio),
                                 Toast.LENGTH_SHORT).show();
@@ -497,8 +443,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                         mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_video_capture_cancelled) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_audio_capture_cancelled),
                         Toast.LENGTH_SHORT).show();
             } else {
-                Log.e("TAG-ClickImageSpan", getActivity().getString(
-                        mMediaType == 1 ? R.string.click_image_span_dialog_builder_msg_video_capture_failed : R.string.click_image_span_dialog_builder_msg_audio_capture_failed));
                 Toast.makeText(getActivity(),
                         mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_video_capture_failed) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_audio_capture_failed),
                         Toast.LENGTH_SHORT).show();
@@ -518,7 +462,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
                         UriUtil.grantReadPermissionToUri(getActivity(), selectedUri, data.getFlags());
                     } else {
-                        Log.e("TAG-ClickImageSpan", getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image));
                         Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image),
                                 Toast.LENGTH_SHORT).show();
                     }
@@ -527,7 +470,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_select_cancelled),
                         Toast.LENGTH_SHORT).show();
             } else {
-                Log.e("TAG-ClickImageSpan", getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_select_failed));
                 Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_select_failed),
                         Toast.LENGTH_SHORT).show();
             }
@@ -546,7 +488,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getActivity(), R.string.click_image_span_dialog_builder_msg_image_capture_cancelled, Toast.LENGTH_SHORT).show();
             } else {
-                Log.e("TAG-ClickImageSpan", getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_capture_failed));
                 Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_capture_failed), Toast.LENGTH_SHORT).show();
             }
         }
@@ -565,7 +506,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             } else if (resultCode == UCrop.RESULT_ERROR) {
                 final Throwable cropError = UCrop.getError(data);
                 if (cropError != null) {
-                    Log.e("TAG-ClickImageSpan", cropError.getMessage());
                     Toast.makeText(getActivity(), cropError.getLocalizedMessage(),
                             Toast.LENGTH_SHORT).show();
                 }
@@ -594,7 +534,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     enableDeleteOldSrcFile = true;
                 }
             } else if (resultCode == DoodleActivity.RESULT_ERROR) {
-                Log.e("TAG-ClickImageSpan", getActivity().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed));
                 Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_doodle_failed),
                         Toast.LENGTH_SHORT).show();
             }
@@ -766,7 +705,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 final String src = s.toString();
-                Log.d("TAG-ClickImageSpan", "mEditTextSrc# TextWatcher.onTextChanged()# src: " + src);
 
                 loadImage(src);
             }
@@ -911,7 +849,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     mTempCropFile = pair.second;
                     startCrop(getActivity(), pair.first, pair.second.getAbsolutePath());
                 } else {
-                    Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
                     Toast.makeText(getActivity(),
                             getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist, src), Toast.LENGTH_SHORT).show();
                 }
@@ -934,7 +871,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     mTempDoodleFile = pair.second;
                     startDoodle(getActivity(), pair.first, pair.second.getAbsolutePath());
                 } else {
-                    Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + src);
                     Toast.makeText(getActivity(),
                             getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist, src), Toast.LENGTH_SHORT).show();
                 }
@@ -1015,7 +951,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
         ///获取图片真正的宽高
         ///https://www.jianshu.com/p/299b637afe7c
-        Glide.with(getActivity().getApplicationContext())
+        Glide.with(getActivity())
 //						.asBitmap()//强制Glide返回一个Bitmap对象 //注意：在Glide 3中的语法是先load()再asBitmap()，而在Glide 4中是先asBitmap()再load()
                 .load(src)
                 .apply(options)
@@ -1254,8 +1190,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         final Intent intent = new Intent(mMediaType == 1 ? MediaStore.ACTION_VIDEO_CAPTURE : MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
         final Pair<Uri, File> pair = mImageSpanCallback.generateMediaTypeSourceAndFile(getActivity(), mMediaType);
-        Log.d("TAG-ClickImageSpan", "pickFromRecorder()# Uri: " + pair.first);
-
         if (pair.first != null && pair.second != null) {
             ///MediaStore.EXTRA_OUTPUT：设置媒体文件的保存路径
             intent.putExtra(MediaStore.EXTRA_OUTPUT, pair.first);
@@ -1281,7 +1215,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
             Toast.makeText(getActivity(),
                     getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist,
                             pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
@@ -1349,7 +1282,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
         final Pair<Uri, File> pair = mImageSpanCallback.generateMediaTypeSourceAndFile(getActivity(), mMediaType);
         mCameraResultFile = pair.second;
-        Log.d("TAG-ClickImageSpan", "pickFromCamera()# mCameraResultFile: " + pair.second);
 
         if (pair.first != null && pair.second != null) {
             ///注意：系统相机拍摄的照片，如果不通过MediaStore.EXTRA_OUTPUT指定路径，data.getExtras().getParcelableExtra("data")只能得到Bitmap缩略图！
@@ -1375,7 +1307,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 Toast.makeText(getActivity(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Log.e("TAG-ClickImageSpan", "Image does not exist, or the read and write permissions are not authorized. " + pair.first + ", " + pair.second);
             Toast.makeText(getActivity(),
                     getActivity().getString(R.string.click_image_span_dialog_builder_msg_image_does_not_exist,
                             pair.first + ", " + pair.second), Toast.LENGTH_SHORT).show();
@@ -1455,7 +1386,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         final File file = new File(filePath);
         if (file.isFile() && file.exists()) {
             if (!file.delete()) {
-                Log.w("TAG-ClickImageSpan", "Fail to delete file: " + file.getAbsolutePath());
+                Log.d("TAG-ClickImageSpan", "Fail to delete file: " + file.getAbsolutePath());
             }
         }
     }
