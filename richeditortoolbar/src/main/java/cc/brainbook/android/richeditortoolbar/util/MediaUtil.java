@@ -35,7 +35,11 @@ public abstract class MediaUtil {
             e.printStackTrace();
         } finally {
             if (mmr != null) {
-                mmr.release();
+                try {
+                    mmr.release();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
