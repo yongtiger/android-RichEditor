@@ -25,7 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -403,11 +402,10 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
         if (requestCode == REQUEST_CODE_PICK_FROM_VIDEO_MEDIA || requestCode == REQUEST_CODE_PICK_FROM_AUDIO_MEDIA) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
-                    final Uri resultUri = data.getData();
-                    if (resultUri != null) {
-                        mEditTextUri.setText(resultUri.toString());
-
-                        UriUtil.grantReadPermissionToUri(getActivity(), resultUri, data.getFlags());
+                    final Uri selectedUri = data.getData();
+                    if (selectedUri != null) {
+                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), null, selectedUri);
+                        mEditTextUri.setText(uri.toString());
                     } else {
                         Toast.makeText(getActivity(),
                                 mMediaType == 1 ? getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_video) : getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_audio),
@@ -459,9 +457,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     if (selectedUri != null) {
                         mImageWidth = 0;
                         mImageHeight = 0;
-                        mEditTextSrc.setText(selectedUri.toString());
-
-                        UriUtil.grantReadPermissionToUri(getActivity(), selectedUri, data.getFlags());
+                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), null, selectedUri);
+                        mEditTextSrc.setText(uri.toString());
                     } else {
                         Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image),
                                 Toast.LENGTH_SHORT).show();
