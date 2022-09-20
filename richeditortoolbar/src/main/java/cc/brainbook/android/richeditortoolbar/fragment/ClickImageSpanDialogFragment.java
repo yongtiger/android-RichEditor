@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+import static cc.brainbook.android.richeditortoolbar.config.Config.FILE_PROVIDER_AUTHORITIES_SUFFIX;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_MAX_DISPLAY_DIGITS;
 import static cc.brainbook.android.richeditortoolbar.config.Config.IMAGE_ZOOM_FACTOR;
 import static cc.brainbook.android.richeditortoolbar.constant.Constant.AUDIO_TYPE;
@@ -404,7 +405,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 if (data != null) {
                     final Uri selectedUri = data.getData();
                     if (selectedUri != null) {
-                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), null, selectedUri);
+                        final String authority = getActivity().getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX;
+                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), authority, selectedUri);
                         mEditTextUri.setText(uri.toString());
                     } else {
                         Toast.makeText(getActivity(),
@@ -457,7 +459,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                     if (selectedUri != null) {
                         mImageWidth = 0;
                         mImageHeight = 0;
-                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), null, selectedUri);
+                        final String authority = getActivity().getPackageName() + FILE_PROVIDER_AUTHORITIES_SUFFIX;
+                        final Uri uri = UriUtil.tryToGetExportableUri(getActivity(), authority, selectedUri);
                         mEditTextSrc.setText(uri.toString());
                     } else {
                         Toast.makeText(getActivity(), getActivity().getString(R.string.click_image_span_dialog_builder_msg_cannot_retrieve_image),

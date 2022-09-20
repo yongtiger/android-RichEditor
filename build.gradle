@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.18.0",   ///v4.18.0#fix#UriUtil#tryToGetExportableUri()
-                versionCode: 41800
+                versionName: "4.18.1",   ///v4.18.1#UriUtil#tryToGetExportableUri()
+                versionCode: 41801
         ]
     }
 

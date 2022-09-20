@@ -8,6 +8,8 @@ import androidx.annotation.IntRange;
 
 public abstract class Config {
 
+    public static final String FILE_PROVIDER_AUTHORITIES_SUFFIX = ".file.path.share";
+
     /* --------------///[ClickImageSpan]-------------- */
     public static final String OBJECT_REPLACEMENT_TEXT = "\uFFFC";
 //    public static final String OBJECT_REPLACEMENT_TEXT = " "; ///不建议用空格！因为有可能被过滤掉
