@@ -1100,7 +1100,7 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
 
     private void setDrawable(Drawable drawable, int width, int height) {
         Log.d("TAG-ClickImageSpan", "setDrawable()#");
-        if (width == 0 || height == 0) {
+        if (width == 0 || height == 0 || drawable == null || mImageViewPreview == null) {
             return;
         }
 
