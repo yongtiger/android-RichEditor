@@ -49,7 +49,7 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.7.0'
 
     ///注意：从1.1.0开始，这个库将与AndroidX一起使用。如果您使用1.1.0或以上版本，请迁移到AndroidX。 如果您还没有迁移到AndroidX，请使用1.0.0
     ///[FIX#jitpack#jcenter废弃#Please remove usages of `jcenter()` Maven repository from your build scripts and migrate your build to other Maven repositories.]
@@ -58,10 +58,10 @@ dependencies {
 //    implementation 'com.google.android:flexbox:flexbox:3.0.0'
     implementation 'com.github.google:flexbox-layout:3.0.0'
 
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10'
 
-    implementation 'com.github.bumptech.glide:glide:4.13.2'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
 
     implementation "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
 //    implementation "org.jsoup:jsoup:1.11.3"

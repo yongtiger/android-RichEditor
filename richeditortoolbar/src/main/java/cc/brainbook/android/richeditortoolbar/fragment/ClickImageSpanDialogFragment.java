@@ -974,7 +974,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
                 .into(new CustomTarget<Drawable>() {
                     @Override
                     public void onLoadStarted(@Nullable Drawable placeholder) {
-                        mImageViewPreview.setImageDrawable(placeholder);
+                        if (placeholder != null)
+                            mImageViewPreview.setImageDrawable(placeholder);
                     }
 
                     @Override
