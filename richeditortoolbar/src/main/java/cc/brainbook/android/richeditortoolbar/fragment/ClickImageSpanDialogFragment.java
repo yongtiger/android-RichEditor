@@ -697,6 +697,8 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             }
         });
 
+        mImageViewPreview = (ImageView) view.findViewById(R.id.iv_preview);
+
         mEditTextSrc = (EditText) view.findViewById(R.id.et_src);
         mEditTextSrc.addTextChangedListener(new TextWatcher() {
             @Override
@@ -718,8 +720,6 @@ public class ClickImageSpanDialogFragment extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {}
         });
-
-        mImageViewPreview = (ImageView) view.findViewById(R.id.iv_preview);
 
         mSliderDisplayWidth = view.findViewById(R.id.slider_display_width);
         mSliderDisplayWidth.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {

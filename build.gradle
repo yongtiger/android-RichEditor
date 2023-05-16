@@ -10,8 +10,8 @@ buildscript {
         ]
 
         release = [
-                versionName: "4.19.1",   ///v4.19.1#ClickImageSpanDialogFragment#onLoadStarted()#@NonNull Drawable drawable
-                versionCode: 41901
+                versionName: "4.19.2",   ///v4.19.2#ClickImageSpanDialogFragment#onLoadStarted()#@NonNull Drawable drawable
+                versionCode: 41902
         ]
     }
 
