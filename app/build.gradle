@@ -37,6 +37,8 @@ dependencies {
     implementation project(path: ':richeditortoolbar')
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    ///注意：使用com.google.android.material:material:1.10.0时，出现编译错误：Dependency 'androidx.activity:activity:1.8.0' requires libraries and applications that depend on it to compile against version 34 or later of the Android APIs.
+    ///implementation 'com.google.android.material:material:1.10.0'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.multidex:multidex:2.0.1'
 
@@ -53,6 +55,6 @@ dependencies {
     implementation 'com.github.google:flexbox-layout:3.0.0'
 
     ///[LeakCanary] A memory leak detection library. https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 
 }
